@@ -19,8 +19,10 @@
      (file-name (git-file-name name version))
      (sha256
       (base32
-       ""))))
+       "1bwjf7w2f1li7q59d244q3b6xaygpaw5rwp5z0bj055qbkz22sah"))))
    (build-system gnu-build-system)
+   (arguments
+     `(#:tests? #f))
    (home-page "https://www.kaoriya.net/software/cmigemo/")
    (synopsis "ローマ字入力から日本語を(インクリメンタルに)検索するための正規表現を生成する")
    (description "C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
