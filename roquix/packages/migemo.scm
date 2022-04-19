@@ -4,7 +4,14 @@
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages wget)
+  #:use-module (gnu packages shells)
+  #:use-module (gnu packages code))
 
 (define-public cmigemo
   (package
@@ -25,17 +32,25 @@
     `(#:phases
       (modify-phases %standard-phases
                      (replace 'build
-                              (lambda* (build #:key (make-flags '()) (parallel-build? #t)
+                              (lambda* (#:key (make-flags '()) (parallel-build? #t)
                                               #:allow-other-keys)
-                                (apply invoke "make"
+                                (apply invoke "make" "gcc"
                                        `(,@(if parallel-build?
-                                               `("-j" ,(number->string (parallel-job-count)))
-                                               '("gcc"))
+                                               `("-j" ,(number->string (parallel-job-count))))
                                          ,@make-flags))))
+                     (add-before 'install 'pre-install
+                                 (lambda* (#:key outputs #:allow-other-keys)
+                                   (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))))
                      (replace 'install
-                              (lambda* (install #:key (make-flags '()) #:allow-other-keys)
-                                (apply invoke "make" "gcc-install" make-flags))))
-      #:tests? #f))
+                              (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+                                (apply invoke "make" "-f" "compile/Make_gcc.mak" "install-lib" make-flags)
+                                (install-file "src/migemo.h" (string-append (assoc-ref outputs "out") "/include"))
+                                (install-file "build/cmigemo" (string-append (assoc-ref outputs "out") "/bin")))))
+      #:tests? #f
+      #:make-flags (list "INSTALL=install -c"
+                         ,(string-append "CC=" (cc-for-target))
+                         (string-append "LDFLAGS_MIGEMO=-Wl,-rpath," (assoc-ref %outputs "out") "/lib"))))
+   (native-inputs (list which nkf wget perl tcsh universal-ctags))
    (home-page "https://www.kaoriya.net/software/cmigemo/")
    (synopsis "ローマ字入力から日本語を(インクリメンタルに)検索するための正規表現を生成する")
    (description "C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
