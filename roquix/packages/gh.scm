@@ -830,15 +830,13 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
                  (modify-phases %standard-phases
                                 (replace 'build
                                          (lambda* (#:key import-path #:allow-other-keys)
-                                           (chdir (string-append (getenv "GOPATH") "/src/" import-path))
-                                           (invoke "make")
-                                           (chdir (getenv "GOPATH"))))
+                                           (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
+                                             (invoke "make"))))
                                 (replace 'install
-                                          (lambda* (#:key import-path outputs #:allow-other-keys)
-                                            (chdir (string-append (getenv "GOPATH") "/src/" import-path))
-                                            (invoke "make" "install"
-                                                    (string-append "prefix=" (assoc-ref outputs "out")))
-                                            (chdir (getenv "GOPATH"))))
+                                         (lambda* (#:key import-path outputs #:allow-other-keys)
+                                           (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
+                                             (invoke "make" "install"
+                                                     (string-append "prefix=" (assoc-ref outputs "out"))))))
                                 (replace 'check
                                          (lambda* (#:key tests? #:allow-other-keys)
                                            (when tests? (invoke "make" "test")))))
