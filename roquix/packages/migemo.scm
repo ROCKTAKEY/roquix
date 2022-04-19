@@ -22,7 +22,20 @@
        "1bwjf7w2f1li7q59d244q3b6xaygpaw5rwp5z0bj055qbkz22sah"))))
    (build-system gnu-build-system)
    (arguments
-     `(#:tests? #f))
+    `(#:phases
+      (modify-phases %standard-phases
+                     (replace 'build
+                              (lambda* (build #:key (make-flags '()) (parallel-build? #t)
+                                              #:allow-other-keys)
+                                (apply invoke "make"
+                                       `(,@(if parallel-build?
+                                               `("-j" ,(number->string (parallel-job-count)))
+                                               '("gcc"))
+                                         ,@make-flags))))
+                     (replace 'install
+                              (lambda* (install #:key (make-flags '()) #:allow-other-keys)
+                                (apply invoke "make" "gcc-install" make-flags))))
+      #:tests? #f))
    (home-page "https://www.kaoriya.net/software/cmigemo/")
    (synopsis "ローマ字入力から日本語を(インクリメンタルに)検索するための正規表現を生成する")
    (description "C/MigemoはMigemo(Ruby/Migemo)をC言語で実装したものです。C/Migemoライブラリを
