@@ -10,10 +10,6 @@
   #:use-module (gnu packages syncthing)
   #:use-module (gnu packages version-control))
 
-(define mit
-  (license:fsf-free "MIT"
-                    "https://opensource.org/licenses/MIT"))
-
 (define-public go-github-com-spf13-cobra-v1.2
   (package
     (name "go-github-com-spf13-cobra-v1.2")
@@ -916,4 +912,4 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
       "@code{gh} is GitHub on the command line.  It brings pull requests, issues, and
 other GitHub concepts to the terminal next to where you are already working with
 @code{git} and your code.")
-    (license mit)))
+    (license license:expat)))
