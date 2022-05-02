@@ -3,6 +3,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
+  #:use-module (gnu packages linux)
   #:use-module (nonguix build-system binary))
 
 (define-public tailscale
@@ -22,6 +23,8 @@
                   ("tailscaled" "/bin/"))))
    (home-page "https://tailscale.com/")
    (synopsis "Tailscale")
+   (propagated-inputs
+    (list iptables))
    (description
     "A secure network that just works
 Zero config VPN. Installs on any device in minutes, manages firewall rules for you, and works from anywhere.")
