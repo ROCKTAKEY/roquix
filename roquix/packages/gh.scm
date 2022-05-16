@@ -815,7 +815,7 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
 (define-public go-github-com-cli-cli-v2
   (package
     (name "go-github-com-cli-cli-v2")
-    (version "2.8.0")
+    (version "2.10.1")
     (source
       (origin
         (method git-fetch)
@@ -824,7 +824,7 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-          (base32 "0p9rjlvvdm4a0y4dqmy2gd1np8n0932qsbh3gndq3wkgf5rygwm0"))))
+          (base32 "0bxahv9vv32jq9xba1aqljbpb4n1jmcvllmm1dz6z89yxq80flns"))))
     (build-system go-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
