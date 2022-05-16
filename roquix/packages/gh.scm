@@ -841,7 +841,6 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
                                          (lambda* (#:key tests? #:allow-other-keys)
                                            (when tests? (invoke "make" "test")))))
                  #:import-path "github.com/cli/cli"
-                 #:import-path "github.com/cli/cli"
                  #:tests? #f))
     (propagated-inputs
       `(("go-github-com-cli-crypto" ,go-github-com-cli-crypto)
