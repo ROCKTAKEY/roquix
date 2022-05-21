@@ -1,0 +1,16 @@
+[[file:LICENSE][https://img.shields.io/github/license/ROCKTAKEY/roquix.svg?style=flat-square]]
+* Roquix: Guix channel for me
+Note that this channel depends on [[https://gitlab.com/nonguix/nonguix][nonguix]],
+and it might include non-free software.
+
+* How to Use?
+Write to =.config/guix/channels.scm=:
+#+BEGIN_SRC scheme -n
+  (cons* (channel
+          (name 'roquix)
+          (url "https://github.com/ROCKTAKEY/roquix"))
+         %default-channels)
+         #+END_SRC
+
+* License
+  This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].
