@@ -19,7 +19,7 @@
               "0i9cr4xcik5832nmaa8f0j0v4wfg6h7vvyb5dv0a4rxq1sh0fs2j"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
-                '(("hugo" "/bin/"))))
+                '(("hugo" "bin/"))))
    (home-page "https://github.com/gohugoio/hugo")
    (synopsis "Hugo")
    (description
@@ -42,7 +42,7 @@ by @url{https://github.com/bep,bep}, @url{http://spf13.com/,spf13} and
               "1z39dhhn4m840qzrxc6zzkm1qvanhcmf3x8nkny76l23mmm7nmv6"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
-                '(("hugo" "/bin/"))
+                '(("hugo" "bin/"))
                 #:patchelf-plan
                 `(("hugo" ("gcc:lib")))
                 #:strip-binaries? #f))

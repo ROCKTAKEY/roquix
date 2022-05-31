@@ -25,7 +25,7 @@
     `(#:install-plan
       ',(map
          (lambda (arg)
-           (list arg "/share/skk/"))
+           (list arg "share/skk/"))
          '("SKK-JISYO.JIS2"
            "SKK-JISYO.JIS2004"
            "SKK-JISYO.JIS3_4"

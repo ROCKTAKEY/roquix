@@ -19,8 +19,8 @@
               "1b697g694vigzmv5q48l1d3pjc9l5gwzazggnfi7z9prb9cvlnx2"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
-                '(("tailscale" "/bin/")
-                  ("tailscaled" "/bin/"))))
+                '(("tailscale" "bin/")
+                  ("tailscaled" "bin/"))))
    (home-page "https://tailscale.com/")
    (synopsis "Tailscale")
    (propagated-inputs

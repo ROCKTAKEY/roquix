@@ -20,10 +20,10 @@
               "0wl3183dac8dav39nqs34lw0sv9wqcpwl74ky0qrdlcjv74lvpzb"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
-                '(("bin" "/bin")
-                  ("include" "/include")
-                  ("lib" "/lib")
-                  ("share" "/share"))
+                '(("bin" "bin")
+                  ("include" "include")
+                  ("lib" "lib")
+                  ("share" "share"))
                 #:patchelf-plan
                 `(("bin/node" ("gcc:lib" "gcc-toolchain")))
                 #:strip-binaries? #f))
