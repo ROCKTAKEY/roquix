@@ -828,18 +828,18 @@ in their configuration files like @code{settings.json}, @code{keybindings.json},
     (build-system go-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
-                                (replace 'build
-                                         (lambda* (#:key import-path #:allow-other-keys)
-                                           (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
-                                             (invoke "make"))))
-                                (replace 'install
-                                         (lambda* (#:key import-path outputs #:allow-other-keys)
-                                           (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
-                                             (invoke "make" "install"
-                                                     (string-append "prefix=" (assoc-ref outputs "out"))))))
-                                (replace 'check
-                                         (lambda* (#:key tests? #:allow-other-keys)
-                                           (when tests? (invoke "make" "test")))))
+                   (replace 'build
+                     (lambda* (#:key import-path #:allow-other-keys)
+                       (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
+                         (invoke "make"))))
+                   (replace 'install
+                     (lambda* (#:key import-path outputs #:allow-other-keys)
+                       (with-directory-excursion (string-append (getenv "GOPATH") "/src/" import-path)
+                         (invoke "make" "install"
+                                 (string-append "prefix=" (assoc-ref outputs "out"))))))
+                   (replace 'check
+                     (lambda* (#:key tests? #:allow-other-keys)
+                       (when tests? (invoke "make" "test")))))
                  #:import-path "github.com/cli/cli"
                  #:tests? #f))
     (propagated-inputs
