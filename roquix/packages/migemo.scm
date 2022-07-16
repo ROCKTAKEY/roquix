@@ -12,7 +12,7 @@
   #:use-module (gnu packages wget)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages code)
-  #:use-module (roquix packages dictionary))
+  #:use-module (guix-jp packages dictionary))
 
 (define-public migemo-dict
   (package
