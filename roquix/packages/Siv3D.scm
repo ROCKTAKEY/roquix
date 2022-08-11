@@ -6,6 +6,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages icu4c)
@@ -168,64 +169,107 @@ across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
+(define-public giflib-5.1.4
+  (package
+    (name "giflib")
+    (version "5.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/giflib/giflib-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))
+              (patches
+               (search-patches "patches/giflib-make-reallocarray-private.patch"))))
+    (build-system gnu-build-system)
+    (outputs '("bin"                    ; utility programs
+               "out"))                  ; library
+    (inputs `(("libx11" ,libx11)
+              ("libice" ,libice)
+              ("libsm" ,libsm)
+              ("perl" ,perl)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-html-doc-gen
+           (lambda _
+             (substitute* "doc/Makefile.in"
+               (("^all: allhtml manpages") ""))
+             #t))
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (assoc-ref outputs "bin"))
+                    (man1dir (string-append bin "/share/man/man1")))
+               (mkdir-p man1dir)
+               (for-each (lambda (file)
+                           (let ((base (basename file)))
+                             (format #t "installing `~a' to `~a'~%"
+                                     base man1dir)
+                             (copy-file file
+                                        (string-append
+                                         man1dir "/" base))))
+                         (find-files "doc" "\\.1"))
+               #t))))
+       #:tests? #f))
+    (synopsis "Tools and library for working with GIF images")
+    (description
+     "GIFLIB is a library for reading and writing GIF images.  It is API and
+ABI compatible with libungif which was in wide use while the LZW compression
+algorithm was patented.  Tools are also included to convert, manipulate,
+compose, and analyze GIF images.")
+    (home-page "http://giflib.sourceforge.net/")
+    (license license:x11)))
+
 (define-public Siv3D
   (package
-   (name "Siv3D")
-   (version "0.6.4")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/Siv3D/OpenSiv3D")
-           (commit "03667011e99263c6609f19c83800e5f6627cc4cc")))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32
-       "1a1lcqynjs4vvfn2wwr7xy488d4xn4235ri413b1hakjzpgjkpzg"))))
-   (build-system cmake-build-system)
-   (arguments
-    '(#:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'set-cwd
-          (lambda* (#:key #:allow-other-keys)
-            (chdir "Linux")))
-        (add-before 'install 'return-cwd
-          (lambda* (#:key #:allow-other-keys)
-            (chdir "..")))
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((lib (string-append (assoc-ref outputs "out") "/lib"))
-                  (inc (string-append (assoc-ref outputs "out") "/include")))
-              (install-file "build/libSiv3D.a" lib)
-              (copy-recursively "Siv3D/include" inc)))))
-      #:tests? #f))
-   (inputs
-    (list gcc
-          pkg-config
-          alsa-lib
-          ffmpeg
-          boost-1.74.0
-          curl
-          ;; libcurl4-openssl
-          gtk+
-          giflib
-          glu
-          harfbuzz
-          mpg123
-          opencv
-          opus
-          opusfile
-          soundtouch
-          libtiff
-          libjpeg-turbo
-          libvorbis
-          libwebp
-          libxft
-          util-linux
-          xorg-server))
-   (home-page "https://github.com/Siv3D/OpenSiv3D")
-   (synopsis "C++20 framework for creative coding")
-   (description "Siv3D (OpenSiv3D) is a C++20 framework for creative coding
+    (name "Siv3D")
+    (version "0.6.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Siv3D/OpenSiv3D")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zvmnqawk8md9qwh2pl8qfncxwlv6pcld00rs5ckny2lnrh337cy"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-cwd
+                    (lambda* (#:key #:allow-other-keys)
+                      (chdir "Linux"))))
+       #:tests? #f))
+    (inputs (list gcc pkg-config))
+    (propagated-inputs (list alsa-lib
+                             ffmpeg
+                             boost-1.74.0
+                             curl
+                             gtk+
+                             giflib-5.1.4
+                             glu
+                             harfbuzz
+                             mpg123
+                             opencv
+                             opus
+                             opusfile
+                             soundtouch
+                             libtiff
+                             libjpeg-turbo
+                             libvorbis
+                             libwebp
+                             libxft
+                             util-linux
+                             xorg-server))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CMAKE_PREFIX_PATH")
+            (files '("")))))
+    (home-page "https://siv3d.github.io/")
+    (synopsis "C++20 framework for creative coding")
+    (description
+     "Siv3D (OpenSiv3D) is a C++20 framework for creative coding
 (2D/3D games, media art, visualizers, and simulators). Siv3D applications run on
 Windows, macOS, Linux, and the Web.")
-   (license license:expat)))
+    (license license:expat)))
