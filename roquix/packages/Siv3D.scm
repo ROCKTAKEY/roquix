@@ -267,10 +267,6 @@ compose, and analyze GIF images.")
                              libxft
                              util-linux
                              xorg-server))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "CMAKE_PREFIX_PATH")
-            (files '("")))))
     (home-page "https://siv3d.github.io/")
     (synopsis "C++20 framework for creative coding")
     (description
