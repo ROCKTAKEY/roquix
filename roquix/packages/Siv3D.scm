@@ -181,7 +181,12 @@ across a broad spectrum of applications.")
                (base32
                 "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))
               (patches
-               (search-patches "patches/giflib-make-reallocarray-private.patch"))))
+               (parameterize
+                   ((%patch-path
+                     (map (lambda (directory)
+                            (string-append directory "/roquix/packages/patches"))
+                          %load-path)))
+                 (search-patches "giflib-make-reallocarray-private.patch")))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
