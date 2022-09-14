@@ -20,7 +20,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "09dhpn0kd4izrqx3w9km51riax1p7cw0ys2qcwnjbmhgcvlv2pzv"))))
+         "0cn7dnkzfczw4rr0calg7y9a270rswvsc8f5ann3cimy405pgii8"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan
                  '(("." "src/keg.el"))
