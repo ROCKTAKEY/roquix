@@ -459,7 +459,8 @@ from @code{https://github.com/shurcooL/graphql}.")
         (sha256
           (base32 "0d1rg1drrfmabilqjjayklsz5d0n3hkf979sr3wsrw92bfbkivs7"))))
     (build-system go-build-system)
-    (arguments '(#:import-path "github.com/russross/blackfriday/v2"))
+    (arguments '(#:import-path "github.com/russross/blackfriday/v2"
+                 #:tests? #f))
     (home-page "https://github.com/russross/blackfriday")
     (synopsis "Blackfriday")
     (description "Package blackfriday is a markdown processor.")
