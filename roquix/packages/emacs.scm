@@ -16,11 +16,11 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/conao3/keg.el")
-             (commit "9394a41b6a934cc95f51465e7a48c572d3121e35")))
+             (commit "7fbfd987d35e29eaab2ebad4f0ed6ee2e2adfe28")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0cn7dnkzfczw4rr0calg7y9a270rswvsc8f5ann3cimy405pgii8"))))
+         "1d5clcjqp48m5282my3akp47h996xn9jxr8kxs7pkz18wixy48aw"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan
                  '(("." "src/keg.el"))
