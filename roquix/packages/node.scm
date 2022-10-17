@@ -9,15 +9,15 @@
 
 (define-public node-latest
   (package
-   (name "node-latest")
-   (version "16.15.0")
+   (name "node")
+   (version "18.11.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://nodejs.org/dist/v"
                                 version "/node-v" version "-linux-x64.tar.xz"))
             (sha256
              (base32
-              "0wl3183dac8dav39nqs34lw0sv9wqcpwl74ky0qrdlcjv74lvpzb"))))
+              "0yjj7qbz9cv3fndq0a5ncxm1g0rkfhcihadc6m06w2hwfrya421p"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("bin" "bin")
