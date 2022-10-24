@@ -17,7 +17,7 @@
 (define-public online-judge-api-client
   (package
    (name "online-judge-api-client")
-   (version "10.10.0")
+   (version "10.10.1")
    (source
     (origin
      (method git-fetch)
@@ -27,7 +27,7 @@
      (file-name (git-file-name name version))
      (sha256
       (base32
-       "0lmryqi0bv82v9k9kf1rzzq9zr83smpmy8ivzw4fk31hvpczp4fn"))))
+       "0yjqhh44va5nawd9rpqcjyf0g7rjlkvn7s90fmwmwjyqvy6lhjiz"))))
    (build-system python-build-system)
    (arguments '(#:tests? #f))
    (propagated-inputs (list
