@@ -8,15 +8,17 @@
   #:use-module (gnu packages emacs))
 
 (define-public emacs-keg
-  (package
+  (let ((commit "7fbfd987d35e29eaab2ebad4f0ed6ee2e2adfe28")
+        (revision "0"))
+    (package
     (name "emacs-keg")
-    (version "0.0.1")
+    (version (git-version "0.0.1" revision commit))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/conao3/keg.el")
-             (commit "7fbfd987d35e29eaab2ebad4f0ed6ee2e2adfe28")))
+             (commit commit)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -37,7 +39,7 @@
     (description
      "Modern Elisp package development system.
 Keg is 100% Elisp project and it developed as alternative to Cask.")
-    (license license:gpl3+)))
+    (license license:gpl3+))))
 
 (define-public emacs-cask
   (let ((commit "2fd12b3aef435bcbdd31e64fbdfbbe69e7bcc65f")
