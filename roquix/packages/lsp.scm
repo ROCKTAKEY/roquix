@@ -9,7 +9,7 @@
 (define-public texlab
   (package
    (name "texlab")
-   (version "4.3.0")
+   (version "4.3.2")
    (source
     (origin
      (method url-fetch)
@@ -19,7 +19,7 @@
            "/texlab-x86_64-linux.tar.gz"))
      (sha256
       (base32
-       "0xrn9392yw7vy6f7yhbb37xm60igy5fv0mip4qgyzq5kfa3ni182"))))
+       "1q1wmdk8wwxjk7xyx5rffwrzm9wibnb3q8bkdkhi3yrvr7gqgzk0"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("texlab" "/bin/"))
