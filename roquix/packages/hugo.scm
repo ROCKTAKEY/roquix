@@ -9,14 +9,14 @@
 (define-public go-github-com-gohugoio-hugo
   (package
    (name "go-github-com-gohugoio-hugo")
-   (version "0.98.0")
+   (version "0.108.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/gohugoio/hugo/releases/download/v"
                                 version "/hugo_" version "_Linux-64bit.tar.gz"))
             (sha256
              (base32
-              "0i9cr4xcik5832nmaa8f0j0v4wfg6h7vvyb5dv0a4rxq1sh0fs2j"))))
+              "19axlkpalicahrr1xqaj0909aj4z4q65xy5q36kdr95mdjvp7rw1"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("hugo" "bin/"))))
@@ -32,14 +32,14 @@ by @url{https://github.com/bep,bep}, @url{http://spf13.com/,spf13} and
 (define-public go-github-com-gohugoio-hugo-extended
   (package
    (name "go-github-com-gohugoio-hugo-extended")
-   (version "0.98.0")
+   (version "0.108.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/gohugoio/hugo/releases/download/v"
                                 version "/hugo_extended_" version "_Linux-64bit.tar.gz"))
             (sha256
              (base32
-              "1z39dhhn4m840qzrxc6zzkm1qvanhcmf3x8nkny76l23mmm7nmv6"))))
+              "12iiyi070a118k3vfs932lp3nan4lryql53fgh6n07v213sq0ip4"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("hugo" "bin/"))
