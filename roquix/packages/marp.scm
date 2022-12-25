@@ -23,7 +23,7 @@
                 '(("marp" "bin/"))
                 #:patchelf-plan
                 '(("marp" ("gcc" "glibc")))
-                #:validate-runpath? #f))
+                #:strip-binaries? #f))
    (inputs
     `((,gcc "lib")
       ,glibc))
