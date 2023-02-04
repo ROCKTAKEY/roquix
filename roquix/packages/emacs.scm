@@ -33,7 +33,7 @@
                        (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
                        (symlink (string-append (assoc-ref outputs "out") "/src/keg.el/bin/keg")
                                 (string-append (assoc-ref outputs "out") "/bin/keg")))))))
-    (propagated-inputs (list emacs))
+    (inputs (list emacs))
     (home-page "https://github.com/conao3/keg.el")
     (synopsis "keg.el")
     (description
@@ -67,7 +67,7 @@ Keg is 100% Elisp project and it developed as alternative to Cask.")
                        (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
                        (symlink (string-append (assoc-ref outputs "out") "/src/cask/bin/cask")
                                 (string-append (assoc-ref outputs "out") "/bin/cask")))))))
-    (propagated-inputs (list emacs))
+    (inputs (list emacs))
     (home-page "https://github.com/cask/cask")
     (synopsis "Project management tool for Emacs")
     (description
