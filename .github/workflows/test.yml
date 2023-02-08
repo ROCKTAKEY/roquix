@@ -1,0 +1,14 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@2
+      - uses: PromyLOPh/guix-install-action@v1
+      - run: guix pull
