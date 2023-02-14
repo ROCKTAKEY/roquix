@@ -1,0 +1,42 @@
+name: "Build all packages"
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/guix
+          key: guix-cache-${{ github.sha }}
+          restore-keys: |
+            guix-cache-
+      - uses: PromyLOPh/guix-install-action@v1
+        with:
+          channels: |-
+            (cons
+             (channel
+              (name 'roquix)
+              (url "https://github.com/ROCKTAKEY/roquix")
+              (commit "${{ github.event.pull_request.head.sha }}"))
+             %default-channels)
+      - run: guix --version
+      - run: guix describe
+      - name: List packages to build
+        id: packages-to-build
+        run: |
+          export CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files | jq -r '.[] | .filename');
+          for file in $CHANGED_FILES; do
+            export PACKAGES_TO_BUILD=$(guix package -A | awk '$4 ~ "^" $file { print $1 }')$PACKAGES_TO_BUILD
+          done
+          echo PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD >> $GITHUB_OUTPUT
+          echo $PACKAGES_TO_BUILD
+      - name: Build each package
+        run: |
+          for file in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}; do
+            echo "::group::Build $package";
+            guix build $package
+            echo "::endgroup::"
+          done
