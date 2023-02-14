@@ -32,9 +32,8 @@ jobs:
           echo $PACKAGES_TO_BUILD
       - name: Build each package
         run: |
-          for file in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }};
-            for package in `guix package -A | awk '$4 ~ "^" file { print $1 }'`;
-              do
+          for file in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}; do
+            for package in `guix package -A | awk '$4 ~ "^" file { print $1 }'`; do
               echo "::group::Build $package";
               guix build $package
               echo "::endgroup::"
