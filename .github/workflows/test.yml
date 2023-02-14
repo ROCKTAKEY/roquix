@@ -23,6 +23,7 @@ jobs:
               (commit "${{ github.sha }}"))
              %default-channels)
       - run: guix --version
+      - run: guix describe
       - name: Build each package
         run: |
           for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`;
