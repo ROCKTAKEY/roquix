@@ -20,7 +20,7 @@ jobs:
             (cons
              (channel
               (name 'roquix)
-              (url "file://${{ env.GITHUB_WORKSPACE }}"))
+              (url "file://${{ github.workspace }}"))
              %default-channels)
       - run: guix --version
       - name: Build each package
