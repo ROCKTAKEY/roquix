@@ -13,6 +13,7 @@ jobs:
           key: guix-cache-${{ github.sha }}
           restore-keys: |
             guix-cache-
+      - run: apt-get install -y jq
       - uses: PromyLOPh/guix-install-action@v1
         with:
           channels: |-
@@ -24,11 +25,18 @@ jobs:
              %default-channels)
       - run: guix --version
       - run: guix describe
+      - name: List package to build
+        id: packages-to-build
+        run: |
+          export PACKAGES_TO_BUILD=$(curl --silent https://api.github.com/repos/"$GITHUB_REPOSITORY"/pulls/${{ github.event.pull_request.number }}/files | jq -r '.[] | .filename');
+          echo PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD >> $GITHUB_OUTPUT
       - name: Build each package
         run: |
-          for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`;
-            do
-            echo "::group::Build $i:";
-            guix build $i
-            echo "::endgroup::"
+          for file in ${{ steps.packages-to-build.outputs.PACKGAGES_TO_BUILD }}
+            for package in `guix package -A | awk '$4 ~ "^" file { print $1 }'`;
+              do
+              echo "::group::Build $package";
+              guix build $package
+              echo "::endgroup::"
+            done
           done
