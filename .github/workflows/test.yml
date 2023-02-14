@@ -27,15 +27,16 @@ jobs:
       - name: List packages to build
         id: packages-to-build
         run: |
-          export PACKAGES_TO_BUILD=$(curl --silent https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files | jq -r '.[] | .filename');
+          export CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files | jq -r '.[] | .filename');
+          for file in $CHANGED_FILES; do
+            export PACKAGES_TO_BUILD=$(guix package -A | awk '$4 ~ "^" $file { print $1 }')$PACKAGES_TO_BUILD
+          done
           echo PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD >> $GITHUB_OUTPUT
           echo $PACKAGES_TO_BUILD
       - name: Build each package
         run: |
           for file in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}; do
-            for package in `guix package -A | awk '$4 ~ "^" file { print $1 }'`; do
-              echo "::group::Build $package";
-              guix build $package
-              echo "::endgroup::"
-            done
+            echo "::group::Build $package";
+            guix build $package
+            echo "::endgroup::"
           done
