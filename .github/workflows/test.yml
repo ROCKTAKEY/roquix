@@ -18,7 +18,7 @@ jobs:
       - run: guix --version
       - name: Build each package
         run: |
-          for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`; \
-          do echo "Build $i:"; \
-          do guix build -L . $i;
+          for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`;
+            do echo "Build $i:";
+            guix build -L . $i;
           done
