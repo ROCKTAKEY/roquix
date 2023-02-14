@@ -27,6 +27,8 @@ jobs:
       - name: Build each package
         run: |
           for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`;
-            do echo "Build $i:";
+            do
+            echo "::group::Build $i:";
             guix build $i
+            echo "::endgroup::"
           done
