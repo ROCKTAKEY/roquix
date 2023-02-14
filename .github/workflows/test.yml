@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
       - uses: actions/cache@v3
         with:
           path: ~/.cache/guix
@@ -20,7 +19,8 @@ jobs:
             (cons
              (channel
               (name 'roquix)
-              (url "file://${{ github.workspace }}"))
+              (url "https://github.com/ROCKTAKEY/roquix")
+              (commit "${{ github.sha }}"))
              %default-channels)
       - run: guix --version
       - name: Build each package
