@@ -21,7 +21,7 @@ jobs:
              (channel
               (name 'roquix)
               (url "https://github.com/ROCKTAKEY/roquix")
-              (commit "${{ github.sha }}"))
+              (commit "${{ github.event.pull_request.head.sha }}"))
              %default-channels)
       - run: guix --version
       - run: guix describe
