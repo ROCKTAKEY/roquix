@@ -1,13 +1,24 @@
-name: test
+name: "Build all packages"
 
-on:
-  - push
-  - pull_request
+on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/guix
+          key: guix-cache-${{ github.sha }}
+          restore-keys: |
+            guix-cache-
       - uses: PromyLOPh/guix-install-action@v1
-      - run: guix pull
+      - run: guix --version
+      - name: Build each package
+        run: |
+          for i in `guix package -A | awk '$4 ~ "^roquix/" { print $1 }'`; \
+          do echo "Build $i:"; \
+          do guix build -L . $i;
+          done
