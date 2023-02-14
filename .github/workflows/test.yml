@@ -1,6 +1,6 @@
 name: "Build all packages"
 
-on: [push]
+on: [pull_request]
 
 jobs:
   test:
@@ -25,7 +25,7 @@ jobs:
              %default-channels)
       - run: guix --version
       - run: guix describe
-      - name: List package to build
+      - name: List packages to build
         id: packages-to-build
         run: |
           export PACKAGES_TO_BUILD=$(curl --silent https://api.github.com/repos/"$GITHUB_REPOSITORY"/pulls/${{ github.event.pull_request.number }}/files | jq -r '.[] | .filename');
