@@ -13,7 +13,6 @@ jobs:
           key: guix-cache-${{ github.sha }}
           restore-keys: |
             guix-cache-
-      - run: sudo apt-get install -y jq
       - uses: PromyLOPh/guix-install-action@v1
         with:
           channels: |-
