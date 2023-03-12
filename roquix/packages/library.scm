@@ -4,7 +4,8 @@
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system cmake))
+  #:use-module (guix build-system cmake)
+  #:use-module (gnu packages check))
 
 (define-public argumentum
   (package
@@ -21,7 +22,10 @@
       (base32
        "0vqz2g2r694vrrnfkdzriwxl6wixc3459s404bnhni73m7dgr9rh"))))
    (build-system cmake-build-system)
-   (arguments '(#:tests? #f))
+   (arguments '(#:configure-flags
+                '("-DARGUMENTUM_BUILD_TESTS=ON")))
+   (native-inputs
+    (list googletest))
    (home-page "https://github.com/mmahnic/argumentum")
    (synopsis "C++ command line parsing library")
    (description "Argumentum is a C++ library for writing command-line program interfaces.
