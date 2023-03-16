@@ -2892,7 +2892,7 @@ Argument Parser")
            "/texlab-x86_64-linux.tar.gz"))
      (sha256
       (base32
-       "1q1wmdk8wwxjk7xyx5rffwrzm9wibnb3q8bkdkhi3yrvr7gqgzk0"))))
+       "0sbqqlvdvy2nk6rfzydjdc7iyway5k6gwm4kpg1d430giin6qv3h"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("texlab" "/bin/"))
