@@ -6,6 +6,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
+  #:use-module (nonguix build-system binary)
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-io))
 
@@ -2875,3 +2876,34 @@ Argument Parser")
     (synopsis "LaTeX Language Server")
     (description "LaTeX Language Server")
     (license license:gpl3)))
+
+
+
+(define-public texlab-latest
+  (package
+   (name "rust-texlab")
+   (version "5.4.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://github.com/latex-lsp/texlab/releases/download/v"
+           version
+           "/texlab-x86_64-linux.tar.gz"))
+     (sha256
+      (base32
+       "1q1wmdk8wwxjk7xyx5rffwrzm9wibnb3q8bkdkhi3yrvr7gqgzk0"))))
+   (build-system binary-build-system)
+   (arguments '(#:install-plan
+                '(("texlab" "/bin/"))
+                #:patchelf-plan
+                '(("texlab" ("gcc:lib" "glibc")))))
+   (inputs
+    `(("gcc:lib" ,gcc "lib")
+      ("glibc" ,glibc)))
+   (synopsis "An implementation of the Language Server Protocol for LaTeX")
+   (description
+    "A cross-platform implementation of the Language Server Protocol providing rich cross-editing support for the LaTeX typesetting system.
+The server may be used with any editor that implements the Language Server Protocol.")
+   (home-page "https://github.com/latex-lsp/texlab")
+   (license license:gpl3)))
