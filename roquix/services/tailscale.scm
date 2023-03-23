@@ -25,6 +25,40 @@
 (define-public %tailscale-configuration
   (tailscale-configuration))
 
+(define-public (tailscale-up-action tailscale iptables)
+  (shepherd-action
+   (name 'up)
+   (documentation
+    "Run tailscale up.")
+   (procedure
+    #~(lambda args
+        (make-forkexec-constructor
+         (cons* #$(file-append tailscale "/bin/tailscale")
+                "up"
+                args)
+         #:log-file "/var/log/tailscale-up.log"
+         #:environment-variables
+         (cons*
+          (string-append "PATH=" #$(file-append iptables "/sbin"))
+          (environ)))))))
+
+(define-public (tailscale-down-action tailscale iptables)
+  (shepherd-action
+   (name 'down)
+   (documentation
+    "Run tailscale down.")
+   (procedure
+    #~(lambda args
+        (make-forkexec-constructor
+         (cons* #$(file-append tailscale "/bin/tailscale")
+                "down"
+                args)
+         #:log-file "/var/log/tailscale-down.log"
+         #:environment-variables
+         (cons*
+          (string-append "PATH=" #$(file-append iptables "/sbin"))
+          (environ)))))))
+
 (define-public (tailscale-shepherd-service config)
   (match-record config <tailscale-configuration>
     (tailscale iptables extra-arguments)
@@ -42,6 +76,9 @@
           (cons*
            (string-append "PATH=" #$(file-append iptables "/sbin"))
            (environ))))
+      (actions
+       (list (tailscale-up-action tailscale iptables)
+             (tailscale-down-action tailscale iptables)))
       (stop #~(make-kill-destructor))))))
 
 (define-public tailscale-service-type
