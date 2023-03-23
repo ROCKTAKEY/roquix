@@ -229,7 +229,7 @@ compose, and analyze GIF images.")
 (define-public Siv3D
   (package
     (name "Siv3D")
-    (version "0.6.5")
+    (version "0.6.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -238,7 +238,7 @@ compose, and analyze GIF images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zvmnqawk8md9qwh2pl8qfncxwlv6pcld00rs5ckny2lnrh337cy"))))
+                "0xbqjwyri4qzhmihfsdnk83gxr1f9plh74i4gbyj17v8wlilizk8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
