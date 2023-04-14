@@ -4,6 +4,7 @@
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages docker)
   #:use-module (nonguix build-system binary))
 
 (define-public docker-buildx
