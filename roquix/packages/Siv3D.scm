@@ -102,6 +102,12 @@
                               "tools/build/src/engine/execunix.cpp")
                  (("/bin/sh") (which "sh")))
 
+               ;; For compatibility to Python 3.10.
+               ;; Retrived from future commit:
+               ;; https://github.com/boostorg/python/commit/cbd2d9f033c61d29d0a1df14951f4ec91e7d05cd
+               (substitute* '("libs/python/src/exec.cpp")
+                 (("_Py_fopen") "fopen"))
+
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
 
