@@ -25,7 +25,16 @@
                         ("lib" "lib")
                         ("share" "share"))
        #:patchelf-plan `(("bin/node" ("gcc" "gcc-toolchain")))
-       #:strip-binaries? #f))
+       #:strip-binaries? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-corepack
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; FIXME: Cannot install npm because installing npm with corepack causes segmentation fault
+             (invoke (string-append (assoc-ref outputs "out") "/bin/node")
+                     (string-append (assoc-ref outputs "out") "/bin/corepack")
+                     "enable"
+                     "--install-directory" (string-append (assoc-ref outputs "out") "/bin")))))))
     (inputs `((,gcc "lib")
               ,gcc-toolchain))
     (home-page "https://nodejs.org/")
