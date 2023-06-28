@@ -969,118 +969,131 @@ interoperation between crates in Rust.")
     (description "Generate JSON Schemas from Rust code")
     (license license:expat)))
 
-(define-public rust-mime-0.3.6
+(define-public rust-mime-macro-0.0.0
   (package
-    (name "rust-mime")
-    (version "0.3.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "mime" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "16hkibgvb9klh0w0jk5crr5xv90l3wlf77ggymzjmvl1818vnxv8"))
-       ;; (patches
-       ;;  (parameterize
-       ;;      ((%patch-path
-       ;;        (map (lambda (directory)
-       ;;               (string-append directory "/roquix/packages/patches"))
-       ;;             %load-path)))
-       ;;    (search-patches "rust-mime-Implement-derive-Eq-PartialEq-for-more-types.patch")))
-       ))
+    (name "rust-mime-macro")
+    (version "0.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "mime-macro" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vh2w8n2x9lms8m9jpx5s0vzyava1jdxlsjdzba6j1s6sjpgl2cm"))))
     (build-system cargo-build-system)
-    (arguments '(#:features '("serde1")))
-    (home-page "https://github.com/hyperium/mime")
-    (synopsis "Strongly Typed Mimes")
-    (description
-     "Support MIME (HTTP Media Types) as strong types in Rust.")
-    (license (list license:asl2.0
-                   license:expat))))
+    (home-page "")
+    (synopsis "mime procedural macros")
+    (description "mime procedural macros")
+    (license license:expat)))
+
+(define-public rust-mime-parse-0.0.0
+  (package
+    (name "rust-mime-parse")
+    (version "0.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "mime-parse" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xkx01r3hrn3g8xkyq3gs8agnjz4m7ikxz7q57ni1rmik5fnicfb"))))
+    (build-system cargo-build-system)
+    (home-page "")
+    (synopsis "mime parsing internals")
+    (description "mime parsing internals")
+    (license license:expat)))
 
 (define-public rust-mime-implement-eq-partialeq-0.4
   (let ((commit "57416f447a10c3343df7fe80deb0ae8a7c77cf0a")
         (revision "0"))
     (package
-     (name "rust-mime-implement-eq-partialeq")
-     (version (git-version "0.4.0-a.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/filips123/mime")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1lb400ra9gbnm0mm5pyqgdz6bgshj47v0mdc12l7jbxbgqn3ncrf"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Allow older versions of the serde crates.
-           (substitute* "Cargo.toml"
-             (("name = \"mime\"") "name = \"mime-implement-eq\""))))))
-     (build-system cargo-build-system)
-     (arguments `(;; #:cargo-package-flags '("--no-metadata" "--no-verify" "--package" "mime")
-                  #:skip-build? #t
-                  #:cargo-inputs
-                 (("rust-quoted-string" ,rust-quoted-string-0.2))
-                 #:cargo-development-inputs
-                 (("rust-assert-matches" ,rust-assert-matches-1)
-                  ("rust-parameterized" ,rust-parameterized-1)
-                  ("rust-serde-json" ,rust-serde-json-1))))
-     (home-page "https://github.com/filips123/mime")
-     (synopsis "Strongly Typed Mimes")
-     (description "Strongly Typed Mimes")
-     (license (list license:expat license:asl2.0)))))
+      (name "rust-mime-implement-eq-partialeq")
+      (version (git-version "0.4.0-a.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/filips123/mime")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1lb400ra9gbnm0mm5pyqgdz6bgshj47v0mdc12l7jbxbgqn3ncrf"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (substitute* "Cargo.toml"
+               ;; NOTE: All dependencies, including path dependencies, should specify version to run "cargo package",
+               (("mime-macro = \\{ ") "mime-macro = { version = \"0.0.0\", ")
+               (("mime-parse = \\{ ") "mime-parse = { version = \"0.0.0\", "))))))
+      (build-system cargo-build-system)
+      (arguments `(#:features
+                   '("serde1")
+                   #:cargo-inputs
+                   (("rust-quoted-string" ,rust-quoted-string-0.2)
+                    ("rust-serde" ,rust-serde-1)
+                    ("rust-mime-parse" ,rust-mime-parse-0.0.0)
+                    ("rust-mime-macro" ,rust-mime-macro-0.0.0))
+                   #:cargo-development-inputs
+                   (("rust-assert-matches" ,rust-assert-matches-1)
+                    ("rust-parameterized" ,rust-parameterized-1)
+                    ("rust-serde-json" ,rust-serde-json-1))))
+      (home-page "https://github.com/filips123/mime")
+      (synopsis "Strongly Typed Mimes")
+      (description "Strongly Typed Mimes")
+      (license (list license:expat license:asl2.0)))))
 
 (define-public rust-web-app-manifest
   (let ((commit "138672b3811594be8ecc5a17a7006dd59a03dd09")
         (revision "0"))
-   (package
-    (name "rust-web-app-manifest")
-    (version (git-version "0.0.0" revision commit))
-    (source
-     (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/filips123/WebAppManifestRS")
-            (commit commit)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "0wbryiaw2160qar866m5bcafhc2rlfsixi8xbwad2bsw9jxmkzn3"))
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          ;; Allow older versions of the serde crates.
-          (substitute* "Cargo.toml"
-            (("git = \"https://github.com/filips123/mime\", branch = \"implement-eq-partialeq\"") "version = \"0.3.6\"")
-            ;; (("mime") "mime-implement-eq")
-            )))))
-    (build-system cargo-build-system)
-    (arguments `(#:cargo-inputs
-                 (("rust-parse-display" ,rust-parse-display-0.8)
-                  ("rust-serde" ,rust-serde-1)
-                  ("rust-serde-with" ,rust-serde-with-2)
-                  ("rust-smart-default" ,rust-smart-default-0.6)
-                  ("rust-thiserror" ,rust-thiserror-1)
+    (package
+      (name "rust-web-app-manifest")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/filips123/WebAppManifestRS")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0wbryiaw2160qar866m5bcafhc2rlfsixi8xbwad2bsw9jxmkzn3"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (substitute* "Cargo.toml"
+               (("git = \"https://github.com/filips123/mime\", branch = \"implement-eq-partialeq\"")
+                "version = \"0.4.0-a.0\""))))))
+      (build-system cargo-build-system)
+      (arguments `(#:cargo-inputs
+                   (("rust-parse-display" ,rust-parse-display-0.8)
+                    ("rust-serde" ,rust-serde-1)
+                    ("rust-serde-with" ,rust-serde-with-2)
+                    ("rust-smart-default" ,rust-smart-default-0.6)
+                    ("rust-thiserror" ,rust-thiserror-1)
 
-                  ("rust-schemars" ,rust-schemars-0.8.12)
+                    ("rust-schemars" ,rust-schemars-0.8.12)
 
-                  ("rust-csscolorparser" ,rust-csscolorparser-0.6)
-                  ("rust-language-tags" ,rust-language-tags-0.3)
-                  ;; ("rust-mime" ,rust-mime-implement-eq-partialeq-0.4)
-                  ("rust-mime" ,rust-mime-0.3)
-                  ("rust-url" ,rust-url-2))
-                 #:cargo-development-inputs
-                 (("rust-assert-matches" ,rust-assert-matches-1)
-                  ("rust-parameterized" ,rust-parameterized-1)
-                  ("rust-serde-json" ,rust-serde-json-1))))
-    (home-page "https://github.com/filips123/WebAppManifestRS")
-    (synopsis "Rust data structure and utilities for (de)serialization and storage of Web Application Manifests")
-    (description "Rust data structure and utilities for (de)serialization and storage of Web Application Manifests")
-    (license license:expat))))
+                    ("rust-csscolorparser" ,rust-csscolorparser-0.6)
+                    ("rust-language-tags" ,rust-language-tags-0.3)
+                    ;; ("rust-mime-implement-eq-partialeq" ,rust-mime-implement-eq-partialeq-0.4)
+                    ("rust-url" ,rust-url-2)
+
+                    ("rust-quoted-string" ,rust-quoted-string-0.2)
+                    ("rust-serde" ,rust-serde-1)
+                    ("rust-mime-parse" ,rust-mime-parse-0.0.0)
+                    ("rust-mime-macro" ,rust-mime-macro-0.0.0))
+                   #:cargo-development-inputs
+                   (("rust-assert-matches" ,rust-assert-matches-1)
+                    ("rust-parameterized" ,rust-parameterized-1)
+                    ("rust-serde-json" ,rust-serde-json-1))))
+      (inputs
+       (list rust-mime-implement-eq-partialeq-0.4))
+      (home-page "https://github.com/filips123/WebAppManifestRS")
+      (synopsis "Rust data structure and utilities for (de)serialization and storage of Web Application Manifests")
+      (description "Rust data structure and utilities for (de)serialization and storage of Web Application Manifests")
+      (license license:expat))))
 
 (define-public pwas-for-firefox
   (package
