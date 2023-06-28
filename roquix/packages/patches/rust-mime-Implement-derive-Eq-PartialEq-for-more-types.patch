@@ -1,0 +1,123 @@
+From 57416f447a10c3343df7fe80deb0ae8a7c77cf0a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Filip=20=C5=A0?= <filip.stamcar@hotmail.com>
+Date: Tue, 25 May 2021 10:53:36 +0200
+Subject: [PATCH] Implement/derive Eq+PartialEq for more types
+
+---
+ mime-parse/src/lib.rs | 11 ++++++-----
+ src/error.rs          |  2 +-
+ src/range.rs          |  2 ++
+ src/type_.rs          |  2 ++
+ src/value.rs          |  2 ++
+ 5 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/mime-parse/src/lib.rs b/mime-parse/src/lib.rs
+index 8d18e0f..e64946d 100644
+--- a/mime-parse/src/lib.rs
++++ b/mime-parse/src/lib.rs
+@@ -15,7 +15,7 @@ pub struct Parser {
+     can_range: bool,
+ }
+ 
+-#[derive(Clone)]
++#[derive(Clone, Eq, PartialEq)]
+ pub struct Mime {
+     source: Source,
+     slash: u16,
+@@ -23,7 +23,7 @@ pub struct Mime {
+     params: ParamSource,
+ }
+ 
+-#[derive(Clone)]
++#[derive(Clone, Eq, PartialEq)]
+ pub enum Source {
+     Atom(u8, &'static str),
+     Dynamic(String),
+@@ -41,7 +41,7 @@ impl AsRef<str> for Source {
+ type Indexed = (u16, u16);
+ type IndexedPair = (Indexed, Indexed);
+ 
+-#[derive(Clone)]
++#[derive(Clone, Debug, Eq, PartialEq)]
+ pub enum ParamSource {
+     None,
+     Utf8(u16),
+@@ -50,12 +50,13 @@ pub enum ParamSource {
+     Custom(u16, Vec<IndexedPair>),
+ }
+ 
++#[derive(Debug, Eq, PartialEq)]
+ pub enum InternParams {
+     Utf8(usize),
+     None,
+ }
+ 
+-#[derive(Debug)]
++#[derive(Debug, Eq, PartialEq)]
+ pub enum ParseError {
+     MissingSlash,
+     MissingEqual,
+@@ -68,7 +69,7 @@ pub enum ParseError {
+     TooLong,
+ }
+ 
+-#[derive(Clone, Copy)]
++#[derive(Clone, Copy, Eq, PartialEq)]
+ pub struct Byte(u8);
+ 
+ impl fmt::Debug for Byte {
+diff --git a/src/error.rs b/src/error.rs
+index e06d29a..2de1efa 100644
+--- a/src/error.rs
++++ b/src/error.rs
+@@ -4,7 +4,7 @@ use std::fmt;
+ use mime_parse::ParseError;
+ 
+ /// An error type representing an invalid `MediaType` or `MediaRange`.
+-#[derive(Debug)]
++#[derive(Debug, Eq, PartialEq)]
+ pub struct InvalidMime {
+     pub(crate) inner: ParseError,
+ }
+diff --git a/src/range.rs b/src/range.rs
+index abec1ed..77273a5 100644
+--- a/src/range.rs
++++ b/src/range.rs
+@@ -274,6 +274,8 @@ impl PartialEq<MediaRange> for str {
+     }
+ }
+ 
++impl Eq for MediaRange {}
++
+ impl FromStr for MediaRange {
+     type Err = InvalidMime;
+ 
+diff --git a/src/type_.rs b/src/type_.rs
+index cfa027e..43c0757 100644
+--- a/src/type_.rs
++++ b/src/type_.rs
+@@ -244,6 +244,8 @@ impl PartialEq<MediaType> for str {
+     }
+ }
+ 
++impl Eq for MediaType {}
++
+ impl FromStr for MediaType {
+     type Err = InvalidMime;
+ 
+diff --git a/src/value.rs b/src/value.rs
+index d1e4b2c..c131b85 100644
+--- a/src/value.rs
++++ b/src/value.rs
+@@ -165,6 +165,8 @@ impl<'a> PartialEq<Value<'a>> for str {
+     }
+ }
+ 
++impl<'a> Eq for Value<'a> {}
++
+ impl<'a> From<Value<'a>> for Cow<'a, str> {
+     #[inline]
+     fn from(value: Value<'a>) -> Self {
+-- 
+2.40.1
+
