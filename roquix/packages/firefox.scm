@@ -4348,6 +4348,7 @@ files.")
                    ;;   cargo-build-system extract source of package in cargo-inputs.
                    ,(with-store %store
                       (package-output %store rust-web-app-manifest)))
+                  ;; HACK: Need inputs of rust-web-app-manifest
                   ("rust-parse-display" ,rust-parse-display-0.8)
                   ("rust-serde" ,rust-serde-1)
                   ("rust-serde-with" ,rust-serde-with-2)
@@ -4378,6 +4379,7 @@ files.")
                   ("rust-plist" ,rust-plist-1)
                   ("rust-sanitize-filename" ,rust-sanitize-filename-0.4)
 
+                  ;; HACK: Unknown dependencies
                   ("rust-windows" ,rust-windows-0.43))
                  #:cargo-development-inputs
                  (("rust-assert-matches" ,rust-assert-matches-1)
@@ -4387,7 +4389,44 @@ files.")
                  (modify-phases %standard-phases
                    (add-before 'build 'change-working-directory
                      (lambda* _
-                       (chdir "native"))))))
+                       ;; NOTE: Cargo.toml is here
+                       (chdir "native")))
+                   (add-after 'unpack 'set-env
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (setenv "FFPWA_EXECUTABLES"
+                               ;; (string-append (assoc-ref outputs "out") "/bin")
+                               "")
+                       (setenv "FFPWA_SYSDATA"
+                               (string-append (assoc-ref outputs "out") "/share/firefoxpwa"))
+                       #t))
+                   (add-after 'install 'additional-install
+                     (lambda* (#:key inputs outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (let ((destination (string-append out "/share/firefoxpwa/userchrome/")))
+                           (mkdir-p destination)
+                           (copy-recursively
+                            "userchrome"
+                            destination))
+
+                         (substitute* "manifests/linux.json"
+                           (("/usr/libexec/firefoxpwa-connector")
+                            (string-append out "/bin/firefoxpwa-connector")))
+                         (for-each
+                          (lambda (dir)
+                            (mkdir-p (string-append out "/" dir "/mozilla/native-messaging-hosts/"))
+                            (copy-file "manifests/linux.json"
+                                       (string-append out "/" dir "/mozilla/native-messaging-hosts/firefoxpwa.json")))
+                          '("lib" "lib64"))
+                         (mkdir-p (string-append out "/usr/share/bash-completion/completions"))
+                         (copy-file "target/release/completions/firefoxpwa.bash"
+                                    (string-append out "/usr/share/bash-completion/completions/firefoxwpa"))
+                         (mkdir-p (string-append out "/usr/share/fish/vendor_completions.d"))
+                         (copy-file "target/release/completions/firefoxpwa.fish"
+                                    (string-append out "/usr/share/fish/vendor_completions.d/firefoxpwa.fish"))
+                         (mkdir-p (string-append out "/usr/share/zsh/vendor-completions"))
+                         (copy-file "target/release/completions/_firefoxpwa"
+                                    (string-append out "/usr/share/zsh/vendor-completions/_firefoxpwa")))
+                       #t)))))
     (native-inputs
      (list
       pkg-config))
