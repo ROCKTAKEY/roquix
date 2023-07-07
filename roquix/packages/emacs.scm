@@ -8,8 +8,8 @@
   #:use-module (gnu packages emacs))
 
 (define-public emacs-keg
-  (let ((commit "7fbfd987d35e29eaab2ebad4f0ed6ee2e2adfe28")
-        (revision "0"))
+  (let ((commit "930b3ab881440a026ec38c1674b3531aa2166e3f")
+        (revision "1"))
     (package
     (name "emacs-keg")
     (version (git-version "0.0.1" revision commit))
@@ -22,7 +22,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1d5clcjqp48m5282my3akp47h996xn9jxr8kxs7pkz18wixy48aw"))))
+         "00i02nlamh4g6hr6fmc94qlabn7p6k1p6fifkxkgmnl55vx4zkrx"))))
     (build-system copy-build-system)
     (arguments '(#:install-plan
                  '(("." "src/keg.el"))
