@@ -11,35 +11,36 @@
   (let ((commit "930b3ab881440a026ec38c1674b3531aa2166e3f")
         (revision "1"))
     (package
-    (name "emacs-keg")
-    (version (git-version "0.0.1" revision commit))
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/conao3/keg.el")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "00i02nlamh4g6hr6fmc94qlabn7p6k1p6fifkxkgmnl55vx4zkrx"))))
-    (build-system copy-build-system)
-    (arguments '(#:install-plan
-                 '(("." "src/keg.el"))
-                 #:phases
-                 (modify-phases %standard-phases
-                   (add-after 'install 'install-bin
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-                       (symlink (string-append (assoc-ref outputs "out") "/src/keg.el/bin/keg")
-                                (string-append (assoc-ref outputs "out") "/bin/keg")))))))
-    (inputs (list emacs))
-    (home-page "https://github.com/conao3/keg.el")
-    (synopsis "keg.el")
-    (description
-     "Modern Elisp package development system.
+      (name "emacs-keg")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/conao3/keg.el")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "00i02nlamh4g6hr6fmc94qlabn7p6k1p6fifkxkgmnl55vx4zkrx"))))
+      (build-system copy-build-system)
+      (arguments
+       '(#:install-plan '(("." "src/keg.el"))
+         #:phases (modify-phases %standard-phases
+                    (add-after 'install 'install-bin
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (mkdir-p (string-append (assoc-ref outputs "out")
+                                                "/bin"))
+                        (symlink (string-append (assoc-ref outputs "out")
+                                                "/src/keg.el/bin/keg")
+                                 (string-append (assoc-ref outputs "out")
+                                                "/bin/keg")))))))
+      (inputs (list emacs))
+      (home-page "https://github.com/conao3/keg.el")
+      (synopsis "keg.el")
+      (description
+       "Modern Elisp package development system.
 Keg is 100% Elisp project and it developed as alternative to Cask.")
-    (license license:gpl3+))))
+      (license license:gpl3+))))
 
 (define-public emacs-cask
   (package
