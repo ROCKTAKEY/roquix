@@ -113,10 +113,10 @@
 
                ,@(if (%current-target-system)
                      `((call-with-output-file "user-config.jam"
-                          (lambda (port)
-                            (format port
-                                    "using gcc : cross : ~a-c++ ;"
-                                    ,(%current-target-system)))))
+                         (lambda (port)
+                           (format port
+                                   "using gcc : cross : ~a-c++ ;"
+                                   ,(%current-target-system)))))
                      '())
 
                ;; Change an #ifdef __MACH__ that really targets macOS.
@@ -148,24 +148,24 @@
          ,@(if (%current-target-system)
                '()
                '((add-after 'install 'provide-libboost_python
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (python-version (python-version
-                                              (assoc-ref inputs "python")))
-                             (libboost_pythonNN.so
-                              (string-append "libboost_python"
-                                             (string-join (string-split
-                                                           python-version #\.)
-                                                          "")
-                                             ".so")))
-                        (with-directory-excursion (string-append out "/lib")
-                          (symlink libboost_pythonNN.so "libboost_python.so")
-                          ;; Some packages only look for the major version.
-                          (symlink libboost_pythonNN.so
-                                   (string-append "libboost_python"
-                                                  (string-take python-version 1)
-                                                  ".so")))
-                        #t))))))))
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (python-version (python-version
+                                             (assoc-ref inputs "python")))
+                            (libboost_pythonNN.so
+                             (string-append "libboost_python"
+                                            (string-join (string-split
+                                                          python-version #\.)
+                                                         "")
+                                            ".so")))
+                       (with-directory-excursion (string-append out "/lib")
+                         (symlink libboost_pythonNN.so "libboost_python.so")
+                         ;; Some packages only look for the major version.
+                         (symlink libboost_pythonNN.so
+                                  (string-append "libboost_python"
+                                                 (string-take python-version 1)
+                                                 ".so")))
+                       #t))))))))
 
     (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
@@ -235,7 +235,7 @@ compose, and analyze GIF images.")
 (define-public Siv3D
   (package
     (name "Siv3D")
-    (version "0.6.8")
+    (version "0.6.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -244,7 +244,7 @@ compose, and analyze GIF images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m4v1qd2gr1mgscaxmbwc99r07mm0249hrrj3nszbgdqwbwi98sv"))))
+                "0ii36nfkarj851m7lnb4sa1yck2p1cn05w8q4yj1qw5fd5g4ldqk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -252,7 +252,7 @@ compose, and analyze GIF images.")
                     (lambda* (#:key #:allow-other-keys)
                       (chdir "Linux"))))
        #:tests? #f))
-    (inputs (list gcc pkg-config))
+    (inputs (list gcc))
     (propagated-inputs (list alsa-lib
                              ffmpeg
                              boost-1.74.0
@@ -273,10 +273,11 @@ compose, and analyze GIF images.")
                              libxft
                              util-linux
                              xorg-server))
+    (native-inputs (list pkg-config))
     (home-page "https://siv3d.github.io/")
     (synopsis "C++20 framework for creative coding")
     (description
      "Siv3D (OpenSiv3D) is a C++20 framework for creative coding
-(2D/3D games, media art, visualizers, and simulators). Siv3D applications run on
+(2D/3D games, media art, visualizers, and simulators).  Siv3D applications run on
 Windows, macOS, Linux, and the Web.")
     (license license:expat)))
