@@ -4,6 +4,7 @@
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages language)
   #:use-module (gnu packages fcitx5)
@@ -29,7 +30,10 @@
                 "186hf2l2iasw2wgsn4l6mrb9vx3vaw1n0aiby465842cca4rr4fb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))
+     (list
+      #:tests? #f
+      #:configure-flags
+      #~(list (string-append "-D" "SKK_DEFAULT_PATH=" #$(file-append (this-package-input "skk-jisyo") "/share/skk/SKK-JISYO.L")))))
     (native-inputs (list extra-cmake-modules gettext-minimal pkg-config))
     (inputs (list glib
                   libskk
