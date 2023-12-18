@@ -18,7 +18,11 @@
       (base32 "1nasm5xm4ybg6sih7g88gwk67g5yga8chfr8c83i76kg31kg5qfk"))))
    (build-system binary-build-system)
    (arguments
-    '(#:install-plan '(("typst" "bin/"))))
+    '(#:install-plan
+      '(("typst" "bin/")
+        ("README.md" "share/doc/typst/")
+        ("LICENSE" "share/doc/typst/")
+        ("NOTICE" "share/doc/typst/"))))
    (home-page "https://typst.app")
    (synopsis
     "A new markup-based typesetting system that is powerful and easy to learn.")
