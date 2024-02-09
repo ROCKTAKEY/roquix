@@ -29,7 +29,7 @@ jobs:
         run: |
           export CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }} | jq -r '.files[] | .filename');
           for file in $CHANGED_FILES;
-            do export PACKAGES_TO_BUILD=$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }')$PACKAGES_TO_BUILD;
+            do export PACKAGES_TO_BUILD=$(printf "%s\n%s" "$PACKAGES_TO_BUILD" "$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }'))";
           done
           echo PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD >> $GITHUB_OUTPUT
           echo $PACKAGES_TO_BUILD
