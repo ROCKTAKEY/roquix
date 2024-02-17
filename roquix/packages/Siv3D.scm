@@ -232,19 +232,19 @@ compose, and analyze GIF images.")
     (home-page "http://giflib.sourceforge.net/")
     (license license:x11)))
 
-(define-public Siv3D
+(define-public opensiv3d
   (package
-    (name "Siv3D")
-    (version "0.6.10")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Siv3D/OpenSiv3D")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0ii36nfkarj851m7lnb4sa1yck2p1cn05w8q4yj1qw5fd5g4ldqk"))))
+    (name "opensiv3d")
+    (version "0.6.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Siv3D/OpenSiv3D")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1279wjv9dkk3sirxhhgfcw47s6kk14fr79swzrz89g2nsil9bq4q"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
