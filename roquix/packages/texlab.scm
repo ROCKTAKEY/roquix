@@ -10,7 +10,8 @@
   #:use-module (gnu packages crates-graphics)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-crypto)
-  #:use-module (gnu packages crates-windows))
+  #:use-module (gnu packages crates-windows)
+  #:use-module (gnu packages crates-apple))
 
 (define-public rust-ron-0.7
   (package
