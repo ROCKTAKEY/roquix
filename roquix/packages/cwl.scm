@@ -78,6 +78,28 @@
 comments, seq/map flow style, and map key order")
     (license license:expat)))
 
+(define-public python-rdflib-jsonld
+  (package
+    (name "python-rdflib-jsonld")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rdflib-jsonld" version))
+        (sha256
+         (base32
+          "0qrshlqzv5g5bign7kjja3xf7hyk7xgayr3yd0qlqda1kl0x6z0h"))))
+    (build-system python-build-system)
+    (native-inputs
+     (list python-nose))
+    (propagated-inputs
+     (list python-rdflib))
+    (home-page "https://github.com/RDFLib/rdflib-jsonld")
+    (synopsis "rdflib extension adding JSON-LD parser and serializer")
+    (description "This package provides an rdflib extension adding JSON-LD
+parser and serializer.")
+    (license license:bsd-3)))
+
 (define-public python-schema-salad-8.4
   (package
     (name "python-schema-salad")
