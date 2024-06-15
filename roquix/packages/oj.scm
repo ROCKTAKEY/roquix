@@ -14,35 +14,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-9))
 
-(define-public online-judge-api-client
-  (package
-   (name "online-judge-api-client")
-   (version "10.10.1")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/online-judge-tools/api-client")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32
-       "0yjqhh44va5nawd9rpqcjyf0g7rjlkvn7s90fmwmwjyqvy6lhjiz"))))
-   (build-system python-build-system)
-   (arguments '(#:tests? #f))
-   (propagated-inputs (list
-                       python-appdirs
-                       python-beautifulsoup4
-                       python-colorlog
-                       python-lxml
-                       python-requests
-                       python-toml
-                       python-jsonschema))
-   (home-page "https://github.com/online-judge-tools/api-client")
-   (synopsis "API client to develop tools for competitive programming")
-   (description "API client to develop tools for competitive programming")
-   (license license:expat)))
-
 (define-public online-judge-tools
   (package
    (name "online-judge-tools")
@@ -60,7 +31,7 @@
    (build-system python-build-system)
    (arguments '(#:tests? #f))
    (propagated-inputs (list
-                       online-judge-api-client
+                       python-online-judge-api-client
                        python-colorama
                        python-requests))
    (home-page "https://github.com/online-judge-tools/oj")
@@ -153,7 +124,7 @@
                        python-beautifulsoup4
                        python-colorlog
                        python-mako
-                       online-judge-api-client
+                       python-online-judge-api-client
                        online-judge-tools
                        python-ply
                        python-pyyaml
