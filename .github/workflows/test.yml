@@ -26,6 +26,6 @@ jobs:
       - run: guix describe
       - name: List packages to build
         id: packages-to-build
-        run: bash ${GITHUB_WORKSPACE}/scripts/list-package.sh ${{ github.repository }} ${{ github.event.before }} ${{ github.event.after }}
+        run: bash scripts/list-package.sh ${{ github.repository }} ${{ github.event.before }} ${{ github.event.after }}
       - name: Build each package
-        run: bash ${GITHUB_WORKSPACE}/scripts/build-package.sh ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}
+        run: bash scripts/build-package.sh ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}
