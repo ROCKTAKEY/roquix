@@ -26,17 +26,6 @@ jobs:
       - run: guix describe
       - name: List packages to build
         id: packages-to-build
-        run: |
-          export CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }} | jq -r '.files[] | .filename');
-          for file in $CHANGED_FILES;
-            do export PACKAGES_TO_BUILD=$(printf "%s\n%s" "$PACKAGES_TO_BUILD" "$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }'))";
-          done
-          echo PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD >> $GITHUB_OUTPUT
-          echo $PACKAGES_TO_BUILD
+        run: bash ${GITHUB_WORKSPACE}/scripts/list-package.sh ${{ github.repository }} ${{ github.event.before }} ${{ github.event.after }}
       - name: Build each package
-        run: |
-          for package in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}; do
-            echo "::group::Build $package";
-            guix build $package
-            echo "::endgroup::"
-          done
+        run: bash ${GITHUB_WORKSPACE}/scripts/build-package.sh ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}
