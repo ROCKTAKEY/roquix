@@ -10,14 +10,14 @@
 (define-public node-latest
   (package
     (name "node")
-    (version "20.7.0")
+    (version "22.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version "-linux-x64.tar.xz"))
               (sha256
                (base32
-                "0ppmavaga6jjlb504zhkcv2ad5q8pjaa472jwkg3nvdzqqj1q9d4"))))
+                "00spngkl27pcw4c87vanc87dg9awbdagf98v7sxhjcn3xlwybfxc"))))
     (build-system binary-build-system)
     (arguments
      `(#:install-plan '(("bin" "bin")
