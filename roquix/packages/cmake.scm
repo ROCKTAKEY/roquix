@@ -1,5 +1,5 @@
 (define-module
-  (roquix packages cmakelint)
+  (roquix packages cmake)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
@@ -85,3 +85,60 @@
     (synopsis "Static code checker for CMake files")
     (description "Static code checker for CMake files")
     (license license:asl2.0)))
+
+(define-public python-cmakelang
+  (package
+    (name "python-cmakelang")
+    (version "0.6.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cheshirekow/cmake_format")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12q9gg5sh4ab7954yq3b9qqjkiaf0jwm3axr38rlbmpj53x0x4vc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-tests
+                    (lambda _
+                      ;; Requires the Internet to download signatures.
+                      (substitute* "cmakelang/contrib/validate_database.py"
+                        (("  def test_signatures\\(self\\):")
+                         "  def disable_test_signatures(self):"))
+                      ;; Test that this package regognize all CMake commands.
+                      ;; It fails because it is not updated yet.
+                      (substitute* "cmakelang/test/command_db_test.py"
+                        (("  def test_all_commands_in_db\\(self\\)")
+                         "  def disable_test_all_commands_in_db(self)"))))
+                  (add-after 'unpack 'fix-tests
+                    (lambda _
+                      ;; Requires GUIX_PYTHONPATH because these tests call
+                      ;; Python as subprocess.
+                      (substitute* "cmakelang/format/invocation_tests.py"
+                        (("    self.env = \\{")
+                         "    self.env = {
+        'GUIX_PYTHONPATH': os.environ['GUIX_PYTHONPATH'],"))))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (setenv "PYTHONPATH"
+                                (string-append (getcwd) ":"
+                                               (getenv "GUIX_PYTHONPATH")))
+                        (invoke "python" "-Bm" "cmakelang.tests")))))))
+    (propagated-inputs (list python-six python-pyyaml))
+    (home-page "https://cmake-format.readthedocs.io/")
+    (synopsis "Quality Assurance (QA) tools for cmake")
+    (description
+     "@code{cmakelang} is QA tools for cmake, including:
+@itemize
+@item @code{cmake-annotate} can generate pretty HTML from your listfiles
+@item @code{cmake-format} can format your listfiles nicely
+      so that they don't look like crap.
+@item @code{cmake-lint} can check your listfiles for problems
+@item @code{ctest-to} can parse a @code{ctest} output tree
+      and translate it into a more structured format (either JSON or XML).
+@end itemize")
+    (license license:gpl3)))
