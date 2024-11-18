@@ -62,9 +62,9 @@
        ("tcsh" ,tcsh)))
     (arguments
      `(#:imported-modules ((guix build python-build-system)
-                           ,@%gnu-build-system-modules)
+                           ,@%default-gnu-imported-modules)
        #:modules (((guix build python-build-system) #:select (python-version))
-                  ,@%gnu-build-system-modules)
+                  ,@%default-gnu-imported-modules)
        #:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
