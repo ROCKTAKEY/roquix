@@ -1,7 +1,7 @@
-(define-module
-  (roquix packages cmake)
+(define-module (roquix packages cmake)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix licenses)
+                #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
@@ -16,21 +16,17 @@
   (package
     (name "python-tox-pyenv")
     (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "tox-pyenv" version))
-              (sha256
-               (base32
-                "1r4r4pyg6zkxsldahl3g36iz6xyh5yrvziajahxhpv3saw9j4v4i"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tox-pyenv" version))
+       (sha256
+        (base32 "1r4r4pyg6zkxsldahl3g36iz6xyh5yrvziajahxhpv3saw9j4v4i"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-tox))
-    (native-inputs
-     (list
-      ;; Needed for test
-      python-pylint
-      python-pycodestyle
-      python-mock
-      python-tomli))
+    (native-inputs (list
+                    ;; Needed for test
+                    python-pylint python-pycodestyle python-mock python-tomli))
     (home-page "https://github.com/samstav/tox-pyenv")
     (synopsis
      "tox plugin that makes tox use `pyenv which` to find python executables")
@@ -42,12 +38,12 @@
   (package
     (name "python-flake8-polyfill")
     (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "flake8-polyfill" version))
-              (sha256
-               (base32
-                "1nlf1mkqw856vi6782qcglqhaacb23khk9wkcgn55npnjxshhjz4"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "flake8-polyfill" version))
+       (sha256
+        (base32 "1nlf1mkqw856vi6782qcglqhaacb23khk9wkcgn55npnjxshhjz4"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-flake8))
     (home-page "https://gitlab.com/pycqa/flake8-polyfill")
@@ -58,15 +54,28 @@
 (define-public python-cmakelint
   (package
     (name "python-cmakelint")
-    (version "1.4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "cmakelint" version))
-              (sha256
-               (base32
-                "0abk3d2n3wpi0phsp3kiaa0hmfdfybnlvxmf48ardg3lpgv9y1w7"))))
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cmakelint" version))
+       (sha256
+        (base32 "07f70h92rpfn12icwgimhmcp9m1r6356jd7f9npywhcb662y98cq"))))
     (arguments
-     '(#:tests? #f))
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-test
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Use output executable to test.
+                      (substitute* "test/cli_test.py"
+                        (("os.path.abspath\\('./bin/cmakelint '\\)")
+                         (string-append "'"
+                                        (assoc-ref outputs "out")
+                                        "/bin/.cmakelint-real" "' + ' '")))))
+                  ;; PYTHONPATH is needed for tests.
+                  (add-before 'check 'add-pythonpath
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append (getenv "GUIX_PYTHONPATH"))))))))
     (build-system pyproject-build-system)
     (native-inputs (list python-configparser
                          python-flake8
