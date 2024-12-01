@@ -20,12 +20,12 @@
     (name "python-pygls")
     ;; Use older one for `python-cmake-language-server'
     (version "0.12.1")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "pygls" version))
-              (sha256
-               (base32
-                "040nq6a2a0ddv9lq7d6m84a1qixbnv5w5pj7s2p28xkfzlis579v"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pygls" version))
+       (sha256
+        (base32 "040nq6a2a0ddv9lq7d6m84a1qixbnv5w5pj7s2p28xkfzlis579v"))))
     (build-system python-build-system)
     (propagated-inputs (list python-pydantic python-typeguard python-wheel))
     (native-inputs (list python-bandit
@@ -50,12 +50,12 @@
   (package
     (name "python-cmake-language-server")
     (version "0.1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "cmake-language-server" version))
-              (sha256
-               (base32
-                "1vgp4cd9dpidib3znjph0j53yinzwqcxq9jm2x1y5lhq2n93ymy1"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cmake-language-server" version))
+       (sha256
+        (base32 "1vgp4cd9dpidib3znjph0j53yinzwqcxq9jm2x1y5lhq2n93ymy1"))))
     (build-system pyproject-build-system)
     (propagated-inputs (list python-importlib-metadata python-pygls
                              python-poetry-core))
