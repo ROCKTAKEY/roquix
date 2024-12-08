@@ -74,7 +74,14 @@
       `(#:cargo-inputs
         (("rust-clap" ,rust-clap-2)
          ("rust-env-logger" ,rust-env-logger-0.4)
-         ("rust-rhq-core" ,rust-rhq-core-0.3))))
+         ("rust-rhq-core" ,rust-rhq-core-0.3))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'build 'remove-readme
+            (lambda* _
+              (substitute* "Cargo.toml"
+                (("readme = \"../../README.md\"\n")
+                 "")))))))
     (propagated-inputs
      (list git))
     (home-page "https://github.com/ubnt-intrepid/rhq")
