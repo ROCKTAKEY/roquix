@@ -88,7 +88,7 @@
         (base32 "1sgfn2r3gmh0h5saks5g8qmmm3nra77xw0k87c2kcps42c82bqi4"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Test seems to be run in build phase.
+     '( ;Test seems to be run in build phase.
         #:tests? #f
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
@@ -102,9 +102,14 @@
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-                      (copy-file "./build//bin/lua-language-server"
-                                 (string-append (assoc-ref outputs "out")
-                                                "/bin/lua-language-server")))))))
+                      (copy-recursively "build/bin"
+                                        (string-append (assoc-ref outputs
+                                                                  "out")
+                                         "/lib/lua-language-server/bin"))
+                      (symlink (string-append (assoc-ref outputs "out")
+                                "/lib/lua-language-server/bin/lua-language-server")
+                               (string-append (assoc-ref outputs "out")
+                                              "/bin/lua-language-server")))))))
     (native-inputs (list ninja lua glibc))
     (home-page "https://luals.github.io/")
     (synopsis
