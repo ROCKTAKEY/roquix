@@ -10,8 +10,7 @@
   #:use-module (gnu packages crates-windows)
   #:use-module (gnu packages crates-web)
   #:use-module (gnu packages crates-apple)
-  #:use-module (gnu packages crates-crypto)
-  #:use-module (roquix packages rust))
+  #:use-module (gnu packages crates-crypto))
 
 (define-public rust-tree-sitter-cmake-0.5
   (package
