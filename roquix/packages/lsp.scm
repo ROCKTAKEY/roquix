@@ -4,6 +4,7 @@
                 #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
   #:use-module (guix git-download)
@@ -88,28 +89,31 @@
         (base32 "1sgfn2r3gmh0h5saks5g8qmmm3nra77xw0k87c2kcps42c82bqi4"))))
     (build-system gnu-build-system)
     (arguments
-     '( ;Test seems to be run in build phase.
-        #:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-before 'build 'build-luamake
-                    (lambda _
-                      (with-directory-excursion "3rd/luamake"
-                        (invoke "./compile/build.sh"))))
-                  (replace 'build
-                    (lambda _
-                      (invoke "3rd/luamake/luamake" "rebuild")))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
-                      (copy-recursively "build/bin"
-                                        (string-append (assoc-ref outputs
-                                                                  "out")
-                                         "/lib/lua-language-server/bin"))
-                      (symlink (string-append (assoc-ref outputs "out")
-                                "/lib/lua-language-server/bin/lua-language-server")
-                               (string-append (assoc-ref outputs "out")
-                                              "/bin/lua-language-server")))))))
+     (list
+      ;; Test seems to be run in build phase.
+      #:tests? #f
+      #:phases #~(modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-before 'build 'build-luamake
+                     (lambda _
+                       (with-directory-excursion "3rd/luamake"
+                         (invoke "./compile/build.sh"))))
+                   (replace 'build
+                     (lambda _
+                       (invoke "3rd/luamake/luamake" "rebuild")))
+                   (replace 'install
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (copy-recursively "build/bin"
+                                         (string-append (assoc-ref outputs "out")
+                                                        "/lib/lua-language-server/bin"))
+                       (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+                       (call-with-output-file (string-append (assoc-ref outputs "out") "/bin/lua-language-server")
+                         (lambda (port)
+                           (format port "\
+#!/bin/bash
+exec \"~a\" \"$@\"
+"
+                                   (string-append (assoc-ref outputs "out") "/lib/lua-language-server/bin/lua-language-server")))))))))
     (native-inputs (list ninja lua glibc))
     (home-page "https://luals.github.io/")
     (synopsis
