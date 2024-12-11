@@ -121,3 +121,22 @@ exec \"~a\" \"$@\"
     (description
      "A language server that offers Lua language support - programmed in Lua")
     (license license:expat)))
+
+ ;; (define-public lua-language-server
+;;   (package
+;;     (name "lua-language-server")
+;;     (version "3.13.3")
+;;     (source
+;;      (origin
+;;        (method url-fetch)
+;;        (uri (string-append
+;;              "https://github.com///releases/download/" version "lua-language-server-" version "-linux-x64.tar.gz"))
+;;        (sha256
+;;         (base32
+;;          "0yirfwqarcbjhr916qcx6zqw9bh4r08ldx598swkcgd275nhyl31"))))
+;;     (build-system gnu-build-system)
+;;     (arguments '())
+;;     (home-page "https://github.com/lua-language-server")
+;;     (synopsis "")
+;;     (description "")
+;;     (license license:expat)))
