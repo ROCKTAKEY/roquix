@@ -114,7 +114,7 @@ parser and serializer.")
     (propagated-inputs (list python-cachecontrol
                              python-importlib-metadata
                              python-importlib-resources
-                             python-mistune-next
+                             python-mistune
                              python-mypy-extensions
                              python-rdflib
                              python-rdflib-jsonld
