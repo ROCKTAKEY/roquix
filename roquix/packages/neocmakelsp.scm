@@ -6,6 +6,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages crates-compression)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-windows)
   #:use-module (gnu packages crates-web)
