@@ -7,7 +7,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
   #:use-module (nonguix build-system binary)
-  #:use-module (gnu packages crates-graphics)
+  #:use-module (gnu packages crates-check)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages crates-crypto)
   #:use-module (gnu packages crates-windows)
