@@ -2937,7 +2937,7 @@ Argument Parser")
 (define-public texlab-latest
   (package
    (name "rust-texlab")
-   (version "5.13.1")
+   (version "5.22.0")
    (source
     (origin
      (method url-fetch)
@@ -2947,7 +2947,7 @@ Argument Parser")
            "/texlab-x86_64-linux.tar.gz"))
      (sha256
       (base32
-       "16pkjjs7v6n0fw1fkg0p1v9papsn1m3m426631yijmkvmm505maz"))))
+       "0b4pn8yin1p1n4j8y7dqhsj9b4dx5cw0vcwgck40ckjh2wykl3hs"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("texlab" "/bin/"))
