@@ -1,3 +1,22 @@
+(define-module (roquix packages ollama)
+  #:use-module (guix packages)
+  #:use-module ((guix licenses)
+                #:prefix license:)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system go)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages golang-build)
+  #:use-module (gnu packages golang-check)
+  #:use-module (gnu packages golang-compression)
+  #:use-module (gnu packages golang-crypto)
+  #:use-module (gnu packages golang-web)
+  #:use-module (gnu packages golang-xyz)
+  #:use-module (gnu packages golang-maths)
+  #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages syncthing)
+  #:use-module (gnu packages prometheus))
+
 (define-public go-github-com-d4l3k-go-bfloat16
   (package
     (name "go-github-com-d4l3k-go-bfloat16")
