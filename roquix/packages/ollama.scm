@@ -1133,9 +1133,9 @@ commonly in arithmetic, comparison and linear algebra operations.")
                     (list go-1.23)
                     (package-native-inputs go-1.23)))))
 
-(define-public go-github-com-ollama-ollama
+(define-public ollama
   (package
-    (name "go-github-com-ollama-ollama")
+    (name "ollama")
     (version "0.7.1")
     (source
      (origin
