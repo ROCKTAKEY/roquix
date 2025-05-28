@@ -1,9 +1,12 @@
 (define-module (roquix packages ollama)
+  #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system go)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
@@ -15,7 +18,10 @@
   #:use-module (gnu packages golang-maths)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages syncthing)
-  #:use-module (gnu packages prometheus))
+  #:use-module (gnu packages prometheus)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public go-github-com-d4l3k-go-bfloat16
   (package
@@ -39,9 +45,9 @@
     (description "BFloat16 conversion utilities for Go/Golang.")
     (license license:expat)))
 
-(define-public go-github-com-emirpasic-gods
+(define-public go-github-com-emirpasic-gods-v2
   (package
-    (name "go-github-com-emirpasic-gods")
+    (name "go-github-com-emirpasic-gods-v2")
     (version "2.0.0-alpha")
     (source
      (origin
@@ -55,13 +61,13 @@
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/emirpasic/gods/v2"
-      #:unpack-path "github.com/emirpasic/gods"))
+      #:skip-build? #t
+      #:import-path "github.com/emirpasic/gods/v2"))
     (home-page "https://github.com/emirpasic/gods")
     (synopsis "GoDS (Go Data Structures)")
     (description
      "Implementation of various data structures and algorithms in Go.")
-    (license unknown-license!)))
+    (license (list license:bsd-2 license:isc))))
 
 (define-public go-github-com-nlpodyssey-gopickle
   (package
@@ -79,6 +85,7 @@
     (build-system go-build-system)
     (arguments
      (list
+      #:skip-build? #t
       #:import-path "github.com/nlpodyssey/gopickle"))
     (propagated-inputs (list go-golang-org-x-text))
     (home-page "https://github.com/nlpodyssey/gopickle")
@@ -105,10 +112,13 @@
     (arguments
      (list
       #:go go-1.22
+      #:skip-build? #t
+      ;; Cycle: go-github-com-envoyproxy-go-control-plane@0.13.4 -> go-google-golang-org-grpc@1.72.1
+      ;; -> go-github-com-envoyproxy-go-control-plane@0.13.4
+      #:tests? #f
       #:import-path "github.com/envoyproxy/go-control-plane"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-google-golang-org-genproto-googleapis-rpc
+                             go-google-golang-org-genproto-googleapis
                              go-go-uber-org-goleak
                              go-github-com-stretchr-testify
                              go-github-com-google-go-cmp))
@@ -136,6 +146,7 @@ implements the discovery service APIs defined in
     (build-system go-build-system)
     (arguments
      (list
+      #:skip-build? #t
       #:import-path "github.com/planetscale/vtprotobuf"))
     (propagated-inputs (list go-google-golang-org-protobuf
                              go-google-golang-org-grpc
@@ -147,109 +158,6 @@ implements the discovery service APIs defined in
 @@code{protoc}, which is used by Vitess to generate optimized marshall &
 unmarshal code.")
     (license license:bsd-3)))
-
-(define-public go-github-com-grpc-ecosystem-grpc-gateway
-  (package
-    (name "go-github-com-grpc-ecosystem-grpc-gateway")
-    (version "2.26.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/grpc-ecosystem/grpc-gateway")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1pw845x9bqhj64pxvyaafacq0mmmblbf5z4r2arprhdnb05czx3v"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "github.com/grpc-ecosystem/grpc-gateway/v2"
-      #:unpack-path "github.com/grpc-ecosystem/grpc-gateway"))
-    (propagated-inputs (list go-gopkg-in-yaml-v3
-                             go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-google-golang-org-genproto-googleapis-rpc
-                             go-google-golang-org-genproto-googleapis-api
-                             go-golang-org-x-text
-                             go-golang-org-x-oauth2
-                             go-github-com-rogpeppe-fastuuid
-                             go-github-com-google-go-cmp
-                             go-github-com-antihax-optional))
-    (home-page "https://github.com/grpc-ecosystem/grpc-gateway")
-    (synopsis "About")
-    (description
-     "The @code{gRPC-Gateway} is a plugin of the Google protocol buffers compiler
-@@url{https://github.com/protocolbuffers/protobuf,protoc}.  It reads protobuf
-service definitions and generates a reverse-proxy server which translates a
-RESTful HTTP API into @code{gRPC}.  This server is generated according to the
-@@url{https://github.com/googleapis/googleapis/raw/master/google/api/http.proto#L46,(code
-google.api.http)} annotations in your service definitions.")
-    (license license:bsd-3)))
-
-(define-public go-go-opentelemetry-io-proto-otlp
-  (package
-    (name "go-go-opentelemetry-io-proto-otlp")
-    (version "1.6.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/open-telemetry/opentelemetry-proto-go")
-             (commit (go-version->git-ref version
-                                          #:subdir "otlp"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "17hajnwi070dvsqcnhn0rlx4h59bn0cgc7364qii34vjhpa665ms"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "go.opentelemetry.io/proto/otlp"
-      #:unpack-path "go.opentelemetry.io/proto"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-github-com-grpc-ecosystem-grpc-gateway-v2))
-    (home-page "https://go.opentelemetry.io/proto")
-    (synopsis #f)
-    (description #f)
-    (license license:asl2.0)))
-
-(define-public go-github-com-envoyproxy-go-control-plane-envoy
-  (package
-    (name "go-github-com-envoyproxy-go-control-plane-envoy")
-    (version "1.32.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/envoyproxy/go-control-plane")
-             (commit (go-version->git-ref version
-                                          #:subdir "envoy"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "08zijpn9bf3dm2arp3z8ssm6wd3vbyfc57vg8ayw7rfh8h8kdaw3"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go go-1.22
-      #:import-path "github.com/envoyproxy/go-control-plane/envoy"
-      #:unpack-path "github.com/envoyproxy/go-control-plane"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-google-golang-org-genproto-googleapis-rpc
-                             go-google-golang-org-genproto-googleapis-api
-                             go-go-opentelemetry-io-proto-otlp
-                             go-github-com-prometheus-client-model
-                             go-github-com-planetscale-vtprotobuf
-                             go-github-com-envoyproxy-protoc-gen-validate
-                             go-github-com-envoyproxy-go-control-plane
-                             go-github-com-cncf-xds-go))
-    (home-page "https://github.com/envoyproxy/go-control-plane")
-    (synopsis #f)
-    (description #f)
-    (license license:asl2.0)))
 
 (define-public go-github-com-microsoft-go-winio
   (package
@@ -317,10 +225,9 @@ management of.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
       #:import-path "cel.dev/expr"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-genproto-googleapis-rpc))
+                             go-google-golang-org-genproto-googleapis))
     (home-page "https://cel.dev/expr")
     (synopsis "Common Expression Language")
     (description
@@ -344,6 +251,8 @@ evaluation, enabling different applications to more easily interoperate.")
     (build-system go-build-system)
     (arguments
      (list
+      ;; FIXME: Tests needs file generation by protoc and protoc-gen-go
+      #:tests? #f
       #:import-path "github.com/envoyproxy/protoc-gen-validate"))
     (propagated-inputs (list go-google-golang-org-protobuf go-golang-org-x-net
                              go-github-com-lyft-protoc-gen-star-v2
@@ -357,9 +266,9 @@ semantic rules for values.  This plugin adds support to protoc-generated code to
 validate such constraints.")
     (license license:asl2.0)))
 
-(define-public go-google-golang-org-genproto-googleapis-api
+(define-public go-google-golang-org-genproto-googleapis
   (package
-    (name "go-google-golang-org-genproto-googleapis-api")
+    (name "go-google-golang-org-genproto-googleapis")
     (version "0.0.0-20250519155744-55703ea1f237")
     (source
      (origin
@@ -367,22 +276,95 @@ validate such constraints.")
        (uri (git-reference
              (url "https://github.com/googleapis/go-genproto")
              (commit (go-version->git-ref version
-                                          #:subdir "googleapis/api"))))
+                                          #:subdir "googleapis"))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1ilf95lhx7930cqx2hmswxasxyxjz3xmbznd0cfcglzdl3d9k4rk"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
-      #:import-path "google.golang.org/genproto/googleapis/api"
+      #:skip-build? #t
+      ;; Cycle: go-google-golang-org-genproto-googleapis@0.0.0-20250519155744-55703ea1f237 -> go-google-golang-org-grpc@1.72.1
+      ;; -> go-google-golang-org-genproto-googleapis@0.0.0-20250519155744-55703ea1f237
+      #:tests? #f
+      #:import-path "google.golang.org/genproto/googleapis"
       #:unpack-path "google.golang.org/genproto"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-google-golang-org-genproto-googleapis-rpc))
+    (propagated-inputs (list go-google-golang-org-protobuf))
     (home-page "https://google.golang.org/genproto")
+    (synopsis " Generated code for Google Cloud client libraries.")
+    (description
+     "This repository contains the generated Go packages for common protocol buffer types,
+and the generated gRPC code necessary for interacting with Google's gRPC APIs.")
+    (license license:asl2.0)))
+
+(define-public go-go-opentelemetry-io-collector-pdata
+  (package
+    (name "go-go-opentelemetry-io-collector-pdata")
+    (version "1.32.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/open-telemetry/opentelemetry-collector")
+             (commit (go-version->git-ref version
+                                          #:subdir "pdata"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cqnvacj52js79nyd4vkmk992xr44ywcr2j7ywx7q5iy2vknh4v3"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:go go-1.23
+      ;; Cycle: go-go-opentelemetry-io-collector-pdata@1.32.0 -> go-go-opentelemetry-io-auto-sdk@1.1.0
+      ;; -> go-go-opentelemetry-io-otel-exporters-prometheus@0.58.0 -> go-google-golang-org-grpc@1.72.1
+      ;; -> go-go-opentelemetry-io-collector-pdata@1.32.0
+      #:tests? #f
+      #:import-path "go.opentelemetry.io/collector/pdata"
+      #:unpack-path "go.opentelemetry.io/collector"))
+    (propagated-inputs (list go-google-golang-org-protobuf
+                             go-go-uber-org-multierr
+                             go-go-uber-org-goleak
+                             go-github-com-stretchr-testify
+                             go-github-com-json-iterator-go
+                             go-github-com-gogo-protobuf))
+    (home-page "https://go.opentelemetry.io/collector")
+    (synopsis "Pipeline data (pdata)")
+    (description
+     "Package pdata provides the data model definitions for all supported pipeline
+data.")
+    (license license:asl2.0)))
+
+(define-public go-go-opentelemetry-io-auto-sdk
+  (package
+    (name "go-go-opentelemetry-io-auto-sdk")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url
+              "https://github.com/open-telemetry/opentelemetry-go-instrumentation")
+             (commit (go-version->git-ref version
+                                          #:subdir "sdk"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "155qcbl84bwy7m9k221w75yakfv71fbxpfn9g3d7nnq6cl30fbfw"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; Cycle: go-go-opentelemetry-io-auto-sdk@1.1.0 -> go-go-opentelemetry-io-otel-exporters-prometheus@0.58.0
+      ;; -> go-google-golang-org-grpc@1.72.1 -> go-go-opentelemetry-io-auto-sdk@1.1.0
+      #:tests? #f
+      #:go go-1.23
+      #:import-path "go.opentelemetry.io/auto/sdk"
+      #:unpack-path "go.opentelemetry.io/auto"))
+    (propagated-inputs (list go-go-opentelemetry-io-otel
+                             go-github-com-stretchr-testify
+                             go-go-opentelemetry-io-collector-pdata))
+    (home-page "https://go.opentelemetry.io/auto")
     (synopsis #f)
-    (description #f)
+    (description
+     "Package sdk provides an auto-instrumentable @code{OpenTelemetry} SDK.")
     (license license:asl2.0)))
 
 (define-public go-github-com-cncf-xds-go
@@ -402,17 +384,48 @@ validate such constraints.")
     (build-system go-build-system)
     (arguments
      (list
+      #:skip-build? #t
+      ;; Cycle: go-github-com-cncf-xds-go@0.0.0-20250501225837-2ac532fd4443 -> go-google-golang-org-grpc@1.72.1
+      ;; -> go-github-com-cncf-xds-go@0.0.0-20250501225837-2ac532fd4443
+      #:tests? #f
       #:import-path "github.com/cncf/xds/go"
       #:unpack-path "github.com/cncf/xds"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-google-golang-org-genproto-googleapis-api
+                             go-google-golang-org-genproto-googleapis
                              go-github-com-envoyproxy-protoc-gen-validate
                              go-cel-dev-expr))
     (home-page "https://github.com/cncf/xds")
-    (synopsis #f)
-    (description #f)
+    (synopsis "Implementation of the xDS suite of protocols")
+    (description
+     "Package xds contains an implementation of the xDS suite of protocols,
+to be used by gRPC client and server applications.
+On the client-side, users simply need to import this package to get all xDS functionality.
+On the server-side, users need to use the GRPCServer type exported by this package instead
+of the regular grpc.Server. ")
     (license license:asl2.0)))
+
+;; Needed by go-go-opentelemetry-io-otel-exporters-prometheus for prometheus.NewConstNativeHistogram
+(define-public go-github-com-prometheus-client-golang-1.22.0
+  (package
+    (inherit go-github-com-prometheus-client-golang)
+    (name "go-github-com-prometheus-client-golang")
+    (version "1.22.0")
+    ;; Copied from go-github-com-prometheus-client-golang
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/prometheus/client_golang")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08japwfsl7wlw6z8dkfdrhpgxr2w6frbinn96ksn0izab2h9s5gd"))
+       (modules '((guix build utils)))
+       (snippet #~(begin
+                    ;; Submodules with their own go.mod files and packaged separately:
+                    ;;
+                    ;; - .bingo - fake module
+                    (delete-file-recursively ".bingo")))))))
 
 (define-public go-go-opentelemetry-io-otel-exporters-prometheus
   (package
@@ -427,53 +440,68 @@ validate such constraints.")
                                           #:subdir "exporters/prometheus"))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kvfbqc56p1h9rh9cvgn37ya6k10613r0f2rhjiwrrkgs2mszk30"))))
+        (base32 "1kvfbqc56p1h9rh9cvgn37ya6k10613r0f2rhjiwrrkgs2mszk30"))
+
+       ;; Copied from go-go-opentelemetry-io-otel-sdk
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-26)))
+       (snippet #~(begin
+                    ;; XXX: 'delete-all-but' is copied from the turbovnc package.
+                    ;; Consider to implement it as re-usable procedure in
+                    ;; guix/build/utils or guix/build-system/go.
+                    (define (delete-all-but directory . preserve)
+                      (define (directory? x)
+                        (and=> (stat x #f)
+                               (compose (cut eq?
+                                             'directory <>) stat:type)))
+                      (with-directory-excursion directory
+                        (let* ((pred (negate (cut member <>
+                                                  (append '("." "..") preserve))))
+                               (items (scandir "." pred)))
+                          (for-each (lambda (item)
+                                      (if (directory? item)
+                                          (delete-file-recursively item)
+                                          (delete-file item))) items))))
+
+                    ;; These are adjusted
+                    (delete-all-but "." "exporters")
+                    (delete-all-but "exporters" "prometheus")))))
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
       #:import-path "go.opentelemetry.io/otel/exporters/prometheus"
-      #:unpack-path "go.opentelemetry.io/otel"))
+      #:unpack-path "go.opentelemetry.io/otel"
+      #:test-flags
+      #~(list "-skip"
+              (string-join (list
+                            ;; FIXME: The namespace is expected to "test/_" but is "test_"
+                            "TestNewConfig/with_unsanitized_namespace"
+                            ;; FIXME: Each key of target_info is expected to "xxx.yyy" but is xxx_yyy
+                            "TestPrometheusExporter/counter"
+                            "TestPrometheusExporter/counter_that_already_has_the_unit_suffix"
+                            "TestPrometheusExporter/counter_that_already_has_a_total_suffix"
+                            "TestPrometheusExporter/counter_with_suffixes_disabled"
+                            "TestPrometheusExporter/gauge"
+                            "TestPrometheusExporter/exponential_histogram"
+                            "TestPrometheusExporter/histogram") "|"))))
     (propagated-inputs (list go-google-golang-org-protobuf
                              go-github-com-stretchr-testify
                              go-github-com-prometheus-common
                              go-github-com-prometheus-client-model
-                             go-github-com-prometheus-client-golang))
+                             go-github-com-prometheus-client-golang-1.22.0
+                             go-github-com-go-logr-logr
+                             go-github-com-go-logr-stdr
+                             go-github-com-google-uuid
+                             go-go-opentelemetry-io-auto-sdk
+                             go-go-opentelemetry-io-otel-sdk
+                             go-go-opentelemetry-io-otel-sdk-metric))
     (home-page "https://go.opentelemetry.io/otel")
     (synopsis "Prometheus Exporter")
     (description
      "Package prometheus provides a Prometheus Exporter that converts OTLP metrics
 into the Prometheus exposition format and implements prometheus.Collector to
 provide a handler for these metrics.")
-    (license license:asl2.0)))
-
-(define-public go-go-opentelemetry-io-otel-exporters-stdout-stdouttrace
-  (package
-    (name "go-go-opentelemetry-io-otel-exporters-stdout-stdouttrace")
-    (version "1.36.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/open-telemetry/opentelemetry-go")
-             (commit (go-version->git-ref version
-                                          #:subdir
-                                          "exporters/stdout/stdouttrace"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1kvfbqc56p1h9rh9cvgn37ya6k10613r0f2rhjiwrrkgs2mszk30"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
-      #:unpack-path "go.opentelemetry.io/otel"))
-    (propagated-inputs (list go-github-com-stretchr-testify))
-    (home-page "https://go.opentelemetry.io/otel")
-    (synopsis "STDOUT Trace Exporter")
-    (description
-     "Package stdouttrace contains an @code{OpenTelemetry} exporter for tracing
-telemetry to be written to an output destination as JSON.")
     (license license:asl2.0)))
 
 (define-public go-google-golang-org-grpc-security-advancedtls
@@ -510,44 +538,6 @@ verification behaviors.  If the provided implementations do not fit a given use
 case, a custom implementation of the interface can be injected.")
     (license license:asl2.0)))
 
-(define-public go-google-golang-org-grpc-examples
-  (package
-    (name "go-google-golang-org-grpc-examples")
-    (version "0.0.0-20250526043511-e3ca7f9077fc")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/grpc/grpc-go")
-             (commit (go-version->git-ref version
-                                          #:subdir "examples"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "11796dkq7y0ll0w9pbihmn9b9nrcrdfp1g6mv8101wn5bmk28xwl"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "google.golang.org/grpc/examples"
-      #:unpack-path "google.golang.org/grpc"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                        go-google-golang-org-grpc-security-advancedtls
-                        go-google-golang-org-genproto-googleapis-rpc
-                        go-golang-org-x-oauth2
-                        go-go-opentelemetry-io-otel-sdk-metric
-                        go-go-opentelemetry-io-otel-sdk
-                        go-go-opentelemetry-io-otel-exporters-stdout-stdouttrace
-                        go-go-opentelemetry-io-otel-exporters-prometheus
-                        go-go-opentelemetry-io-otel
-                        go-github-com-prometheus-client-golang
-                        go-github-com-cncf-xds-go))
-    (home-page "https://google.golang.org/grpc")
-    (synopsis "Examples")
-    (description
-     "The following examples are provided to help users get started with
-@code{gRPC-Go}.  They are arranged as follows:.")
-    (license license:asl2.0)))
-
 (define-public go-github-com-spiffe-go-spiffe
   (package
     (name "go-github-com-spiffe-go-spiffe")
@@ -564,12 +554,13 @@ case, a custom implementation of the interface can be injected.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
+      #:skip-build? #t
+      ;; Cycle: go-github-com-spiffe-go-spiffe@2.5.0 -> go-google-golang-org-grpc@1.72.1
+      ;; -> go-github-com-spiffe-go-spiffe@2.5.0
+      #:tests? #f
       #:import-path "github.com/spiffe/go-spiffe/v2"
-      #:unpack-path "github.com/spiffe/go-spiffe"))
+      #:unpack-path "github.com/spiffe/go-spiffe/v2"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc-examples
-                             go-google-golang-org-grpc
                              go-github-com-zeebo-errs
                              go-github-com-stretchr-testify
                              go-github-com-go-jose-go-jose-v4
@@ -577,6 +568,34 @@ case, a custom implementation of the interface can be injected.")
     (home-page "https://github.com/spiffe/go-spiffe")
     (synopsis #f)
     (description #f)
+    (license license:asl2.0)))
+
+(define-public go-cloud-google-com-go-compute-metadata-0.121.2
+  (package
+    (inherit go-cloud-google-com-go-compute-metadata)
+    (name "go-cloud-google-com-go-compute-metadata-0.121.2")
+    ;; Version should be equal to or more than 0.113.0,
+    ;; though 0.6.0 is pointed by go.mod in go-github-com-googlecloudplatform-opentelemetry-operations-go-detectors-gcp
+    (version "0.121.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/googleapis/google-cloud-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dl179xpx9xb0k3s23m49k1mw5krrl20cs6026g7rmz584b54nsh"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "cloud.google.com/go"
+       #:import-path "cloud.google.com/go/compute/metadata"))
+    (propagated-inputs (list go-github-com-google-go-cmp))
+    (home-page "https://pkg.go.dev/cloud.google.com/go/compute/metadata")
+    (synopsis "Go wrapper for Google Compute Engine metadata service")
+    (description
+     "This package provides access to Google Compute Engine (GCE) metadata and
+API service accounts for Go.")
     (license license:asl2.0)))
 
 (define-public go-github-com-googlecloudplatform-opentelemetry-operations-go-detectors-gcp
@@ -604,7 +623,7 @@ case, a custom implementation of the interface can be injected.")
       #:unpack-path
       "github.com/GoogleCloudPlatform/opentelemetry-operations-go"))
     (propagated-inputs (list go-github-com-stretchr-testify
-                             go-cloud-google-com-go-compute-metadata))
+                             go-cloud-google-com-go-compute-metadata-0.121.2))
     (home-page
      "https://github.com/GoogleCloudPlatform/opentelemetry-operations-go")
     (synopsis "GCP Resource detection library")
@@ -631,7 +650,6 @@ the detection functions in real GCP environments.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
       #:import-path "go.opentelemetry.io/contrib/detectors/gcp"
       #:unpack-path "go.opentelemetry.io/contrib"))
     (propagated-inputs (list go-go-opentelemetry-io-otel-sdk
@@ -639,99 +657,16 @@ the detection functions in real GCP environments.")
                         go-github-com-stretchr-testify
                         go-github-com-google-go-cmp
                         go-github-com-googlecloudplatform-opentelemetry-operations-go-detectors-gcp
-                        go-cloud-google-com-go-compute-metadata))
+                        go-cloud-google-com-go-compute-metadata-0.121.2))
     (home-page "https://go.opentelemetry.io/contrib")
     (synopsis "GCP Resource detector")
     (description "The GCP resource detector supports detecting resources on:.")
     (license license:asl2.0)))
 
-(define-public go-go-opentelemetry-io-otel-metric
-  (package
-    (name "go-go-opentelemetry-io-otel-metric")
-    (version "1.36.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/open-telemetry/opentelemetry-go")
-             (commit (go-version->git-ref version
-                                          #:subdir "metric"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1kvfbqc56p1h9rh9cvgn37ya6k10613r0f2rhjiwrrkgs2mszk30"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "go.opentelemetry.io/otel/metric"
-      #:unpack-path "go.opentelemetry.io/otel"))
-    (propagated-inputs (list go-github-com-stretchr-testify))
-    (home-page "https://go.opentelemetry.io/otel")
-    (synopsis "Metric API")
-    (description
-     "Package metric provides the @code{OpenTelemetry} API used to measure metrics
-about source code operation.")
-    (license license:asl2.0)))
-
-(define-public go-go-opentelemetry-io-otel-trace
-  (package
-    (name "go-go-opentelemetry-io-otel-trace")
-    (version "1.36.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/open-telemetry/opentelemetry-go")
-             (commit (go-version->git-ref version
-                                          #:subdir "trace"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1kvfbqc56p1h9rh9cvgn37ya6k10613r0f2rhjiwrrkgs2mszk30"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "go.opentelemetry.io/otel/trace"
-      #:unpack-path "go.opentelemetry.io/otel"))
-    (propagated-inputs (list go-github-com-stretchr-testify
-                             go-github-com-google-go-cmp))
-    (home-page "https://go.opentelemetry.io/otel")
-    (synopsis "Trace API")
-    (description
-     "Package trace provides an implementation of the tracing part of the
-@code{OpenTelemetry} API.")
-    (license license:asl2.0)))
-
-(define-public go-google-golang-org-genproto-googleapis-rpc
-  (package
-    (name "go-google-golang-org-genproto-googleapis-rpc")
-    (version "0.0.0-20250519155744-55703ea1f237")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/googleapis/go-genproto")
-             (commit (go-version->git-ref version
-                                          #:subdir "googleapis/rpc"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1ilf95lhx7930cqx2hmswxasxyxjz3xmbznd0cfcglzdl3d9k4rk"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go #{go-#f}#
-      #:import-path "google.golang.org/genproto/googleapis/rpc"
-      #:unpack-path "google.golang.org/genproto"))
-    (propagated-inputs (list go-google-golang-org-protobuf))
-    (home-page "https://google.golang.org/genproto")
-    (synopsis #f)
-    (description #f)
-    (license license:asl2.0)))
-
 (define-public go-google-golang-org-grpc
   (package
     (name "go-google-golang-org-grpc")
-    (version "1.72.2")
+    (version "1.72.1")
     (source
      (origin
        (method git-fetch)
@@ -740,33 +675,66 @@ about source code operation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m561i99rfjlzfljbm7j2l5a3birakdl92jpkrlpnyg54zq9gqzx"))))
+        (base32 "0lxllrw23psd910krbrgzyrmh6calf42wg9fwkmybv2fn5liq73v"))))
     (build-system go-build-system)
     (arguments
      (list
       #:go go-1.23
+      ;; src/google.golang.org/grpc/credentials/tls/certprovider/provider.go:33:2: cannot find package "github.com/spiffe/go-spiffe/v2/bundle/spiffebundle" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/github.com/spiffe/go-spiffe/v2/bundle/spiffebundle (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/github.com/spiffe/go-spiffe/v2/bundle/spiffebundle (from $GOPATH)
+      ;; src/google.golang.org/grpc/internal/credentials/spiffe/spiffe.go:29:2: cannot find package "github.com/spiffe/go-spiffe/v2/spiffeid" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/github.com/spiffe/go-spiffe/v2/spiffeid (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/github.com/spiffe/go-spiffe/v2/spiffeid (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/config.go:29:2: cannot find package "cloud.google.com/go/logging" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/cloud.google.com/go/logging (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/cloud.google.com/go/logging (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/opencensus.go:27:2: cannot find package "contrib.go.opencensus.io/exporter/stackdriver" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/contrib.go.opencensus.io/exporter/stackdriver (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/contrib.go.opencensus.io/exporter/stackdriver (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/opencensus.go:28:2: cannot find package "contrib.go.opencensus.io/exporter/stackdriver/monitoredresource" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/contrib.go.opencensus.io/exporter/stackdriver/monitoredresource (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/contrib.go.opencensus.io/exporter/stackdriver/monitoredresource (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/opencensus.go:30:2: cannot find package "go.opencensus.io/stats/view" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/go.opencensus.io/stats/view (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/go.opencensus.io/stats/view (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/logging.go:32:2: cannot find package "go.opencensus.io/trace" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/go.opencensus.io/trace (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/go.opencensus.io/trace (from $GOPATH)
+      ;; src/google.golang.org/grpc/gcp/observability/exporting.go:26:2: cannot find package "google.golang.org/api/option" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/google.golang.org/api/option (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/google.golang.org/api/option (from $GOPATH)
+      ;; src/google.golang.org/grpc/stats/opencensus/client_metrics.go:20:2: cannot find package "go.opencensus.io/stats" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/go.opencensus.io/stats (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/go.opencensus.io/stats (from $GOPATH)
+      ;; src/google.golang.org/grpc/stats/opencensus/client_metrics.go:22:2: cannot find package "go.opencensus.io/tag" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/go.opencensus.io/tag (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/go.opencensus.io/tag (from $GOPATH)
+      ;; src/google.golang.org/grpc/stats/opencensus/trace.go:25:2: cannot find package "go.opencensus.io/trace/propagation" in any of:
+      ;; /gnu/store/mbp2fpgmgdhbmg8kw69hd864szvnni7g-go-1.23.5/lib/go/src/go.opencensus.io/trace/propagation (from $GOROOT)
+      ;; /tmp/guix-build-go-google-golang-org-grpc-1.72.1.drv-0/src/go.opencensus.io/trace/propagation (from $GOPATH)
+      #:tests? #f
       #:import-path "google.golang.org/grpc"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-genproto-googleapis-rpc
+                             go-google-golang-org-genproto-googleapis
                              go-golang-org-x-sys
                              go-golang-org-x-sync
                              go-golang-org-x-oauth2
                              go-golang-org-x-net
-                             go-go-opentelemetry-io-otel-trace
                              go-go-opentelemetry-io-otel-sdk-metric
                              go-go-opentelemetry-io-otel-sdk
-                             go-go-opentelemetry-io-otel-metric
                              go-go-opentelemetry-io-otel
                              go-go-opentelemetry-io-contrib-detectors-gcp
-                             go-github-com-spiffe-go-spiffe-v2
+                             go-github-com-spiffe-go-spiffe
                              go-github-com-google-uuid
                              go-github-com-google-go-cmp
                              go-github-com-golang-protobuf
                              go-github-com-golang-glog
-                             go-github-com-envoyproxy-go-control-plane-envoy
                              go-github-com-envoyproxy-go-control-plane
                              go-github-com-cncf-xds-go
-                             go-github-com-cespare-xxhash-v2))
+                             go-github-com-cespare-xxhash-v2
+                             go-github-com-spiffe-go-spiffe
+                             go-go-opentelemetry-io-otel-exporters-prometheus))
     (home-page "https://google.golang.org/grpc")
     (synopsis "gRPC-Go")
     (description "Package grpc implements an RPC system called @code{gRPC}.")
@@ -789,10 +757,11 @@ about source code operation.")
     (build-system go-build-system)
     (arguments
      (list
+      #:go go-1.22
+      #:test-flags ''("-skip" "TestReadWrite/extension")
       #:import-path "github.com/apache/arrow/go/arrow"
       #:unpack-path "github.com/apache/arrow"))
     (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
                              go-gonum-org-v1-gonum
                              go-golang-org-x-xerrors
                              go-golang-org-x-exp
@@ -800,11 +769,36 @@ about source code operation.")
                              go-github-com-pierrec-lz4-v4
                              go-github-com-klauspost-compress
                              go-github-com-google-flatbuffers
-                             go-github-com-golang-protobuf))
+                             go-github-com-golang-protobuf
+                             go-google-golang-org-grpc))
     (home-page "https://github.com/apache/arrow")
     (synopsis #f)
     (description "Package arrow provides an implementation of Apache Arrow.")
-    (license unknown-license!)))
+    (license license:asl2.0)))
+
+(define-public go-github-com-xtgo-set
+  (package
+    (name "go-github-com-xtgo-set")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xtgo/set")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "148jb5f87lf7090jg8340f24r29818krydajkm75vpzylaw6yd8w"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/xtgo/set"))
+    (home-page "https://github.com/xtgo/set")
+    (synopsis "set")
+    (description
+     "Package set implements type-safe, non-allocating algorithms that operate on
+ordered sets.")
+    (license license:bsd-2)))
 
 (define-public go-github-com-chewxy-hm
   (package
@@ -823,6 +817,8 @@ about source code operation.")
     (arguments
      (list
       #:import-path "github.com/chewxy/hm"))
+    (propagated-inputs (list go-github-com-pkg-errors go-github-com-xtgo-set
+                             go-github-com-stretchr-testify))
     (home-page "https://github.com/chewxy/hm")
     (synopsis "hm")
     (description
@@ -839,14 +835,17 @@ the necessary data structures and functions for creating such a system.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/google/flatbuffers")
-             (commit (go-version->git-ref version))))
+             (commit (go-version->git-ref version
+                                          #:subdir "go"))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1wcpaj4k9dwccb752pl8p54pqwajr51sxjym32q2bpm9ny6ib45v"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/google/flatbuffers"))
+      #:skip-build? #t
+      #:import-path "github.com/google/flatbuffers/go"
+      #:unpack-path "github.com/google/flatbuffers"))
     (home-page "https://github.com/google/flatbuffers")
     (synopsis "FlatBuffers")
     (description
@@ -951,6 +950,8 @@ types.")
     (build-system go-build-system)
     (arguments
      (list
+      ;; FIXME: "misplaced +build comment" occured
+      #:tests? #f
       #:import-path "gorgonia.org/vecf64"))
     (propagated-inputs (list go-github-com-stretchr-testify
                              go-github-com-pmezard-go-difflib
@@ -960,6 +961,53 @@ types.")
     (description
      "Package vecf64 provides common functions and methods for slices of float64.")
     (license license:expat)))
+
+(define-public go-gorgonia-org-tensor
+  (package
+    (name "go-gorgonia-org-tensor")
+    (version "0.9.24")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gorgonia/tensor")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13dk1gmplik5z8x27khgk5aja480znq4ryx3j0csp2j9vnwccpl3"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "gorgonia.org/tensor"
+      #:phases '(modify-phases %standard-phases
+                  ;; Need python for tests
+                  (add-before 'check 'add-python-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "PYTHON_COMMAND"
+                              (string-append (assoc-ref inputs "python")
+                                             "/bin/python3")))))))
+    (propagated-inputs (list go-gorgonia-org-vecf64
+                             go-gorgonia-org-vecf32
+                             go-gonum-org-v1-gonum
+                             go-go4-org-unsafe-assume-no-moving-gc
+                             go-github-com-stretchr-testify
+                             go-github-com-pkg-errors
+                             go-github-com-google-flatbuffers
+                             go-github-com-golang-protobuf
+                             go-github-com-gogo-protobuf
+                             go-github-com-chewxy-math32
+                             go-github-com-chewxy-hm
+                             go-github-com-apache-arrow-go-arrow))
+    (native-inputs (list
+                    ;; Need for test
+                    python python-numpy))
+    (home-page "https://gorgonia.org/tensor")
+    (synopsis "Package")
+    (description
+     "Package tensor is a package that provides efficient, generic n-dimensional
+arrays in Go.  Also in this package are functions and methods that are used
+commonly in arithmetic, comparison and linear algebra operations.")
+    (license license:asl2.0)))
 
 (define-public go-github-com-pdevine-tensor
   (package
@@ -977,8 +1025,20 @@ types.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
-      #:import-path "github.com/pdevine/tensor"))
+      #:import-path "github.com/pdevine/tensor"
+      #:phases '(modify-phases %standard-phases
+                  ;; Need python for tests
+                  (add-before 'check 'add-python-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "PYTHON_COMMAND"
+                              (string-append (assoc-ref inputs "python")
+                                             "/bin/python3"))))
+                  (add-after 'unpack 'remove-import-path-comment
+                    ;; This package is a fork, but import path comments are not fixed.
+                    (lambda _
+                      (substitute* (find-files "." "\\.go$")
+                        (("// *import .*$")
+                         "")))))))
     (propagated-inputs (list go-gorgonia-org-vecf64
                              go-gorgonia-org-vecf32
                              go-gonum-org-v1-gonum
@@ -991,6 +1051,9 @@ types.")
                              go-github-com-chewxy-math32
                              go-github-com-chewxy-hm
                              go-github-com-apache-arrow-go-arrow))
+    (native-inputs (list
+                    ;; Need for test
+                    python python-numpy))
     (home-page "https://github.com/pdevine/tensor")
     (synopsis "Package")
     (description
@@ -1015,7 +1078,6 @@ commonly in arithmetic, comparison and linear algebra operations.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
       #:import-path "github.com/gin-contrib/cors"))
     (propagated-inputs (list go-github-com-stretchr-testify
                              go-github-com-gin-gonic-gin))
@@ -1023,6 +1085,53 @@ commonly in arithmetic, comparison and linear algebra operations.")
     (synopsis "CORS gin's middleware")
     (description "Gin middleware/handler to enable CORS support.")
     (license license:expat)))
+
+;; Ollama needs 1.11.5
+;; https://github.com/ollama/ollama/issues/9656#issuecomment-2717522554
+(define-public go-github-com-dlclark-regexp2-1.11.5
+  (package
+    (inherit go-github-com-dlclark-regexp2)
+    (name "go-github-com-dlclark-regexp2")
+    (version "1.11.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dlclark/regexp2")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i5c7ak8r4wwlyrx5f1mdipqk6p6ms1jgclb7hlb4qgy83c7xplc"))))
+    (arguments
+     (cons* #:test-flags #~(list "-skip"
+                                 (string-join
+                                  ;; These tests are flaky
+                                  (list "TestDeadline/.*"
+                                        "TestStopTimeoutClock/.*"
+                                        "TestIncorrectDeadline/.*") "|"))
+            (package-arguments go-github-com-dlclark-regexp2)))))
+
+;; Ollama needs os.OpenRoot
+(define-public go-1.24
+  (package
+    (inherit go-1.23)
+    (name "go")
+    (version "1.24.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/golang/go")
+             (commit (string-append "go" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b24pdsxrarw22gffv85sghpgvgamafvwwrvvhmyv3hqf89m97zk"))))
+    (native-inputs
+     ;; Go 1.22 and later requires Go 1.20 (min. 1.20.6, which we don't have)
+     ;; as the bootstrap toolchain.
+     (alist-replace "go"
+                    (list go-1.23)
+                    (package-native-inputs go-1.23)))))
 
 (define-public go-github-com-ollama-ollama
   (package
@@ -1040,7 +1149,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go #{go-#f}#
+      #:go go-1.24
       #:import-path "github.com/ollama/ollama"))
     (propagated-inputs (list go-google-golang-org-protobuf
                              go-golang-org-x-text
@@ -1056,7 +1165,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
                              go-github-com-mattn-go-runewidth
                              go-github-com-google-go-cmp
                              go-github-com-emirpasic-gods-v2
-                             go-github-com-dlclark-regexp2
+                             go-github-com-dlclark-regexp2-1.11.5
                              go-github-com-d4l3k-go-bfloat16
                              go-github-com-agnivade-levenshtein
                              go-golang-org-x-sync
@@ -1066,9 +1175,9 @@ commonly in arithmetic, comparison and linear algebra operations.")
                              go-github-com-olekukonko-tablewriter
                              go-github-com-google-uuid
                              go-github-com-gin-gonic-gin
-                             go-github-com-containerd-console))
+                             go-github-com-containerd-console
+                             go-modernc-org-mathutil))
     (home-page "https://github.com/ollama/ollama")
     (synopsis "Ollama")
     (description "Get up and running with large language models.")
     (license license:expat)))
-
