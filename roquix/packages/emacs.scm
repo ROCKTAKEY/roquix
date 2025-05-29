@@ -4,6 +4,7 @@
   #:use-module ((guix licenses)  #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix build-system copy)
   #:use-module (gnu packages emacs))
 
@@ -71,3 +72,15 @@ Keg is 100% Elisp project and it developed as alternative to Cask.")
     (synopsis "Project management tool for Emacs")
     (description "Project management tool for Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-with-source
+  (package
+    (inherit emacs)
+    (name "emacs-with-source")
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'install-source
+            (lambda* _
+              (copy-recursively "." (string-append #$output "src")))))))))
