@@ -30,13 +30,14 @@ jobs:
           CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }} | jq -r '.files[] | .filename')
           PACKAGES_TO_BUILD=""
           for file in $CHANGED_FILES; do
-            packages=$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }')
+            packages=$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }' | tr '\n' ' ')
             if [ -n "$packages" ]; then
               PACKAGES_TO_BUILD="$PACKAGES_TO_BUILD $packages"
             fi
           done
+          PACKAGES_TO_BUILD=$(echo "$PACKAGES_TO_BUILD" | xargs)
           echo "PACKAGES_TO_BUILD=$PACKAGES_TO_BUILD" >> $GITHUB_OUTPUT
-          echo "Packages to build: $PACKAGES_TO_BUILD"
+          echo "Packages to build: [$PACKAGES_TO_BUILD]"
       - name: Build each package
         run: |
           for package in ${{ steps.packages-to-build.outputs.PACKAGES_TO_BUILD }}; do
