@@ -7,6 +7,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build utils)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix profiles)
   #:use-module (guix build-system go)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
@@ -21,7 +24,10 @@
   #:use-module (gnu packages prometheus)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (amd packages rocm-hip)
+  #:use-module (amd packages rocm-base)
+  #:use-module (amd packages rocm-libs))
 
 (define-public go-github-com-d4l3k-go-bfloat16
   (package
@@ -1177,6 +1183,53 @@ commonly in arithmetic, comparison and linear algebra operations.")
                              go-github-com-gin-gonic-gin
                              go-github-com-containerd-console
                              go-modernc-org-mathutil))
+    (home-page "https://github.com/ollama/ollama")
+    (synopsis "Ollama")
+    (description "Get up and running with large language models.")
+    (license license:expat)))
+
+(define hip-union
+  (directory-union "hip-union"
+                   (list rocm-toolchain
+                         hipamd)))
+
+(define-public ollama-rocm
+  (package
+    (inherit ollama)
+    (name "ollama-rocm")
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-DCMAKE_HIP_COMPILER=" #$hip-union "/bin/clang++")
+              "-DCMAKE_HIP_PLATFORM=amd"
+              "-DAMDGPU_TARGETS=gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906:xnack-;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-")
+      #:imported-modules
+      `(,@%cmake-build-system-modules
+        ,@%go-build-system-modules)
+      #:modules
+      '((guix build cmake-build-system)
+        ((guix build go-build-system) #:prefix go:)
+        (guix build union)
+        (guix build utils))
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'build
+            (assoc-ref go:%standard-phases 'check)
+            ;; (lambda _
+            ;;   (format #t (getcwd))
+            ;;   (chdir "../source")
+            ;;   (assoc-ref go:%standard-phases 'check))
+            ))))
+    (native-inputs
+     (list go-1.24))
+    (inputs
+     (list
+      rocm-cmake
+      rocm-toolchain
+      hipamd
+      hipblas
+      rocblas))
     (home-page "https://github.com/ollama/ollama")
     (synopsis "Ollama")
     (description "Get up and running with large language models.")
