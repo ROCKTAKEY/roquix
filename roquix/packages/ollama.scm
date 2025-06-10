@@ -1214,13 +1214,21 @@ commonly in arithmetic, comparison and linear algebra operations.")
         (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'check 'setup-go-environment
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((go-build-system-phases
+                     (@ (guix build go-build-system) %standard-phases)))
+                ((assoc-ref go-build-system-phases 'setup-go-environment)
+                 #:inputs inputs #:outputs outputs))))
           (replace 'check
-            (assoc-ref go:%standard-phases 'check)
-            ;; (lambda _
-            ;;   (format #t (getcwd))
-            ;;   (chdir "../source")
-            ;;   (assoc-ref go:%standard-phases 'check))
-            ))))
+            (lambda* (#:key tests? import-path test-flags test-subdirs parallel-tests? #:allow-other-keys)
+              (when tests?
+                (let ((go-check (@ (guix build go-build-system) check)))
+                  (go-check #:tests? tests?
+                           #:import-path "github.com/ollama/ollama"
+                           #:test-flags (or test-flags '())
+                           #:test-subdirs (or test-subdirs '(""))
+                           #:parallel-tests? (if (unspecified? parallel-tests?) #t parallel-tests?)))))))))
     (native-inputs
      (list go-1.24))
     (inputs
