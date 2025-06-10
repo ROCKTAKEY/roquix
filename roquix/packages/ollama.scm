@@ -1214,7 +1214,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
         (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
-          (replace 'build
+          (replace 'check
             (assoc-ref go:%standard-phases 'check)
             ;; (lambda _
             ;;   (format #t (getcwd))
