@@ -1214,21 +1214,32 @@ commonly in arithmetic, comparison and linear algebra operations.")
         (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
-          (add-before 'check 'setup-go-environment
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((go-build-system-phases
-                     (@ (guix build go-build-system) %standard-phases)))
-                ((assoc-ref go-build-system-phases 'setup-go-environment)
-                 #:inputs inputs #:outputs outputs))))
+          (add-before 'unpack 'setup-go-environment
+            (assoc-ref go:%standard-phases 'setup-go-environment))
+          (add-before 'unpack fix-embed-files
+            (assoc-ref go:%standard-phases 'fix-embed-files))
+          (replace 'unpack
+            (lambda* args
+              (apply (assoc-ref go:%standard-phases 'unpack)
+                     #:import-path "github.com/ollama/ollama"
+                     #:unpack-path "github.com/ollama/ollama"
+                     args)))
+          (add-before 'configure 'chdir
+            (lambda _
+             (chdir (string-append (getenv "GOPATH") "/src/github.com/ollama/ollama"))))
           (replace 'check
-            (lambda* (#:key tests? import-path test-flags test-subdirs parallel-tests? #:allow-other-keys)
+            (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
+              (format #t (getcwd))
               (when tests?
-                (let ((go-check (@ (guix build go-build-system) check)))
-                  (go-check #:tests? tests?
-                           #:import-path "github.com/ollama/ollama"
-                           #:test-flags (or test-flags '())
-                           #:test-subdirs (or test-subdirs '(""))
-                           #:parallel-tests? (if (unspecified? parallel-tests?) #t parallel-tests?)))))))))
+                (setenv "HOME" "/tmp")
+                ;; (invoke "go" "test" "github.com/ollama/ollama")
+                ((assoc-ref go:%standard-phases 'check)
+                 #:tests? tests?
+                 #:import-path "github.com/ollama/ollama"
+                 #:test-flags  '()
+                 #:test-subdirs '(".")
+                 #:parallel-tests? (if (unspecified? parallel-tests?) #t parallel-tests?)))
+              )))))
     (native-inputs
      (list go-1.24))
     (inputs
