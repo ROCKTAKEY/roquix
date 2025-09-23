@@ -14,12 +14,4 @@
   (channel
    (name guix-jp)
    (url "https://gitlab.com/guix-jp/channel")
-   (branch "main"))
-  (channel
-   (name rustup)
-   (url "https://github.com/declantsien/guix-rustup")
-   (introduction
-    (channel-introduction
-     (version 0)
-     (commit "325d3e2859d482c16da21eb07f2c6ff9c6c72a80")
-     (signer "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))))
+   (branch "main"))))
