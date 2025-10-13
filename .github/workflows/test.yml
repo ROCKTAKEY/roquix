@@ -26,7 +26,7 @@ jobs:
       - name: List packages to build
         id: packages-to-build
         run: |
-          CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }} | jq -r '.files[] | .filename')
+          CHANGED_FILES=$(curl --silent https://api.github.com/repos/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }} | jq -r '.files // [] | .[] | .filename')
           PACKAGES_TO_BUILD=""
           for file in $CHANGED_FILES; do
             packages=$(guix package -A | awk -v file="$file" '$4 ~ file { print $1 }' | tr '\n' ' ')
