@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2025 Hilton Chain <hako@ultrarare.space>
 ;;; Copyright © 2025 ROCKTAKEY <rocktakey@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
