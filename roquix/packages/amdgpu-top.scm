@@ -36,9 +36,7 @@
     (arguments
      (list
       #:rust rust-1.88
-      #:cargo-package-crates ''("libamdgpu_top" "amdgpu_top_tui"
-                                "amdgpu_top_gui" "amdgpu_top_json"
-                                "amdgpu_top")))
+      #:install-source? #f))
     (inputs (cons* libdrm
                    (cargo-inputs 'amdgpu-top
                                  #:module '(roquix packages rust-crates))))
