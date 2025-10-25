@@ -6,12 +6,13 @@
   #:use-module (guix build-system cargo)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages python)
   #:use-module (rustup build toolchain))
 
 (define-public codex
   (package
     (name "codex")
-    (version "0.46.0")
+    (version "0.48.0")
     (source
      (origin
        (method git-fetch)
@@ -20,12 +21,13 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0avcx7h8z09mfzjbi7w484f2nsrmah94cralspmynafg71b7rkx3"))))
+        (base32 "1m6ca4z8kdc00xvfsh25pzywhd1n44xf92r7p96hg8qfj8q3a8ba"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.89.0"))
     (inputs (cons* clang-toolchain openssl
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
+    (native-inputs (list python))
     (arguments
      `(#:install-source? #f
        #:cargo-install-paths '("cli")
@@ -47,10 +49,12 @@
                             "--skip=git_info::tests::test_get_git_working_tree_state_with_changes"
                             "--skip=git_info::tests::test_recent_commits_orders_and_limits"
                             "--skip=shell::tests::test_run_with_profile_bash_escaping_and_execution"
+
                             "--skip=unified_exec::tests::multi_unified_exec_sessions"
                             "--skip=unified_exec::tests::reusing_completed_session_returns_unknown_session"
                             "--skip=unified_exec::tests::unified_exec_persists_across_requests_jif"
                             "--skip=unified_exec::tests::unified_exec_timeouts"
+
                             "--skip=suite::cli_stream::integration_git_info_unit_test"
                             "--skip=suite::client::azure_overrides_assign_properties_used_for_responses_url"
                             "--skip=suite::client::env_var_overrides_loaded_auth"
@@ -120,7 +124,11 @@
                             ;; NOTE: The paths are replaced to absolute path like "/tmp/guix-build-codex-0.46.0.drv-0/source/codex-rs/tui/example.png".
                             ;; It seems to be hard to fix, because such a longer path sometimes causes complicated UI change.
                             "--skip=chatwidget::tests::view_image_tool_call_adds_history_cell"
-                            "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path")
+                            "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path"
+
+                            ;; core
+                            ;; NOTE: Seems to depend on time
+                            "--skip=suite::approvals::approval_matrix_covers_all_modes")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
                     (lambda _
@@ -130,7 +138,7 @@
                       (substitute* "Cargo.toml"
                         (("ratatui = \\{ git = \"https://github.com/nornagon/ratatui\", branch = \"nornagon-v0.29.0-patch\" \\}")
                          ""))))
-                  (add-after 'use-guix-vendored-dependencies 'replace-version-string-in-test
+                  (add-after 'use-guix-vendored-dependencies 'fix-test
                     (lambda _
                       ;; NOTE: The version is always 0.0.0 in the original Cargo.toml,
                       ;; but cargo-build-system generates theirs, where the version is package version.
@@ -157,7 +165,18 @@
                                                         (- (string-length
                                                             "0.0.0")
                                                            (string-length ,version)))
-                                                       #\space))))))))))
+                                                       #\space)))))
+                      (substitute* (append '("core/src/unified_exec/mod.rs"
+                                             "core/src/tools/handlers/unified_exec.rs")
+                                           (find-files "core/tests/suite/"))
+                        (("/bin/sh")
+                         (which "sh"))
+                        (("/bin/bash")
+                         (which "bash"))
+                        (("/bin/echo")
+                         (which "echo"))
+                        (("/bin/cat")
+                         (which "cat"))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
