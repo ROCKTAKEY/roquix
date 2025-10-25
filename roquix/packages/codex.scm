@@ -57,7 +57,15 @@
                             ;; NOTE: The paths are replaced to absolute path like "/tmp/guix-build-codex-0.46.0.drv-0/source/codex-rs/tui/example.png".
                             ;; It seems to be hard to fix, because such a longer path sometimes causes complicated UI change.
                             "--skip=chatwidget::tests::view_image_tool_call_adds_history_cell"
-                            "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path")
+                            "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path"
+
+                            ;; app-server
+                            ;; FIXME: Unknown error occur in cuirass
+                            ;; thread 'suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow' panicked at app-server/tests/suite/codex_message_processor_flow.rs:148:6:
+                            ;; task_finished_notification resp: unexpected JSONRPCMessage::Request: Request(JSONRPCRequest { id: Integer(0), method: "execCommandApproval", params: Some(Object {"conversationId": String("019a1bf7-6bce-7371-b2a7-c9319d5d5c0d"), "callId": String("call1234"), "command": Array [String("ls")], "cwd": String("/tmp/guix-build-codex-0.48.0.drv-0/.tmpiAoxpP/workdir"), "reason": String("command failed; retry without sandbox?"), "parsedCmd": Array [Object {"type": String("list_files"), "cmd": String("ls"), "path": Null}]}) })
+                            ;; note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+                            "--skip=suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow"
+)
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
                     (lambda _
