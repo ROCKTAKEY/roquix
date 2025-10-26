@@ -14,6 +14,7 @@
 (define-public uv-patched
   (package
     (inherit uv)
+    (name "uv-patched")
     (arguments
      (substitute-keyword-arguments (package-arguments uv)
        ((#:phases phases)
