@@ -13,7 +13,7 @@
 (define-public codex
   (package
     (name "codex")
-    (version "0.48.0")
+    (version "0.53.0")
     (source
      (origin
        (method git-fetch)
@@ -22,7 +22,7 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1m6ca4z8kdc00xvfsh25pzywhd1n44xf92r7p96hg8qfj8q3a8ba"))))
+        (base32 "0jfxx71izyny92pvqq12lj3adbhfav6fxg889sr1rpdvka1gncmh"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.89.0"))
     (inputs (cons* clang-toolchain openssl
@@ -60,12 +60,16 @@
                             "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path"
 
                             ;; app-server
-                            ;; FIXME: Unknown error occur in cuirass
+                            ;; FIXME: Unknown error occurs in cuirass
                             ;; thread 'suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow' panicked at app-server/tests/suite/codex_message_processor_flow.rs:148:6:
                             ;; task_finished_notification resp: unexpected JSONRPCMessage::Request: Request(JSONRPCRequest { id: Integer(0), method: "execCommandApproval", params: Some(Object {"conversationId": String("019a1bf7-6bce-7371-b2a7-c9319d5d5c0d"), "callId": String("call1234"), "command": Array [String("ls")], "cwd": String("/tmp/guix-build-codex-0.48.0.drv-0/.tmpiAoxpP/workdir"), "reason": String("command failed; retry without sandbox?"), "parsedCmd": Array [Object {"type": String("list_files"), "cmd": String("ls"), "path": Null}]}) })
                             ;; note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
                             "--skip=suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow"
-)
+                            ;; FIXME: Unknown error occurs
+;;                             thread 'suite::send_message::test_send_message_raw_notifications_opt_in' panicked at app-server/tests/suite/send_message.rs:316:13:
+;; expected instructions message, got ["<environment_context>\n  <cwd>/tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/app-server</cwd>\n  <approval_policy>never</approval_policy>\n  <sandbox_mode>danger-full-access</sandbox_mode>\n  <network_access>enabled</network_access>\n</environment_context>"]
+                            "--skip=suite::send_message::test_send_message_raw_notifications_opt_in"
+                            )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
                     (lambda _

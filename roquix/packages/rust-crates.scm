@@ -387,6 +387,10 @@
   (crate-source "bitflags" "1.3.2"
                 "12ki6w8gn1ldq7yz9y680llwk5gmrhrzszaa17g1sbrw2r2qvwxy"))
 
+(define rust-bitflags-2.10.0
+  (crate-source "bitflags" "2.10.0"
+                "1lqxwc3625lcjrjm5vygban9v8a6dlxisp1aqylibiaw52si4bl1"))
+
 (define rust-bitflags-2.8.0
   (crate-source "bitflags" "2.8.0"
                 "0dixc6168i98652jxf0z9nbyn0zcis3g6hi6qdr7z5dbhcygas4g"))
@@ -1818,25 +1822,49 @@
   (crate-source "icu_collections" "2.0.0"
                 "0izfgypv1hsxlz1h8fc2aak641iyvkak16aaz5b4aqg3s3sp4010"))
 
+(define rust-icu-collections-2.1.1
+  (crate-source "icu_collections" "2.1.1"
+                "0hsblchsdl64q21qwrs4hvc2672jrf466zivbj1bwyv606bn8ssc"))
+
 (define rust-icu-decimal-2.0.0
   (crate-source "icu_decimal" "2.0.0"
                 "1qm2p28xg56fc1v5ji1s13bz13is28rjh9shyjlniqy4zm1iripy"))
+
+(define rust-icu-decimal-2.1.1
+  (crate-source "icu_decimal" "2.1.1"
+                "13iybf7h6cpla1v2rfh761i9jl8rycm8m1n1hawzjj633cim5353"))
 
 (define rust-icu-decimal-data-2.0.0
   (crate-source "icu_decimal_data" "2.0.0"
                 "1m9q4xmwgchnc2h0zq302z3is74ryicg9hd5csyg3ggr6ny662dp"))
 
+(define rust-icu-decimal-data-2.1.1
+  (crate-source "icu_decimal_data" "2.1.1"
+                "1xzy8qszcqqka08lf2ck7amn6ysnjn8ry6c4zr4dhbdb9q2b8199"))
+
 (define rust-icu-locale-2.0.0
   (crate-source "icu_locale" "2.0.0"
                 "1zdy5ym97gj0aqggk8zs2fngazf33szmssbc3gd92pik50ar5rba"))
+
+(define rust-icu-locale-2.1.1
+  (crate-source "icu_locale" "2.1.1"
+                "0q6xwqzj9yb5jjcfrbv64s9lpr9yzq7fp9kbj6zvc2im5rr12ask"))
 
 (define rust-icu-locale-core-2.0.0
   (crate-source "icu_locale_core" "2.0.0"
                 "02phv7vwhyx6vmaqgwkh2p4kc2kciykv2px6g4h8glxfrh02gphc"))
 
+(define rust-icu-locale-core-2.1.1
+  (crate-source "icu_locale_core" "2.1.1"
+                "1djvdc2f5ylmp1ymzv4gcnmq1s4hqfim9nxlcm173lsd01hpifpd"))
+
 (define rust-icu-locale-data-2.0.0
   (crate-source "icu_locale_data" "2.0.0"
                 "0r974pj4waqfb5k935xccgmm8rc1a21r77n68fkhd7bl4k0z1pjg"))
+
+(define rust-icu-locale-data-2.1.1
+  (crate-source "icu_locale_data" "2.1.1"
+                "0iriiv9d1ca6yp5pfkym9ndrdavr1rs92vrxkxhhbpzcxz52ygph"))
 
 (define rust-icu-locid-1.5.0
   (crate-source "icu_locid" "1.5.0"
@@ -1858,6 +1886,10 @@
   (crate-source "icu_normalizer" "2.0.0"
                 "0ybrnfnxx4sf09gsrxri8p48qifn54il6n3dq2xxgx4dw7l80s23"))
 
+(define rust-icu-normalizer-2.1.1
+  (crate-source "icu_normalizer" "2.1.1"
+                "16dmn5596la2qm0r3vih0bzjfi0vx9a20yqjha6r1y3vnql8hv2z"))
+
 (define rust-icu-normalizer-data-1.5.0
   (crate-source "icu_normalizer_data" "1.5.0"
                 "05lmk0zf0q7nzjnj5kbmsigj3qgr0rwicnn5pqi9n7krmbvzpjpq"))
@@ -1865,6 +1897,10 @@
 (define rust-icu-normalizer-data-2.0.0
   (crate-source "icu_normalizer_data" "2.0.0"
                 "1lvjpzxndyhhjyzd1f6vi961gvzhj244nribfpdqxjdgjdl0s880"))
+
+(define rust-icu-normalizer-data-2.1.1
+  (crate-source "icu_normalizer_data" "2.1.1"
+                "02jnzizg6q75m41l6c13xc7nkc5q8yr1b728dcgfhpzw076wrvbs"))
 
 (define rust-icu-properties-1.5.1
   (crate-source "icu_properties" "1.5.1"
@@ -1874,6 +1910,10 @@
   (crate-source "icu_properties" "2.0.1"
                 "0az349pjg8f18lrjbdmxcpg676a7iz2ibc09d2wfz57b3sf62v01"))
 
+(define rust-icu-properties-2.1.1
+  (crate-source "icu_properties" "2.1.1"
+                "16gvnnxr1xry6vn5275a1s0z0c8scp7gdkzqla6hqv3nawqwsgz9"))
+
 (define rust-icu-properties-data-1.5.0
   (crate-source "icu_properties_data" "1.5.0"
                 "0scms7pd5a7yxx9hfl167f5qdf44as6r3bd8myhlngnxqgxyza37"))
@@ -1882,6 +1922,10 @@
   (crate-source "icu_properties_data" "2.0.1"
                 "0cnn3fkq6k88w7p86w7hsd1254s4sl783rpz4p6hlccq74a5k119"))
 
+(define rust-icu-properties-data-2.1.1
+  (crate-source "icu_properties_data" "2.1.1"
+                "16a80p8j371jkl10x26rh9gw6d1gyl7limpc008my15v8wv5p102"))
+
 (define rust-icu-provider-1.5.0
   (crate-source "icu_provider" "1.5.0"
                 "1nb8vvgw8dv2inqklvk05fs0qxzkw8xrg2n9vgid6y7gm3423m3f"))
@@ -1889,6 +1933,10 @@
 (define rust-icu-provider-2.0.0
   (crate-source "icu_provider" "2.0.0"
                 "1bz5v02gxv1i06yhdhs2kbwxkw3ny9r2vvj9j288fhazgfi0vj03"))
+
+(define rust-icu-provider-2.1.1
+  (crate-source "icu_provider" "2.1.1"
+                "0576b7dizgyhpfa74kacv86y4g1p7v5ffd6c56kf1q82rvq2r5l5"))
 
 (define rust-icu-provider-macros-1.5.0
   (crate-source "icu_provider_macros" "1.5.0"
@@ -2916,6 +2964,10 @@
   (crate-source "potential_utf" "0.1.3"
                 "12mhwvhpvvim6xqp6ifgkh1sniv9j2cmid6axn10fnjvpsnikpw4"))
 
+(define rust-potential-utf-0.1.4
+  (crate-source "potential_utf" "0.1.4"
+                "0xxg0pkfpq299wvwln409z4fk80rbv55phh3f1jhjajy5x1ljfdp"))
+
 (define rust-powerfmt-0.2.0
   (crate-source "powerfmt" "0.2.0"
                 "14ckj2xdpkhv3h6l5sdmb9f1d57z8hbfpdldjc2vl5givq2y77j3"))
@@ -3246,6 +3298,10 @@
   (crate-source "rmcp" "0.8.2"
                 "163qxqb7v1i9pz3m6nrf1k727cr5v8k38diipj1rrddyi4gx6daf"))
 
+(define rust-rmcp-0.8.3
+  (crate-source "rmcp" "0.8.3"
+                "0hq2wqkxq3309lkxxg3jzp8vbhw2kj9ndhnzyb0gsnbjiwjx3nhz"))
+
 (define rust-rmcp-macros-0.8.1
   (crate-source "rmcp-macros" "0.8.1"
                 "0x52aklb7g6nd5nbnjslxb6b60s4amx8zq827nfbf8xa18idbwf9"))
@@ -3253,6 +3309,10 @@
 (define rust-rmcp-macros-0.8.2
   (crate-source "rmcp-macros" "0.8.2"
                 "0r564kry74c9z63wn487af568p8hwm0fwkhg7yh3ki0hh6rii1fq"))
+
+(define rust-rmcp-macros-0.8.3
+  (crate-source "rmcp-macros" "0.8.3"
+                "16ydglc7widhp8488ll17k8gq5xrfizals5ys60wxiwc42d5iq7d"))
 
 (define rust-ron-0.10.1
   (crate-source "ron" "0.10.1"
@@ -4988,6 +5048,10 @@
   (crate-source "writeable" "0.6.1"
                 "1fx29zncvbrqzgz7li88vzdm8zvgwgwy2r9bnjqxya09pfwi0bza"))
 
+(define rust-writeable-0.6.2
+  (crate-source "writeable" "0.6.2"
+                "1fg08y97n6vk7l0rnjggw3xyrii6dcqg54wqaxldrlk98zdy1pcy"))
+
 (define rust-x11-dl-2.21.0
   (crate-source "x11-dl" "2.21.0"
                 "0vsiq62xpcfm0kn9zjw5c9iycvccxl22jya8wnk18lyxzqj5jwrq"))
@@ -5123,6 +5187,10 @@
 (define rust-zerovec-0.11.4
   (crate-source "zerovec" "0.11.4"
                 "0fz7j1ns8d86m2fqg2a4bzi5gnh5892bxv4kcr9apwc6a3ajpap7"))
+
+(define rust-zerovec-0.11.5
+  (crate-source "zerovec" "0.11.5"
+                "00m0p47k2g9mkv505hky5xh3r6ps7v8qc0dy4pspg542jj972a3c"))
 
 (define rust-zerovec-derive-0.10.3
   (crate-source "zerovec-derive" "0.10.3"
@@ -5687,7 +5755,7 @@
                              rust-bit-set-0.5.3
                              rust-bit-vec-0.6.3
                              rust-bitflags-1.3.2
-                             rust-bitflags-2.9.1
+                             rust-bitflags-2.10.0
                              rust-block-buffer-0.10.4
                              rust-block-padding-0.3.3
                              rust-blocking-1.6.2
@@ -5858,17 +5926,17 @@
                              rust-hyper-util-0.1.16
                              rust-iana-time-zone-0.1.63
                              rust-iana-time-zone-haiku-0.1.2
-                             rust-icu-collections-2.0.0
-                             rust-icu-decimal-2.0.0
-                             rust-icu-decimal-data-2.0.0
-                             rust-icu-locale-2.0.0
-                             rust-icu-locale-core-2.0.0
-                             rust-icu-locale-data-2.0.0
-                             rust-icu-normalizer-2.0.0
-                             rust-icu-normalizer-data-2.0.0
-                             rust-icu-properties-2.0.1
-                             rust-icu-properties-data-2.0.1
-                             rust-icu-provider-2.0.0
+                             rust-icu-collections-2.1.1
+                             rust-icu-decimal-2.1.1
+                             rust-icu-decimal-data-2.1.1
+                             rust-icu-locale-2.1.1
+                             rust-icu-locale-core-2.1.1
+                             rust-icu-locale-data-2.1.1
+                             rust-icu-normalizer-2.1.1
+                             rust-icu-normalizer-data-2.1.1
+                             rust-icu-properties-2.1.1
+                             rust-icu-properties-data-2.1.1
+                             rust-icu-provider-2.1.1
                              rust-ident-case-1.0.1
                              rust-idna-1.0.3
                              rust-idna-adapter-1.2.1
@@ -6006,7 +6074,7 @@
                              rust-portable-atomic-1.11.1
                              rust-portable-atomic-util-0.2.4
                              rust-portable-pty-0.9.0
-                             rust-potential-utf-0.1.2
+                             rust-potential-utf-0.1.4
                              rust-powerfmt-0.2.0
                              rust-ppv-lite86-0.2.21
                              rust-precomputed-hash-0.1.1
@@ -6050,8 +6118,8 @@
                              rust-regex-syntax-0.8.5
                              rust-reqwest-0.12.23
                              rust-ring-0.17.14
-                             rust-rmcp-0.8.2
-                             rust-rmcp-macros-0.8.2
+                             rust-rmcp-0.8.3
+                             rust-rmcp-macros-0.8.3
                              rust-rustc-demangle-0.1.25
                              rust-rustc-hash-1.1.0
                              rust-rustc-hash-2.1.1
@@ -6092,9 +6160,9 @@
                              rust-sentry-panic-0.34.0
                              rust-sentry-tracing-0.34.0
                              rust-sentry-types-0.34.0
-                             rust-serde-1.0.226
-                             rust-serde-core-1.0.226
-                             rust-serde-derive-1.0.226
+                             rust-serde-1.0.228
+                             rust-serde-core-1.0.228
+                             rust-serde-derive-1.0.228
                              rust-serde-derive-internals-0.29.1
                              rust-serde-json-1.0.145
                              rust-serde-path-to-error-0.1.20
@@ -6308,7 +6376,7 @@
                              rust-winsafe-0.0.19
                              rust-wiremock-0.6.5
                              rust-wit-bindgen-rt-0.39.0
-                             rust-writeable-0.6.1
+                             rust-writeable-0.6.2
                              rust-x11rb-0.13.1
                              rust-x11rb-protocol-0.13.1
                              rust-xdg-home-1.3.0
@@ -6325,7 +6393,7 @@
                              rust-zeroize-1.8.1
                              rust-zeroize-derive-1.4.2
                              rust-zerotrie-0.2.2
-                             rust-zerovec-0.11.2
+                             rust-zerovec-0.11.5
                              rust-zerovec-derive-0.11.1
                              rust-zune-core-0.4.12
                              rust-zune-jpeg-0.4.19
