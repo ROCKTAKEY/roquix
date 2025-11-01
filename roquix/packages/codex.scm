@@ -39,6 +39,15 @@
                             "--skip=suite::compact_resume_fork::compact_resume_after_second_compaction_preserves_history" ; "hello world" message is missing
                             "--skip=suite::compact_resume_fork::compact_resume_and_fork_preserve_model_history_view" ; "hello world" message is excessive
 
+                            ;; FIXME: The kernel must support landlock feature to run these tests.
+                            "--skip=suite::tools::sandbox_denied_shell_returns_original_output"
+                            "--skip=suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir"
+
+                            ;; FIXME: It seems to be timeout
+                            ;; thread 'suite::view_image::view_image_tool_attaches_local_image' panicked at /tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/core/tests/common/lib.rs:159:14:
+                            ;; timeout waiting for event: Elapsed(())
+                            "--skip=suite::view_image::view_image_tool_attaches_local_image"
+
                             ;; NOTE: Seems to depend on time
                             "--skip=suite::approvals::approval_matrix_covers_all_modes"
 
