@@ -106,7 +106,7 @@
                             ;;  ]
                             "--skip=suite::compact::manual_compact_twice_preserves_latest_user_messages"
 
-                            ;; FIXME: The kernel must support landlock feature to run these tests.
+                            ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::tools::sandbox_denied_shell_returns_original_output"
                             "--skip=suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir"
 
@@ -123,7 +123,7 @@
                             "--skip=suite::sandbox::sandbox_distinguishes_command_and_policy_cwds"
 
                             ;; linux-sandbox
-                            ;; FIXME: The kernel must support landlock feature to run these tests.
+                            ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::landlock::test_dev_null_write"
                             "--skip=suite::landlock::test_root_read"
                             "--skip=suite::landlock::test_timeout"
@@ -145,6 +145,12 @@
 ;;                             thread 'suite::send_message::test_send_message_raw_notifications_opt_in' panicked at app-server/tests/suite/send_message.rs:316:13:
 ;; expected instructions message, got ["<environment_context>\n  <cwd>/tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/app-server</cwd>\n  <approval_policy>never</approval_policy>\n  <sandbox_mode>danger-full-access</sandbox_mode>\n  <network_access>enabled</network_access>\n</environment_context>"]
                             "--skip=suite::send_message::test_send_message_raw_notifications_opt_in"
+                            ;; NOTE: The kernel must support landlock feature to run these tests.
+                            "--skip=suite::interrupt::test_shell_command_interruption"
+
+                            ;; v2
+                            ;; NOTE: The kernel must support landlock feature to run these tests.
+                            "--skip=suite::v2::turn_interrupt::turn_interrupt_aborts_running_turn"
                             )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
