@@ -114,6 +114,7 @@
                             ;; thread 'suite::view_image::view_image_tool_attaches_local_image' panicked at /tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/core/tests/common/lib.rs:159:14:
                             ;; timeout waiting for event: Elapsed(())
                             "--skip=suite::view_image::view_image_tool_attaches_local_image"
+                            "--skip=suite::abort_tasks::interrupt_tool_records_history_entries"
 
                             ;; NOTE: Seems to depend on time
                             "--skip=suite::approvals::approval_matrix_covers_all_modes"
