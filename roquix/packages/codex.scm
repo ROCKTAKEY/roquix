@@ -110,6 +110,7 @@
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::tools::sandbox_denied_shell_returns_original_output"
                             "--skip=suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir"
+                            "--skip=suite::unified_exec::unified_exec_runs_under_sandbox"
 
                             ;; FIXME: It seems to be timeout
                             ;; thread 'suite::view_image::view_image_tool_attaches_local_image' panicked at /tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/core/tests/common/lib.rs:159:14:
