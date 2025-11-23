@@ -7,13 +7,14 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages version-control)
   #:use-module (rustup build toolchain))
 
 (define-public codex
   (package
     (name "codex")
-    (version "0.57.0")
+    (version "0.63.0")
     (source
      (origin
        (method git-fetch)
@@ -22,14 +23,14 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rn844iwh66cp8v5rrhcj973y8kpdl28afr15v0y950wxd4zcf9j"))))
+        (base32 "0laq2jd0r441f2j7ly31kzjr767v9dfhpkg5r8v40jx9ahd14qh9"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.89.0"))
     (inputs (cons* clang-toolchain openssl
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; Need for tests
-    (native-inputs (list python git))
+    (native-inputs (list python git perl))
     (arguments
      `(#:install-source? #f
        #:cargo-install-paths '("cli")
@@ -197,8 +198,7 @@
                                                             "0.0.0")
                                                            (string-length ,version)))
                                                        #\space)))))
-                      (substitute* (append (find-files "core/src/")
-                                           (find-files "core/tests/suite/"))
+                      (substitute* (append (find-files "./"))
                         (("/bin/sh")
                          (which "sh"))
                         (("/bin/bash")
@@ -208,7 +208,9 @@
                         (("/bin/cat")
                          (which "cat"))
                         (("/usr/bin/sed")
-                         (which "sed"))))))))
+                         (which "sed"))
+                        (("\"command\": \"perl")
+                         (string-append "\"command\": \"" (which "perl")))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")

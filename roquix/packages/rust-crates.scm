@@ -231,13 +231,25 @@
   (crate-source "askama" "0.12.1"
                 "0a1cmp0f1b01zzbzzp81ppa6r754zpax5372aykswz5933gr345p"))
 
+(define rust-askama-0.14.0
+  (crate-source "askama" "0.14.0"
+                "1i3m3dzshx46v94w24chl6xg7xjyf350gqzzyijy46vp9f3n6lzp"))
+
 (define rust-askama-derive-0.12.5
   (crate-source "askama_derive" "0.12.5"
                 "10qxszzrwbabpd3jh6lvk3q1a81ryfba8bh75jb18irwn5n8vzhr"))
 
+(define rust-askama-derive-0.14.0
+  (crate-source "askama_derive" "0.14.0"
+                "0kx9sfych8m7cswcs75jhq0cy9pqn7iah1w4lvl8hc781wh9g4qj"))
+
 (define rust-askama-escape-0.10.3
   (crate-source "askama_escape" "0.10.3"
                 "0hg3rz0cma5f6385z7qmqw3jbir76jndwd5s7dqfk92v9gil75v1"))
+
+(define rust-askama-parser-0.14.0
+  (crate-source "askama_parser" "0.14.0"
+                "0n235ljbvbvlhwr54s675x1z6lgbjmzrfrq1c8rg5snmncq5dayn"))
 
 (define rust-askama-parser-0.2.1
   (crate-source "askama_parser" "0.2.1"
@@ -546,6 +558,10 @@
 (define rust-cgl-0.3.2
   (crate-source "cgl" "0.3.2"
                 "1zs7skrsyrsm759vfy2cygkx52fx91b567a12bpaz1sf4d8hbv8c"))
+
+(define rust-chardetng-0.1.17
+  (crate-source "chardetng" "0.1.17"
+                "1spikjcnblwa5n1nnk46fxkwn86yfiqxgs47h4yaw23vbfvg1f0l"))
 
 (define rust-chrono-0.4.41
   (crate-source "chrono" "0.4.41"
@@ -2881,6 +2897,10 @@
   (crate-source "os_info" "3.12.0"
                 "1hzzmxj8z69q5l1hzlnqnaa56ip9kvmghp8k750w6hwdvrgsrqfh"))
 
+(define rust-os-pipe-1.2.2
+  (crate-source "os_pipe" "1.2.2"
+                "090jhg0i1pj6l9w9zm0p0r7lv89kpwkj8vqij1iaskmic13mycyv"))
+
 (define rust-owned-ttf-parser-0.25.1
   (crate-source "owned_ttf_parser" "0.25.1"
                 "0fsqzcbc4sq8qhkmc3rgcfg1xg389nmhlxvmvi6h38dca680x0in"))
@@ -4053,6 +4073,18 @@
   (crate-source "termtree" "0.5.1"
                 "10s610ax6nb70yi7xfmwcb6d3wi9sj5isd0m63gy2pizr2zgwl4g"))
 
+(define rust-test-case-3.3.1
+  (crate-source "test-case" "3.3.1"
+                "1a380yzm6787737cw7s09jqmkn9035hghahradl2ikdg2gfm09gb"))
+
+(define rust-test-case-core-3.3.1
+  (crate-source "test-case-core" "3.3.1"
+                "0krqi0gbi1yyycigyjlak63r8h1n0vms7mg3kckqwlfd87c7zjxd"))
+
+(define rust-test-case-macros-3.3.1
+  (crate-source "test-case-macros" "3.3.1"
+                "1yvgky3qax73bic6m368q04xc955p4a91mddd6b5fk7d04mfg2aw"))
+
 (define rust-test-log-0.2.18
   (crate-source "test-log" "0.2.18"
                 "0yxywma018rfr4mb409b1yz4ppg8ir9rg87bd08vx81fb25bjcqy"))
@@ -4352,6 +4384,10 @@
 (define rust-tracing-test-macro-0.2.5
   (crate-source "tracing-test-macro" "0.2.5"
                 "0s3m7a3pycn8r4xyql5gv5b85sdrqp4w24k1aqy26zf80vdrsr84"))
+
+(define rust-tree-magic-mini-3.2.0
+  (crate-source "tree_magic_mini" "3.2.0"
+                "0b2ncw376snr5lwdnmpqgnz4bm1j0c8xf11sq3pfipvci4fkjhzr"))
 
 (define rust-tree-sitter-0.25.10
   (crate-source "tree-sitter" "0.25.10"
@@ -5157,6 +5193,10 @@
   (crate-source "wit-bindgen-rt" "0.39.0"
                 "1hd65pa5hp0nl664m94bg554h4zlhrzmkjsf6lsgsb7yc4734hkg"))
 
+(define rust-wl-clipboard-rs-0.9.2
+  (crate-source "wl-clipboard-rs" "0.9.2"
+                "1sxsaspzix3xiq6wi1l1g55acgi04sv6r7gxz94zar80wv8ghpwf"))
+
 (define rust-write16-1.0.0
   (crate-source "write16" "1.0.0"
                 "0dnryvrrbrnl7vvf5vb1zkmwldhjkf2n5znliviam7bm4900z2fi"))
@@ -5845,10 +5885,9 @@
                              rust-arrayvec-0.7.6
                              rust-ascii-1.1.0
                              rust-ascii-canvas-3.0.0
-                             rust-askama-0.12.1
-                             rust-askama-derive-0.12.5
-                             rust-askama-escape-0.10.3
-                             rust-askama-parser-0.2.1
+                             rust-askama-0.14.0
+                             rust-askama-derive-0.14.0
+                             rust-askama-parser-0.14.0
                              rust-assert-json-diff-2.0.2
                              rust-assert-cmd-2.0.17
                              rust-assert-matches-1.5.0
@@ -5894,6 +5933,7 @@
                              rust-cfg-if-1.0.1
                              rust-cfg-aliases-0.1.1
                              rust-cfg-aliases-0.2.1
+                             rust-chardetng-0.1.17
                              rust-chrono-0.4.42
                              rust-chunked-transfer-1.5.0
                              rust-cipher-0.4.4
@@ -5987,7 +6027,6 @@
                              rust-event-listener-strategy-0.5.4
                              rust-eventsource-stream-0.2.3
                              rust-eyre-0.6.12
-                             rust-fancy-regex-0.13.0
                              rust-fastrand-2.3.0
                              rust-fax-0.2.6
                              rust-fax-derive-0.2.0
@@ -6041,7 +6080,6 @@
                              rust-http-body-util-0.1.3
                              rust-httparse-1.10.1
                              rust-httpdate-1.0.3
-                             rust-humansize-2.1.3
                              rust-hyper-1.7.0
                              rust-hyper-rustls-0.27.7
                              rust-hyper-timeout-0.5.2
@@ -6099,7 +6137,6 @@
                              rust-lazy-static-1.5.0
                              rust-libc-0.2.175
                              rust-libdbus-sys-0.2.6
-                             rust-libm-0.2.15
                              rust-libredox-0.1.6
                              rust-linux-keyutils-0.2.4
                              rust-linux-raw-sys-0.4.15
@@ -6174,6 +6211,7 @@
                              rust-option-ext-0.2.0
                              rust-ordered-stream-0.2.0
                              rust-os-info-3.12.0
+                             rust-os-pipe-1.2.2
                              rust-owo-colors-4.2.2
                              rust-parking-2.2.1
                              rust-parking-lot-0.12.4
@@ -6214,6 +6252,7 @@
                              rust-pulldown-cmark-escape-0.10.1
                              rust-pxfm-0.1.23
                              rust-quick-error-2.0.1
+                             rust-quick-xml-0.37.5
                              rust-quick-xml-0.38.0
                              rust-quinn-0.11.9
                              rust-quinn-proto-0.11.13
@@ -6244,7 +6283,6 @@
                              rust-rmcp-0.8.5
                              rust-rmcp-macros-0.8.5
                              rust-rustc-demangle-0.1.25
-                             rust-rustc-hash-1.1.0
                              rust-rustc-hash-2.1.1
                              rust-rustc-version-0.4.1
                              rust-rustix-0.38.44
@@ -6345,6 +6383,9 @@
                              rust-termcolor-1.4.1
                              rust-terminal-size-0.4.2
                              rust-termtree-0.5.1
+                             rust-test-case-3.3.1
+                             rust-test-case-core-3.3.1
+                             rust-test-case-macros-3.3.1
                              rust-test-log-0.2.18
                              rust-test-log-macros-0.2.18
                              rust-textwrap-0.11.0
@@ -6355,7 +6396,6 @@
                              rust-thiserror-impl-2.0.17
                              rust-thread-local-1.1.9
                              rust-tiff-0.10.3
-                             rust-tiktoken-rs-0.7.0
                              rust-time-0.3.44
                              rust-time-core-0.1.6
                              rust-time-macros-0.2.24
@@ -6394,6 +6434,7 @@
                              rust-tree-sitter-bash-0.25.0
                              rust-tree-sitter-highlight-0.25.10
                              rust-tree-sitter-language-0.1.5
+                             rust-tree-magic-mini-3.2.0
                              rust-try-lock-0.2.5
                              rust-ts-rs-11.0.1
                              rust-ts-rs-macros-11.0.1
@@ -6432,6 +6473,12 @@
                              rust-wasm-bindgen-macro-support-0.2.100
                              rust-wasm-bindgen-shared-0.2.100
                              rust-wasm-streams-0.4.2
+                             rust-wayland-backend-0.3.11
+                             rust-wayland-client-0.31.11
+                             rust-wayland-protocols-0.32.9
+                             rust-wayland-protocols-wlr-0.3.9
+                             rust-wayland-scanner-0.31.7
+                             rust-wayland-sys-0.31.7
                              rust-web-sys-0.3.77
                              rust-web-time-1.1.0
                              rust-webbrowser-1.0.5
@@ -6500,6 +6547,7 @@
                              rust-winsafe-0.0.19
                              rust-wiremock-0.6.5
                              rust-wit-bindgen-rt-0.39.0
+                             rust-wl-clipboard-rs-0.9.2
                              rust-writeable-0.6.2
                              rust-x11rb-0.13.1
                              rust-x11rb-protocol-0.13.1
@@ -6514,7 +6562,7 @@
                              rust-zerocopy-derive-0.8.26
                              rust-zerofrom-0.1.6
                              rust-zerofrom-derive-0.1.6
-                             rust-zeroize-1.8.1
+                             rust-zeroize-1.8.2
                              rust-zeroize-derive-1.4.2
                              rust-zerotrie-0.2.2
                              rust-zerovec-0.11.5
