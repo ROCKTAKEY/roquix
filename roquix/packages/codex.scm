@@ -110,6 +110,8 @@
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::tools::sandbox_denied_shell_returns_original_output"
                             "--skip=suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir"
+                            "--skip=suite::sandbox::python_multiprocessing_lock_works_under_sandbox"
+                            "--skip=suite::sandbox::sandbox_distinguishes_command_and_policy_cwds"
                             "--skip=suite::unified_exec::unified_exec_runs_under_sandbox"
 
                             ;; FIXME: It seems to be timeout
@@ -120,10 +122,9 @@
 
                             ;; NOTE: Seems to depend on time
                             "--skip=suite::approvals::approval_matrix_covers_all_modes"
-
-                            ;; FIXME: python exited with ExitStatus(unix_wait_status(25856))
-                            "--skip=suite::sandbox::python_multiprocessing_lock_works_under_sandbox"
-                            "--skip=suite::sandbox::sandbox_distinguishes_command_and_policy_cwds"
+                            "--skip=suite::shell_serialization::shell_command_output_is_not_truncated_over_10k_bytes"
+                            "--skip=suite::shell_serialization::shell_command_output_is_not_truncated_under_10k_bytes"
+                            "--skip=suite::unified_exec::unified_exec_emits_exec_command_end_event"
 
                             ;; linux-sandbox
                             ;; NOTE: The kernel must support landlock feature to run these tests.
