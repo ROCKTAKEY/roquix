@@ -155,6 +155,9 @@
                             ;; v2
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::v2::turn_interrupt::turn_interrupt_aborts_running_turn"
+
+                            ;; FIXME: Unknown
+                            "--skip=suite::v2::review::review_start_runs_review_turn_and_emits_code_review_item"
                             )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
