@@ -9,14 +9,14 @@
 (define-public tailscale
   (package
    (name "tailscale")
-   (version "1.88.3")
+   (version "1.90.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://pkgs.tailscale.com/stable/tailscale_"
                                 version "_amd64.tgz"))
             (sha256
              (base32
-              "1f6c7yqx2c3lcxbfn5v82jrfp0jv2n38g4bzp5z3bikk8pbha21n"))))
+              "1bc2jm8ss7drx54m4kb8rkvkxjia8dwxqw6im4xwh45s1qpyrlg8"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("tailscale" "bin/")
