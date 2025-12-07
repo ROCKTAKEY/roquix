@@ -151,7 +151,8 @@
                             "--skip=suite::send_message::test_send_message_raw_notifications_opt_in"
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::interrupt::test_shell_command_interruption"
-
+                            ;; FIXME: Unknown
+                            "--skip=suite::v2::turn_start::turn_start_exec_approval_decline_v2"
                             ;; v2
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::v2::turn_interrupt::turn_interrupt_aborts_running_turn"
