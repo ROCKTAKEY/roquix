@@ -4,14 +4,19 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix gexp)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fontutils)
+  #:use-module ((gnu packages gettext) #:select (gettext-minimal))
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -19,38 +24,135 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages tbb)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml))
 
+(define-public libnoise
+  (package
+    (name "libnoise")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://prdownloads.sourceforge.net/libnoise/libnoisesrc-" version ".zip"))
+       (sha256
+        (base32
+         "0nz97ds5q3qnclf394n05g6q44616fajqr0jk3iya37k8cpl1v9l"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      '(modify-phases %standard-phases
+        (add-before 'configure 'set-cwd
+                    (lambda* (#:key #:allow-other-keys)
+                      (chdir "src")))
+        (delete 'configure)
+        (delete 'check))
+      ))
+    (home-page "https://github.com/eXpl0it3r/libnoise")
+    (synopsis "A portable, open-source, coherent noise-generating library for C++")
+    (description "A portable, open-source, coherent noise-generating library for C++")
+    (license license:lgpl2.1)))
 
 (define-public orcaslicer
   (package
-   (name "orcaslicer")
-   (version "2.3.1")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/OrcaSlicer/OrcaSlicer")
-           (commit (string-append "v" version))))
-     (file-name (git-file-name name version))
+    (name "orcaslicer")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/OrcaSlicer/OrcaSlicer")
+              (commit (string-append "v" version))
+              (recursive? #t)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08hh58iqz6zh7jjd48yy6wc94pcq0x3jyv4dl1yawbi7zb3h3ls5"))))
-   (build-system cmake-build-system)
-   (arguments
-    (list))
-   (native-inputs
-    (list pkg-config))
-   (inputs
-    (list ))
-   (home-page "https://github.com/OrcaSlicer/OrcaSlicer")
-   (synopsis "G-code generator for 3D printers")
-   (description "G-code generator for 3D printers")
-   (license license:agpl3)))
+        (base32 "08hh58iqz6zh7jjd48yy6wc94pcq0x3jyv4dl1yawbi7zb3h3ls5"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f
+      #:configure-flags
+      #~(list "-DSLIC3R_FHS=1"
+              "-DSLIC3R_GTK=3"
+              "-DSLIC3R_WX_STABLE=1"
+              "-DBoost_NO_BOOST_CMAKE=ON")
+      ;; #:phases
+      ;; #~(modify-phases %standard-phases
+      ;;     (add-before 'configure 'provide-boost-system-cmake-config
+      ;;       (lambda _
+      ;;         ;; Boost 1.89 stopped shipping the Boost.System compiled library
+      ;;         ;; (and thus its CMake package "boost_system").  Some projects still
+      ;;         ;; request the "system" component via BoostConfig.cmake, which
+      ;;         ;; makes CMake fail with:
+      ;;         ;;   Could not find a package configuration file provided by "boost_system"
+      ;;         ;;
+      ;;         ;; Provide a minimal config package that maps Boost::system to
+      ;;         ;; Boost::headers, which is sufficient for header-only Boost.System.
+      ;;         (let* ((boost-version #$(package-version boost))
+      ;;                (prefix (string-append (getcwd) "/boost-system-cmake"))
+      ;;                (cmake-dir
+      ;;                 (string-append prefix "/lib/cmake/boost_system-" boost-version))
+      ;;                (config (string-append cmake-dir "/boost_system-config.cmake"))
+      ;;                (version-config
+      ;;                 (string-append cmake-dir "/boost_system-config-version.cmake")))
+      ;;           (mkdir-p cmake-dir)
+      ;;           (call-with-output-file config
+      ;;             (lambda (port)
+      ;;               (format port "# Generated by roquix (Guix build workaround).~%")
+      ;;               (format port "if(TARGET Boost::system)~%  return()~%endif()~%~%")
+      ;;               (format port "find_package(boost_headers ~a EXACT CONFIG REQUIRED)~%~%"
+      ;;                       boost-version)
+      ;;               (format port "add_library(Boost::system INTERFACE IMPORTED)~%")
+      ;;               (format port "set_property(TARGET Boost::system APPEND PROPERTY INTERFACE_LINK_LIBRARIES Boost::headers)~%")))
+      ;;           (call-with-output-file version-config
+      ;;             (lambda (port)
+      ;;               (format port "# Generated by roquix (Guix build workaround).~%")
+      ;;               (format port "set(PACKAGE_VERSION \"~a\")~%~%" boost-version)
+      ;;               (format port "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)~%")
+      ;;               (format port "  set(PACKAGE_VERSION_COMPATIBLE FALSE)~%")
+      ;;               (format port "else()~%")
+      ;;               (format port "  set(PACKAGE_VERSION_COMPATIBLE TRUE)~%")
+      ;;               (format port "  if(PACKAGE_VERSION VERSION_EQUAL PACKAGE_FIND_VERSION)~%")
+      ;;               (format port "    set(PACKAGE_VERSION_EXACT TRUE)~%")
+      ;;               (format port "  endif()~%")
+      ;;               (format port "endif()~%")))
+      ;;           (setenv "CMAKE_PREFIX_PATH"
+      ;;                   (string-append prefix ";"
+      ;;                                  (or (getenv "CMAKE_PREFIX_PATH") "")))
+      ;;           #t)))
+      ;;     (add-before 'configure 'set-home
+      ;;       (lambda _
+      ;;         ;; CMake writes caches in $HOME; use build directory to keep it writable.
+      ;;         (setenv "HOME" (getcwd))
+      ;;         #t)))
+      ))
+    (native-inputs
+     (list autoconf automake cmake extra-cmake-modules file gettext-minimal
+           git-minimal libtool ninja pkg-config texinfo wget))
+    (inputs
+     (list boost-1.83 cereal cgal curl dbus eglexternalplatform eigen eudev expat
+           glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libigl
+           libjpeg-turbo libmspack libnoise libpng libsecret libspnav mesa mpfr nanosvg
+           nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode
+           prusa-wxwidgets qhull tbb webkitgtk-for-gtk3 zlib))
+    (home-page "https://github.com/OrcaSlicer/OrcaSlicer")
+    (synopsis "G-code generator for 3D printers")
+    (description "G-code generator for 3D printers")
+    (license license:agpl3)))
