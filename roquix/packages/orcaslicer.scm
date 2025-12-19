@@ -52,9 +52,10 @@
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/libnoise/libnoisesrc-" version ".zip"))
        (sha256
-        (base32
+       (base32
          "0nz97ds5q3qnclf394n05g6q44616fajqr0jk3iya37k8cpl1v9l"))))
     (build-system gnu-build-system)
+    (native-inputs (list libtool unzip))
     (arguments
      (list
       #:phases
@@ -63,6 +64,86 @@
                     (lambda* (#:key #:allow-other-keys)
                       (chdir "src")))
         (delete 'configure)
+        (replace 'build
+                 (lambda* (#:key #:allow-other-keys)
+                   ;; The shipped Makefile tries to build libnoise.so.0.3 via
+                   ;; 'libtool ... -o libnoise.so.0.3 ...', but without a
+                   ;; configure-generated 'libtool' script this ends up linking
+                   ;; as a program (missing -shared) and fails with "undefined
+                   ;; reference to `main'".  Build the objects via the Makefile,
+                   ;; then link the shared library ourselves from libtool's PIC
+                   ;; objects under .libs/.
+                   (invoke "make" "libnoise.a" "libnoise.la")
+                   (let ((pic-objects (find-files "." ".*/\\.libs/.*\\.o$")))
+                     (apply invoke "g++" "-shared" "-Wl,-soname=libnoise.so.0"
+                            "-o" "libnoise.so.0.3" pic-objects))
+                   (symlink "libnoise.so.0.3" "libnoise.so.0")
+                   (symlink "libnoise.so.0" "libnoise.so")
+                   #t))
+        (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (libdir (string-append out "/lib"))
+                          (include-noise (string-append out "/include/noise"))
+                          (include-libnoise (string-append out "/include/libnoise"))
+                          (model-noise (string-append include-noise "/model"))
+                          (module-noise (string-append include-noise "/module"))
+                          (model-libnoise (string-append include-libnoise "/model"))
+                          (module-libnoise (string-append include-libnoise "/module"))
+                          (cmakedir (string-append out "/lib/cmake/libnoise")))
+                     (mkdir-p libdir)
+                     (for-each mkdir-p
+                               (list include-noise include-libnoise
+                                     model-noise module-noise
+                                     model-libnoise module-libnoise
+                                     cmakedir))
+
+                     (install-file "libnoise.a" libdir)
+                     (install-file "libnoise.so.0.3" libdir)
+                     (with-directory-excursion libdir
+                       (symlink "libnoise.so.0.3" "libnoise.so.0")
+                       (symlink "libnoise.so.0" "libnoise.so"))
+
+                     ;; headers are installed twice for compatibility:
+                     ;;  - include/noise/... (original layout)
+                     ;;  - include/libnoise/... (CMake Findlibnoise expects libnoise/noise.h)
+                     (for-each (lambda (h)
+                                 (install-file h include-noise)
+                                 (install-file h include-libnoise))
+                               (find-files "." "^[^/]+\\.h$"))
+                     (for-each (lambda (h)
+                                 (install-file h model-noise)
+                                 (install-file h model-libnoise))
+                               (find-files "model" "\\.h$"))
+                     (for-each (lambda (h)
+                                 (install-file h module-noise)
+                                 (install-file h module-libnoise))
+                               (find-files "module" "\\.h$"))
+
+                     ;; Provide a config-package for CMake (preferred over bundled
+                     ;; Findlibnoise.cmake) to avoid search failures.
+                     (call-with-output-file (string-append cmakedir "/libnoiseConfig.cmake")
+                       (lambda (port)
+                         (format port "set(LIBNOISE_INCLUDE_DIR \"~a\")~%" include-libnoise)
+                         (format port "set(LIBNOISE_LIBRARY \"~a/libnoise.so\")~%" libdir)
+                         (format port "if(NOT TARGET noise::noise)~%")
+                         (format port "  add_library(noise::noise UNKNOWN IMPORTED)~%")
+                         (format port "  set_target_properties(noise::noise PROPERTIES~%")
+                         (format port "    IMPORTED_LOCATION \"~a/libnoise.so\"~%" libdir)
+                         (format port "    INTERFACE_INCLUDE_DIRECTORIES \"~a\")~%" include-libnoise)
+                         (format port "endif()~%")))
+                     (call-with-output-file (string-append cmakedir "/libnoiseConfigVersion.cmake")
+                       (lambda (port)
+                         (format port "set(PACKAGE_VERSION \"1.0.0\")~%")
+                         (format port "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)~%")
+                         (format port "  set(PACKAGE_VERSION_COMPATIBLE FALSE)~%")
+                         (format port "else()~%")
+                         (format port "  set(PACKAGE_VERSION_COMPATIBLE TRUE)~%")
+                         (format port "  if(PACKAGE_VERSION VERSION_EQUAL PACKAGE_FIND_VERSION)~%")
+                         (format port "    set(PACKAGE_VERSION_EXACT TRUE)~%")
+                         (format port "  endif()~%")
+                         (format port "endif()~%")))
+                     #t)))
         (delete 'check))
       ))
     (home-page "https://github.com/eXpl0it3r/libnoise")
@@ -88,69 +169,46 @@
     (arguments
      (list
       #:tests? #f
+      #:make-flags #~(list "-j4")
       #:configure-flags
       #~(list "-DSLIC3R_FHS=1"
               "-DSLIC3R_GTK=3"
               "-DSLIC3R_WX_STABLE=1"
-              "-DBoost_NO_BOOST_CMAKE=ON")
-      ;; #:phases
-      ;; #~(modify-phases %standard-phases
-      ;;     (add-before 'configure 'provide-boost-system-cmake-config
-      ;;       (lambda _
-      ;;         ;; Boost 1.89 stopped shipping the Boost.System compiled library
-      ;;         ;; (and thus its CMake package "boost_system").  Some projects still
-      ;;         ;; request the "system" component via BoostConfig.cmake, which
-      ;;         ;; makes CMake fail with:
-      ;;         ;;   Could not find a package configuration file provided by "boost_system"
-      ;;         ;;
-      ;;         ;; Provide a minimal config package that maps Boost::system to
-      ;;         ;; Boost::headers, which is sufficient for header-only Boost.System.
-      ;;         (let* ((boost-version #$(package-version boost))
-      ;;                (prefix (string-append (getcwd) "/boost-system-cmake"))
-      ;;                (cmake-dir
-      ;;                 (string-append prefix "/lib/cmake/boost_system-" boost-version))
-      ;;                (config (string-append cmake-dir "/boost_system-config.cmake"))
-      ;;                (version-config
-      ;;                 (string-append cmake-dir "/boost_system-config-version.cmake")))
-      ;;           (mkdir-p cmake-dir)
-      ;;           (call-with-output-file config
-      ;;             (lambda (port)
-      ;;               (format port "# Generated by roquix (Guix build workaround).~%")
-      ;;               (format port "if(TARGET Boost::system)~%  return()~%endif()~%~%")
-      ;;               (format port "find_package(boost_headers ~a EXACT CONFIG REQUIRED)~%~%"
-      ;;                       boost-version)
-      ;;               (format port "add_library(Boost::system INTERFACE IMPORTED)~%")
-      ;;               (format port "set_property(TARGET Boost::system APPEND PROPERTY INTERFACE_LINK_LIBRARIES Boost::headers)~%")))
-      ;;           (call-with-output-file version-config
-      ;;             (lambda (port)
-      ;;               (format port "# Generated by roquix (Guix build workaround).~%")
-      ;;               (format port "set(PACKAGE_VERSION \"~a\")~%~%" boost-version)
-      ;;               (format port "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)~%")
-      ;;               (format port "  set(PACKAGE_VERSION_COMPATIBLE FALSE)~%")
-      ;;               (format port "else()~%")
-      ;;               (format port "  set(PACKAGE_VERSION_COMPATIBLE TRUE)~%")
-      ;;               (format port "  if(PACKAGE_VERSION VERSION_EQUAL PACKAGE_FIND_VERSION)~%")
-      ;;               (format port "    set(PACKAGE_VERSION_EXACT TRUE)~%")
-      ;;               (format port "  endif()~%")
-      ;;               (format port "endif()~%")))
-      ;;           (setenv "CMAKE_PREFIX_PATH"
-      ;;                   (string-append prefix ";"
-      ;;                                  (or (getenv "CMAKE_PREFIX_PATH") "")))
-      ;;           #t)))
-      ;;     (add-before 'configure 'set-home
-      ;;       (lambda _
-      ;;         ;; CMake writes caches in $HOME; use build directory to keep it writable.
-      ;;         (setenv "HOME" (getcwd))
-      ;;         #t)))
-      ))
+              "-DBoost_NO_BOOST_CMAKE=ON"
+              "-DOpenGL_GL_PREFERENCE=GLVND"
+              (string-append "-Dlibnoise_DIR=" #$libnoise "/lib/cmake/libnoise")
+              (string-append "-DLIBNOISE_LIBRARY=" #$libnoise "/lib/libnoise.so")
+              (string-append "-DLIBNOISE_INCLUDE_DIR=" #$libnoise "/include/libnoise"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-opencv-world
+            (lambda _
+              (substitute* "src/libslic3r/CMakeLists.txt"
+                (("find_package\\(OpenCV REQUIRED core\\)")
+                 "find_package(OpenCV REQUIRED core imgproc imgcodecs highgui)")
+                (("opencv_world") "${OpenCV_LIBRARIES}"))
+              #t))
+          ;; (add-before 'configure 'set-opencv-paths
+          ;;   (lambda _
+          ;;     (let* ((inc (string-append #$opencv "/include/opencv4"))
+          ;;            (lib (string-append #$opencv "/lib"))
+          ;;            (prepend (lambda (var val)
+          ;;                       (setenv var
+          ;;                               (string-append val ":"
+          ;;                                              (or (getenv var) ""))))))
+          ;;       (prepend "CPLUS_INCLUDE_PATH" inc)
+          ;;       (prepend "C_INCLUDE_PATH" inc)
+          ;;       (prepend "LIBRARY_PATH" lib)
+          ;;       #t)))
+          )))
     (native-inputs
      (list autoconf automake cmake extra-cmake-modules file gettext-minimal
            git-minimal libtool ninja pkg-config texinfo wget))
     (inputs
      (list boost-1.83 cereal cgal curl dbus eglexternalplatform eigen eudev expat
-           glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libigl
+           glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libglvnd libigl
            libjpeg-turbo libmspack libnoise libpng libsecret libspnav mesa mpfr nanosvg
-           nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode
+           nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode prusa-slicer
            prusa-wxwidgets qhull tbb webkitgtk-for-gtk3 zlib))
     (home-page "https://github.com/OrcaSlicer/OrcaSlicer")
     (synopsis "G-code generator for 3D printers")
