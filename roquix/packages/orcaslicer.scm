@@ -66,19 +66,10 @@
         (delete 'configure)
         (replace 'build
                  (lambda* (#:key #:allow-other-keys)
-                   ;; The shipped Makefile tries to build libnoise.so.0.3 via
-                   ;; 'libtool ... -o libnoise.so.0.3 ...', but without a
-                   ;; configure-generated 'libtool' script this ends up linking
-                   ;; as a program (missing -shared) and fails with "undefined
-                   ;; reference to `main'".  Build the objects via the Makefile,
-                   ;; then link the shared library ourselves from libtool's PIC
-                   ;; objects under .libs/.
+                   ;; Build with upstream Makefile, then reuse libtool's archive.
                    (invoke "make" "libnoise.a" "libnoise.la")
-                   (let ((pic-objects (find-files "." ".*/\\.libs/.*\\.o$")))
-                     (apply invoke "g++" "-shared" "-Wl,-soname=libnoise.so.0"
-                            "-o" "libnoise.so.0.3" pic-objects))
-                   (symlink "libnoise.so.0.3" "libnoise.so.0")
-                   (symlink "libnoise.so.0" "libnoise.so")
+                   (copy-file ".libs/libnoise.a" "libnoise.a")
+                   (invoke "ranlib" "libnoise.a")
                    #t))
         (replace 'install
                  (lambda* (#:key outputs #:allow-other-keys)
@@ -99,10 +90,6 @@
                                      cmakedir))
 
                      (install-file "libnoise.a" libdir)
-                     (install-file "libnoise.so.0.3" libdir)
-                     (with-directory-excursion libdir
-                       (symlink "libnoise.so.0.3" "libnoise.so.0")
-                       (symlink "libnoise.so.0" "libnoise.so"))
 
                      ;; headers are installed twice for compatibility:
                      ;;  - include/noise/... (original layout)
@@ -125,11 +112,11 @@
                      (call-with-output-file (string-append cmakedir "/libnoiseConfig.cmake")
                        (lambda (port)
                          (format port "set(LIBNOISE_INCLUDE_DIR \"~a\")~%" include-libnoise)
-                         (format port "set(LIBNOISE_LIBRARY \"~a/libnoise.so\")~%" libdir)
+                         (format port "set(LIBNOISE_LIBRARY \"~a/libnoise.a\")~%" libdir)
                          (format port "if(NOT TARGET noise::noise)~%")
                          (format port "  add_library(noise::noise UNKNOWN IMPORTED)~%")
                          (format port "  set_target_properties(noise::noise PROPERTIES~%")
-                         (format port "    IMPORTED_LOCATION \"~a/libnoise.so\"~%" libdir)
+                         (format port "    IMPORTED_LOCATION \"~a/libnoise.a\"~%" libdir)
                          (format port "    INTERFACE_INCLUDE_DIRECTORIES \"~a\")~%" include-libnoise)
                          (format port "endif()~%")))
                      (call-with-output-file (string-append cmakedir "/libnoiseConfigVersion.cmake")
@@ -177,7 +164,7 @@
               "-DBoost_NO_BOOST_CMAKE=ON"
               "-DOpenGL_GL_PREFERENCE=GLVND"
               (string-append "-Dlibnoise_DIR=" #$libnoise "/lib/cmake/libnoise")
-              (string-append "-DLIBNOISE_LIBRARY=" #$libnoise "/lib/libnoise.so")
+              (string-append "-DLIBNOISE_LIBRARY=" #$libnoise "/lib/libnoise.a")
               (string-append "-DLIBNOISE_INCLUDE_DIR=" #$libnoise "/include/libnoise"))
       #:phases
       #~(modify-phases %standard-phases
@@ -187,20 +174,15 @@
                 (("find_package\\(OpenCV REQUIRED core\\)")
                  "find_package(OpenCV REQUIRED core imgproc imgcodecs highgui)")
                 (("opencv_world") "${OpenCV_LIBRARIES}"))
-              #t))
-          ;; (add-before 'configure 'set-opencv-paths
-          ;;   (lambda _
-          ;;     (let* ((inc (string-append #$opencv "/include/opencv4"))
-          ;;            (lib (string-append #$opencv "/lib"))
-          ;;            (prepend (lambda (var val)
-          ;;                       (setenv var
-          ;;                               (string-append val ":"
-          ;;                                              (or (getenv var) ""))))))
-          ;;       (prepend "CPLUS_INCLUDE_PATH" inc)
-          ;;       (prepend "C_INCLUDE_PATH" inc)
-          ;;       (prepend "LIBRARY_PATH" lib)
-          ;;       #t)))
-          )))
+              ;; Always link against webkit2gtk on Linux; upstream only does this
+              ;; under FLATPAK, which leaves symbols unresolved in our static libs.
+              (substitute* "src/slic3r/CMakeLists.txt"
+                (("if \\(FLATPAK\\)") "if (TRUE)")
+                (("pkg_check_modules\\(webkit2gtk REQUIRED webkit2gtk-4\\.1\\)")
+                 "pkg_check_modules(webkit2gtk REQUIRED webkit2gtk-4.0)")
+                (("target_link_libraries \\(libslic3r_gui \\$\\{X11_LIBRARIES\\} \\$\\{webkit2gtk_LIBRARIES\\}\\)")
+                 "target_link_libraries (libslic3r_gui ${X11_LIBRARIES} ${webkit2gtk_LIBRARIES})"))
+              #t)))))
     (native-inputs
      (list autoconf automake cmake extra-cmake-modules file gettext-minimal
            git-minimal libtool ninja pkg-config texinfo wget))
@@ -209,7 +191,8 @@
            glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libglvnd libigl
            libjpeg-turbo libmspack libnoise libpng libsecret libspnav mesa mpfr nanosvg
            nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode prusa-slicer
-           prusa-wxwidgets qhull tbb webkitgtk-for-gtk3 zlib))
+           prusa-wxwidgets qhull tbb ;; webkitgtk-for-gtk3
+           webkitgtk-with-libsoup2 zlib))
     (home-page "https://github.com/OrcaSlicer/OrcaSlicer")
     (synopsis "G-code generator for 3D printers")
     (description "G-code generator for 3D printers")
