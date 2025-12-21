@@ -10,6 +10,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -138,9 +139,9 @@
     (description "A portable, open-source, coherent noise-generating library for C++")
     (license license:lgpl2.1)))
 
-(define-public orcaslicer
+(define-public orca-slicer
   (package
-    (name "orcaslicer")
+    (name "orca-slicer")
     (version "2.3.1")
     (source
      (origin
@@ -158,11 +159,9 @@
       #:tests? #f
       #:make-flags #~(list "-j4")
       #:configure-flags
-      #~(list "-DSLIC3R_FHS=1"
-              "-DSLIC3R_GTK=3"
-              "-DSLIC3R_WX_STABLE=1"
-              "-DBoost_NO_BOOST_CMAKE=ON"
+      #~(list "-DBoost_NO_BOOST_CMAKE=ON"
               "-DOpenGL_GL_PREFERENCE=GLVND"
+              "-DSLIC3R_GTK=3"
               (string-append "-Dlibnoise_DIR=" #$libnoise "/lib/cmake/libnoise")
               (string-append "-DLIBNOISE_LIBRARY=" #$libnoise "/lib/libnoise.a")
               (string-append "-DLIBNOISE_INCLUDE_DIR=" #$libnoise "/include/libnoise"))
@@ -180,19 +179,37 @@
                 (("if \\(FLATPAK\\)") "if (TRUE)")
                 (("pkg_check_modules\\(webkit2gtk REQUIRED webkit2gtk-4\\.1\\)")
                  "pkg_check_modules(webkit2gtk REQUIRED webkit2gtk-4.0)")
-                (("target_link_libraries \\(libslic3r_gui \\$\\{X11_LIBRARIES\\} \\$\\{webkit2gtk_LIBRARIES\\}\\)")
-                 "target_link_libraries (libslic3r_gui ${X11_LIBRARIES} ${webkit2gtk_LIBRARIES})"))
-              #t)))))
+                ;; (("target_link_libraries \\(libslic3r_gui \\$\\{X11_LIBRARIES\\} \\$\\{webkit2gtk_LIBRARIES\\}\\)")
+                ;;  "target_link_libraries (libslic3r_gui ${X11_LIBRARIES} ${webkit2gtk_LIBRARIES})")
+                )
+              ;; Avoid runtime asserts when a color is missing in dark/light maps.
+              ;; (substitute* "src/slic3r/GUI/Widgets/StateColor.cpp"
+              ;;   (("wxASSERT\\(iter != gDarkColors.end\\(\\)\\);") "")
+              ;;   (("wxASSERT\\(iter != gLightColors.end\\(\\)\\);") ""))
+              #t))
+          ;; (add-before 'configure 'set-wx-config
+          ;;   (lambda _
+          ;;     (setenv "WX_CONFIG"
+          ;;             (string-append #$prusa-wxwidgets "/bin/wx-config"))
+          ;;     (setenv "PATH"
+          ;;             (string-append #$prusa-wxwidgets "/bin:"
+          ;;                            (getenv "PATH")))
+          ;;     #t))
+          )))
     (native-inputs
-     (list autoconf automake cmake extra-cmake-modules file gettext-minimal
-           git-minimal libtool ninja pkg-config texinfo wget))
+     (list autoconf automake cmake coreutils extra-cmake-modules file gettext-minimal
+           git-minimal grep libtool ninja pkg-config sed texinfo wget))
     (inputs
      (list boost-1.83 cereal cgal curl dbus eglexternalplatform eigen eudev expat
            glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libglvnd libigl
            libjpeg-turbo libmspack libnoise libpng libsecret libspnav mesa mpfr nanosvg
            nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode prusa-slicer
-           prusa-wxwidgets qhull tbb ;; webkitgtk-for-gtk3
-           webkitgtk-with-libsoup2 zlib))
+           wxwidgets
+           qhull tbb
+           webkitgtk-with-libsoup2
+           libsoup
+           ;; wxwidgets-gtk2
+           zlib))
     (home-page "https://github.com/OrcaSlicer/OrcaSlicer")
     (synopsis "G-code generator for 3D printers")
     (description "G-code generator for 3D printers")
