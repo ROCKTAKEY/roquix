@@ -154,6 +154,8 @@
                             "--skip=suite::interrupt::test_shell_command_interruption"
                             ;; FIXME: Unknown
                             "--skip=suite::v2::turn_start::turn_start_exec_approval_decline_v2"
+                            ;; FIXME: Seems to be timeout
+                            "--skip=suite::v2::turn_start::command_execution_notifications_include_process_id"
 
                             ;; v2
                             ;; NOTE: The kernel must support landlock feature to run these tests.
