@@ -15,6 +15,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fontutils)
   #:use-module ((gnu packages gettext) #:select (gettext-minimal))
@@ -159,8 +160,7 @@
       #:tests? #f
       #:make-flags #~(list "-j10")
       #:configure-flags
-      #~(list "-DBoost_NO_BOOST_CMAKE=ON"
-              "-DOpenGL_GL_PREFERENCE=GLVND"
+      #~(list "-DSLIC3R_FHS=1"
               "-DSLIC3R_GTK=3"
               "-DSLIC3R_WX_STABLE=1"
               (string-append "-Dlibnoise_DIR=" #$libnoise "/lib/cmake/libnoise")
@@ -181,9 +181,9 @@
                 (("pkg_check_modules\\(webkit2gtk REQUIRED webkit2gtk-4\\.1\\)")
                  "pkg_check_modules(webkit2gtk REQUIRED webkit2gtk-4.0)"))
               ;; Avoid runtime asserts when a color is missing in dark/light maps.
-              ;; (substitute* "src/slic3r/GUI/Widgets/StateColor.cpp"
-              ;;   (("wxASSERT\\(iter != gDarkColors.end\\(\\)\\);") "")
-              ;;   (("wxASSERT\\(iter != gLightColors.end\\(\\)\\);") ""))
+              (substitute* "src/slic3r/GUI/Widgets/StateColor.cpp"
+                (("wxASSERT\\(iter != gDarkColors.end\\(\\)\\);") "")
+                (("wxASSERT\\(iter != gLightColors.end\\(\\)\\);") ""))
               #t))
           (add-after 'patch-opencv-world 'fix-gcc14-set-values
             (lambda _
@@ -196,11 +196,11 @@
            git-minimal grep libtool ninja pkg-config sed texinfo wget))
     (inputs
      (list boost-1.83 cereal cgal curl dbus eglexternalplatform eigen eudev expat
-           glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase ;; libglvnd
+           glew glfw glib glu gmp gstreamer gtk+ heatshrink hidapi ilmbase libglvnd
            libigl
            libjpeg-turbo libmspack libnoise libpng libsecret libspnav mesa mpfr nanosvg
-           nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode prusa-slicer
-           wxwidgets
+           nlopt opencascade-occt opencv openvdb openssl pango prusa-libbgcode
+           prusa-wxwidgets
            qhull tbb
            webkitgtk-for-gtk3
            webkitgtk-with-libsoup2
