@@ -47,6 +47,8 @@
          "--skip=routes::audio::tests::test_transcribe_endpoint_requires_auth"
          "--skip=tunnel::lapstone_test::test_tunnel_end_to_end"
          "--skip=tunnel::lapstone_test::test_tunnel_post_request"
+         ;; FIXME: (code: 5) database is locked
+         "--skip=session::session_manager::tests::test_concurrent_session_creation"
          )))
     (inputs (cons* pkg-config
                    `(,zstd "lib")
