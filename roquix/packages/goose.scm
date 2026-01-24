@@ -50,13 +50,13 @@
          ;; FIXME: (code: 5) database is locked
          "--skip=session::session_manager::tests::test_concurrent_session_creation"
          )))
-    (inputs (cons* pkg-config
-                   `(,zstd "lib")
+    (inputs (cons* `(,zstd "lib")
                    sqlite
                    oniguruma
                    libxcb
                    (cargo-inputs 'goose-cli
                                  #:module '(roquix packages rust-crates))))
+    (native-inputs (list pkg-config))
     (home-page "https://github.com/block/goose")
     (synopsis "AI agent CLI")
     (description "This package provides the Goose AI agent CLI.")
