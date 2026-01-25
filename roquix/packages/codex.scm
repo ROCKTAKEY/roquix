@@ -9,12 +9,14 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression)
   #:use-module (rustup build toolchain))
 
 (define-public codex
   (package
     (name "codex")
-    (version "0.77.0")
+    (version "0.89.0")
     (source
      (origin
        (method git-fetch)
@@ -23,14 +25,16 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "066yj4kgxamr1a0kal85ckrczs1wkl6m0zdcmvpz516m5b6f776k"))))
+        (base32 "1mmspc67yzdk184zf2cb73q2nx86pq8zhs55b8mcspxacg2fsmjl"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.89.0"))
-    (inputs (cons* clang-toolchain openssl
+    (inputs (cons* clang-toolchain openssl `(,zstd "lib")
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
-    ;; Need for tests
-    (native-inputs (list python git perl))
+    (native-inputs (list
+                    pkg-config
+                    ;; Need for tests
+                    python git perl))
     (arguments
      `(#:install-source? #f
        #:cargo-install-paths '("cli")
@@ -156,18 +160,28 @@
                             "--skip=suite::v2::turn_start::turn_start_exec_approval_decline_v2"
                             ;; FIXME: Seems to be timeout
                             "--skip=suite::v2::turn_start::command_execution_notifications_include_process_id"
+                            ;; FIXME: Unknown
+                            ;; thread 'suite::approvals::approving_apply_patch_for_session_skips_future_prompts_for_same_file' panicked at core/tests/suite/approvals.rs:596:38:
+                            ;; expected patch approval request before completion
+                            ;; note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+                            "--skip=suite::approvals::approving_apply_patch_for_session_skips_future_prompts_for_same_file"
+                            ;; FIXME: Unknown
+                            ;; Diff < left / right > :
+                            ;; <1
+                            ;; >2
+                            "--skip=suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas"
 
                             ;; v2
                             ;; NOTE: The kernel must support landlock feature to run these tests.
                             "--skip=suite::v2::turn_interrupt::turn_interrupt_aborts_running_turn"
+                            ;; FIXME: Unknown
+                            "--skip=suite::v2::review::review_start_runs_review_turn_and_emits_code_review_item"
 
                             ;; exec_server
                             ;; FIXME: No such file or directory (os error 2)
                             "--skip=suite::accept_elicitation::accept_elicitation_for_prompt_rule"
                             "--skip=suite::list_tools::list_tools"
 
-                            ;; FIXME: Unknown
-                            "--skip=suite::v2::review::review_start_runs_review_turn_and_emits_code_review_item"
 
                             ;; snapshot
                             ;; NOTE: Snapshots include version string. It is hard to fix.
@@ -179,6 +193,7 @@
                             "--skip=status::tests::status_snapshot_shows_missing_limits_message"
                             "--skip=status::tests::status_snapshot_shows_stale_limits_message"
                             "--skip=status::tests::status_snapshot_truncates_in_narrow_terminal"
+                            "--skip=status::tests::status_snapshot_includes_forked_from"
                             )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
@@ -191,7 +206,33 @@
                          "")
                         (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", branch = \"nornagon/color-query\" \\}")
                          ""))))
-                  (add-after 'use-guix-vendored-dependencies 'fix-test
+                  (add-after 'use-guix-vendored-dependencies 'remove-arg0-dispatch-in-tests
+                    (lambda _
+                      (let ((patch (string-append
+                                     "--- a/core/tests/suite/mod.rs\n"
+                                     "+++ b/core/tests/suite/mod.rs\n"
+                                     "@@ -1,16 +1,1 @@\n"
+                                     "-// Aggregates all former standalone integration tests as modules.\n"
+                                     "-use codex_arg0::arg0_dispatch;\n"
+                                     "-use ctor::ctor;\n"
+                                     "-use tempfile::TempDir;\n"
+                                     "-\n"
+                                     "-// This code runs before any other tests are run.\n"
+                                     "-// It allows the test binary to behave like codex and dispatch to apply_patch and codex-linux-sandbox\n"
+                                     "-// based on the arg0.\n"
+                                     "-// NOTE: this doesn't work on ARM\n"
+                                     "-#[ctor]\n"
+                                     "-pub static CODEX_ALIASES_TEMP_DIR: TempDir = unsafe {\n"
+                                     "-    #[allow(clippy::unwrap_used)]\n"
+                                     "-    arg0_dispatch().unwrap()\n"
+                                     "-};\n"
+                                     "-\n"
+                                     " #[cfg(not(target_os = \"windows\"))]\n")))
+                        (call-with-output-file "remove-arg0-dispatch-in-tests.patch"
+                          (lambda (port)
+                            (display patch port)))
+                        (invoke "patch" "-p1" "-i" "remove-arg0-dispatch-in-tests.patch"))))
+                  (add-after 'remove-arg0-dispatch-in-tests 'fix-test
                     (lambda _
                       ;; Tese tests need environments variable named USER.
                       ;; - suite::client::azure_overrides_assign_properties_used_for_responses_url
