@@ -11,12 +11,16 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages libunwind)
   #:use-module (rustup build toolchain))
 
 (define-public codex
   (package
     (name "codex")
-    (version "0.89.0")
+    (version "0.92.0")
     (source
      (origin
        (method git-fetch)
@@ -25,14 +29,15 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mmspc67yzdk184zf2cb73q2nx86pq8zhs55b8mcspxacg2fsmjl"))))
+        (base32 "1miwhlq2l83x7mnn329zqs5f4xg0lkwfd8hf1y3jd1sy0zkkxy4v"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
-    (build-system (make-cargo-build-system "1.89.0"))
-    (inputs (cons* clang-toolchain openssl `(,zstd "lib")
+    (build-system (make-cargo-build-system "1.91.0"))
+    (inputs (cons* clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     (native-inputs (list
                     pkg-config
+                    cmake
                     ;; Need for tests
                     python git perl))
     (arguments
@@ -205,6 +210,12 @@
                         (("ratatui = \\{ git = \"https://github.com/nornagon/ratatui\", branch = \"nornagon-v0.29.0-patch\" \\}")
                          "")
                         (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", branch = \"nornagon/color-query\" \\}")
+                         "")
+                        (("tokio-tungstenite = \\{ git = \"https://github.com/JakkuSakura/tokio-tungstenite\", rev = \"2ae536b0de793f3ddf31fc2f22d445bf1ef2023d\" \\}")
+                         "")
+                        (("\\[patch.\"ssh://git@github.com/JakkuSakura/tungstenite-rs.git\"\\]")
+                         "")
+                        (("tungstenite = \\{ git = \"https://github.com/JakkuSakura/tungstenite-rs\", rev = \"f514de8644821113e5d18a027d6d28a5c8cc0a6e\" \\}")
                          ""))))
                   (add-after 'use-guix-vendored-dependencies 'remove-arg0-dispatch-in-tests
                     (lambda _
@@ -263,7 +274,53 @@
                         (("/usr/bin/sed")
                          (which "sed"))
                         (("\"command\": \"perl")
-                         (string-append "\"command\": \"" (which "perl")))))))))
+                         (string-append "\"command\": \"" (which "perl"))))))
+
+                  ;; NOTE: These are needed because of Rust updates default target spec.
+                  ;;   1.89.0 target spec:
+                  ;;     linker-flavor: "gnu-cc"
+                  ;;   1.91.0 target spec:
+                  ;;     linker-flavor: "gnu-lld-cc"
+                  ;;     link-self-contained: { components: ["linker"] }
+                  ;; This causes linker error on some packages.
+                  (add-before 'build 'set-cc-cxx
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((toolchain (assoc-ref inputs "gcc-toolchain")))
+                        (when toolchain
+                          (setenv "CC" (string-append toolchain "/bin/gcc"))
+                          (setenv "CXX" (string-append toolchain "/bin/g++"))))))
+                  (add-before 'build 'set-libclang-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((clang (assoc-ref inputs "clang-toolchain"))
+                             (libclang (and clang (find-files clang "^libclang\\.so"))))
+                        (when (and libclang (pair? libclang))
+                          (setenv "LIBCLANG_PATH" (dirname (car libclang)))))))
+                  (add-before 'build 'disable-lld-linker
+                    (lambda _
+                      (let* ((flags "-C linker-features=-lld -C link-self-contained=-linker")
+                             (existing (getenv "RUSTFLAGS")))
+                        (setenv "RUSTFLAGS"
+                                (if (and existing (not (string=? existing "")))
+                                    (string-append existing " " flags)
+                                    flags)))))
+                  (add-before 'build 'set-libgcc-path
+                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                      (define (input-path name)
+                        (or (assoc-ref native-inputs name)
+                            (assoc-ref inputs name)))
+                      (define (prepend-lib dir)
+                        (when (and dir (file-exists? dir))
+                          (let ((current (or (getenv "LD_LIBRARY_PATH") "")))
+                            (setenv "LD_LIBRARY_PATH"
+                                    (if (string=? current "")
+                                        dir
+                                        (string-append dir ":" current))))))
+                      (let ((gcc-lib (input-path "gcc"))
+                            (gcc-tc (input-path "gcc-toolchain")))
+                        (prepend-lib (and gcc-lib (string-append gcc-lib "/lib")))
+                        (prepend-lib (and gcc-lib (string-append gcc-lib "/lib64")))
+                        (prepend-lib (and gcc-tc (string-append gcc-tc "/lib")))
+                        (prepend-lib (and gcc-tc (string-append gcc-tc "/lib64")))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
