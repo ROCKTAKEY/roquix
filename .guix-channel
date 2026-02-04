@@ -17,7 +17,7 @@
      (branch "main"))
    (channel
      (name rustup)
-     (url "https://github.com/declantsien/guix-rustup")
+     (url "https://codeberg.org/declantsien/guix-rustup")
      (commit "0c2df409a4d9b1233038f191f9a90d0b3c549492")
      (introduction
       (channel-introduction
