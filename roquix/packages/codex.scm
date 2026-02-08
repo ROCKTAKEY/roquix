@@ -31,8 +31,8 @@
        (sha256
         (base32 "1miwhlq2l83x7mnn329zqs5f4xg0lkwfd8hf1y3jd1sy0zkkxy4v"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
-    (build-system (make-cargo-build-system "1.91.0"))
-    (inputs (cons* clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind
+    (build-system cargo-build-system)
+    (inputs (cons* ;; clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     (native-inputs (list
