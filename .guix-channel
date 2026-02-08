@@ -18,7 +18,7 @@
    (channel
      (name rustup)
      (url "https://codeberg.org/declantsien/guix-rustup")
-     (commit "0c2df409a4d9b1233038f191f9a90d0b3c549492")
+     (commit "23af395ca77619dcc4edcb9e7b265d9979ce36d6")
      (introduction
       (channel-introduction
        (version 0)
