@@ -236,6 +236,43 @@ parser and serializer.")
 PROV-JSON, PROV-XML and PROV-O (RDF)")
     (license license:expat)))
 
+;; Copied from 1021218d0fbadee0cfa0df4514688af157feac97 in Guix
+(define-public python-shellescape
+  (package
+    (name "python-shellescape")
+    (version "3.8.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/chrissimpkins/shellescape")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0wzccxk139qx1lb2g70f5b2yh9zq15nr2mgvqdbfabg5zm0vf1qw"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "python" "tests/test_shellescape.py"))
+             #t)))))
+    (native-inputs
+     (list python-pytest))
+    (home-page "https://github.com/chrissimpkins/shellescape")
+    (synopsis
+     "Shell escape a string to safely use it as a token in a shell command")
+    (description
+     "The shellescape Python module defines the @code{shellescape.quote()}
+     function that returns a shell-escaped version of a Python string.  This is a
+     backport of the @code{shlex.quote()} function from Python 3.8 that makes it
+     accessible to users of Python 3 versions < 3.3 and all Python 2.x versions.")
+    (license license:expat)))
+
 ;; TODO: Cannot install. Only work on `guix shell'
 (define-public python-cwltool
   (package
