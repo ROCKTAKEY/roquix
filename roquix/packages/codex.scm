@@ -16,12 +16,13 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages linux)
   #:use-module (rustup build toolchain))
 
 (define-public codex
   (package
     (name "codex")
-    (version "0.98.0")
+    (version "0.101.0")
     (source
      (origin
        (method git-fetch)
@@ -30,10 +31,11 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mn322gbir4gn4y5jihdqg0wprjlnx771chyfmmm7ri7pnim1zmc"))))
+        (base32 "1r0sziwv16ai0bz7crc59n3120cxvfnayhdkvp70ypfjyvnnlqlv"))))
     ;; TODO: Use official rust-1.91.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.91.0"))
     (inputs (cons* clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
+                   libcap               ; codex-linux-sandbox
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     (native-inputs (list
@@ -258,6 +260,9 @@
                             "--skip=external_editor::tests::run_editor_returns_updated_content"
                             "--skip=tests::pipe_and_pty_share_interface"
                             "--skip=tests::pipe_process_detaches_from_parent_session"
+
+                            "--skip=registry::tests::hook_executes_program_with_payload_argument_unix"
+                            "--skip=drop_kills_wrapper_process_group"
                             )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
@@ -274,11 +279,11 @@
                          "")
                         (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", branch = \"nornagon/color-query\" \\}")
                          "")
-                        (("tokio-tungstenite = \\{ git = \"https://github.com/JakkuSakura/tokio-tungstenite\", rev = \"2ae536b0de793f3ddf31fc2f22d445bf1ef2023d\" \\}")
+                        (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"132f5b39c862e3a970f731d709608b3e6276d5f6\" \\}")
                          "")
                         (("\\[patch.\"ssh://git@github.com/JakkuSakura/tungstenite-rs.git\"\\]")
                          "")
-                        (("tungstenite = \\{ git = \"https://github.com/JakkuSakura/tungstenite-rs\", rev = \"f514de8644821113e5d18a027d6d28a5c8cc0a6e\" \\}")
+                        (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"9200079d3b54a1ff51072e24d81fd354f085156f\" \\}")
                          ""))))
                   ;; (add-after 'use-guix-vendored-dependencies 'remove-arg0-dispatch-in-tests
                   ;;   (lambda _

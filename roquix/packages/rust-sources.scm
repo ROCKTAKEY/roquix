@@ -8,34 +8,6 @@
   #:use-module (guix build-system cargo)
   #:use-module (gnu packages rust))
 
-(define-public rust-tungstenite-0.28.0.f514de8
-  (let ((commit "f514de8644821113e5d18a027d6d28a5c8cc0a6e")
-        (revision "0"))
-    (hidden-package
-     (package
-       (name "rust-tungstenite")
-       (version (git-version "0.28.0" revision commit))
-       (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                (url "https://github.com/JakkuSakura/tungstenite-rs")
-                (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32 "0h7vkblgpavap5wzwj18sbvvi122cf5miywa28hma6ikkykxj98b"))))
-       (build-system cargo-build-system)
-       (arguments
-        (list #:skip-build? #t
-              #:cargo-package-crates
-              ''("tungstenite")))
-       ;; (inputs (cargo-inputs 'rust-tungstenite-0.28.0.f514de8
-       ;;                       #:module '(roquix packages rust-crates)))
-       (home-page "https://github.com/JakkuSakura/tungstenite-rs")
-       (synopsis "WebSocket library for Rust")
-       (description "This package provides a WebSocket library for Rust.")
-       (license (list license:expat license:asl2.0))))))
-
 (define-public rust-runfiles-0.1.0.b56cbaa
   (let ((commit "b56cbaa8465e74127f1ea216f813cd377295ad81")
         (revision "0"))
