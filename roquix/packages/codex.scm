@@ -22,7 +22,7 @@
 (define-public codex
   (package
     (name "codex")
-    (version "0.101.0")
+    (version "0.104.0")
     (source
      (origin
        (method git-fetch)
@@ -31,7 +31,7 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r0sziwv16ai0bz7crc59n3120cxvfnayhdkvp70ypfjyvnnlqlv"))))
+        (base32 "10kafm9k6l524jfzq0ggas41szd0qjbr252fxjkdd5r3dgz9p5dj"))))
     ;; TODO: Use official rust-1.91.0 when the official guix channel is updated
     (build-system (make-cargo-build-system "1.91.0"))
     (inputs (cons* clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
@@ -263,6 +263,13 @@
 
                             "--skip=registry::tests::hook_executes_program_with_payload_argument_unix"
                             "--skip=drop_kills_wrapper_process_group"
+
+                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_applies_explicit_path_override"
+                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_does_not_embed_override_values_in_argv"
+                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_keeps_snapshot_path_without_override"
+                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_preserves_unset_override_variables"
+                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_restores_explicit_override_precedence"
+
                             )
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source

@@ -297,6 +297,10 @@
   (crate-source "arc-swap" "1.8.0"
                 "0zi02pwgn0vj615k6gpsr36fa6ix8qqsys88ywpcr8lcpd4k9l2i"))
 
+(define rust-arc-swap-1.8.2
+  (crate-source "arc-swap" "1.8.2"
+                "19aas8y3kz0v6jr6yijvw6cad9grpl3lw1a25k0cws2m2iy69wzr"))
+
 (define rust-arraydeque-0.5.1
   (crate-source "arraydeque" "0.5.1"
                 "0dn2xdfg3rkiqsh8a6achnmvf5nf11xk33xgjzpksliab4yjx43x"))
@@ -1093,6 +1097,10 @@
   (crate-source "clap" "4.5.56"
                 "03mynk7b90qcl6rv9cji84vpsgjhgc3wa96cgaai8fp361jacp57"))
 
+(define rust-clap-4.5.58
+  (crate-source "clap" "4.5.58"
+                "01k8bsz52dy3zbmi35dfdcz34zmgl7khpkljjh197qyd3ab9ggk3"))
+
 (define rust-clap-builder-4.5.40
   (crate-source "clap_builder" "4.5.40"
                 "17pmcjwk6rbkizj4y5vlhrnr7b5n1ffjgh75pj66j34zrq46rip0"))
@@ -1124,6 +1132,10 @@
 (define rust-clap-builder-4.5.56
   (crate-source "clap_builder" "4.5.56"
                 "1w1xwq9qlzbp2zxvk38wvhy73gpxwmcbi00himha0033zb3hfckr"))
+
+(define rust-clap-builder-4.5.58
+  (crate-source "clap_builder" "4.5.58"
+                "1qi11wancym0zc92ks9y995gkwmhyid7x0j7x7bnkzaxv95if4vz"))
 
 (define rust-clap-complete-4.5.55
   (crate-source "clap_complete" "4.5.55"
@@ -1180,6 +1192,10 @@
 (define rust-clap-lex-0.7.7
   (crate-source "clap_lex" "0.7.7"
                 "0cibsbziyzw2ywar2yh6zllsamhwkblfly565zgi56s3q064prn3"))
+
+(define rust-clap-lex-1.0.0
+  (crate-source "clap_lex" "1.0.0"
+                "0c8888qi1l9sayqlv666h8s0yxn2qc6jr88v1zagk43mpjjjx0is"))
 
 (define rust-cli-table-0.5.0
   (crate-source "cli-table" "0.5.0"
@@ -1969,6 +1985,10 @@
   (crate-source "env_filter" "0.1.4"
                 "1qk8yn4lsqzxsz025kf4kaabika6aidykqih3c2p1jjms9cw5wqv"))
 
+(define rust-env-filter-1.0.0
+  (crate-source "env_filter" "1.0.0"
+                "13rhwy5arjn626a0z3hvvkpf9w9pnll14c35vscyqx3jwp43q73s"))
+
 (define rust-env-flags-0.1.1
   (crate-source "env-flags" "0.1.1"
                 "05f4537d68a0wg9iy3kj77hb8xcrkyy2fsirr7kcbpijqrzhxzfv"))
@@ -1988,6 +2008,10 @@
 (define rust-env-logger-0.11.8
   (crate-source "env_logger" "0.11.8"
                 "17q6zbjam4wq75fa3m4gvvmv3rj3ch25abwbm84b28a0j3q67j0k"))
+
+(define rust-env-logger-0.11.9
+  (crate-source "env_logger" "0.11.9"
+                "13913sqpnhv741z5ixmcy5j3nnml53gmsllnhajjkx2ili7fxnmj"))
 
 (define rust-epaint-0.32.1
   (crate-source "epaint" "0.32.1"
@@ -9201,7 +9225,7 @@
                              rust-anyhow-1.0.101
                              rust-arbitrary-1.4.2
                              rust-arboard-3.6.1
-                             rust-arc-swap-1.8.0
+                             rust-arc-swap-1.8.2
                              rust-arrayvec-0.7.6
                              rust-ascii-1.1.0
                              rust-ascii-canvas-3.0.0
@@ -9279,11 +9303,11 @@
                              rust-chrono-0.4.43
                              rust-chunked-transfer-1.5.0
                              rust-cipher-0.4.4
-                             rust-clap-4.5.56
-                             rust-clap-builder-4.5.56
+                             rust-clap-4.5.58
+                             rust-clap-builder-4.5.58
                              rust-clap-complete-4.5.65
                              rust-clap-derive-4.5.55
-                             rust-clap-lex-0.7.7
+                             rust-clap-lex-1.0.0
                              rust-clipboard-win-5.4.1
                              rust-cmake-0.1.57
                              rust-cmp-any-0.8.1
@@ -9384,9 +9408,9 @@
                              rust-enumflags2-0.7.12
                              rust-enumflags2-derive-0.7.12
                              rust-env-flags-0.1.1
-                             rust-env-filter-0.1.4
+                             rust-env-filter-1.0.0
                              rust-env-home-0.1.0
-                             rust-env-logger-0.11.8
+                             rust-env-logger-0.11.9
                              rust-equivalent-1.0.2
                              rust-erased-serde-0.3.31
                              rust-errno-0.3.14
