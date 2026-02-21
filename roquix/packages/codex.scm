@@ -348,7 +348,11 @@
                         (("/usr/bin/sed")
                          (which "sed"))
                         (("\"command\": \"perl")
-                         (string-append "\"command\": \"" (which "perl")))))))))
+                         (string-append "\"command\": \"" (which "perl"))))))
+                  (add-before 'build 'set-release-lto-to-thin
+                    (lambda _
+                      ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
+                      (setenv "CARGO_PROFILE_RELEASE_LTO" "thin"))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
