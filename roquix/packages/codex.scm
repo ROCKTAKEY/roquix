@@ -291,32 +291,6 @@
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"9200079d3b54a1ff51072e24d81fd354f085156f\" \\}")
                          ""))))
-                  ;; (add-after 'use-guix-vendored-dependencies 'remove-arg0-dispatch-in-tests
-                  ;;   (lambda _
-                  ;;     (let ((patch (string-append
-                  ;;                    "--- a/core/tests/suite/mod.rs\n"
-                  ;;                    "+++ b/core/tests/suite/mod.rs\n"
-                  ;;                    "@@ -1,16 +1,1 @@\n"
-                  ;;                    "-// Aggregates all former standalone integration tests as modules.\n"
-                  ;;                    "-use codex_arg0::arg0_dispatch;\n"
-                  ;;                    "-use ctor::ctor;\n"
-                  ;;                    "-use tempfile::TempDir;\n"
-                  ;;                    "-\n"
-                  ;;                    "-// This code runs before any other tests are run.\n"
-                  ;;                    "-// It allows the test binary to behave like codex and dispatch to apply_patch and codex-linux-sandbox\n"
-                  ;;                    "-// based on the arg0.\n"
-                  ;;                    "-// NOTE: this doesn't work on ARM\n"
-                  ;;                    "-#[ctor]\n"
-                  ;;                    "-pub static CODEX_ALIASES_TEMP_DIR: TempDir = unsafe {\n"
-                  ;;                    "-    #[allow(clippy::unwrap_used)]\n"
-                  ;;                    "-    arg0_dispatch().unwrap()\n"
-                  ;;                    "-};\n"
-                  ;;                    "-\n"
-                  ;;                    " #[cfg(not(target_os = \"windows\"))]\n")))
-                  ;;       (call-with-output-file "remove-arg0-dispatch-in-tests.patch"
-                  ;;         (lambda (port)
-                  ;;           (display patch port)))
-                  ;;       (invoke "patch" "-p1" "-i" "remove-arg0-dispatch-in-tests.patch"))))
                   (add-after 'change-directory-to-rust-source 'fix-test
                     (lambda _
                       ;; Tese tests need environments variable named USER.
