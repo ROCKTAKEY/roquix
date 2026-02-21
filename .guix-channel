@@ -15,12 +15,13 @@
      (name guix-jp)
      (url "https://gitlab.com/guix-jp/channel")
      (branch "main"))
-   (channel
-     (name rustup)
-     (url "https://codeberg.org/declantsien/guix-rustup")
-     (commit "23af395ca77619dcc4edcb9e7b265d9979ce36d6")
-     (introduction
-      (channel-introduction
-       (version 0)
-       (commit "325d3e2859d482c16da21eb07f2c6ff9c6c72a80")
-       (signer "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))))
+   ;; (channel
+   ;;   (name rustup)
+   ;;   (url "https://codeberg.org/declantsien/guix-rustup")
+   ;;   (commit "23af395ca77619dcc4edcb9e7b265d9979ce36d6")
+   ;;   (introduction
+   ;;    (channel-introduction
+   ;;     (version 0)
+   ;;     (commit "325d3e2859d482c16da21eb07f2c6ff9c6c72a80")
+   ;;     (signer "F695 F39E C625 E081 33B5  759F 0FC6 8703 75EF E2F5"))))
+   ))

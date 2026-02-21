@@ -16,8 +16,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages linux)
-  #:use-module (rustup build toolchain))
+  #:use-module (gnu packages linux))
 
 (define-public codex
   (package
@@ -32,9 +31,9 @@
        (file-name (git-file-name name version))
        (sha256
         (base32 "10kafm9k6l524jfzq0ggas41szd0qjbr252fxjkdd5r3dgz9p5dj"))))
-    ;; TODO: Use official rust-1.91.0 when the official guix channel is updated
-    (build-system (make-cargo-build-system "1.91.0"))
-    (inputs (cons* clang-toolchain openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
+    (build-system cargo-build-system)
+    (inputs (cons* ;; clang-toolchain
+                   openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
                    libcap               ; codex-linux-sandbox
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
@@ -349,53 +348,7 @@
                         (("/usr/bin/sed")
                          (which "sed"))
                         (("\"command\": \"perl")
-                         (string-append "\"command\": \"" (which "perl"))))))
-
-                  ;; NOTE: These are needed because of Rust updates default target spec.
-                  ;;   1.89.0 target spec:
-                  ;;     linker-flavor: "gnu-cc"
-                  ;;   1.91.0 target spec:
-                  ;;     linker-flavor: "gnu-lld-cc"
-                  ;;     link-self-contained: { components: ["linker"] }
-                  ;; This causes linker error on some packages.
-                  (add-before 'build 'set-cc-cxx
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((toolchain (assoc-ref inputs "gcc-toolchain")))
-                        (when toolchain
-                          (setenv "CC" (string-append toolchain "/bin/gcc"))
-                          (setenv "CXX" (string-append toolchain "/bin/g++"))))))
-                  (add-before 'build 'set-libclang-path
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let* ((clang (assoc-ref inputs "clang-toolchain"))
-                             (libclang (and clang (find-files clang "^libclang\\.so"))))
-                        (when (and libclang (pair? libclang))
-                          (setenv "LIBCLANG_PATH" (dirname (car libclang)))))))
-                  (add-before 'build 'disable-lld-linker
-                    (lambda _
-                      (let* ((flags "-C linker-features=-lld -C link-self-contained=-linker")
-                             (existing (getenv "RUSTFLAGS")))
-                        (setenv "RUSTFLAGS"
-                                (if (and existing (not (string=? existing "")))
-                                    (string-append existing " " flags)
-                                    flags)))))
-                  (add-before 'build 'set-libgcc-path
-                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
-                      (define (input-path name)
-                        (or (assoc-ref native-inputs name)
-                            (assoc-ref inputs name)))
-                      (define (prepend-lib dir)
-                        (when (and dir (file-exists? dir))
-                          (let ((current (or (getenv "LD_LIBRARY_PATH") "")))
-                            (setenv "LD_LIBRARY_PATH"
-                                    (if (string=? current "")
-                                        dir
-                                        (string-append dir ":" current))))))
-                      (let ((gcc-lib (input-path "gcc"))
-                            (gcc-tc (input-path "gcc-toolchain")))
-                        (prepend-lib (and gcc-lib (string-append gcc-lib "/lib")))
-                        (prepend-lib (and gcc-lib (string-append gcc-lib "/lib64")))
-                        (prepend-lib (and gcc-tc (string-append gcc-tc "/lib")))
-                        (prepend-lib (and gcc-tc (string-append gcc-tc "/lib64")))))))))
+                         (string-append "\"command\": \"" (which "perl")))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")

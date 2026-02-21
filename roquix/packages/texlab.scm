@@ -4,7 +4,6 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
-  #:use-module (rustup build toolchain)
   #:use-module (gnu packages llvm))
 
 (define-public texlab
@@ -21,7 +20,7 @@
        (sha256
         (base32 "163c3rdjbq2nbyzc4blj7rcgj6af14jw2fyn7fpzhmzgmgdbf41z"))))
     ;; TODO: Use official rust-1.89.0 when the official guix channel is updated
-    (build-system (make-cargo-build-system "1.89.0"))
+    (build-system cargo-build-system)
     (arguments
      (list
       #:install-source? #f
