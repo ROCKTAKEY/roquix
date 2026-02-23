@@ -23,7 +23,8 @@
       (base32
        "1b20xdy4jyvhcq98n65pv30x1hd3ba3bzadv4ayib8g6mzqgr5bj"))))
    (build-system cargo-build-system)
-   (arguments '(#:install-source? #f))
+   (arguments (list #:install-source? #f
+                    #:cargo-install-paths ''("crates/loon-cli")))
    (native-inputs (list pkg-config))
    (inputs (cons* `(,zstd "lib")
                   (cargo-inputs 'loon #:module '(roquix packages rust-crates))))
