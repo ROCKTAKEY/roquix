@@ -35,7 +35,7 @@
       (requirement '(networking))
       (start
        #~(make-forkexec-constructor
-          (list #$(file-append tailscale "/bin/tailscaled")
+          (list #$(file-append tailscaled "/bin/tailscaled")
                 #$@extra-arguments)
           #:log-file "/var/log/tailscaled.log"
           #:environment-variables
