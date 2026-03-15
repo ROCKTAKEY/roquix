@@ -10855,7 +10855,6 @@ text, drawing and images.")
      (list
       #:import-path "github.com/ruudk/golang-pdf417"))
     (propagated-inputs (list go-github-com-boombuler-barcode
-                             go-github-com-phpdave11-gofpdf
                              go-github-com-stretchr-testify))
     (home-page "https://github.com/ruudk/golang-pdf417")
     (synopsis "PDF417 barcodes in Golang")
