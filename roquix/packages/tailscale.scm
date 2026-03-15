@@ -19238,7 +19238,6 @@ maintainability and scalability challenges.")
                         go-github-com-google-btree
                         go-github-com-google-go-cmp
                         go-github-com-google-uuid
-                        go-github-com-googleapis-cloud-bigtable-clients-test
                         go-github-com-googleapis-gax-go-v2
                         go-github-com-googlecloudplatform-opentelemetry-operations-go-exporter-metric
                         go-go-opentelemetry-io-contrib-detectors-gcp
