@@ -21351,7 +21351,6 @@ package cloud.google.com/go/logging/logadmin.")
       #:unpack-path "cloud.google.com/go"))
     (propagated-inputs (list go-cloud-google-com-go
                              go-cloud-google-com-go-iam
-                             go-cloud-google-com-go-pubsub
                              go-github-com-google-go-cmp
                              go-github-com-google-uuid
                              go-github-com-googleapis-gax-go-v2
