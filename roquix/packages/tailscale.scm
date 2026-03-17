@@ -5,6 +5,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system go)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages containers)
@@ -3263,6 +3264,22 @@ Storage / Rackspace Cloud Files.")
 file.")
     (license license:asl2.0)))
 
+(define go-github-com-xitongsys-parquet-go-source-interface
+  (package
+    (inherit go-github-com-xitongsys-parquet-go)
+    (name "go-github-com-xitongsys-parquet-go-source-interface")
+    (arguments
+     (list
+      #:import-path "github.com/xitongsys/parquet-go/source"
+      #:unpack-path "github.com/xitongsys/parquet-go"))
+    (propagated-inputs (list go-github-com-apache-thrift))
+    (synopsis "parquet-go source interface")
+    (description
+     "This package provides the
+@code{github.com/xitongsys/parquet-go/source} interface package separately from
+the rest of @code{parquet-go}, which avoids a dependency cycle with
+@code{parquet-go-source}.")))
+
 (define-public go-github-com-azure-go-autorest-autorest
   (package
     (name "go-github-com-azure-go-autorest-autorest")
@@ -4129,7 +4146,7 @@ working with Wire, see the user guide at
                         go-github-com-pkg-errors
                         go-github-com-spf13-afero
                         go-github-com-stretchr-testify
-                        go-github-com-xitongsys-parquet-go
+                        go-github-com-xitongsys-parquet-go-source-interface
                         go-gocloud-dev))
     (home-page "https://github.com/xitongsys/parquet-go-source")
     (synopsis "parquet-go-source")
@@ -8654,8 +8671,7 @@ kernel.")
     (arguments
      (list
       #:import-path "github.com/hexdigest/gowrap"))
-    (propagated-inputs (list go-github-com-gojuno-minimock-v3
-                             go-github-com-masterminds-sprig-v3
+    (propagated-inputs (list go-github-com-masterminds-sprig-v3
                              go-github-com-pkg-errors
                              go-github-com-stretchr-testify
                              go-golang-org-x-text
@@ -9024,8 +9040,6 @@ except that it is 100% native go.  This means that:.")
      (list
       #:import-path "github.com/hugelgupf/p9"))
     (propagated-inputs (list go-github-com-hugelgupf-socketpair
-                             go-github-com-hugelgupf-vmtest
-                             go-github-com-u-root-u-root
                              go-github-com-u-root-uio
                              go-golang-org-x-exp
                              go-golang-org-x-sys
@@ -9055,8 +9069,6 @@ p9 supports Windows, BSD, and Linux on most Go-available architectures.")
      (list
       #:import-path "github.com/u-root/iscsinl"))
     (propagated-inputs (list go-github-com-gostor-gotgt
-                             go-github-com-hugelgupf-p9
-                             go-github-com-u-root-u-root
                              go-github-com-vishvananda-netlink
                              go-golang-org-x-sys))
     (home-page "https://github.com/u-root/iscsinl")
@@ -9270,7 +9282,6 @@ package's public interface doesn't call CPUID instruction.")
                              go-github-com-google-go-cmp
                              go-github-com-hugelgupf-go-shlex
                              go-github-com-u-root-gobusybox-src
-                             go-github-com-u-root-u-root
                              go-github-com-u-root-uio
                              go-golang-org-x-exp
                              go-golang-org-x-sync
@@ -9382,7 +9393,6 @@ package's public interface doesn't call CPUID instruction.")
                              go-github-com-google-go-tpm
                              go-github-com-google-uuid
                              go-github-com-gopacket-gopacket
-                             go-github-com-hugelgupf-vmtest
                              go-github-com-insomniacslk-dhcp
                              go-github-com-ishidawataru-sctp
                              go-github-com-jaypipes-ghw
@@ -9571,9 +9581,7 @@ inet.af/netaddr package moved to the standard library in Go 1.18 as net/netip.")
     (propagated-inputs (list go-golang-org-x-crypto
                              go-golang-org-x-net
                              go-golang-org-x-sys
-                             go-golang-org-x-text
-                             go-golang-zx2c4-com-wireguard-windows
-                             go-golang-zx2c4-com-wireguard-windows))
+                             go-golang-org-x-text))
     (home-page "https://golang.zx2c4.com/wireguard/windows")
     (synopsis "for Windows")
     (description
@@ -9909,7 +9917,6 @@ management of.")
                         go-github-com-klauspost-compress
                         go-github-com-mdlayher-vsock
                         go-github-com-microsoft-go-winio
-                        go-github-com-microsoft-hcsshim
                         go-github-com-moby-locker
                         go-github-com-moby-sys-mountinfo
                         go-github-com-moby-sys-sequential
@@ -10350,7 +10357,6 @@ codebase) used to support running Linux Hyper-V containers.")
     (propagated-inputs (list go-dario-cat-mergo
                         go-github-com-adalogics-go-fuzz-headers
                         go-github-com-adamkorcz-go-118-fuzz-build
-                        go-github-com-containerd-aufs
                         go-github-com-containerd-btrfs-v2
                         go-github-com-containerd-cgroups-v3
                         go-github-com-containerd-console
@@ -10360,13 +10366,11 @@ codebase) used to support running Linux Hyper-V containers.")
                         go-github-com-containerd-fifo
                         go-github-com-containerd-go-cni
                         go-github-com-containerd-go-runc
-                        go-github-com-containerd-imgcrypt
                         go-github-com-containerd-log
                         go-github-com-containerd-nri
                         go-github-com-containerd-platforms
                         go-github-com-containerd-ttrpc
                         go-github-com-containerd-typeurl-v2
-                        go-github-com-containerd-zfs
                         go-github-com-containernetworking-cni
                         go-github-com-containernetworking-plugins
                         go-github-com-coreos-go-systemd-v22
@@ -10384,7 +10388,6 @@ codebase) used to support running Linux Hyper-V containers.")
                         go-github-com-intel-goresctrl
                         go-github-com-klauspost-compress
                         go-github-com-microsoft-go-winio
-                        go-github-com-microsoft-hcsshim
                         go-github-com-moby-locker
                         go-github-com-moby-sys-mountinfo
                         go-github-com-moby-sys-sequential
@@ -11752,8 +11755,7 @@ what developers like about other SDKs in the ecosystem to create the
       #:import-path
       "github.com/testcontainers/testcontainers-go/modules/chroma"
       #:unpack-path "github.com/testcontainers/testcontainers-go"))
-    (propagated-inputs (list go-github-com-amikos-tech-chroma-go
-                             go-github-com-stretchr-testify))
+    (propagated-inputs (list go-github-com-testcontainers-testcontainers-go))
     (home-page "https://github.com/testcontainers/testcontainers-go")
     (synopsis #f)
     (description #f)
@@ -11883,9 +11885,6 @@ AI} APIs.")
                         go-github-com-oklog-ulid
                         go-github-com-pkg-errors
                         go-github-com-stretchr-testify
-                        go-github-com-testcontainers-testcontainers-go
-                        go-github-com-testcontainers-testcontainers-go-modules-chroma
-                        go-github-com-testcontainers-testcontainers-go-modules-ollama
                         go-github-com-twmb-murmur3
                         go-github-com-yalue-onnxruntime-go
                         go-go-uber-org-zap
@@ -13148,9 +13147,7 @@ and supports client side caching.")
       #:import-path
       "github.com/testcontainers/testcontainers-go/modules/weaviate"
       #:unpack-path "github.com/testcontainers/testcontainers-go"))
-    (propagated-inputs (list go-github-com-stretchr-testify
-                             go-github-com-weaviate-weaviate-go-client-v5
-                             go-google-golang-org-grpc))
+    (propagated-inputs (list go-github-com-testcontainers-testcontainers-go))
     (home-page "https://github.com/testcontainers/testcontainers-go")
     (synopsis #f)
     (description #f)
@@ -14791,8 +14788,6 @@ content classification.")
                         go-github-com-google-uuid
                         go-github-com-launchdarkly-go-semver
                         go-github-com-stretchr-testify
-                        go-github-com-testcontainers-testcontainers-go
-                        go-github-com-testcontainers-testcontainers-go-modules-weaviate
                         go-github-com-weaviate-weaviate
                         go-go-nhat-io-grpcmock
                         go-golang-org-x-oauth2
@@ -17595,7 +17590,7 @@ code to your project:.")
      (list
       #:import-path "github.com/alibabacloud-go/tea-utils/v2"
       #:unpack-path "github.com/alibabacloud-go/tea-utils"))
-    (propagated-inputs (list go-github-com-alibabacloud-go-tea))
+    (propagated-inputs (list go-github-com-alibabacloud-go-tea-tea))
     (home-page "https://github.com/alibabacloud-go/tea-utils")
     (synopsis "Alibaba Cloud Tea Util for Go")
     (description
@@ -17632,6 +17627,24 @@ code to your project:.")
      "This project is used for support Darabonba @code{OpenAPI} DSL. It's a low-level
 library for http request.")
     (license license:asl2.0)))
+
+(define-public go-github-com-alibabacloud-go-tea-tea
+  (package
+    (inherit go-github-com-alibabacloud-go-tea)
+    (name "go-github-com-alibabacloud-go-tea-tea")
+    (arguments
+     (list
+      #:import-path "github.com/alibabacloud-go/tea/tea"
+      #:unpack-path "github.com/alibabacloud-go/tea"))
+    (propagated-inputs (list go-github-com-alibabacloud-go-debug
+                             go-github-com-json-iterator-go
+                             go-github-com-modern-go-reflect2
+                             go-golang-org-x-net))
+    (synopsis "Alibaba Cloud Tea core subpackage")
+    (description
+     "This package provides the @code{github.com/alibabacloud-go/tea/tea}
+subpackage without the @code{dara} helpers, which avoids a module-level
+dependency cycle with @code{tea-utils/v2}.")))
 
 (define-public go-github-com-aliyun-credentials-go
   (package
@@ -23612,7 +23625,6 @@ stuff for life.")
     (propagated-inputs (list go-github-com-go-logr-logr
                              go-github-com-go-logr-zerologr
                              go-github-com-rs-zerolog
-                             go-github-com-tgulacsi-go
                              go-golang-org-x-exp
                              go-golang-org-x-term))
     (home-page "https://github.com/UNO-SOFT/zlog")
@@ -25502,6 +25514,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
   (package
     (inherit go-github-com-azure-go-autorest-autorest)
     (name "go-github-com-azure-go-autorest")
+    (propagated-inputs '())
     (arguments
      (substitute-keyword-arguments
          (package-arguments go-github-com-azure-go-autorest-autorest)
