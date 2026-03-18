@@ -8,6 +8,9 @@
   #:use-module (guix git-download)
   #:use-module (guix build utils)
   #:use-module (guix build-system go)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
@@ -16,12 +19,20 @@
   #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages golang-maths)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages syncthing)
   #:use-module (gnu packages prometheus)
+  #:use-module (gnu packages rocm)
+  #:use-module (gnu packages rocm-libs)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages xdisorg))
 
 (define-public go-github-com-d4l3k-go-bfloat16
   (package
@@ -1255,6 +1266,12 @@ commonly in arithmetic, comparison and linear algebra operations.")
                     (list go-1.23)
                     (package-native-inputs go-1.23)))))
 
+(define %ollama-rocm-targets
+  "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906:xnack-;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-")
+
+(define %ollama-rocm-hip-architectures
+  "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906;gfx908;gfx90a")
+
 (define-public ollama
   (package
     (name "ollama")
@@ -1267,12 +1284,253 @@ commonly in arithmetic, comparison and linear algebra operations.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h1gkcd4fvcygq4775ylc03qxnkr61qvkhwh2j90c3amyy98rvbr"))))
+       (base32 "1h1gkcd4fvcygq4775ylc03qxnkr61qvkhwh2j90c3amyy98rvbr"))))
     (build-system go-build-system)
+    (native-inputs
+     `(("clang-rocm" ,clang-rocm)
+       ("cmake" ,cmake)
+       ("gcc-toolchain" ,gcc-toolchain-14)
+       ("lld" ,lld-20)
+       ("ninja" ,ninja)
+       ("pkg-config" ,pkg-config)))
+    (inputs (list hipblas
+                  hipblas-common
+                  hipblaslt
+                  libdrm
+                  libelf
+                  ncurses
+                  numactl
+                  rocblas
+                  rocm-comgr
+                  rocm-device-libs
+                  rocm-hip-runtime
+                  rocprofiler-register
+                  rocr-runtime
+                  rocsolver
+                  rocsparse))
     (arguments
      (list
       #:go go-1.24
-      #:import-path "github.com/ollama/ollama"))
+      #:import-path "github.com/ollama/ollama"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-rocm-hip-api
+            (lambda* (#:key import-path #:allow-other-keys)
+              (substitute* (string-append "src/" import-path
+                                          "/ml/backend/ggml/ggml/src/ggml-cuda/vendors/hip.h")
+                (("#define CUBLAS_COMPUTE_16F HIPBLAS_R_16F")
+                 "#define CUBLAS_COMPUTE_16F HIPBLAS_COMPUTE_16F")
+                (("#define CUBLAS_COMPUTE_32F HIPBLAS_R_32F")
+                 "#define CUBLAS_COMPUTE_32F HIPBLAS_COMPUTE_32F")
+                (("#define CUBLAS_COMPUTE_32F_FAST_16F HIPBLAS_R_32F")
+                 "#define CUBLAS_COMPUTE_32F_FAST_16F HIPBLAS_COMPUTE_32F")
+                (("#define cublasComputeType_t hipblasDatatype_t //deprecated, new hipblasComputeType_t not in 5.6")
+                 "#define cublasComputeType_t hipblasComputeType_t")
+                (("#define cudaDataType_t hipblasDatatype_t //deprecated, new hipblasDatatype not in 5.6")
+                 "#define cudaDataType_t hipDataType"))))
+          (add-after 'install 'install-rocm-backend
+            (lambda* (#:key inputs outputs import-path #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (source-dir (string-append (getcwd) "/src/" import-path))
+                     (build-dir (string-append source-dir "/build-rocm"))
+                     (rocm-dir (string-append out "/lib/ollama/rocm"))
+                     (gcc-toolchain-input
+                      (assoc-ref inputs "gcc-toolchain"))
+                     (gcc (or (and gcc-toolchain-input
+                                   (string-append gcc-toolchain-input
+                                                  "/bin/gcc"))
+                              (search-input-file inputs "/bin/gcc")
+                              (which "gcc")
+                              "gcc"))
+                     (g++ (or (and gcc-toolchain-input
+                                   (string-append gcc-toolchain-input
+                                                  "/bin/g++"))
+                              (search-input-file inputs "/bin/g++")
+                              (which "g++")
+                              "g++"))
+                     (clang (string-append (assoc-ref inputs "clang-rocm")
+                                           "/bin/clang"))
+                     (clang++ (string-append (assoc-ref inputs "clang-rocm")
+                                             "/bin/clang++"))
+                     (device-lib-path
+                      (string-append (assoc-ref inputs "rocm-device-libs")
+                                     "/amdgcn/bitcode"))
+                     (gcc-toolchain
+                      (or gcc-toolchain-input
+                          (and (string-prefix? "/" g++)
+                               (dirname (dirname g++)))))
+                     (gcc-c++-include-dir
+                      (and gcc-toolchain
+                           (string-append gcc-toolchain "/include/c++")))
+                     (gcc-c++-target-include-dir
+                      (and gcc-c++-include-dir
+                           (let ((configs
+                                  (find-files gcc-c++-include-dir
+                                              "c\\+\\+config\\.h$")))
+                             (and (pair? configs)
+                                  (dirname (dirname (car configs)))))))
+                     (gcc-c++-backward-include-dir
+                      (let ((dir (and gcc-c++-include-dir
+                                      (string-append gcc-c++-include-dir
+                                                     "/backward"))))
+                        (and dir (file-exists? dir) dir)))
+                     (gcc-toolchain-flag
+                      (if gcc-toolchain
+                          (string-append " --gcc-toolchain="
+                                         gcc-toolchain)
+                          ""))
+                     (cmake-prefix-path
+                      (string-join
+                       (map (lambda (label)
+                              (assoc-ref inputs label))
+                            '("rocm-hip-runtime"
+                              "rocm-comgr"
+                              "rocm-device-libs"
+                              "rocr-runtime"
+                              "rocblas"
+                              "hipblas"
+                              "hipblas-common"
+                              "hipblaslt"
+                              "rocsolver"
+                              "rocsparse"))
+                       ";")))
+                (define (symlink-libraries directory pattern)
+                  (let ((files (find-files directory pattern)))
+                    (when (null? files)
+                      (error "missing ROCm runtime libraries" directory pattern))
+                    (for-each
+                     (lambda (file)
+                       (let ((target (string-append rocm-dir "/"
+                                                    (basename file))))
+                         (unless (file-exists? target)
+                           (symlink file target))))
+                     files)))
+
+                (define (append-to-search-path environment-variable directory)
+                  (when directory
+                    (let ((current (getenv environment-variable)))
+                      (setenv environment-variable
+                              (if (or (not current)
+                                      (zero? (string-length current)))
+                                  directory
+                                  (string-append current ":" directory))))))
+
+                (define (append-hip-include-flag flags directory)
+                  (if directory
+                      (string-append flags " -isystem" directory)
+                      flags))
+
+                (define hip-flags
+                  (append-hip-include-flag
+                   (append-hip-include-flag
+                    (append-hip-include-flag
+                     (string-append "--rocm-path="
+                                    (assoc-ref inputs "rocm-hip-runtime")
+                                    " --rocm-device-lib-path="
+                                    device-lib-path
+                                    gcc-toolchain-flag)
+                     gcc-c++-include-dir)
+                    gcc-c++-target-include-dir)
+                   gcc-c++-backward-include-dir))
+
+                ;; Upstream ships ROCm support as a separate lib/ollama/rocm
+                ;; payload; Guix splits those runtime pieces across packages.
+                (mkdir-p rocm-dir)
+                (with-directory-excursion source-dir
+                  (setenv "PATH"
+                          (string-join
+                           (list (string-append (assoc-ref inputs "cmake") "/bin")
+                                 (string-append (assoc-ref inputs "ninja") "/bin")
+                                 (string-append (assoc-ref inputs "rocm-hip-runtime")
+                                                "/bin")
+                                 (string-append (assoc-ref inputs "clang-rocm") "/bin")
+                                 (getenv "PATH"))
+                           ":"))
+                  (setenv "CC" gcc)
+                  (setenv "CXX" g++)
+                  (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                         gcc-c++-include-dir)
+                  (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                         gcc-c++-target-include-dir)
+                  (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                         gcc-c++-backward-include-dir)
+                  (setenv "HIPCXX" clang++)
+                  (setenv "ROCM_PATH" (assoc-ref inputs "rocm-hip-runtime"))
+                  (invoke "cmake"
+                          "-S" "."
+                          "-B" build-dir
+                          "-G" "Ninja"
+                          (string-append "-DCMAKE_C_COMPILER=" gcc)
+                          (string-append "-DCMAKE_CXX_COMPILER=" g++)
+                          (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                          (string-append "-DCMAKE_PREFIX_PATH="
+                                         cmake-prefix-path)
+                          (string-append "-DCMAKE_HIP_ARCHITECTURES="
+                                         #$%ollama-rocm-hip-architectures)
+                          "-DCMAKE_HIP_PLATFORM=amd"
+                          (string-append "-DCMAKE_HIP_COMPILER=" clang++)
+                          (string-append "-DCMAKE_HIP_HOST_COMPILER=" g++)
+                          (string-append "-DCMAKE_HIP_COMPILER_ROCM_ROOT="
+                                         (assoc-ref inputs "rocm-hip-runtime"))
+                          (string-append "-DCMAKE_HIP_FLAGS=" hip-flags)
+                          (string-append "-DAMDGPU_TARGETS="
+                                         #$%ollama-rocm-targets))
+                  (invoke "cmake" "--build" build-dir
+                          "--parallel"
+                          (number->string (parallel-job-count))
+                          "--target" "ggml-hip")
+                  (invoke "cmake" "--install" build-dir "--component" "HIP"))
+
+                (symlink-libraries (string-append (assoc-ref inputs
+                                                             "rocm-hip-runtime")
+                                                  "/lib")
+                                   "^libamdhip64\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "hipblas")
+                                                  "/lib")
+                                   "^libhipblas\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "hipblaslt")
+                                                  "/lib")
+                                   "^libhipblaslt\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "rocblas")
+                                                  "/lib")
+                                   "^librocblas\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "rocsolver")
+                                                  "/lib")
+                                   "^librocsolver\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "rocsparse")
+                                                  "/lib")
+                                   "^librocsparse\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "rocm-comgr")
+                                                  "/lib")
+                                   "^libamd_comgr\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "rocr-runtime")
+                                                  "/lib")
+                                   "^libhsa-runtime64\\.so(\\..*)?$")
+                (symlink-libraries (string-append
+                                    (assoc-ref inputs "rocprofiler-register")
+                                    "/lib")
+                                   "^librocprofiler-register\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "libdrm")
+                                                  "/lib")
+                                   "^libdrm\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "libdrm")
+                                                  "/lib")
+                                   "^libdrm_amdgpu\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "numactl")
+                                                  "/lib")
+                                   "^libnuma\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "libelf")
+                                                  "/lib")
+                                   "^libelf\\.so(\\..*)?$")
+                (symlink-libraries (string-append (assoc-ref inputs "ncurses")
+                                                  "/lib")
+                                   "^libtinfo\\.so(\\..*)?$")
+
+                (let ((rocblas-data (string-append (assoc-ref inputs "rocblas")
+                                                   "/lib/rocblas"))
+                      (target (string-append rocm-dir "/rocblas")))
+                  (unless (file-exists? target)
+                    (symlink rocblas-data target)))))))))
     (propagated-inputs (list go-google-golang-org-protobuf
                              go-golang-org-x-text
                              go-golang-org-x-term
