@@ -22,7 +22,7 @@
 (define-public codex
   (package
     (name "codex")
-    (version "0.111.0")
+    (version "0.115.0")
     (source
      (origin
        (method git-fetch)
@@ -31,7 +31,7 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18hgj4s6yhm0kqpzs3lrq4ykf9j5wzhhkjr6zr30yck23387pm45"))))
+        (base32 "1r2nackkpmlm8w1hck6slkmfsx9vfrn696csashmnbxs0ijlwppj"))))
     (build-system cargo-build-system)
     (inputs (cons* ;; clang-toolchain
                    openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
@@ -47,6 +47,7 @@
     (arguments
      `(#:install-source? #f
        #:tests? #f
+       #:cargo-build-flags '("--package" "codex-cli")
        #:cargo-install-paths '("cli")
        #:cargo-test-flags '("--"
                             ;; core
