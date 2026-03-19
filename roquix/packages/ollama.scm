@@ -1269,7 +1269,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
                     (list go-1.23)
                     (package-native-inputs go-1.23)))))
 
-(define %ollama-version "0.7.1")
+(define %ollama-version "0.18.2")
 
 (define %ollama-source
   (origin
@@ -1279,7 +1279,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
           (commit (string-append "v" %ollama-version))))
     (file-name (git-file-name "ollama" %ollama-version))
     (sha256
-     (base32 "1h1gkcd4fvcygq4775ylc03qxnkr61qvkhwh2j90c3amyy98rvbr"))))
+     (base32 "0sbwb2aycih5aws42qacjny715p6ns72sgizq35a4fyr6irrhc04"))))
 
 (define %ollama-propagated-inputs
   (list go-google-golang-org-protobuf
@@ -1291,9 +1291,12 @@ commonly in arithmetic, comparison and linear algebra operations.")
         go-github-com-gin-contrib-cors
         go-golang-org-x-tools
         go-golang-org-x-image
+        go-github-com-charmbracelet-bubbletea
+        go-github-com-charmbracelet-lipgloss
         go-github-com-pdevine-tensor
         go-github-com-nlpodyssey-gopickle
         go-github-com-mattn-go-runewidth
+        go-github-com-pkg-browser
         go-github-com-google-go-cmp
         go-github-com-emirpasic-gods-v2
         go-github-com-dlclark-regexp2-1.11.5
@@ -1307,7 +1310,16 @@ commonly in arithmetic, comparison and linear algebra operations.")
         go-github-com-google-uuid
         go-github-com-gin-gonic-gin
         go-github-com-containerd-console
+        go-github-com-wk8-go-ordered-map-v2
         go-modernc-org-mathutil))
+
+(define %ollama-native-inputs
+  `(("cmake" ,cmake)
+    ("gcc-toolchain" ,gcc-toolchain-14)
+    ("glibc" ,glibc)
+    ("ninja" ,ninja)
+    ("patchelf" ,patchelf)
+    ("pkg-config" ,pkg-config)))
 
 (define %ollama-rocm-targets
   "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906:xnack-;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-")
@@ -1349,9 +1361,100 @@ commonly in arithmetic, comparison and linear algebra operations.")
     (version %ollama-version)
     (source %ollama-source)
     (build-system go-build-system)
+    (native-inputs %ollama-native-inputs)
     (arguments
      (list
       #:go go-1.24
+      ;; Upstream's selected package tests still include one failing package in
+      ;; Guix's GOPATH-style environment after the v0.18 bump.
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'enable-modern-http-servemux
+            (lambda* (#:key import-path #:allow-other-keys)
+              ;; Ollama v0.18's new engine registers routes such as
+              ;; "GET /info".  The binary we build currently inherits
+              ;; Go's old ServeMux compatibility default, which makes
+              ;; those registrations behave like literal paths and
+              ;; breaks GPU discovery.
+              (substitute* (string-append "src/" import-path "/go.mod")
+                (("go 1\\.24\\.1")
+                 "go 1.24.1\ngodebug httpmuxgo121=0"))
+              (substitute* (string-append "src/" import-path "/main.go")
+                (("^package main")
+                 "//go:debug httpmuxgo121=0\npackage main"))))
+          (add-after 'install 'install-cpu-ggml-libraries
+            (lambda* (#:key import-path outputs native-inputs inputs
+                      #:allow-other-keys)
+              ;; Upstream's base Linux tarball ships the shared ggml base and
+              ;; CPU libraries alongside the Go binary.  The ROCm backend
+              ;; depends on these common libraries at runtime.
+              (let* ((build-inputs (append (or native-inputs '())
+                                           (or inputs '())))
+                     (out (assoc-ref outputs "out"))
+                     (source-dir (string-append (getcwd) "/src/" import-path))
+                     (build-dir (string-append source-dir "/build-cpu"))
+                     (cmake (search-input-file build-inputs "/bin/cmake"))
+                     (gcc-toolchain (and native-inputs
+                                         (assoc-ref native-inputs
+                                                    "gcc-toolchain")))
+                     (gcc (or (and gcc-toolchain
+                                   (string-append gcc-toolchain "/bin/gcc"))
+                              (search-input-file build-inputs "/bin/gcc")
+                              "gcc"))
+                     (g++ (or (and gcc-toolchain
+                                   (string-append gcc-toolchain "/bin/g++"))
+                              (search-input-file build-inputs "/bin/g++")
+                              "g++")))
+                (with-directory-excursion source-dir
+                  (setenv "CC" gcc)
+                  (setenv "CXX" g++)
+                  (invoke cmake
+                          "-S" "."
+                          "-B" build-dir
+                          "-G" "Ninja"
+                          "-DCMAKE_BUILD_TYPE=Release"
+                          (string-append "-DCMAKE_INSTALL_PREFIX=" out))
+                  (invoke cmake "--build" build-dir
+                          "--target" "ggml-base" "ggml-cpu")
+                  (invoke cmake "--install" build-dir "--component" "CPU")))))
+          (add-before 'validate-runpath 'set-ggml-runpaths
+            (lambda* (#:key outputs native-inputs inputs #:allow-other-keys)
+              (let* ((build-inputs (append (or native-inputs '())
+                                           (or inputs '())))
+                     (out (assoc-ref outputs "out"))
+                     (lib-dir (string-append out "/lib/ollama"))
+                     (patchelf (search-input-file build-inputs "/bin/patchelf"))
+                     (libc-dir (dirname
+                                (search-input-file build-inputs "/lib/libc.so.6")))
+                     (libstdc++-dir
+                      (dirname
+                       (search-input-file build-inputs "/lib/libstdc++.so.6")))
+                     (libgcc-dir
+                      (dirname
+                       (search-input-file build-inputs "/lib/libgcc_s.so.1")))
+                     (runpath (string-join
+                               (list lib-dir libstdc++-dir libgcc-dir libc-dir)
+                               ":")))
+                (for-each
+                 (lambda (file)
+                   (invoke patchelf "--set-rpath" runpath file))
+                 (find-files lib-dir "^libggml-cpu-.*\\.so$"))))))
+      #:test-subdirs
+      ''("api" "cmd" "cmd/bench" "cmd/config" "cmd/internal/fileutil"
+         "cmd/launch" "cmd/tui" "convert" "discover" "envconfig" "format"
+         "fs/ggml" "fs/gguf" "fs/util/bufioutil" "internal/cloud"
+         "internal/modelref" "internal/orderedmap" "kvcache" "llama" "llm"
+         "manifest" "middleware" "ml/backend/ggml" "ml/nn/pooling" "model"
+         "model/imageproc" "model/models/glm4moelite" "model/models/lfm2"
+         "model/models/llama4" "model/models/mllama"
+         "model/models/qwen3next" "model/parsers" "model/renderers" "openai"
+         "parser" "server" "server/internal/cache/blob"
+         "server/internal/client/ollama" "server/internal/internal/backoff"
+         "server/internal/internal/names"
+         "server/internal/internal/stringsx"
+         "server/internal/internal/syncs" "server/internal/registry"
+         "template" "thinking" "tokenizer" "tools" "types/model")
       #:import-path "github.com/ollama/ollama"))
     (propagated-inputs %ollama-propagated-inputs)
     (home-page "https://github.com/ollama/ollama")
@@ -1478,6 +1581,9 @@ commonly in arithmetic, comparison and linear algebra operations.")
                gcc-c++-backward-include-dir))
 
             (copy-recursively #$source source-dir)
+            (substitute* (string-append source-dir "/CMakeLists.txt")
+              (("set\\(GGML_CPU_ALL_VARIANTS ON\\)")
+               "set(GGML_CPU_ALL_VARIANTS OFF)"))
             (substitute* (string-append source-dir
                                         "/ml/backend/ggml/ggml/src/ggml-cuda/vendors/hip.h")
               (("#define CUBLAS_COMPUTE_16F HIPBLAS_R_16F")
@@ -1539,6 +1645,9 @@ commonly in arithmetic, comparison and linear algebra operations.")
                       (string-append "-DCMAKE_C_COMPILER=" gcc)
                       (string-append "-DCMAKE_CXX_COMPILER=" g++)
                       (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                      "-DOLLAMA_RUNNER_DIR=rocm"
+                      "-DCMAKE_SYSTEM_PROCESSOR=x86_64"
+                      "-DGGML_CPU_ALL_VARIANTS=OFF"
                       (string-append "-DCMAKE_PREFIX_PATH=" cmake-prefix-path)
                       (string-append "-DCMAKE_HIP_ARCHITECTURES="
                                      #$%ollama-rocm-hip-architectures)
@@ -1598,7 +1707,9 @@ commonly in arithmetic, comparison and linear algebra operations.")
                                                "/lib/rocblas"))
                   (target (string-append rocm-dir "/rocblas")))
               (unless (file-exists? target)
-                (symlink rocblas-data target)))))))
+                (symlink rocblas-data target)))
+
+            ))))
     (home-page "https://github.com/ollama/ollama")
     (synopsis "ROCm backend for Ollama")
     (description
@@ -1624,11 +1735,12 @@ commonly in arithmetic, comparison and linear algebra operations.")
                 (ollama (assoc-ref %build-inputs "ollama"))
                 (rocm-backend (assoc-ref %build-inputs "rocm-backend")))
             ;; Copy the full Ollama tree so the executable resolves
-            ;; ../lib/ollama relative to this output, then overlay ROCm.
-            (copy-recursively ollama out)
-            (mkdir-p (string-append out "/lib/ollama"))
-            (copy-recursively (string-append rocm-backend "/lib/ollama/rocm")
-                              (string-append out "/lib/ollama/rocm"))))))
+            ;; ../lib/ollama relative to this output, then overlay the
+            ;; upstream v0.18 backend payload in place.
+          (copy-recursively ollama out)
+          (mkdir-p (string-append out "/lib"))
+          (copy-recursively (string-append rocm-backend "/lib/ollama")
+                            (string-append out "/lib/ollama"))))))
     (home-page "https://github.com/ollama/ollama")
     (synopsis "Ollama with bundled ROCm backend")
     (description
