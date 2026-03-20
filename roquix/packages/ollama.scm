@@ -8,6 +8,12 @@
   #:use-module (guix git-download)
   #:use-module (guix build utils)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system trivial)
+  #:use-module ((gnu packages base)
+                #:select (glibc))
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
@@ -16,12 +22,20 @@
   #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages golang-maths)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages syncthing)
   #:use-module (gnu packages prometheus)
+  #:use-module (gnu packages rocm)
+  #:use-module (gnu packages rocm-libs)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages xdisorg))
 
 (define-public go-github-com-d4l3k-go-bfloat16
   (package
@@ -1255,51 +1269,480 @@ commonly in arithmetic, comparison and linear algebra operations.")
                     (list go-1.23)
                     (package-native-inputs go-1.23)))))
 
+(define %ollama-version "0.18.2")
+
+(define %ollama-source
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/ollama/ollama")
+          (commit (string-append "v" %ollama-version))))
+    (file-name (git-file-name "ollama" %ollama-version))
+    (sha256
+     (base32 "0sbwb2aycih5aws42qacjny715p6ns72sgizq35a4fyr6irrhc04"))))
+
+(define %ollama-propagated-inputs
+  (list go-google-golang-org-protobuf
+        go-golang-org-x-text
+        go-golang-org-x-term
+        go-golang-org-x-sys
+        go-golang-org-x-exp
+        go-golang-org-x-crypto
+        go-github-com-gin-contrib-cors
+        go-golang-org-x-tools
+        go-golang-org-x-image
+        go-github-com-charmbracelet-bubbletea
+        go-github-com-charmbracelet-lipgloss
+        go-github-com-pdevine-tensor
+        go-github-com-nlpodyssey-gopickle
+        go-github-com-mattn-go-runewidth
+        go-github-com-pkg-browser
+        go-github-com-google-go-cmp
+        go-github-com-emirpasic-gods-v2
+        go-github-com-dlclark-regexp2-1.11.5
+        go-github-com-d4l3k-go-bfloat16
+        go-github-com-agnivade-levenshtein
+        go-golang-org-x-sync
+        go-github-com-x448-float16
+        go-github-com-stretchr-testify
+        go-github-com-spf13-cobra
+        go-github-com-olekukonko-tablewriter-0.0.5
+        go-github-com-google-uuid
+        go-github-com-gin-gonic-gin
+        go-github-com-containerd-console
+        go-github-com-wk8-go-ordered-map-v2
+        go-modernc-org-mathutil))
+
+(define %ollama-native-inputs
+  `(("cmake" ,cmake)
+    ("gcc-toolchain" ,gcc-toolchain-14)
+    ("glibc" ,glibc)
+    ("ninja" ,ninja)
+    ("patchelf" ,patchelf)
+    ("pkg-config" ,pkg-config)))
+
+(define %ollama-rocm-targets
+  "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906:xnack-;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-")
+
+(define %ollama-rocm-hip-architectures
+  "gfx900;gfx940;gfx941;gfx942;gfx1010;gfx1012;gfx1030;gfx1100;gfx1101;gfx1102;gfx1151;gfx1200;gfx1201;gfx906;gfx908;gfx90a")
+
+(define %ollama-rocm-native-inputs
+  `(("clang-rocm" ,clang-rocm)
+    ("cmake" ,cmake)
+    ("gcc-toolchain" ,gcc-toolchain-14)
+    ("glibc" ,glibc)
+    ("linux-libre-headers" ,linux-libre-headers)
+    ("lld" ,lld-20)
+    ("ninja" ,ninja)
+    ("llvm" ,llvm-20)
+    ("pkg-config" ,pkg-config)))
+
+(define %ollama-rocm-inputs
+  `(("hipblas" ,hipblas)
+    ("hipblas-common" ,hipblas-common)
+    ("hipblaslt" ,hipblaslt)
+    ("libdrm" ,libdrm)
+    ("libelf" ,libelf)
+    ("ncurses" ,ncurses)
+    ("numactl" ,numactl)
+    ("rocblas" ,rocblas)
+    ("rocm-comgr" ,rocm-comgr)
+    ("rocm-device-libs" ,rocm-device-libs)
+    ("rocm-hip-runtime" ,rocm-hip-runtime)
+    ("rocprofiler-register" ,rocprofiler-register)
+    ("rocr-runtime" ,rocr-runtime)
+    ("rocsolver" ,rocsolver)
+    ("rocsparse" ,rocsparse)))
+
 (define-public ollama
   (package
     (name "ollama")
-    (version "0.7.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ollama/ollama")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1h1gkcd4fvcygq4775ylc03qxnkr61qvkhwh2j90c3amyy98rvbr"))))
+    (version %ollama-version)
+    (source %ollama-source)
     (build-system go-build-system)
+    (native-inputs %ollama-native-inputs)
     (arguments
      (list
       #:go go-1.24
+      ;; Upstream's selected package tests still include one failing package in
+      ;; Guix's GOPATH-style environment after the v0.18 bump.
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'enable-modern-http-servemux
+            (lambda* (#:key import-path #:allow-other-keys)
+              ;; Ollama v0.18's new engine registers routes such as
+              ;; "GET /info".  The binary we build currently inherits
+              ;; Go's old ServeMux compatibility default, which makes
+              ;; those registrations behave like literal paths and
+              ;; breaks GPU discovery.
+              (substitute* (string-append "src/" import-path "/go.mod")
+                (("go 1\\.24\\.1")
+                 "go 1.24.1\ngodebug httpmuxgo121=0"))
+              (substitute* (string-append "src/" import-path "/main.go")
+                (("^package main")
+                 "//go:debug httpmuxgo121=0\npackage main"))))
+          (add-after 'install 'install-cpu-ggml-libraries
+            (lambda* (#:key import-path outputs native-inputs inputs
+                      #:allow-other-keys)
+              ;; Upstream's base Linux tarball ships the shared ggml base and
+              ;; CPU libraries alongside the Go binary.  The ROCm backend
+              ;; depends on these common libraries at runtime.
+              (let* ((build-inputs (append (or native-inputs '())
+                                           (or inputs '())))
+                     (out (assoc-ref outputs "out"))
+                     (source-dir (string-append (getcwd) "/src/" import-path))
+                     (build-dir (string-append source-dir "/build-cpu"))
+                     (cmake (search-input-file build-inputs "/bin/cmake"))
+                     (gcc-toolchain (and native-inputs
+                                         (assoc-ref native-inputs
+                                                    "gcc-toolchain")))
+                     (gcc (or (and gcc-toolchain
+                                   (string-append gcc-toolchain "/bin/gcc"))
+                              (search-input-file build-inputs "/bin/gcc")
+                              "gcc"))
+                     (g++ (or (and gcc-toolchain
+                                   (string-append gcc-toolchain "/bin/g++"))
+                              (search-input-file build-inputs "/bin/g++")
+                              "g++")))
+                (with-directory-excursion source-dir
+                  (setenv "CC" gcc)
+                  (setenv "CXX" g++)
+                  (invoke cmake
+                          "-S" "."
+                          "-B" build-dir
+                          "-G" "Ninja"
+                          "-DCMAKE_BUILD_TYPE=Release"
+                          (string-append "-DCMAKE_INSTALL_PREFIX=" out))
+                  (invoke cmake "--build" build-dir
+                          "--target" "ggml-base" "ggml-cpu")
+                  (invoke cmake "--install" build-dir "--component" "CPU")))))
+          (add-before 'validate-runpath 'set-ggml-runpaths
+            (lambda* (#:key outputs native-inputs inputs #:allow-other-keys)
+              (let* ((build-inputs (append (or native-inputs '())
+                                           (or inputs '())))
+                     (out (assoc-ref outputs "out"))
+                     (lib-dir (string-append out "/lib/ollama"))
+                     (patchelf (search-input-file build-inputs "/bin/patchelf"))
+                     (libc-dir (dirname
+                                (search-input-file build-inputs "/lib/libc.so.6")))
+                     (libstdc++-dir
+                      (dirname
+                       (search-input-file build-inputs "/lib/libstdc++.so.6")))
+                     (libgcc-dir
+                      (dirname
+                       (search-input-file build-inputs "/lib/libgcc_s.so.1")))
+                     (runpath (string-join
+                               (list lib-dir libstdc++-dir libgcc-dir libc-dir)
+                               ":")))
+                (for-each
+                 (lambda (file)
+                   (invoke patchelf "--set-rpath" runpath file))
+                 (find-files lib-dir "^libggml-cpu-.*\\.so$"))))))
+      #:test-subdirs
+      ''("api" "cmd" "cmd/bench" "cmd/config" "cmd/internal/fileutil"
+         "cmd/launch" "cmd/tui" "convert" "discover" "envconfig" "format"
+         "fs/ggml" "fs/gguf" "fs/util/bufioutil" "internal/cloud"
+         "internal/modelref" "internal/orderedmap" "kvcache" "llama" "llm"
+         "manifest" "middleware" "ml/backend/ggml" "ml/nn/pooling" "model"
+         "model/imageproc" "model/models/glm4moelite" "model/models/lfm2"
+         "model/models/llama4" "model/models/mllama"
+         "model/models/qwen3next" "model/parsers" "model/renderers" "openai"
+         "parser" "server" "server/internal/cache/blob"
+         "server/internal/client/ollama" "server/internal/internal/backoff"
+         "server/internal/internal/names"
+         "server/internal/internal/stringsx"
+         "server/internal/internal/syncs" "server/internal/registry"
+         "template" "thinking" "tokenizer" "tools" "types/model")
       #:import-path "github.com/ollama/ollama"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-golang-org-x-text
-                             go-golang-org-x-term
-                             go-golang-org-x-sys
-                             go-golang-org-x-exp
-                             go-golang-org-x-crypto
-                             go-github-com-gin-contrib-cors
-                             go-golang-org-x-tools
-                             go-golang-org-x-image
-                             go-github-com-pdevine-tensor
-                             go-github-com-nlpodyssey-gopickle
-                             go-github-com-mattn-go-runewidth
-                             go-github-com-google-go-cmp
-                             go-github-com-emirpasic-gods-v2
-                             go-github-com-dlclark-regexp2-1.11.5
-                             go-github-com-d4l3k-go-bfloat16
-                             go-github-com-agnivade-levenshtein
-                             go-golang-org-x-sync
-                             go-github-com-x448-float16
-                             go-github-com-stretchr-testify
-                             go-github-com-spf13-cobra
-                             go-github-com-olekukonko-tablewriter-0.0.5
-                             go-github-com-google-uuid
-                             go-github-com-gin-gonic-gin
-                             go-github-com-containerd-console
-                             go-modernc-org-mathutil))
+    (propagated-inputs %ollama-propagated-inputs)
     (home-page "https://github.com/ollama/ollama")
     (synopsis "Ollama")
     (description "Get up and running with large language models.")
+    (license license:expat)))
+
+(define-public ollama-rocm-backend
+  (package
+    (name "ollama-rocm-backend")
+    (version %ollama-version)
+    (source %ollama-source)
+    (build-system trivial-build-system)
+    (native-inputs %ollama-rocm-native-inputs)
+    (inputs %ollama-rocm-inputs)
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+
+          (let* ((out #$output)
+                 (source-dir (string-append (getcwd) "/source"))
+                 (build-dir (string-append source-dir "/build-rocm"))
+                 (rocm-dir (string-append out "/lib/ollama/rocm"))
+                 (gcc-toolchain-input
+                  (assoc-ref %build-inputs "gcc-toolchain"))
+                 (gcc (or (and gcc-toolchain-input
+                               (string-append gcc-toolchain-input "/bin/gcc"))
+                          (search-input-file %build-inputs "/bin/gcc")
+                          (which "gcc")
+                          "gcc"))
+                 (g++ (or (and gcc-toolchain-input
+                               (string-append gcc-toolchain-input "/bin/g++"))
+                          (search-input-file %build-inputs "/bin/g++")
+                          (which "g++")
+                          "g++"))
+                 (clang++ (string-append (assoc-ref %build-inputs "clang-rocm")
+                                         "/bin/clang++"))
+                 (device-lib-path
+                  (string-append (assoc-ref %build-inputs "rocm-device-libs")
+                                 "/amdgcn/bitcode"))
+                 (gcc-toolchain
+                  (or gcc-toolchain-input
+                      (and (string-prefix? "/" g++)
+                           (dirname (dirname g++)))))
+                 (gcc-c++-include-dir
+                  (and gcc-toolchain
+                       (string-append gcc-toolchain "/include/c++")))
+                 (gcc-c++-target-include-dir
+                  (and gcc-c++-include-dir
+                       (let ((configs
+                              (find-files gcc-c++-include-dir
+                                          "c\\+\\+config\\.h$")))
+                         (and (pair? configs)
+                              (dirname (dirname (car configs)))))))
+                 (gcc-c++-backward-include-dir
+                  (let ((dir (and gcc-c++-include-dir
+                                  (string-append gcc-c++-include-dir
+                                                 "/backward"))))
+                    (and dir (file-exists? dir) dir)))
+                 (linux-headers-include-dir
+                  (string-append
+                   (assoc-ref %build-inputs "linux-libre-headers")
+                   "/include"))
+                 (gcc-toolchain-flag
+                  (if gcc-toolchain
+                      (string-append " --gcc-toolchain=" gcc-toolchain)
+                      ""))
+                 (cmake-prefix-path
+                  (string-join
+                   (map (lambda (label)
+                          (assoc-ref %build-inputs label))
+                        '("rocm-hip-runtime"
+                          "rocm-comgr"
+                          "rocm-device-libs"
+                          "rocr-runtime"
+                          "rocblas"
+                          "hipblas"
+                          "hipblas-common"
+                          "hipblaslt"
+                          "rocsolver"
+                          "rocsparse"))
+                   ";")))
+            (define (symlink-libraries directory pattern)
+              (let ((files (find-files directory pattern)))
+                (when (null? files)
+                  (error "missing ROCm runtime libraries" directory pattern))
+                (for-each
+                 (lambda (file)
+                   (let ((target (string-append rocm-dir "/" (basename file))))
+                     (unless (file-exists? target)
+                       (symlink file target))))
+                 files)))
+
+            (define (append-to-search-path environment-variable directory)
+              (when directory
+                (let ((current (getenv environment-variable)))
+                  (setenv environment-variable
+                          (if (or (not current)
+                                  (zero? (string-length current)))
+                              directory
+                              (string-append current ":" directory))))))
+
+            (define (append-hip-include-flag flags directory)
+              (if directory
+                  (string-append flags " -isystem" directory)
+                  flags))
+
+            (define hip-flags
+              (append-hip-include-flag
+               (append-hip-include-flag
+                (append-hip-include-flag
+                 (append-hip-include-flag
+                  (string-append "--rocm-path="
+                                 (assoc-ref %build-inputs "rocm-hip-runtime")
+                                 " --rocm-device-lib-path="
+                                 device-lib-path
+                                 gcc-toolchain-flag)
+                  linux-headers-include-dir)
+                 gcc-c++-include-dir)
+                gcc-c++-target-include-dir)
+               gcc-c++-backward-include-dir))
+
+            (copy-recursively #$source source-dir)
+            (substitute* (string-append source-dir "/CMakeLists.txt")
+              (("set\\(GGML_CPU_ALL_VARIANTS ON\\)")
+               "set(GGML_CPU_ALL_VARIANTS OFF)"))
+            (substitute* (string-append source-dir
+                                        "/ml/backend/ggml/ggml/src/ggml-cuda/vendors/hip.h")
+              (("#define CUBLAS_COMPUTE_16F HIPBLAS_R_16F")
+               "#define CUBLAS_COMPUTE_16F HIPBLAS_COMPUTE_16F")
+              (("#define CUBLAS_COMPUTE_32F HIPBLAS_R_32F")
+               "#define CUBLAS_COMPUTE_32F HIPBLAS_COMPUTE_32F")
+              (("#define CUBLAS_COMPUTE_32F_FAST_16F HIPBLAS_R_32F")
+               "#define CUBLAS_COMPUTE_32F_FAST_16F HIPBLAS_COMPUTE_32F")
+              (("#define cublasComputeType_t hipblasDatatype_t //deprecated, new hipblasComputeType_t not in 5.6")
+               "#define cublasComputeType_t hipblasComputeType_t")
+              (("#define cudaDataType_t hipblasDatatype_t //deprecated, new hipblasDatatype not in 5.6")
+               "#define cudaDataType_t hipDataType"))
+
+            ;; Upstream ships ROCm support as a separate lib/ollama/rocm
+            ;; payload; Guix splits those runtime pieces across packages.
+            (mkdir-p rocm-dir)
+            (with-directory-excursion source-dir
+              (setenv "PATH"
+                      (string-join
+                       (list (string-append (assoc-ref %build-inputs "cmake")
+                                            "/bin")
+                             (string-append (assoc-ref %build-inputs "ninja")
+                                            "/bin")
+                             (string-append
+                              (assoc-ref %build-inputs "gcc-toolchain")
+                              "/bin")
+                             (string-append (assoc-ref %build-inputs "glibc")
+                                            "/sbin")
+                             (string-append (assoc-ref %build-inputs "lld")
+                                            "/bin")
+                             (string-append (assoc-ref %build-inputs "llvm")
+                                            "/bin")
+                             (string-append
+                              (assoc-ref %build-inputs "rocm-hip-runtime")
+                              "/bin")
+                             (string-append
+                              (assoc-ref %build-inputs "clang-rocm")
+                              "/bin")
+                             (or (getenv "PATH") ""))
+                       ":"))
+              (setenv "CC" gcc)
+              (setenv "CXX" g++)
+              (append-to-search-path "C_INCLUDE_PATH"
+                                     linux-headers-include-dir)
+              (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                     linux-headers-include-dir)
+              (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                     gcc-c++-include-dir)
+              (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                     gcc-c++-target-include-dir)
+              (append-to-search-path "CPLUS_INCLUDE_PATH"
+                                     gcc-c++-backward-include-dir)
+              (setenv "HIPCXX" clang++)
+              (setenv "ROCM_PATH" (assoc-ref %build-inputs "rocm-hip-runtime"))
+              (invoke "cmake"
+                      "-S" "."
+                      "-B" build-dir
+                      "-G" "Ninja"
+                      (string-append "-DCMAKE_C_COMPILER=" gcc)
+                      (string-append "-DCMAKE_CXX_COMPILER=" g++)
+                      (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                      "-DOLLAMA_RUNNER_DIR=rocm"
+                      "-DCMAKE_SYSTEM_PROCESSOR=x86_64"
+                      "-DGGML_CPU_ALL_VARIANTS=OFF"
+                      (string-append "-DCMAKE_PREFIX_PATH=" cmake-prefix-path)
+                      (string-append "-DCMAKE_HIP_ARCHITECTURES="
+                                     #$%ollama-rocm-hip-architectures)
+                      "-DCMAKE_HIP_PLATFORM=amd"
+                      (string-append "-DCMAKE_HIP_COMPILER=" clang++)
+                      (string-append "-DCMAKE_HIP_HOST_COMPILER=" g++)
+                      (string-append "-DCMAKE_HIP_COMPILER_ROCM_ROOT="
+                                     (assoc-ref %build-inputs
+                                                "rocm-hip-runtime"))
+                      (string-append "-DCMAKE_HIP_FLAGS=" hip-flags)
+                      (string-append "-DAMDGPU_TARGETS="
+                                     #$%ollama-rocm-targets))
+              (invoke "cmake" "--build" build-dir
+                      "--parallel"
+                      (number->string (parallel-job-count))
+                      "--target" "ggml-hip")
+              (invoke "cmake" "--install" build-dir "--component" "HIP"))
+
+            (symlink-libraries
+             (string-append (assoc-ref %build-inputs "rocm-hip-runtime") "/lib")
+             "^libamdhip64\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "hipblas")
+                                              "/lib")
+                               "^libhipblas\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "hipblaslt")
+                                              "/lib")
+                               "^libhipblaslt\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "rocblas")
+                                              "/lib")
+                               "^librocblas\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "rocsolver")
+                                              "/lib")
+                               "^librocsolver\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "rocsparse")
+                                              "/lib")
+                               "^librocsparse\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "rocm-comgr")
+                                              "/lib")
+                               "^libamd_comgr\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "rocr-runtime")
+                                              "/lib")
+                               "^libhsa-runtime64\\.so(\\..*)?$")
+            (symlink-libraries
+             (string-append (assoc-ref %build-inputs "rocprofiler-register")
+                            "/lib")
+             "^librocprofiler-register\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "libdrm")
+                                              "/lib")
+                               "^libdrm\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "libdrm")
+                                              "/lib")
+                               "^libdrm_amdgpu\\.so(\\..*)?$")
+            (symlink-libraries (string-append (assoc-ref %build-inputs "numactl")
+                                              "/lib")
+                               "^libnuma\\.so(\\..*)?$")
+            (let ((rocblas-data (string-append (assoc-ref %build-inputs "rocblas")
+                                               "/lib/rocblas"))
+                  (target (string-append rocm-dir "/rocblas")))
+              (unless (file-exists? target)
+                (symlink rocblas-data target)))
+
+            ))))
+    (home-page "https://github.com/ollama/ollama")
+    (synopsis "ROCm backend for Ollama")
+    (description
+     "This package contains the separately-built ROCm backend payload for Ollama.")
+    (license license:expat)))
+
+(define-public ollama-rocm
+  (package
+    (name "ollama-rocm")
+    (version %ollama-version)
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("ollama" ,ollama)
+              ("rocm-backend" ,ollama-rocm-backend)))
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+
+          (let ((out #$output)
+                (ollama (assoc-ref %build-inputs "ollama"))
+                (rocm-backend (assoc-ref %build-inputs "rocm-backend")))
+            ;; Copy the full Ollama tree so the executable resolves
+            ;; ../lib/ollama relative to this output, then overlay the
+            ;; upstream v0.18 backend payload in place.
+          (copy-recursively ollama out)
+          (mkdir-p (string-append out "/lib"))
+          (copy-recursively (string-append rocm-backend "/lib/ollama")
+                            (string-append out "/lib/ollama"))))))
+    (home-page "https://github.com/ollama/ollama")
+    (synopsis "Ollama with bundled ROCm backend")
+    (description
+     "Get up and running with large language models, with the ROCm backend bundled next to the Ollama executable.")
     (license license:expat)))
