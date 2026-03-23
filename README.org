@@ -12,5 +12,51 @@ Write to =.config/guix/channels.scm=:
          %default-channels)
          #+END_SRC
 
+* AppImage build system
+=roquix= includes =appimage-build-system= for repackaging Type 2 AppImages as
+Guix packages.
+
+** Design
+- Only Type 2 AppImages are supported.
+- The extracted AppDir is installed privately under =lib/<name>/=.
+- The generated wrapper exports =APPDIR= and executes =AppRun=.
+- The exported =.desktop= file points to an icon inside the private AppDir.
+- The build system does not globally install icon assets, which avoids
+  collisions under =share/icons= or =share/pixmaps=.
+
+** =#:patchelf-plan=
+Use =#:patchelf-plan= for normal ELF fixups.
+
+- Rewrites the ELF interpreter.
+- Adds Guix library directories to =RUNPATH=.
+- Best for shared libraries referenced through normal ELF dependency
+  resolution.
+- This is the preferred mechanism when it is sufficient.
+
+** =#:ld-library-path-inputs=
+Use =#:ld-library-path-inputs= only as an opt-in wrapper fixup.
+
+- It appends selected input directories to =LD_LIBRARY_PATH= in the generated
+  launcher.
+- Entries use the same shape as the runpath entries in =#:patchelf-plan=:
+  ~"mesa"~ means =<input>/lib=, and ~("nss" "/lib/nss")~ means a custom
+  subdirectory.
+- This is intended for cases where upstream loads libraries later by name,
+  outside normal ELF dependency resolution, for example via =dlopen= or a
+  library-specific module loader.
+
+** When to use which
+- Prefer =#:patchelf-plan= first.
+- Use =#:ld-library-path-inputs= only when the application still fails to find
+  a runtime-loaded module after =RUNPATH= has been fixed.
+- Do not enable =LD_LIBRARY_PATH= globally in the build system by default,
+  because it overrides the normal dynamic linker search order and can defeat
+  the intent of =RUNPATH= fixups.
+
+** Example
+An AppImage package may need =#:ld-library-path-inputs= for modules that are
+loaded later by name rather than through normal ELF =NEEDED= resolution, such
+as NSS modules under =lib/nss=.
+
 * License
   This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].
