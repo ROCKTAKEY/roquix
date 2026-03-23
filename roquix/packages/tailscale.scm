@@ -25900,31 +25900,36 @@ parameters into a struct type.")
   (package
     (inherit go-tailscale-com)
     (name "tailscale")
-    (native-inputs (list go-github-com-u-root-u-root-pkg-termios-0.14.0))
-    (arguments
-     (list
-      #:go go-1.25
-      #:tests? #f
-      #:install-source? #f
-      #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
-      #:import-path "tailscale.com/cmd/tailscale"
-      #:unpack-path "tailscale.com"))
+    (native-inputs (package-propagated-inputs go-tailscale-com))
+    (propagated-inputs '())
+    (inputs '())
+    (arguments (list
+                #:go go-1.25
+                #:tests? #f
+                #:install-source? #f
+                #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
+                #:import-path "tailscale.com/cmd/tailscale"
+                #:unpack-path "tailscale.com"))
     (synopsis "Tailscale client")
     (description
      "Build the @code{tailscale} CLI from the Tailscale source tree.")))
 
 (define-public tailscaled
   (package
-    (inherit tailscale)
+    (inherit go-tailscale-com)
     (name "tailscaled")
-    (arguments
-     (list
-      #:go go-1.25
-      #:tests? #f
-      #:install-source? #f
-      #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
-      #:import-path "tailscale.com/cmd/tailscaled"
-      #:unpack-path "tailscale.com"))
+    (native-inputs
+     (modify-inputs (package-propagated-inputs go-tailscale-com)
+       (append go-github-com-u-root-u-root-pkg-termios-0.14.0)))
+    (propagated-inputs '())
+    (inputs '())
+    (arguments (list
+                #:go go-1.25
+                #:tests? #f
+                #:install-source? #f
+                #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
+                #:import-path "tailscale.com/cmd/tailscaled"
+                #:unpack-path "tailscale.com"))
     (synopsis "Tailscale daemon")
     (description
      "Build the @code{tailscaled} daemon from the Tailscale source tree.")))
