@@ -25900,6 +25900,12 @@ parameters into a struct type.")
   (package
     (inherit go-tailscale-com)
     (name "tailscale")
+    ;; Match official Guix command packages such as go-staticcheck and
+    ;; protoc-gen-go-grpc: move the repo-root source package's propagated Go
+    ;; graph to native-inputs for the end-user command package, or the
+    ;; build-time closure leaks into profile hooks and can even reproduce the
+    ;; "gdk-pixbuf-loaders-cache-file.drv' failed due to signal 11" crash we
+    ;; saw from the oversized generated builder here.
     (native-inputs (package-propagated-inputs go-tailscale-com))
     (propagated-inputs '())
     (inputs '())
@@ -25918,6 +25924,8 @@ parameters into a struct type.")
   (package
     (inherit go-tailscale-com)
     (name "tailscaled")
+    ;; Same split as the official CLI packages above, plus tailscaled's
+    ;; daemon-only termios source dependency.
     (native-inputs
      (modify-inputs (package-propagated-inputs go-tailscale-com)
        (append go-github-com-u-root-u-root-pkg-termios-0.14.0)))
