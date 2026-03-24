@@ -22,7 +22,7 @@
 (define-public codex
   (package
     (name "codex")
-    (version "0.115.0")
+    (version "0.116.0")
     (source
      (origin
        (method git-fetch)
@@ -31,7 +31,7 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r2nackkpmlm8w1hck6slkmfsx9vfrn696csashmnbxs0ijlwppj"))))
+        (base32 "17mrvhsmcnnykmdah3vg7ki4j4j6z36k0s6fa90zk01p32k0lfrx"))))
     (build-system cargo-build-system)
     (inputs (cons* ;; clang-toolchain
                    openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
