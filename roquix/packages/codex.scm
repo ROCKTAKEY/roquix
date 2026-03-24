@@ -17,6 +17,7 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages textutils))
 
 (define-public codex
@@ -35,6 +36,7 @@
     (build-system cargo-build-system)
     (inputs (cons* ;; clang-toolchain
                    openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
+                   bubblewrap
                    libcap               ; codex-linux-sandbox
                    oniguruma            ; onig-sys
                    (cargo-inputs 'codex
@@ -293,6 +295,13 @@
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"9200079d3b54a1ff51072e24d81fd354f085156f\" \\}")
                          ""))))
+                  (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((bwrap (search-input-file inputs "/bin/bwrap")))
+                        (substitute* '("core/src/config/mod.rs"
+                                       "linux-sandbox/src/launcher.rs")
+                          (("/usr/bin/bwrap")
+                           bwrap)))))
                   (add-after 'change-directory-to-rust-source 'fix-test
                     (lambda _
                       ;; Tese tests need environments variable named USER.
