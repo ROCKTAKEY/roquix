@@ -1,0 +1,7 @@
+interface:
+  display_name: "Update Roquix Codex"
+  short_description: "Bump roquix's openai/codex package safely."
+  default_prompt: "Use $update-roquix-codex to bump roquix's packaged Codex release to a target rust-vX.Y.Z tag and validate the channel."
+
+policy:
+  allow_implicit_invocation: true
