@@ -2,8 +2,10 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages python)
@@ -20,10 +22,54 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages textutils))
 
+(define rusty-v8-prebuilt-archive
+  (package
+    (name "rusty-v8-prebuilt-archive")
+    (version "146.4.0")
+    (source
+     (let* ((archive
+             (cond
+              ((string=? (%current-system) "aarch64-linux")
+               '("librusty_v8_release_aarch64-unknown-linux-gnu.a.gz"
+                 "1n7cc88ag0v9fysbbhd4q6yggz397v946sq4piab1gc1gjq6bwfv"))
+              (else
+               '("librusty_v8_release_x86_64-unknown-linux-gnu.a.gz"
+                 "0lqi57snhsgsq68vagy1h81s32qph2dshi32hhp3ladfwjclsjz6"))))
+            (archive-name (car archive))
+            (archive-sha256 (cadr archive)))
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/denoland/rusty_v8/releases/download/v146.4.0/"
+               archive-name))
+         (sha256
+          (base32 archive-sha256)))))
+    (build-system trivial-build-system)
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+          (let ((out (assoc-ref %outputs "out"))
+                (src (assoc-ref %build-inputs "source")))
+            (mkdir-p (string-append out "/share/rusty-v8"))
+            (copy-file src
+                       (string-append out "/share/rusty-v8/"
+                                      (basename src)))))))
+    (home-page "https://github.com/denoland/rusty_v8")
+    (synopsis "Prebuilt rusty_v8 static library archive")
+    (description
+     "This helper package installs the prebuilt static library archive used
+by the rust-v8 crate so Guix builds do not attempt to download it during the
+build phase.")
+    (license (list license:expat license:bsd-3))))
+
 (define-public codex
   (package
     (name "codex")
-    (version "0.117.0")
+    (version "0.118.0")
     (source
      (origin
        (method git-fetch)
@@ -32,8 +78,9 @@
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xnszwd3xhh4j64zxlk611kcphvrw4ihky1f517y4m8cl4lpqdqk"))))
+       (base32 "1mlks8w51c42fl31w3ndk78891n3f5qas5q7gbkqjk1a4bw5bnqm"))))
     (build-system cargo-build-system)
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
                    openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
                    bubblewrap
@@ -41,11 +88,14 @@
                    oniguruma            ; onig-sys
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
-    (native-inputs (list
-                    pkg-config
-                    cmake
-                    ;; Need for tests
-                    python git perl))
+    (native-inputs
+     (list rusty-v8-prebuilt-archive
+           pkg-config
+           cmake
+           ;; Need for tests
+           python
+           git
+           perl))
     (arguments
      `(#:install-source? #f
        #:tests? #f
@@ -329,6 +379,22 @@
                          (which "sed"))
                         (("\"command\": \"perl")
                          (string-append "\"command\": \"" (which "perl"))))))
+                  (add-before 'build 'use-local-rusty-v8-archive
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; The `v8` crate downloads this archive during build by
+                      ;; default, which fails in the Guix build sandbox.
+                      (let* ((archive-dir
+                              (string-append
+                               (assoc-ref inputs "rusty-v8-prebuilt-archive")
+                               "/share/rusty-v8"))
+                             (archives
+                              (find-files
+                               archive-dir
+                               "librusty_v8_release_.*\\.a\\.gz$")))
+                        (unless (= 1 (length archives))
+                          (error "expected exactly one rusty_v8 archive"
+                                 archives))
+                        (setenv "RUSTY_V8_ARCHIVE" (car archives)))))
                   (add-before 'build 'set-release-lto-to-thin
                     (lambda _
                       ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.

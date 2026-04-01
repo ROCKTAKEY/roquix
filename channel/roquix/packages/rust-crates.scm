@@ -10092,7 +10092,6 @@
                              rust-fdeflate-0.3.7
                              rust-fiat-crypto-0.2.9
                              rust-filedescriptor-0.8.3
-                             rust-filetime-0.2.27
                              rust-find-crate-0.6.3
                              rust-find-msvc-tools-0.1.9
                              rust-findshlibs-0.10.2
@@ -10157,7 +10156,6 @@
                              rust-hmac-0.12.1
                              rust-home-0.5.12
                              rust-hostname-0.4.2
-                             rust-hound-3.5.1
                              rust-http-0.2.12
                              rust-http-1.4.0
                              rust-http-body-1.0.1
@@ -10591,7 +10589,6 @@
                              rust-system-configuration-0.6.1
                              rust-system-configuration-sys-0.6.0
                              rust-tagptr-0.2.0
-                             rust-tar-0.4.45
                              rust-tempfile-3.24.0
                              rust-temporal-capi-0.1.2
                              rust-temporal-rs-0.1.2
@@ -10809,7 +10806,6 @@
                              rust-x11rb-protocol-0.13.2
                              rust-x25519-dalek-2.0.1
                              rust-x509-parser-0.18.1
-                             rust-xattr-1.6.1
                              rust-xdg-home-1.3.0
                              rust-xz2-0.1.7
                              rust-yaml-rust-0.4.5
