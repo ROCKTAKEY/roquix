@@ -398,7 +398,16 @@ build phase.")
                   (add-before 'build 'set-release-lto-to-thin
                     (lambda _
                       ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
-                      (setenv "CARGO_PROFILE_RELEASE_LTO" "thin"))))))
+                      (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")))
+                  (add-after 'install 'wrap-with-system-bubblewrap-on-path
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Codex checks PATH for a system bwrap before falling
+                      ;; back to its vendored copy and emitting a warning.
+                      (wrap-program (string-append (assoc-ref outputs "out")
+                                                   "/bin/codex")
+                        `("PATH" ":" prefix
+                          (,(string-append (assoc-ref inputs "bubblewrap")
+                                           "/bin")))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
