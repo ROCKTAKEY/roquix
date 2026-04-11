@@ -6,7 +6,8 @@
   #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module (guix build-system cargo)
-  #:use-module (gnu packages rust))
+  #:use-module (gnu packages rust)
+  #:use-module (srfi srfi-1))
 
 (define-public rust-runfiles-0.1.0.b56cbaa
   (let ((commit "b56cbaa8465e74127f1ea216f813cd377295ad81")
@@ -51,4 +52,44 @@
        (home-page "https://github.com/matts1/rust_runfiles")
        (synopsis "Runfiles lookup library for Bazel-built Rust binaries and tests.")
        (description "Runfiles lookup library for Bazel-built Rust binaries and tests.")
+       (license license:asl2.0)))))
+
+(define-public rust-rust-sdks-0.0.0.e2d1d1d
+  (let ((commit "e2d1d1d230c6fc9df171ccb181423f957bb3c1f0")
+        (revision "0"))
+    (hidden-package
+     (package
+       (name "rust-rust-sdks")
+       (version (git-version "0.0.0" revision commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/juberti-oai/rust-sdks.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "00xwa6w00kdv9nd4a2206wyz3aw61al914xd1g8kj4gx9bmdhic2"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list
+         #:skip-build? #t
+         #:cargo-package-crates
+         ;; Order matters: dependencies must come before packages that need them.
+         ''("webrtc-sys-build"
+            "webrtc-sys"
+            "livekit-runtime"
+            "livekit-protocol"
+            "libwebrtc")))
+       (inputs
+        (delete-duplicates
+         (append (cargo-inputs 'libwebrtc
+                               #:module '(roquix packages rust-crates))
+                 (cargo-inputs 'livekit-runtime
+                               #:module '(roquix packages rust-crates)))))
+       (home-page "https://github.com/juberti-oai/rust-sdks")
+       (synopsis "Workspace crates from the LiveKit rust-sdks repository")
+       (description
+        "This package provides the rust-sdks workspace crates used by Codex's
+realtime WebRTC support.")
        (license license:asl2.0)))))
