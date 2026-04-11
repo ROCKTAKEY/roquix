@@ -30,6 +30,7 @@
   #:export (lookup-cargo-inputs))
 
 ;; TODO: rust-sdks family should be defined in rust-sources.scm.
+;;   https://codeberg.org/guix/guix/pulls/6825 should be merged to do so.
 
 (define rust-sdks-source-modules
   '((guix build utils)
