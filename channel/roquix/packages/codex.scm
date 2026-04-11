@@ -69,7 +69,7 @@ build phase.")
 (define-public codex
   (package
     (name "codex")
-    (version "0.118.0")
+    (version "0.120.0")
     (source
      (origin
        (method git-fetch)
@@ -78,7 +78,7 @@ build phase.")
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "1mlks8w51c42fl31w3ndk78891n3f5qas5q7gbkqjk1a4bw5bnqm"))))
+       (base32 "0gqzkqndb8jwvb9j5dxqgidyzk67x00ccfzhg54gdlv4adc1cgwj"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -329,7 +329,7 @@ build phase.")
                     (lambda _
                       (chdir "codex-rs")))
                   (add-after 'change-directory-to-rust-source 'use-guix-vendored-dependencies
-                    (lambda _
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "Cargo.toml"
                         (("runfiles = \\{ git = \"https://github.com/dzbarsky/rules_rust\", rev = \"b56cbaa8465e74127f1ea216f813cd377295ad81\" \\}")
                          "runfiles = \"0.1.0\"")
@@ -344,7 +344,10 @@ build phase.")
                         (("\\[patch.\"ssh://git@github.com/JakkuSakura/tungstenite-rs.git\"\\]")
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"9200079d3b54a1ff51072e24d81fd354f085156f\" \\}")
-                         ""))))
+                         ""))
+                      (substitute* "realtime-webrtc/Cargo.toml"
+                        (("libwebrtc = \\{ version = \"0\\.3\\.26\", git = \"https://github.com/juberti-oai/rust-sdks.git\", rev = \"e2d1d1d230c6fc9df171ccb181423f957bb3c1f0\" \\}")
+                         "libwebrtc = \"0.3.26\""))))
                   (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((bwrap (search-input-file inputs "/bin/bwrap")))
