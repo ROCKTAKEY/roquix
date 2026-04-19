@@ -328,7 +328,7 @@ and the generated gRPC code necessary for interacting with Google's gRPC APIs.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.23
+      #:go go-1.24
       ;; go-build-system packages actual import paths, not every indirect
       ;; module dependency recorded in go.mod.
       #:tests? #f
@@ -408,7 +408,7 @@ data.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.23
+      #:go go-1.24
       #:import-path "go.opentelemetry.io/auto/sdk"
       #:unpack-path "go.opentelemetry.io/auto/sdk"
       #:test-subdirs ''("" "internal/telemetry")))
@@ -777,7 +777,7 @@ the detection functions in real GCP environments.")
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.23
+      #:go go-1.24
       ;; This package is consumed as a source dependency; building the module
       ;; root itself is not required for downstream users such as Ollama.
       #:skip-build? #t
@@ -1246,28 +1246,6 @@ commonly in arithmetic, comparison and linear algebra operations.")
                                         "TestStopTimeoutClock/.*"
                                         "TestIncorrectDeadline/.*") "|"))
             (package-arguments go-github-com-dlclark-regexp2)))))
-
-;; Ollama needs os.OpenRoot
-(define-public go-1.24
-  (package
-    (inherit go-1.23)
-    (name "go")
-    (version "1.24.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/golang/go")
-             (commit (string-append "go" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1b24pdsxrarw22gffv85sghpgvgamafvwwrvvhmyv3hqf89m97zk"))))
-    (native-inputs
-     ;; Go 1.22 and later requires Go 1.20 (min. 1.20.6, which we don't have)
-     ;; as the bootstrap toolchain.
-     (alist-replace "go"
-                    (list go-1.23)
-                    (package-native-inputs go-1.23)))))
 
 (define %ollama-version "0.18.2")
 
