@@ -1817,6 +1817,10 @@
   (crate-source "deflate64" "0.1.10"
                 "012jmx4jrxwdk5d6fbnnxih4zdq9nb0vmjzhqasjkvf5a71qzgr6"))
 
+(define rust-deno-core-icudata-0.77.0
+  (crate-source "deno_core_icudata" "0.77.0"
+                "1ik4pka1zjypkkgqr28j4gfrsx66lphhf999ckk1lb58j24zzvx9"))
+
 (define rust-der-0.7.10
   (crate-source "der" "0.7.10"
                 "1jyxacyxdx6mxbkfw99jz59dzvcd9k17rq01a7xvn1dr6wl87hg7"))
@@ -2075,6 +2079,14 @@
 (define rust-ecolor-0.32.1
   (crate-source "ecolor" "0.32.1"
                 "08plb55cwn0mhvl4va5r81680ng1fx0zir1cdfb5dvy2f8qzr9xn"))
+
+(define rust-ed25519-2.2.3
+  (crate-source "ed25519" "2.2.3"
+                "0lydzdf26zbn82g7xfczcac9d7mzm3qgx934ijjrd5hjpjx32m8i"))
+
+(define rust-ed25519-dalek-2.2.0
+  (crate-source "ed25519-dalek" "2.2.0"
+                "1agcwij1z687hg26ngzwhnmpz29b2w56m8z1ap3pvrnfh709drvh"))
 
 (define rust-eframe-0.32.1
   (crate-source "eframe" "0.32.1"
@@ -5671,6 +5683,10 @@
   (crate-source "rand" "0.9.2"
                 "1lah73ainvrgl7brcxx0pwhpnqa3sm3qaj672034jz8i0q7pgckd"))
 
+(define rust-rand-0.9.3
+  (crate-source "rand" "0.9.3"
+                "0rkim3hc792p968nqm9rr7yvzp8bjcx3kqz94hhiq5r599jrbh3y"))
+
 (define rust-rand-chacha-0.3.1
   (crate-source "rand_chacha" "0.3.1"
                 "123x2adin558xbhvqb8w4f6syjsdkmqff8cxwhmjacpsl1ihmhg6"))
@@ -6142,6 +6158,10 @@
 (define rust-rustls-webpki-0.103.10
   (crate-source "rustls-webpki" "0.103.10"
                 "1vyipcdbazvhl6kyi1m8n0bg98sk25iv12bby2xcly653awb4cyz"))
+
+(define rust-rustls-webpki-0.103.12
+  (crate-source "rustls-webpki" "0.103.12"
+                "01nxzkfd1l96jzp04svc7iznlkarzx3wb9p63a0i17rc4y2vnyc2"))
 
 (define rust-rustls-webpki-0.103.4
   (crate-source "rustls-webpki" "0.103.4"
@@ -10217,6 +10237,7 @@
                              rust-debugid-0.8.0
                              rust-debugserver-types-0.5.0
                              rust-deflate64-0.1.10
+                             rust-deno-core-icudata-0.77.0
                              rust-der-0.7.10
                              rust-der-parser-10.0.0
                              rust-deranged-0.5.5
@@ -10249,6 +10270,8 @@
                              rust-dupe-0.9.1
                              rust-dupe-derive-0.9.1
                              rust-dyn-clone-1.0.20
+                             rust-ed25519-2.2.3
+                             rust-ed25519-dalek-2.2.0
                              rust-either-1.15.0
                              rust-ena-0.14.3
                              rust-encode-unicode-1.0.0
@@ -10637,7 +10660,7 @@
                              rust-rama-unix-0.3.0-alpha.4
                              rust-rama-utils-0.3.0-alpha.4
                              rust-rand-0.8.5
-                             rust-rand-0.9.2
+                             rust-rand-0.9.3
                              rust-rand-chacha-0.3.1
                              rust-rand-chacha-0.9.0
                              rust-rand-core-0.6.4
@@ -10682,7 +10705,7 @@
                              rust-rustls-0.23.36
                              rust-rustls-native-certs-0.8.3
                              rust-rustls-pki-types-1.14.0
-                             rust-rustls-webpki-0.103.10
+                             rust-rustls-webpki-0.103.12
                              rust-rustversion-1.0.22
                              rust-rustyline-14.0.0
                              rust-ryu-1.0.22
