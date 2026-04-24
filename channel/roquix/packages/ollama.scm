@@ -1247,7 +1247,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
                                         "TestIncorrectDeadline/.*") "|"))
             (package-arguments go-github-com-dlclark-regexp2)))))
 
-(define %ollama-version "0.18.2")
+(define %ollama-version "0.21.1")
 
 (define %ollama-source
   (origin
@@ -1257,7 +1257,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
           (commit (string-append "v" %ollama-version))))
     (file-name (git-file-name "ollama" %ollama-version))
     (sha256
-     (base32 "0sbwb2aycih5aws42qacjny715p6ns72sgizq35a4fyr6irrhc04"))))
+     (base32 "06rchm4q734q8afc6abb9jf8nwa0rkyzid4fhwa55jxznshkdxxp"))))
 
 (define %ollama-propagated-inputs
   (list go-google-golang-org-protobuf
@@ -1267,6 +1267,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
         go-golang-org-x-exp
         go-golang-org-x-crypto
         go-github-com-gin-contrib-cors
+        go-github-com-klauspost-compress
         go-golang-org-x-tools
         go-golang-org-x-image
         go-github-com-charmbracelet-bubbletea
@@ -1274,6 +1275,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
         go-github-com-pdevine-tensor
         go-github-com-nlpodyssey-gopickle
         go-github-com-mattn-go-runewidth
+        go-github-com-mattn-go-sqlite3
         go-github-com-pkg-browser
         go-github-com-google-go-cmp
         go-github-com-emirpasic-gods-v2
@@ -1289,6 +1291,7 @@ commonly in arithmetic, comparison and linear algebra operations.")
         go-github-com-gin-gonic-gin
         go-github-com-containerd-console
         go-github-com-wk8-go-ordered-map-v2
+        go-gopkg-in-yaml-v3
         go-modernc-org-mathutil))
 
 (define %ollama-native-inputs
