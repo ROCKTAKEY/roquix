@@ -568,6 +568,10 @@
   (crate-source "aws-sigv4" "1.3.7"
                 "0z5yh2h6ym51xkcydnxg3j5axzibwa42jwwx47zyirz8qkhj7rb9"))
 
+(define rust-aws-smithy-async-1.2.14
+  (crate-source "aws-smithy-async" "1.2.14"
+                "1z5cb4dasm2s698x8py79mirhi94d8r0qh3835bq996xddiazz1g"))
+
 (define rust-aws-smithy-async-1.2.7
   (crate-source "aws-smithy-async" "1.2.7"
                 "0z0hnhak0nhxgw67j6377k9v492cf372il4p2sgsbpf4qyar1qcy"))
@@ -579,6 +583,10 @@
 (define rust-aws-smithy-http-0.62.6
   (crate-source "aws-smithy-http" "0.62.6"
                 "12y8d7a5ii6rkw63m94r53969i1hivr1fg10z1r26xcmj8342qc2"))
+
+(define rust-aws-smithy-http-client-1.1.12
+  (crate-source "aws-smithy-http-client" "1.1.12"
+                "0sgpqnkznfd468d439krf7xg91qr3059v2cb09iz5rpfgxd1cbva"))
 
 (define rust-aws-smithy-http-client-1.1.5
   (crate-source "aws-smithy-http-client" "1.1.5"
@@ -600,13 +608,25 @@
   (crate-source "aws-smithy-runtime" "1.9.5"
                 "1xd5nkhjw9jwnl7ga10nv63qhpbwpsvqdywaac9ak91yb1ndp4m3"))
 
+(define rust-aws-smithy-runtime-api-1.12.0
+  (crate-source "aws-smithy-runtime-api" "1.12.0"
+                "0bmlc7g3rgj5c12bi5kxyyfzlk1jz76xyfx746zsy2nsdbgi66mp"))
+
 (define rust-aws-smithy-runtime-api-1.9.3
   (crate-source "aws-smithy-runtime-api" "1.9.3"
                 "18hlmqw92rlh8qlymafh5m2pmhjlpa1gaysq1qq0irgrk7c463db"))
 
+(define rust-aws-smithy-runtime-api-macros-1.0.0
+  (crate-source "aws-smithy-runtime-api-macros" "1.0.0"
+                "1dx7m2lcg329bwxyqmafjdsd7fkinvn8gsb0wii9wn00jpyrcwwd"))
+
 (define rust-aws-smithy-types-1.3.5
   (crate-source "aws-smithy-types" "1.3.5"
                 "009z37kc9sjpjpj3hb28qws3i49d0sdpbv9crx4nsqlmk0xb2p4h"))
+
+(define rust-aws-smithy-types-1.4.7
+  (crate-source "aws-smithy-types" "1.4.7"
+                "0p69816m27cfznmn18q96n179ljqp607c4s5j1xwajwfmbxxnwwx"))
 
 (define rust-aws-smithy-xml-0.60.13
   (crate-source "aws-smithy-xml" "0.60.13"
@@ -1457,6 +1477,10 @@
 (define rust-cookie-store-0.22.0
   (crate-source "cookie_store" "0.22.0"
                 "0zr0f389i29pcbgl2096jrvvr8ix2l9mvclp3vxwgd698pvvzi1z"))
+
+(define rust-cookie-store-0.22.1
+  (crate-source "cookie_store" "0.22.1"
+                "01jjqwlg3v76b627ar6mm8bgshjv51kag16swg5cc3k1rw1w3chm"))
 
 (define rust-cordyceps-0.3.4
   (crate-source "cordyceps" "0.3.4"
@@ -6492,6 +6516,10 @@
   (crate-source "rustls-webpki" "0.103.12"
                 "01nxzkfd1l96jzp04svc7iznlkarzx3wb9p63a0i17rc4y2vnyc2"))
 
+(define rust-rustls-webpki-0.103.13
+  (crate-source "rustls-webpki" "0.103.13"
+                "0vkm7z9pnxz5qz66p2kmyy2pwx0g4jnsbqk5xzfhs4czcjl2ki31"))
+
 (define rust-rustls-webpki-0.103.4
   (crate-source "rustls-webpki" "0.103.4"
                 "1z4jmmgasjgk9glb160a66bshvgifa64mgfjrkqp7dy1w158h5qa"))
@@ -10455,14 +10483,34 @@
                              rust-atoi-2.0.0
                              rust-atomic-waker-1.1.2
                              rust-autocfg-1.5.0
+                             rust-aws-config-1.8.12
+                             rust-aws-credential-types-1.2.11
                              rust-aws-lc-rs-1.16.2
                              rust-aws-lc-sys-0.39.0
+                             rust-aws-runtime-1.5.17
+                             rust-aws-sdk-sso-1.91.0
+                             rust-aws-sdk-ssooidc-1.93.0
+                             rust-aws-sdk-sts-1.95.0
+                             rust-aws-sigv4-1.3.7
+                             rust-aws-smithy-async-1.2.14
+                             rust-aws-smithy-http-0.62.6
+                             rust-aws-smithy-http-client-1.1.12
+                             rust-aws-smithy-json-0.61.9
+                             rust-aws-smithy-observability-0.1.5
+                             rust-aws-smithy-query-0.60.9
+                             rust-aws-smithy-runtime-1.9.5
+                             rust-aws-smithy-runtime-api-1.12.0
+                             rust-aws-smithy-runtime-api-macros-1.0.0
+                             rust-aws-smithy-types-1.4.7
+                             rust-aws-smithy-xml-0.60.13
+                             rust-aws-types-1.3.11
                              rust-axum-0.8.8
                              rust-axum-core-0.5.6
                              rust-backtrace-0.3.76
                              rust-base16ct-0.2.0
                              rust-base64-0.21.7
                              rust-base64-0.22.1
+                             rust-base64-simd-0.8.0
                              rust-base64ct-1.8.3
                              rust-basic-toml-0.1.10
                              rust-bech32-0.9.1
@@ -10486,6 +10534,7 @@
                              rust-byteorder-1.5.0
                              rust-byteorder-lite-0.1.0
                              rust-bytes-1.11.1
+                             rust-bytes-utils-0.1.4
                              rust-bytestring-1.5.0
                              rust-bzip2-0.4.4
                              rust-bzip2-0.5.2
@@ -10537,7 +10586,9 @@
                              rust-constant-time-eq-0.3.1
                              rust-convert-case-0.6.0
                              rust-convert-case-0.10.0
+                             rust-cookie-0.18.1
                              rust-cookie-factory-0.3.3
+                             rust-cookie-store-0.22.1
                              rust-core-foundation-0.9.4
                              rust-core-foundation-0.10.1
                              rust-core-foundation-sys-0.8.7
@@ -10619,6 +10670,7 @@
                              rust-display-container-0.9.0
                              rust-displaydoc-0.2.5
                              rust-dns-lookup-3.0.1
+                             rust-document-features-0.2.12
                              rust-dotenvy-0.15.7
                              rust-downcast-rs-1.2.1
                              rust-dtor-0.1.1
@@ -10793,6 +10845,7 @@
                              rust-hostname-0.4.2
                              rust-http-0.2.12
                              rust-http-1.4.0
+                             rust-http-body-0.4.6
                              rust-http-body-1.0.1
                              rust-http-body-util-0.1.3
                              rust-http-range-header-0.4.2
@@ -10891,6 +10944,7 @@
                              rust-linux-raw-sys-0.4.15
                              rust-linux-raw-sys-0.12.1
                              rust-litemap-0.8.1
+                             rust-litrs-1.0.0
                              rust-livekit-protocol-0.7.1.e2d1d1d
                              rust-livekit-runtime-0.4.0.e2d1d1d
                              rust-local-waker-0.1.4
@@ -10999,6 +11053,7 @@
                              rust-ordered-stream-0.2.0
                              rust-os-info-3.14.0
                              rust-os-pipe-1.2.3
+                             rust-outref-0.5.2
                              rust-owo-colors-4.3.0
                              rust-p256-0.13.2
                              rust-parking-2.2.1
@@ -11063,6 +11118,7 @@
                              rust-prost-types-0.14.3
                              rust-psl-2.1.184
                              rust-psl-types-2.0.11
+                             rust-publicsuffix-2.3.0
                              rust-pulldown-cmark-0.10.3
                              rust-pulldown-cmark-escape-0.10.1
                              rust-pxfm-0.1.27
@@ -11138,7 +11194,7 @@
                              rust-rustls-0.23.36
                              rust-rustls-native-certs-0.8.3
                              rust-rustls-pki-types-1.14.0
-                             rust-rustls-webpki-0.103.12
+                             rust-rustls-webpki-0.103.13
                              rust-rustversion-1.0.22
                              rust-rustyline-14.0.0
                              rust-ryu-1.0.22
@@ -11368,6 +11424,7 @@
                              rust-vcpkg-0.2.15
                              rust-version-compare-0.2.1
                              rust-version-check-0.9.5
+                             rust-vsimd-0.8.0
                              rust-vt100-0.16.2
                              rust-vte-0.15.0
                              rust-wait-timeout-0.2.1
@@ -11483,6 +11540,7 @@
                              rust-x25519-dalek-2.0.1
                              rust-x509-parser-0.18.1
                              rust-xdg-home-1.3.0
+                             rust-xmlparser-0.13.6
                              rust-xz2-0.1.7
                              rust-yaml-rust-0.4.5
                              rust-yansi-1.0.1
