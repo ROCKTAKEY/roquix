@@ -11314,6 +11314,7 @@
                              rust-system-configuration-sys-0.6.0
                              rust-system-deps-7.0.7
                              rust-tagptr-0.2.0
+                             rust-tar-0.4.45
                              rust-target-lexicon-0.13.3
                              rust-tempfile-3.27.0
                              rust-temporal-capi-0.1.2
