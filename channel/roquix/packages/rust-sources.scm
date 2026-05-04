@@ -59,6 +59,13 @@
    "wgpu = \"28.0\"\n"
    "winit = \"0.30.12\"\n"))
 
+;; rust-sdks is a Cargo workspace, but keep its generated origins as per-crate
+;; sources instead of a hidden workspace package using #:cargo-package-crates.
+;; Cargo 0.94+ leaves target/package/tmp-crate/*.crate as scratch output from
+;; `cargo package`; Guix master still scans target/package recursively, so that
+;; workspace packaging path can fail until guix/guix#6825 reaches master from
+;; rust-team.  This snippet extracts one crate and appends the workspace metadata
+;; it needs, avoiding the broken repackaging path.
 (define-public (rust-sdks-crate-snippet crate-dir)
   #~(begin
        (define crate-dir #$crate-dir)
