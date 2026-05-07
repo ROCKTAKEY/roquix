@@ -1,10 +1,7 @@
 (define-module (roquix services waydroid)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services dbus)
   #:use-module (gnu services shepherd)
-  #:use-module ((gnu system file-systems)
-                #:select (%control-groups))
   #:use-module (guix gexp)
   #:use-module (guix modules)
   #:use-module (guix records)
@@ -81,7 +78,9 @@
 Waydroid requires a Wayland session, Binder/BinderFS kernel support, a cgroup2
 mount and Android images initialized with @command{sudo waydroid init}.  The
 @code{package} field can be set to @code{waydroid-nftables} to install the
-nftables networking variant.
+nftables networking variant.  Operating systems not based on
+@code{%desktop-services} must provide the cgroup mount separately, for example
+by adding @code{%control-groups} to @code{file-systems}.
 
 A minimal operating system configuration can enable the service like this:
 
@@ -133,8 +132,6 @@ waydroid show-full-ui
                         waydroid-activation)
      (service-extension profile-service-type
                         waydroid-package-list)
-     (service-extension file-system-service-type
-                        (const %control-groups))
      (service-extension dbus-root-service-type
                         waydroid-package-list)
      (service-extension polkit-service-type

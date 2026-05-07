@@ -21,6 +21,8 @@
              (gnu services desktop)
              (gnu services networking)
              (gnu services shepherd)
+             ((gnu system file-systems)
+              #:select (%control-groups))
              (gnu system vm)
              (guix gexp)
              (roquix packages waydroid)
@@ -256,11 +258,12 @@
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
                  (targets '("/dev/vda"))))
-    (file-systems (cons (file-system
-                          (device "/dev/vda1")
-                          (mount-point "/")
-                          (type "ext4"))
-                        %base-file-systems))
+    (file-systems (append (list (file-system
+                                  (device "/dev/vda1")
+                                  (mount-point "/")
+                                  (type "ext4")))
+                          %control-groups
+                          %base-file-systems))
     (users (cons (user-account
                   (name "tester")
                   (comment "Waydroid test user")
