@@ -4,6 +4,7 @@
   #:use-module (gnu packages apparmor)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages certs)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
@@ -18,6 +19,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages xdisorg)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix gexp)
@@ -413,3 +415,144 @@ at run time with @command{waydroid init}.")
 
 (define-public waydroid-nftables
   (waydroid-package "waydroid-nftables" #t))
+
+(define-public waydroid-extras-script
+  (let ((commit "d5289cfd8929e86e7f0dc89ecadcef8b66930eec"))
+    (package
+      (name "waydroid-extras-script")
+      (version "0-unstable-2026-05-07")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/casualsnek/waydroid_script")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g26xsaahxnr2bib9wjsv9l3r2hgl62safbj2d8nc7f926bdj8fd"))))
+      (build-system copy-build-system)
+      (arguments
+       (list
+        #:install-plan #~'(("." "share/waydroid-extras"))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-cli-wrapper
+              (lambda _
+                ;; Guix does not currently provide InquirerPy.  Keep the
+                ;; command-line installer usable and make accidental
+                ;; interactive invocation fail with an actionable message.
+                (substitute* "main.py"
+                  (("from InquirerPy import inquirer\n") "")
+                  (("from InquirerPy\\.base\\.control import Choice\n") "")
+                  (("from InquirerPy\\.separator import Separator\n") "")
+                  (("def interact\\(\\):")
+                   (string-append
+                    "def interact():\n"
+                    "    Logger.error(\"Interactive mode is disabled in this "
+                    "Guix package; use 'waydroid-extras install <component>' "
+                    "or 'waydroid-extras remove <component>'.\")\n"
+                    "    raise SystemExit(1)")))))
+            (add-after 'patch-cli-wrapper 'patch-waydroid-paths
+              (lambda _
+                ;; Honor the same state-directory override as the roquix
+                ;; Waydroid package and service.
+                (substitute* "stuff/general.py"
+                  (("from tools.logger import Logger\n")
+                   (string-append
+                    "from tools.logger import Logger\n\n\n"
+                    "def get_waydroid_work():\n"
+                    "    return os.environ.get(\"WAYDROID_WORK\", "
+                    "\"/var/lib/waydroid\")\n\n\n"
+                    "def get_waydroid_config():\n"
+                    "    return os.environ.get(\"WAYDROID_CONFIG\", "
+                    "os.path.join(get_waydroid_work(), \"waydroid.cfg\"))\n"))
+                  (("return \"/var/lib/waydroid/overlay\"")
+                   "return os.path.join(get_waydroid_work(), \"overlay\")")
+                  (("cfg.read\\(\"/var/lib/waydroid/waydroid.cfg\"\\)")
+                   "cfg.read(get_waydroid_config())")
+                  (("with open\\(\"/var/lib/waydroid/waydroid.cfg\", \"w\"\\) as f:")
+                   "with open(get_waydroid_config(), \"w\") as f:"))
+                (substitute* "stuff/magisk.py"
+                  (("sys_overlay_rw = \"/var/lib/waydroid/overlay_rw\"")
+                   (string-append
+                    "sys_overlay_rw = os.path.join("
+                    "os.environ.get(\"WAYDROID_WORK\", \"/var/lib/waydroid\"), "
+                    "\"overlay_rw\")")))))
+            (add-after 'install 'install-wrapper
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let* ((bin (string-append #$output "/bin"))
+                       (program (string-append bin "/waydroid-extras"))
+                       (python (search-input-file inputs "/bin/python3"))
+                       (sh (search-input-file inputs "/bin/sh"))
+                       (runtime-inputs
+                        '("bash-minimal" "coreutils" "e2fsprogs" "findutils"
+                          "gawk" "grep" "lzip" "sed" "squashfs-tools" "sudo"
+                          "tar" "unzip" "util-linux" "waydroid"))
+                       (input-directories
+                        (lambda (name)
+                          (let ((input (assoc-ref inputs name)))
+                            (if input
+                                (filter file-exists?
+                                        (map (lambda (suffix)
+                                               (string-append input suffix))
+                                             '("/bin" "/sbin")))
+                                '()))))
+                       (path
+                        (string-join
+                         (apply append (map input-directories runtime-inputs))
+                         ":"))
+                       (python-path
+                        (search-path-as-string->list
+                         (or (getenv "GUIX_PYTHONPATH") "")))
+                       (cert-dir
+                        (string-append
+                         (assoc-ref inputs "nss-certs")
+                         "/etc/ssl/certs")))
+                  (mkdir-p bin)
+                  (call-with-output-file program
+                    (lambda (port)
+                      (format port
+                              "#!~a~%exec ~a ~a/share/waydroid-extras/main.py \"~a\"~%"
+                              sh python #$output "$@")))
+                  (chmod program #o755)
+                  (wrap-program program
+                    `("PATH" ":" prefix (,path))
+                    `("GUIX_PYTHONPATH" ":" prefix ,python-path)
+                    `("SSL_CERT_DIR" = (,cert-dir))))))
+            (add-after 'install-wrapper 'validate-wrapper
+              (lambda _
+                (setenv "HOME" "/tmp")
+                (setenv "XDG_CACHE_HOME" "/tmp")
+                (setenv "USER" "root")
+                (invoke (string-append #$output "/bin/waydroid-extras")
+                        "-h"))))))
+      (inputs
+       (list bash-minimal
+             coreutils
+             e2fsprogs
+             findutils
+             gawk
+             grep
+             lzip
+             nss-certs
+             python-requests
+             python-tqdm
+             python-wrapper
+             sed
+             squashfs-tools
+             sudo
+             tar
+             unzip
+             util-linux
+             waydroid))
+      (home-page "https://github.com/casualsnek/waydroid_script")
+      (synopsis "Install optional Waydroid extras")
+      (description
+       "Waydroid Extras Script installs optional additions into an existing
+Waydroid image.  This package provides the @command{waydroid-extras} command
+for non-interactive use, including @command{sudo waydroid-extras install
+libndk} and @command{sudo waydroid-extras install libhoudini}.  The native
+bridge archives themselves are not bundled; they are downloaded and verified by
+the script at run time.  Use only one native bridge implementation for a given
+Waydroid image.")
+      (license license:gpl3+))))

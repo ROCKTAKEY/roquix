@@ -11,6 +11,7 @@
             waydroid-configuration-package
             waydroid-configuration-state-directory
             waydroid-configuration-misc-directory
+            waydroid-configuration-extra-packages
             waydroid-configuration-extra-environment-variables
             waydroid-configuration-auto-start?
             waydroid-shepherd-service
@@ -26,6 +27,8 @@
                    (default "/var/lib/waydroid"))
   (misc-directory waydroid-configuration-misc-directory
                   (default "/var/lib/misc"))
+  (extra-packages waydroid-configuration-extra-packages
+                  (default (list waydroid-extras-script)))
   (extra-environment-variables
    waydroid-configuration-extra-environment-variables
    (default '()))
@@ -69,6 +72,11 @@
 
 (define (waydroid-package-list config)
   (list (waydroid-configuration-package config)))
+
+(define (waydroid-profile-package-list config)
+  (match-record config <waydroid-configuration>
+    (package extra-packages)
+    (cons package extra-packages)))
 
 (define-public waydroid-service-type
   (service-type
@@ -123,6 +131,15 @@ sudo waydroid init
 herd start waydroid-container
 waydroid session start
 waydroid show-full-ui
+@end example
+
+The system profile also includes @command{waydroid-extras} by default.  It can
+install optional ARM translation support into an initialized image.  Install
+only one native bridge implementation for a given image.
+
+@example
+sudo waydroid-extras install libndk
+sudo waydroid-extras install libhoudini
 @end example")
    (extensions
     (list
@@ -131,7 +148,7 @@ waydroid show-full-ui
      (service-extension activation-service-type
                         waydroid-activation)
      (service-extension profile-service-type
-                        waydroid-package-list)
+                        waydroid-profile-package-list)
      (service-extension dbus-root-service-type
                         waydroid-package-list)
      (service-extension polkit-service-type
