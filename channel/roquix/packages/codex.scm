@@ -69,7 +69,7 @@ build phase.")
 (define-public codex
   (package
     (name "codex")
-    (version "0.128.0")
+    (version "0.130.0")
     (source
      (origin
        (method git-fetch)
@@ -78,7 +78,7 @@ build phase.")
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "0c79ynahn07ag0lylhi7wg5zixqkwjwzkyky3pqz2f2gr5xb8rdz"))))
+       (base32 "0npg5g6n7g5y5ndikmm3c0miixgjvb9pc2hjjrs4qcflpihixrb1"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain

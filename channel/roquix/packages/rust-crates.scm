@@ -552,6 +552,10 @@
   (crate-source "aws-sdk-sagemakerruntime" "1.93.0"
                 "0qjlb25c94hp69qsni1d21r50mzrxcb09mw4lln42mn8zscdc2ba"))
 
+(define rust-aws-sdk-signin-1.2.0
+  (crate-source "aws-sdk-signin" "1.2.0"
+                "0lxyqv388cb809vidsc0ld0dv6z4q9df1ndqihsf25hrjiivv160"))
+
 (define rust-aws-sdk-sso-1.91.0
   (crate-source "aws-sdk-sso" "1.91.0"
                 "0p8ik57j1ddzmcmslxmna98n7cl4sqr6f736czz54yzj6qm41rlf"))
@@ -10488,6 +10492,7 @@
                              rust-aws-lc-rs-1.16.2
                              rust-aws-lc-sys-0.39.0
                              rust-aws-runtime-1.5.17
+                             rust-aws-sdk-signin-1.2.0
                              rust-aws-sdk-sso-1.91.0
                              rust-aws-sdk-ssooidc-1.93.0
                              rust-aws-sdk-sts-1.95.0
