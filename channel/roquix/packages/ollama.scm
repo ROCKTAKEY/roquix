@@ -144,35 +144,6 @@ implements the discovery service APIs defined in
 @@url{https://github.com/envoyproxy/data-plane-api,data-plane-api}.")
     (license license:asl2.0)))
 
-(define-public go-github-com-planetscale-vtprotobuf
-  (package
-    (name "go-github-com-planetscale-vtprotobuf")
-    (version "0.6.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/planetscale/vtprotobuf")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0bms8rrg8wrm3x9mspqrzzix24vjgi3p5zzbw108ydr1rnarwblf"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:skip-build? #t
-      #:import-path "github.com/planetscale/vtprotobuf"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-google-golang-org-grpc
-                             go-github-com-stretchr-testify))
-    (home-page "https://github.com/planetscale/vtprotobuf")
-    (synopsis ", the Vitess Protocol Buffers compiler")
-    (description
-     "This repository provides the @@code{protoc-gen-go-vtproto} plug-in for
-@@code{protoc}, which is used by Vitess to generate optimized marshall &
-unmarshal code.")
-    (license license:bsd-3)))
-
 (define-public go-github-com-microsoft-go-winio
   (package
     (name "go-github-com-microsoft-go-winio")
@@ -309,116 +280,6 @@ validate such constraints.")
     (description
      "This repository contains the generated Go packages for common protocol buffer types,
 and the generated gRPC code necessary for interacting with Google's gRPC APIs.")
-    (license license:asl2.0)))
-
-(define-public go-go-opentelemetry-io-collector-pdata
-  (package
-    (name "go-go-opentelemetry-io-collector-pdata")
-    (version "1.32.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/open-telemetry/opentelemetry-collector")
-             (commit (go-version->git-ref version
-                                          #:subdir "pdata"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0cqnvacj52js79nyd4vkmk992xr44ywcr2j7ywx7q5iy2vknh4v3"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go go-1.24
-      ;; go-build-system packages actual import paths, not every indirect
-      ;; module dependency recorded in go.mod.
-      #:tests? #f
-      #:import-path "go.opentelemetry.io/collector/pdata"
-      #:unpack-path "go.opentelemetry.io/collector"))
-    (propagated-inputs (list go-google-golang-org-protobuf
-                             go-go-uber-org-multierr
-                             go-go-uber-org-goleak
-                             go-github-com-stretchr-testify
-                             go-github-com-json-iterator-go
-                             go-github-com-gogo-protobuf))
-    (home-page "https://go.opentelemetry.io/collector")
-    (synopsis "Pipeline data (pdata)")
-    (description
-     "Package pdata provides the data model definitions for all supported pipeline
-data.")
-    (license license:asl2.0)))
-
-(define go-go-opentelemetry-io-otel-bootstrap
-  (package
-    (inherit go-go-opentelemetry-io-otel)
-    ;; Source-only variant used to break the real otel <-> auto-sdk cycle.
-    ;; The current auto-sdk source tree itself satisfies otel's import of
-    ;; go.opentelemetry.io/auto/sdk during the auto-sdk build, so propagating
-    ;; auto-sdk back through this edge only reintroduces the same source tree
-    ;; as a read-only input.
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-go-opentelemetry-io-otel)
-       ((#:skip-build? _ #f) #t)
-       ((#:tests? _ #t) #f)))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs go-go-opentelemetry-io-otel)
-       (delete "go-go-opentelemetry-io-auto-sdk")))))
-
-(define-public go-go-opentelemetry-io-auto-sdk
-  (package
-    (name "go-go-opentelemetry-io-auto-sdk")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url
-              "https://github.com/open-telemetry/opentelemetry-go-instrumentation")
-             (commit (go-version->git-ref version
-                                          #:subdir "sdk"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "155qcbl84bwy7m9k221w75yakfv71fbxpfn9g3d7nnq6cl30fbfw"))
-       (modules '((guix build utils)
-                  (ice-9 ftw)))
-       (snippet #~(begin
-                    ;; Build only the SDK subdirectory and flatten it to the
-                    ;; source root so go-build-system can unpack it directly at
-                    ;; go.opentelemetry.io/auto/sdk.
-                    (define (directory? file)
-                      (let ((st (stat file #f)))
-                        (and st (eq? 'directory (stat:type st)))))
-                    (define (delete-path file)
-                      (if (directory? file)
-                          (delete-file-recursively file)
-                          (delete-file file)))
-                    (let ((sdk-entries
-                           (scandir "sdk"
-                                    (lambda (entry)
-                                      (not (member entry '("." "..")))))))
-                      (for-each
-                       (lambda (entry)
-                         (unless (member entry '("." ".." "sdk"))
-                           (delete-path entry)))
-                       (scandir "."))
-                      (for-each
-                       (lambda (entry)
-                         (rename-file (string-append "sdk/" entry) entry))
-                       sdk-entries)
-                      (rmdir "sdk"))))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:go go-1.24
-      #:import-path "go.opentelemetry.io/auto/sdk"
-      #:unpack-path "go.opentelemetry.io/auto/sdk"
-      #:test-subdirs ''("" "internal/telemetry")))
-    (propagated-inputs (list go-go-opentelemetry-io-otel-bootstrap
-                             go-github-com-stretchr-testify
-                             go-go-opentelemetry-io-collector-pdata))
-    (home-page "https://go.opentelemetry.io/auto")
-    (synopsis #f)
-    (description
-     "Package sdk provides an auto-instrumentable @code{OpenTelemetry} SDK.")
     (license license:asl2.0)))
 
 (define-public go-github-com-cncf-xds-go
@@ -600,40 +461,6 @@ of the regular grpc.Server. ")
      "Package prometheus provides a Prometheus Exporter that converts OTLP metrics
 into the Prometheus exposition format and implements prometheus.Collector to
 provide a handler for these metrics.")
-    (license license:asl2.0)))
-
-(define-public go-google-golang-org-grpc-security-advancedtls
-  (package
-    (name "go-google-golang-org-grpc-security-advancedtls")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/grpc/grpc-go")
-             (commit (go-version->git-ref version
-                                          #:subdir "security/advancedtls"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1xkqjian41falr0h8sicx2vdajf1zxcrkqiz5p2g7mmm8gcb6l4w"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:import-path "google.golang.org/grpc/security/advancedtls"
-      #:unpack-path "google.golang.org/grpc"))
-    (propagated-inputs (list go-golang-org-x-crypto
-                             go-github-com-google-go-cmp))
-    (home-page "https://google.golang.org/grpc")
-    (synopsis #f)
-    (description
-     "Package advancedtls provides @code{gRPC} transport credentials that allow easy
-configuration of advanced TLS features.  The APIs here give the user more
-customizable control to fit their security landscape, thus the \"advanced\"
-moniker.  This package provides both interfaces and generally useful
-implementations of those interfaces, for example periodic credential reloading,
-support for certificate revocation lists, and customizable certificate
-verification behaviors.  If the provided implementations do not fit a given use
-case, a custom implementation of the interface can be injected.")
     (license license:asl2.0)))
 
 (define-public go-github-com-spiffe-go-spiffe
@@ -1097,53 +924,6 @@ types.")
     (description
      "Package vecf64 provides common functions and methods for slices of float64.")
     (license license:expat)))
-
-(define-public go-gorgonia-org-tensor
-  (package
-    (name "go-gorgonia-org-tensor")
-    (version "0.9.24")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/gorgonia/tensor")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "13dk1gmplik5z8x27khgk5aja480znq4ryx3j0csp2j9vnwccpl3"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:import-path "gorgonia.org/tensor"
-      #:phases '(modify-phases %standard-phases
-                  ;; Need python for tests
-                  (add-before 'check 'add-python-path
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "PYTHON_COMMAND"
-                              (string-append (assoc-ref inputs "python")
-                                             "/bin/python3")))))))
-    (propagated-inputs (list go-gorgonia-org-vecf64
-                             go-gorgonia-org-vecf32
-                             go-gonum-org-v1-gonum
-                             go-go4-org-unsafe-assume-no-moving-gc
-                             go-github-com-stretchr-testify
-                             go-github-com-pkg-errors
-                             go-github-com-google-flatbuffers
-                             go-github-com-golang-protobuf
-                             go-github-com-gogo-protobuf
-                             go-github-com-chewxy-math32
-                             go-github-com-chewxy-hm
-                             go-github-com-apache-arrow-go-arrow))
-    (native-inputs (list
-                    ;; Need for test
-                    python python-numpy))
-    (home-page "https://gorgonia.org/tensor")
-    (synopsis "Package")
-    (description
-     "Package tensor is a package that provides efficient, generic n-dimensional
-arrays in Go.  Also in this package are functions and methods that are used
-commonly in arithmetic, comparison and linear algebra operations.")
-    (license license:asl2.0)))
 
 (define-public go-github-com-pdevine-tensor
   (package
