@@ -37,7 +37,8 @@
                          python-mypy
                          python-pytest
                          python-pytest-asyncio
-                         python-setuptools-scm))
+                         python-setuptools-scm
+                         python-toml))
     (arguments
      '(#:tests? #f
        #:phases (modify-phases %standard-phases
