@@ -28,153 +28,6 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages xorg))
 
-(define (version-with-underscores version)
-  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version))
-
-(define (boost-patch name version hash)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://www.boost.org/patches/"
-                        (version-with-underscores version) "/" name))
-    (file-name (string-append "boost-" name))
-    (sha256 (base32 hash))))
-
-(define-public boost-1.74.0
-  (package
-    (name "boost")
-    (version "1.74.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dl.bintray.com/boostorg/release/"
-                                  version "/source/boost_"
-                                  (version-with-underscores version) ".tar.bz2"))
-              (sha256
-               (base32
-                "1c8nw4jz17zy2y27h7p554a5jza1ymz8phkz71p9181ifx8c3gw3"))))
-    (build-system gnu-build-system)
-    (inputs `(("icu4c" ,icu4c)
-              ("zlib" ,zlib)))
-    (native-inputs
-     `(("perl" ,perl)
-       ,@(if (%current-target-system)
-             '()
-             `(("python" ,python-minimal-wrapper)))
-       ("tcsh" ,tcsh)))
-    (arguments
-     `(#:imported-modules ((guix build python-build-system)
-                           ,@%default-gnu-imported-modules)
-       #:modules (((guix build python-build-system) #:select (python-version))
-                  ,@%default-gnu-imported-modules)
-       #:tests? #f
-       #:make-flags
-       (list "threading=multi" "link=shared"
-
-             ;; Set the RUNPATH to $libdir so that the libs find each other.
-             (string-append "linkflags=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib")
-             ,@(if (%current-target-system)
-                   `("--user-config=user-config.jam"
-                     ;; Python is not supported when cross-compiling.
-                     "--without-python"
-                     "binary-format=elf"
-                     "target-os=linux"
-                     ,@(cond
-                        ((string-prefix? "arm" (%current-target-system))
-                         '("abi=aapcs"
-                           "address-model=32"
-                           "architecture=arm"))
-                        ((string-prefix? "aarch64" (%current-target-system))
-                         '("abi=aapcs"
-                           "address-model=64"
-                           "architecture=arm"))
-                        (else '())))
-                   '()))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'bootstrap)
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((icu (assoc-ref inputs "icu4c"))
-                   (python (assoc-ref inputs "python"))
-                   (out (assoc-ref outputs "out")))
-               (substitute* '("libs/config/configure"
-                              "libs/spirit/classic/phoenix/test/runtest.sh"
-                              "tools/build/src/engine/execunix.cpp")
-                 (("/bin/sh") (which "sh")))
-
-               ;; For compatibility to Python 3.10.
-               ;; Retrived from future commit:
-               ;; https://github.com/boostorg/python/commit/cbd2d9f033c61d29d0a1df14951f4ec91e7d05cd
-               (substitute* '("libs/python/src/exec.cpp")
-                 (("_Py_fopen") "fopen"))
-
-               (setenv "SHELL" (which "sh"))
-               (setenv "CONFIG_SHELL" (which "sh"))
-
-               ,@(if (%current-target-system)
-                     `((call-with-output-file "user-config.jam"
-                         (lambda (port)
-                           (format port
-                                   "using gcc : cross : ~a-c++ ;"
-                                   ,(%current-target-system)))))
-                     '())
-
-               ;; Change an #ifdef __MACH__ that really targets macOS.
-               (substitute* "boost/test/utils/timer.hpp"
-                 (("defined\\(__MACH__\\)")
-                  "(defined __MACH__ && !defined __GNU__)"))
-
-               (invoke "./bootstrap.sh"
-                       (string-append "--prefix=" out)
-                       ;; Auto-detection looks for ICU only in traditional
-                       ;; install locations.
-                       (string-append "--with-icu=" icu)
-                       ;; Ditto for Python.
-                       ,@(if (%current-target-system)
-                             '()
-                             `((string-append "--with-python-root=" python)
-                               (string-append "--with-python=" python "/bin/python")
-                               (string-append "--with-python-version="
-                                              (python-version python))))
-                       "--with-toolset=gcc"))))
-         (replace 'build
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "./b2"
-                    (format #f "-j~a" (parallel-job-count))
-                    make-flags)))
-         (replace 'install
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "./b2" "install" make-flags)))
-         ,@(if (%current-target-system)
-               '()
-               '((add-after 'install 'provide-libboost_python
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let* ((out (assoc-ref outputs "out"))
-                            (python-version (python-version
-                                             (assoc-ref inputs "python")))
-                            (libboost_pythonNN.so
-                             (string-append "libboost_python"
-                                            (string-join (string-split
-                                                          python-version #\.)
-                                                         "")
-                                            ".so")))
-                       (with-directory-excursion (string-append out "/lib")
-                         (symlink libboost_pythonNN.so "libboost_python.so")
-                         ;; Some packages only look for the major version.
-                         (symlink libboost_pythonNN.so
-                                  (string-append "libboost_python"
-                                                 (string-take python-version 1)
-                                                 ".so")))
-                       #t))))))))
-
-    (home-page "https://www.boost.org")
-    (synopsis "Peer-reviewed portable C++ source libraries")
-    (description
-     "A collection of libraries intended to be widely useful, and usable
-across a broad spectrum of applications.")
-    (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
-                                "Some components have other similar licences."))))
-
 (define-public giflib-5.1.4
   (package
     (name "giflib")
@@ -235,7 +88,7 @@ compose, and analyze GIF images.")
 (define-public opensiv3d
   (package
     (name "opensiv3d")
-    (version "0.6.14")
+    (version "0.6.16")
     (source
      (origin
        (method git-fetch)
@@ -244,18 +97,40 @@ compose, and analyze GIF images.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1279wjv9dkk3sirxhhgfcw47s6kk14fr79swzrz89g2nsil9bq4q"))))
+        (base32 "1z045fb0p1g3ca912sjg30pw6bq43p6mvdra1wraca7n1jb1grmh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'set-cwd
                     (lambda* (#:key #:allow-other-keys)
-                      (chdir "Linux"))))
+                      (chdir "Linux")))
+                  (add-after 'set-cwd 'patch-linux-build
+                    (lambda _
+                      ;; GCC 13 accepted this incompatible pointer argument as
+                      ;; a warning, but GCC 14 treats -Wincompatible-pointer-types
+                      ;; as an error for C99-and-later C code.  OpenSiv3D's
+                      ;; preedit API takes XPointer, while this vendored GLFW
+                      ;; call still passes _GLFWwindow* directly.
+                      (substitute*
+                          "../Siv3D/src/ThirdParty/GLFW/x11_window.c"
+                        (("s3d_PreeditAttributes\\(window\\)")
+                         "s3d_PreeditAttributes((XPointer) window)"))
+                      ;; Upstream Linux CMake requests -msse4.1, but Siv3D's
+                      ;; Linux intrinsic gate in Platform.hpp enables the native
+                      ;; SIMD path only when __SSE4_2__ is defined.  This is a
+                      ;; known upstream Linux/SIMDe issue:
+                      ;; https://github.com/Siv3D/OpenSiv3D/issues/819
+                      ;; With GCC 11/13/14, the inconsistent state can enter the
+                      ;; vendored SIMDe fallback/native-alias path and collide
+                      ;; with GCC's own intrinsic declarations.  Build with
+                      ;; SSE4.2 to match Siv3D's native SIMD condition on Linux.
+                      (substitute* "CMakeLists.txt"
+                        (("-msse4\\.1") "-msse4.2")))))
        #:tests? #f))
     (inputs (list gcc))
     (propagated-inputs (list alsa-lib
                              ffmpeg
-                             boost-1.74.0
+                             boost-1.83
                              curl
                              gtk+
                              giflib-5.1.4
