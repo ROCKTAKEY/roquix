@@ -5338,6 +5338,12 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
     (description "Package tailscaleroot embeds VERSION.txt into the binary.")
     (license license:bsd-3)))
 
+(define (tailscale-version-build-flags version)
+  ;; Guix builds outside a Git checkout, so Tailscale cannot infer this from
+  ;; Go's VCS build info.
+  #~(list (string-append "-ldflags=-X tailscale.com/version.longStamp=" #$version
+                         " -X tailscale.com/version.shortStamp=" #$version)))
+
 (define-public tailscale
   (package
     (inherit go-tailscale-com)
@@ -5355,6 +5361,9 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
                 #:go go-1.26
                 #:tests? #f
                 #:install-source? #f
+                #:build-flags
+                (tailscale-version-build-flags
+                 (package-version go-tailscale-com))
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
                 #:import-path "tailscale.com/cmd/tailscale"
                 #:unpack-path "tailscale.com"))
@@ -5377,6 +5386,9 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
                 #:go go-1.26
                 #:tests? #f
                 #:install-source? #f
+                #:build-flags
+                (tailscale-version-build-flags
+                 (package-version go-tailscale-com))
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
                 #:import-path "tailscale.com/cmd/tailscaled"
                 #:unpack-path "tailscale.com"))
