@@ -2740,6 +2740,21 @@ interface that is loosly modeled on the iproute2 cli.")
 known as the Windows firewall.")
     (license license:bsd-3)))
 
+;; Tailscale 1.96.4 needs a newer gVisor than Guix's go-gvisor-dev-gvisor.
+(define-public go-gvisor-dev-gvisor-for-tailscale
+  (package
+    (inherit go-gvisor-dev-gvisor)
+    (version "0.0.0-20260224225140-573d5e7127a8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/gvisor")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name "go-gvisor-dev-gvisor" version))
+       (sha256
+        (base32 "1by1fblmbbg7kbqh4hciysg2jqj87plmfpyyn92ba6aivb1szbyr"))))))
+
 (define-public go-github-com-tailscale-wireguard-go
   (package
     (name "go-github-com-tailscale-wireguard-go")
@@ -2761,7 +2776,7 @@ known as the Windows firewall.")
       #:import-path "github.com/tailscale/wireguard-go"))
     (propagated-inputs (list go-golang-org-x-crypto go-golang-org-x-net
                              go-golang-org-x-sys go-golang-zx2c4-com-wintun
-                             go-gvisor-dev-gvisor))
+                             go-gvisor-dev-gvisor-for-tailscale))
     (home-page "https://github.com/tailscale/wireguard-go")
     (synopsis "Go Implementation of")
     (description "This is an implementation of @code{WireGuard} in Go.")
@@ -5169,7 +5184,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
 (define-public go-tailscale-com
   (package
     (name "go-tailscale-com")
-    (version "1.94.2")
+    (version "1.96.4")
     (source
      (origin
        (method git-fetch)
@@ -5178,7 +5193,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07pz43lfmxkvg3b1a4dq9wh8a247gaqxppqaa8ah4mjnrh3radda"))))
+        (base32 "0qqlj6cq43h0pr8jg9g956yz5xgg81959vq2kl7n9yqnixyh8w2n"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -5305,7 +5320,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
                         go-golang-zx2c4-com-wintun
                         go-gopkg-in-square-go-jose-v2
                         go-gopkg-in-yaml-v3
-                        go-gvisor-dev-gvisor
+                        go-gvisor-dev-gvisor-for-tailscale
                         go-honnef-co-go-tools
                         go-k8s-io-api
                         go-k8s-io-apiextensions-apiserver
@@ -5337,7 +5352,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
     (propagated-inputs '())
     (inputs '())
     (arguments (list
-                #:go go-1.25
+                #:go go-1.26
                 #:tests? #f
                 #:install-source? #f
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
@@ -5359,7 +5374,7 @@ JSON Web Encryption, JSON Web Signature, and JSON Web Token.")
     (propagated-inputs '())
     (inputs '())
     (arguments (list
-                #:go go-1.25
+                #:go go-1.26
                 #:tests? #f
                 #:install-source? #f
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
