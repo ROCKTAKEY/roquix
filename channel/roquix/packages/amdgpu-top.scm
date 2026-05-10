@@ -36,6 +36,7 @@
     (arguments
      (list
       #:rust rust-1.88
+      #:cargo-install-paths ''(".")
       #:install-source? #f))
     (inputs (cons* libdrm
                    (cargo-inputs 'amdgpu-top
