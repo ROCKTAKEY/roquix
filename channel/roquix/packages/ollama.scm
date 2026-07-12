@@ -344,6 +344,10 @@ of the regular grpc.Server. ")
     ;; skip list, which causes spurious failures with this older source tree.
     (arguments
      (list
+      ;; client_golang 1.22.0 has collector test fixtures only through Go 1.24
+      ;; (tagged "go1.24 && !go1.25"); newer Go versions compile the shared
+      ;; tests without their fixture definitions, causing undefined symbols.
+      #:go go-1.24
       #:skip-build? #t
       #:tests? (target-64bit?)
       #:import-path "github.com/prometheus/client_golang"
