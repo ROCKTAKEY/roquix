@@ -6,6 +6,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages rust)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages python)
@@ -25,22 +26,22 @@
 (define rusty-v8-prebuilt-archive
   (package
     (name "rusty-v8-prebuilt-archive")
-    (version "146.4.0")
+    (version "149.2.0")
     (source
      (let* ((archive
              (cond
               ((string=? (%current-system) "aarch64-linux")
                '("librusty_v8_release_aarch64-unknown-linux-gnu.a.gz"
-                 "1n7cc88ag0v9fysbbhd4q6yggz397v946sq4piab1gc1gjq6bwfv"))
+                 "1igkmyr76iyqhfl46fc3iywsbyyfl8hsa09dcsiw9p34r8km2xzr"))
               (else
                '("librusty_v8_release_x86_64-unknown-linux-gnu.a.gz"
-                 "0lqi57snhsgsq68vagy1h81s32qph2dshi32hhp3ladfwjclsjz6"))))
+                 "0nf58l4kaap6w1c3z57p1cnlgpjvxiclgfxqpz47vrxpgmirivca"))))
             (archive-name (car archive))
             (archive-sha256 (cadr archive)))
        (origin
          (method url-fetch)
          (uri (string-append
-               "https://github.com/denoland/rusty_v8/releases/download/v146.4.0/"
+               "https://github.com/denoland/rusty_v8/releases/download/v149.2.0/"
                archive-name))
          (sha256
           (base32 archive-sha256)))))
@@ -69,7 +70,7 @@ build phase.")
 (define-public codex
   (package
     (name "codex")
-    (version "0.130.0")
+    (version "0.144.1")
     (source
      (origin
        (method git-fetch)
@@ -78,7 +79,7 @@ build phase.")
              (commit (string-append "rust-v" version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "0npg5g6n7g5y5ndikmm3c0miixgjvb9pc2hjjrs4qcflpihixrb1"))))
+       (base32 "0icwnvss0zswsp0vz2cffzr4xq46zfv634cl9phn40kjhsl2ny18"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -98,6 +99,7 @@ build phase.")
            perl))
     (arguments
      `(#:install-source? #f
+       #:rust ,rust-1.94
        #:tests? #f
        #:cargo-build-flags '("--package" "codex-cli")
        #:cargo-install-paths '("cli")
@@ -335,17 +337,17 @@ build phase.")
                          "runfiles = \"0.1.0\"")
                         (("nucleo = \\{ git = \"https://github.com/helix-editor/nucleo.git\", rev = \"4253de9faabb4e5c6d81d946a5e35a90f87347ee\" \\}")
                          "nucleo = \"0.5.0\"")
-                        (("ratatui = \\{ git = \"https://github.com/nornagon/ratatui\", rev = \"9b2ad1298408c45918ee9f8241a6f95498cdbed2\" \\}")
+                        (("ratatui = \\{ git = \"https://github.com/nornagon/ratatui\", rev = \"[0-9a-f]+\" \\}")
                          "")
-                        (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", rev = \"87db8bfa6dc99427fd3b071681b07fc31c6ce995\" \\}")
+                        (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", rev = \"[0-9a-f]+\" \\}")
                          "")
-                        (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"132f5b39c862e3a970f731d709608b3e6276d5f6\" \\}")
+                        (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"[0-9a-f]+\" \\}")
                          "")
                         (("\\[patch\\.crates-io\\]")
                          "")
                         (("\\[patch\\.\"ssh://git@github\\.com/openai-oss-forks/tungstenite-rs\\.git\"\\]")
                          "")
-                        (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"9200079d3b54a1ff51072e24d81fd354f085156f\" \\}")
+                        (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"[0-9a-f]+\" \\}")
                          ""))
                       (substitute* "realtime-webrtc/Cargo.toml"
                         (("libwebrtc = \\{ version = \"0\\.3\\.26\", git = \"https://github.com/juberti-oai/rust-sdks.git\", rev = \"e2d1d1d230c6fc9df171ccb181423f957bb3c1f0\" \\}")
