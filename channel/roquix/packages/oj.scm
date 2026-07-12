@@ -30,6 +30,7 @@
        "0zkzmmjgjb6lyrzq1ip54cpnp7al9a7mcyjyi5vx58bvnx3q0c6m"))))
    (build-system python-build-system)
    (arguments '(#:tests? #f))
+   (native-inputs (list python-setuptools))
    (propagated-inputs (list
                        python-online-judge-api-client
                        python-colorama
@@ -119,6 +120,7 @@
                                   out))
                         ))))
                 #:tests? #f))
+   (native-inputs (list python-setuptools))
    (propagated-inputs (list
                        python-appdirs
                        python-beautifulsoup4
