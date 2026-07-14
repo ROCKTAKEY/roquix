@@ -101,7 +101,7 @@ build phase.")
      `(#:install-source? #f
        #:rust ,rust-1.94
        #:tests? #f
-       #:cargo-build-flags '("--package" "codex-cli")
+       #:cargo-build-flags '("--package" "codex-cli" "--release")
        #:cargo-install-paths '("cli")
        #:cargo-test-flags '("--"
                             ;; core
