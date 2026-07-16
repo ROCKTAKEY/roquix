@@ -6,6 +6,30 @@
   #:use-module (guix gexp)
   #:use-module (gnu packages node-xyz))
 
+;; NOTE: Guix's node-build-system hard-codes --install-links in both the
+;; configure and install phases.  With npm 11, this can make npm try to chmod
+;; bin files in file:// dependencies from the read-only GNU store.  Although
+;; the build system accepts #:npm-flags, its standard phases do not use them,
+;; so replacing the phases is currently necessary to disable install links.
+(define (node-build-phases-without-install-links . phases)
+  #~(modify-phases %standard-phases
+      (replace 'configure
+        (lambda* (#:key inputs #:allow-other-keys)
+          (invoke (string-append (assoc-ref inputs "node") "/bin/npm")
+                  "--offline" "--ignore-scripts" "--no-audit"
+                  "--no-bin-links" "install")))
+      (replace 'install
+        (lambda* (#:key outputs inputs #:allow-other-keys)
+          (invoke (string-append (assoc-ref inputs "node") "/bin/npm")
+                  "--prefix" (assoc-ref outputs "out")
+                  "--global"
+                  "--offline"
+                  "--loglevel" "info"
+                  "--production"
+                  "--no-bin-links"
+                  "install" "../package.tgz")))
+      #$@phases))
+
 (define-public node-s-color-0.0.15
   (package
     (name "node-s-color")
@@ -734,9 +758,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/node"
@@ -996,9 +1020,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/mocha" "@types/node"
@@ -1097,9 +1121,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/node"
@@ -1130,9 +1154,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/node"
@@ -1162,9 +1186,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/node" "prettier"
@@ -1279,9 +1303,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/path-browserify"
@@ -1317,9 +1341,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("volar-service-typescript"
@@ -1967,9 +1991,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("vscode-languageserver-textdocument"
@@ -2161,9 +2185,9 @@
      (list
       #:tests? #f
       #:phases
-      #~(modify-phases %standard-phases
-          (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+      (node-build-phases-without-install-links
+          '(delete 'build)
+          '(add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
                            (delete-dependencies '("@types/node"
@@ -2175,7 +2199,17 @@
                                                   "vscode-languageserver-textdocument"
                                                   "astro-scripts"
                                                   "prettier-plugin-astro"
-                                                  "prettier"))))))))
+                                                  "prettier")))))
+          '(add-after 'install 'link-astro-ls
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (target (string-append
+                              out
+                              "/lib/node_modules/@astrojs/language-server"
+                              "/bin/nodeServer.js")))
+                (mkdir-p bin)
+                (symlink target (string-append bin "/astro-ls"))))))))
     (inputs (list node-vscode-uri-3.1.0
                   node-vscode-html-languageservice-5.6.2
                   node-volar-service-yaml-0.0.70
