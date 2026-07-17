@@ -30,6 +30,12 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
 3. Review the diff.
    - Expected package files: `channel/roquix/packages/codex.scm` and
      `channel/roquix/packages/rust-crates.scm`.
+   - Keep the OpenAI Codex release in `%codex-release-version`.  The exported
+     package appends `-roquix` so Guix selects the channel package when the
+     official Guix package has the same release version.  Source tags must use
+     the unsuffixed release version.
+   - When changing the updater, make it update `%codex-release-version` rather
+     than replacing the exported package version expression.
    - If the updater logic changes, `scripts/update-codex.sh` and
      `.github/workflows/update-codex.yml` should change together.
 4. Validate package resolution.
@@ -52,7 +58,7 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
 
 ## Notes
 
-- `guix show codex` may resolve to Guix's upstream package instead of
+- `guix show codex` may resolve to the official Guix package instead of
   `(roquix packages codex)`. Prefer `guix build -e '(@ (roquix packages codex)
   codex)'` or module-local checks.
 - `cargo-build-system` can treat a bare `origin` in `native-inputs` as a cargo

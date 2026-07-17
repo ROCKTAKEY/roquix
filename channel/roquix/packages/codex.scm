@@ -67,16 +67,20 @@ by the rust-v8 crate so Guix builds do not attempt to download it during the
 build phase.")
     (license (list license:expat license:bsd-3))))
 
+(define %codex-release-version "0.144.1")
+
 (define-public codex
   (package
     (name "codex")
-    (version "0.144.1")
+    ;; Guix also provides Codex, so a channel revision makes this build win
+    ;; package specification resolution when both packages track the same tag.
+    (version (string-append %codex-release-version "-roquix"))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/openai/codex/")
-             (commit (string-append "rust-v" version))))
+             (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
        (base32 "0icwnvss0zswsp0vz2cffzr4xq46zfv634cl9phn40kjhsl2ny18"))))
