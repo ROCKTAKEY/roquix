@@ -136,7 +136,7 @@ compose, and analyze GIF images.")
                              giflib-5.1.4
                              glu
                              harfbuzz
-                             mpg123
+                             libmpg123
                              opencv
                              opus
                              opusfile
