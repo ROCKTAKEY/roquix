@@ -1,21 +1,20 @@
 (define-module (roquix packages opencode)
+  #:use-module (roquix packages bun)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix records)
-  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages compression)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages rust-apps))
 
 (define %opencode-version "1.18.3")
-(define %bun-version "1.3.14")
 
 (define %opencode-aarch64?
   (string=? (%current-system) "aarch64-linux"))
@@ -34,102 +33,6 @@
     (file-name (git-file-name "opencode" %opencode-version))
     (sha256
      (base32 "0pnm9r6b39sl6jnvkd009wq5ky04zc8xj9pi6cvpr83xrsd37nar"))))
-
-(define %bun-archive
-  (if %opencode-aarch64?
-      "bun-linux-aarch64.zip"
-      "bun-linux-x64-baseline.zip"))
-
-(define %bun-hash
-  (if %opencode-aarch64?
-      "0fwsl5rijcv53j17rhw8ig8xia3zw656cvqdds1pa0rim1iznzx2"
-      "1iz66qxxfr9xx3f0557vx2ydlggdrv3bv6wk23554y4bw2590qx0"))
-
-;; Bun is self-hosting and Guix does not currently package it.  Keep the
-;; bootstrap executable private and use it only while building OpenCode.
-(define bun-bootstrap
-  (package
-    (name "bun-bootstrap")
-    (version %bun-version)
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/oven-sh/bun/releases/download/bun-v"
-             %bun-version "/" %bun-archive))
-       (sha256 (base32 %bun-hash))))
-    (build-system copy-build-system)
-    (supported-systems '("x86_64-linux" "aarch64-linux"))
-    (arguments
-     (list
-      #:install-plan #~'(("bun" "libexec/bun/bun"))
-      #:strip-binaries? #f
-      #:validate-runpath? #f
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'install 'patch-interpreter-in-place
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; patchelf grows this self-extracting executable and invalidates
-              ;; offsets used by Bun.compile.  Replace the interpreter bytes
-              ;; without changing the file size instead.
-              (use-modules (rnrs bytevectors)
-                           (rnrs io ports))
-              (let* ((file (string-append (assoc-ref outputs "out")
-                                           "/libexec/bun/bun"))
-                     (old (string->utf8
-                           (string-append "/lib" (if #$%opencode-aarch64?
-                                                     ""
-                                                     "64")
-                                          "/" #$%opencode-loader)))
-                     (new (string->utf8 "/tmp/bun-ld.so"))
-                     (input (open-file file "rb"))
-                     (data (get-bytevector-all input)))
-                (close-port input)
-                (let search ((offset 0))
-                  (cond
-                   ((> (+ offset (bytevector-length old))
-                       (bytevector-length data))
-                    (error "Bun ELF interpreter not found"))
-                   ((let compare ((index 0))
-                      (or (= index (bytevector-length old))
-                          (and (= (bytevector-u8-ref data (+ offset index))
-                                  (bytevector-u8-ref old index))
-                               (compare (+ index 1)))))
-                    (bytevector-copy! new 0 data offset
-                                      (bytevector-length new))
-                    (do ((index (+ offset (bytevector-length new))
-                                (+ index 1)))
-                        ((= index (+ offset (bytevector-length old))))
-                      (bytevector-u8-set! data index 0))
-                    (let ((output (open-file file "wb")))
-                      (put-bytevector output data)
-                      (close-port output)))
-                   (else (search (+ offset 1)))))
-                (chmod file #o555))))
-          (add-after 'install 'make-wrapper
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (wrapper (string-append bin "/bun"))
-                     (program (string-append out "/libexec/bun/bun"))
-                     (bash (assoc-ref inputs "bash-minimal"))
-                     (glibc (assoc-ref inputs "glibc")))
-                (mkdir-p bin)
-                (call-with-output-file wrapper
-                  (lambda (port)
-                    (format port "#!~a/bin/bash~%" bash)
-                    (format port
-                            "exec ~a/lib/~a --library-path ~a/lib ~a \"$@\"~%"
-                            glibc #$%opencode-loader glibc program)))
-                (chmod wrapper #o555)))))))
-    (native-inputs (list unzip))
-    (inputs (list bash-minimal glibc))
-    (home-page "https://bun.sh/")
-    (synopsis "Bootstrap Bun executable for building OpenCode")
-    (description
-     "This private package provides the pinned Bun executable needed to build
-OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
-    (license license:expat)))
 
 (define-record-type* <bun-node-modules-reference>
   bun-node-modules-reference make-bun-node-modules-reference
@@ -156,21 +59,18 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                                   #+coreutils "/bin:"
                                   #+findutils "/bin"))
            (setenv "SSL_CERT_FILE"
-                   #$(file-append nss-certs
+                   #$(file-append nss-certs-for-test
                                   "/etc/ssl/certs/ca-certificates.crt"))
            (setenv "HOME" (string-append (getcwd) "/.home"))
            (setenv "XDG_CACHE_HOME" (string-append (getcwd) "/.cache"))
            (setenv "BUN_INSTALL_CACHE_DIR"
                    (string-append (getcwd) "/.bun-cache"))
-           (false-if-exception (delete-file "/tmp/bun-ld.so"))
-           (symlink #$(file-append glibc "/lib/" %opencode-loader)
-                    "/tmp/bun-ld.so")
            (mkdir-p (getenv "HOME"))
            (copy-recursively #+source "source")
            (with-directory-excursion "source"
              (invoke #$(file-append coreutils "/bin/chmod")
                      "-R" "u+w" ".")
-             (invoke #$(file-append bun "/libexec/bun/bun")
+             (invoke #$(file-append bun "/bin/bun")
                      "install"
                      (string-append "--cpu=" #$cpu)
                      "--os=linux"
@@ -181,9 +81,9 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                      "--frozen-lockfile"
                      "--ignore-scripts"
                      "--no-progress")
-             (invoke #$(file-append bun "/libexec/bun/bun") "--bun"
+             (invoke #$(file-append bun "/bin/bun") "--bun"
                      "nix/scripts/canonicalize-node-modules.ts")
-             (invoke #$(file-append bun "/libexec/bun/bun") "--bun"
+             (invoke #$(file-append bun "/bin/bun") "--bun"
                      "nix/scripts/normalize-bun-binaries.ts")
              (mkdir-p #$output)
              (invoke #$(file-append findutils "/bin/find")
@@ -203,7 +103,7 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
     (method bun-node-modules-fetch)
     (uri (bun-node-modules-reference
           (source %opencode-source)
-          (bun bun-bootstrap)
+          (bun bun)
           (cpu (if %opencode-aarch64? "arm64" "x64"))))
     (file-name (string-append "opencode-node-modules-"
                               %opencode-version))
@@ -241,7 +141,12 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                 ;; wrapper instead.
                 (substitute* "packages/opencode/script/build.ts"
                   (("if \\(item.os.*!item.abi\\) \\{")
-                   "if (false) {"))))
+                   "if (false) {")
+                  ;; A platform-qualified target selects Bun's prebuilt
+                  ;; compiler artifact from node_modules.  Compile against
+                  ;; the current, source-built Guix Bun runtime instead.
+                  (("target: name.replace\\(pkg.name, \"bun\"\\) as any,")
+                   "// target omitted: use the current Bun runtime"))))
             (add-before 'build 'install-node-modules
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((modules (assoc-ref inputs "node_modules")))
@@ -262,9 +167,8 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                                                    file "/node_modules/"))))))))))
             (replace 'build
               (lambda* (#:key inputs #:allow-other-keys)
-                (let ((bun (string-append (assoc-ref inputs "bun-bootstrap")
-                                          "/libexec/bun/bun"))
-                      (glibc (assoc-ref inputs "glibc")))
+                (let ((bun (string-append (assoc-ref inputs "bun")
+                                          "/bin/bun")))
                   (setenv "HOME" (string-append (getcwd) "/.home"))
                   (for-each
                    (lambda (name)
@@ -274,10 +178,6 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                   (setenv "OPENCODE_VERSION" #$%opencode-version)
                   (setenv "OPENCODE_CHANNEL" "prod")
                   (setenv "OPENCODE_DISABLE_MODELS_FETCH" "1")
-                  (false-if-exception (delete-file "/tmp/bun-ld.so"))
-                  (symlink (string-append glibc "/lib/"
-                                          #$%opencode-loader)
-                           "/tmp/bun-ld.so")
                   (setenv
                    "MODELS_DEV_API_JSON"
                    (string-append
@@ -297,6 +197,7 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                        (wrapper (string-append bin "/opencode"))
                        (bash (assoc-ref inputs "bash-minimal"))
                        (glibc (assoc-ref inputs "glibc"))
+                       (icu (assoc-ref inputs "icu4c"))
                        (ripgrep (assoc-ref inputs "ripgrep"))
                        (built
                         (car
@@ -317,8 +218,8 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                       (format port "export PATH=~a/bin${PATH:+:}$PATH~%"
                               ripgrep)
                       (format port
-                              "exec ~a/lib/~a --library-path ~a/lib ~a \"$@\"~%"
-                              glibc #$%opencode-loader glibc program)))
+                              "exec ~a/lib/~a --library-path ~a/lib:~a/lib ~a \"$@\"~%"
+                              glibc #$%opencode-loader glibc icu program)))
                   (chmod wrapper #o555))))
             (add-after 'install 'install-completions
               (lambda* (#:key outputs #:allow-other-keys)
@@ -363,10 +264,10 @@ OpenCode from source.  It is not propagated to the OpenCode runtime closure.")
                                    (string=? actual #$%opencode-version))
                         (error "unexpected OpenCode version" actual)))))))))))
     (native-inputs
-     `(("bun-bootstrap" ,bun-bootstrap)
+     `(("bun" ,bun)
        ("node" ,node)
        ("node_modules" ,%opencode-node-modules)))
-    (inputs (list bash-minimal glibc ripgrep))
+    (inputs (list bash-minimal glibc icu4c ripgrep))
     (home-page "https://opencode.ai/")
     (synopsis "Open source coding agent")
     (description
