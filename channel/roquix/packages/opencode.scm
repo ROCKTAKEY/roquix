@@ -19,11 +19,6 @@
 (define %opencode-aarch64?
   (string=? (%current-system) "aarch64-linux"))
 
-(define %opencode-loader
-  (if %opencode-aarch64?
-      "ld-linux-aarch64.so.1"
-      "ld-linux-x86-64.so.2"))
-
 (define %opencode-source
   (origin
     (method git-fetch)
@@ -126,7 +121,6 @@
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:validate-runpath? #f
       #:phases
       #~(begin
           (use-modules (ice-9 popen)
@@ -134,19 +128,26 @@
           (modify-phases %standard-phases
             (delete 'bootstrap)
             (delete 'configure)
-            (add-after 'unpack 'disable-unwrapped-smoke-test
+            (add-after 'unpack 'use-current-bun-template
               (lambda _
-                ;; The generated ELF cannot use /lib64/ld-linux directly in a
-                ;; Guix build container.  Test it after installing the loader
-                ;; wrapper instead.
+                ;; A platform-qualified target selects Bun's prebuilt
+                ;; compiler artifact from node_modules.  Compile against the
+                ;; current, source-built Guix Bun runtime instead.  That Bun
+                ;; carries the Guix interpreter and link-time RUNPATH into the
+                ;; compiled OpenCode executable, so the upstream smoke test is
+                ;; valid without an explicit loader wrapper.
                 (substitute* "packages/opencode/script/build.ts"
-                  (("if \\(item.os.*!item.abi\\) \\{")
-                   "if (false) {")
-                  ;; A platform-qualified target selects Bun's prebuilt
-                  ;; compiler artifact from node_modules.  Compile against
-                  ;; the current, source-built Guix Bun runtime instead.
                   (("target: name.replace\\(pkg.name, \"bun\"\\) as any,")
                    "// target omitted: use the current Bun runtime"))))
+            (add-after 'use-current-bun-template 'use-guix-ripgrep
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; Upstream first searches PATH and otherwise downloads a
+                ;; prebuilt ripgrep release at run time.  Embed the Guix store
+                ;; path so neither a wrapper nor a network fallback is needed.
+                (let ((rg (search-input-file inputs "/bin/rg")))
+                  (substitute* "packages/core/src/ripgrep/binary.ts"
+                    (("const system = yield\\* Effect\\.sync\\(.*which.*\\)")
+                     (string-append "const system = \"" rg "\""))))))
             (add-before 'build 'install-node-modules
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((modules (assoc-ref inputs "node_modules")))
@@ -189,16 +190,10 @@
                             "--single" "--skip-install")
                     (invoke bun "--bun" "./script/schema.ts" "schema.json")))))
             (replace 'install
-              (lambda* (#:key inputs outputs #:allow-other-keys)
+              (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref outputs "out"))
                        (bin (string-append out "/bin"))
-                       (libexec (string-append out "/libexec/opencode"))
-                       (program (string-append libexec "/opencode"))
-                       (wrapper (string-append bin "/opencode"))
-                       (bash (assoc-ref inputs "bash-minimal"))
-                       (glibc (assoc-ref inputs "glibc"))
-                       (icu (assoc-ref inputs "icu4c"))
-                       (ripgrep (assoc-ref inputs "ripgrep"))
+                       (program (string-append bin "/opencode"))
                        (built
                         (car
                          (find-files
@@ -207,20 +202,10 @@
                             (and (eq? 'regular (stat:type stat))
                                  (string-suffix? "/bin/opencode" file)))))))
                   (mkdir-p bin)
-                  (mkdir-p libexec)
-                  (install-file built libexec)
+                  (install-file built bin)
                   (chmod program #o555)
                   (install-file "packages/opencode/schema.json"
-                                (string-append out "/share/opencode"))
-                  (call-with-output-file wrapper
-                    (lambda (port)
-                      (format port "#!~a/bin/bash~%" bash)
-                      (format port "export PATH=~a/bin${PATH:+:}$PATH~%"
-                              ripgrep)
-                      (format port
-                              "exec ~a/lib/~a --library-path ~a/lib:~a/lib ~a \"$@\"~%"
-                              glibc #$%opencode-loader glibc icu program)))
-                  (chmod wrapper #o555))))
+                                (string-append out "/share/opencode")))))
             (add-after 'install 'install-completions
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref outputs "out"))
@@ -267,12 +252,11 @@
      `(("bun" ,bun)
        ("node" ,node)
        ("node_modules" ,%opencode-node-modules)))
-    (inputs (list bash-minimal glibc icu4c ripgrep))
+    (inputs (list glibc icu4c ripgrep))
     (home-page "https://opencode.ai/")
     (synopsis "Open source coding agent")
     (description
      "OpenCode is an open source coding agent for the terminal.  This package
 builds the CLI, terminal interface, embedded web interface, and configuration
-schema from the upstream source and adds the runtime tools expected by
-OpenCode to its search path.")
+schema from the upstream source.")
     (license license:expat)))

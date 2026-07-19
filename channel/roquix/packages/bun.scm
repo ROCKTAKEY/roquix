@@ -8,11 +8,13 @@
   #:use-module (guix utils)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages node)
@@ -48,6 +50,13 @@
           (url "https://github.com/oven-sh/bun")
           (commit %bun-commit)))
     (file-name (git-file-name "bun" %bun-version))
+    (patches
+     (parameterize
+         ((%patch-path
+           (map (lambda (directory)
+                  (string-append directory "/roquix/packages/patches"))
+                %load-path)))
+       (search-patches "bun-1.3.14-fix-patchelf-writable-load.patch")))
     (sha256
      (base32 "0zrjhig60bs81177hv35g65nfi1lbirbl3380s4k0j48hdbc27pv"))))
 
@@ -167,47 +176,30 @@
      (list
       #:install-plan #~'(("bun" "libexec/bun/bun"))
       #:strip-binaries? #f
+      ;; This private, upstream-provided seed predates the source backport of
+      ;; PR #31024 and cannot safely be resized by patchelf.  It is never
+      ;; copied to the public output.  A shorter build-only interpreter is
+      ;; written in place without adding or reordering PT_LOAD segments.
       #:validate-runpath? #f
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'install 'patch-interpreter-in-place
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Growing Bun with patchelf invalidates offsets used by its
-              ;; self-extracting executable format.  Replace the interpreter
-              ;; bytes without changing the file size.
-              (use-modules (rnrs bytevectors)
-                           (rnrs io ports))
-              (let* ((file (string-append (assoc-ref outputs "out")
-                                           "/libexec/bun/bun"))
-                     (old (string->utf8
-                           (string-append "/lib" (if #$%bun-aarch64? "" "64")
-                                          "/" #$%bun-loader)))
-                     (new (string->utf8 "/tmp/bun-ld.so"))
-                     (input (open-file file "rb"))
-                     (data (get-bytevector-all input)))
-                (close-port input)
-                (let search ((offset 0))
-                  (cond
-                   ((> (+ offset (bytevector-length old))
-                       (bytevector-length data))
-                    (error "Bun ELF interpreter not found"))
-                   ((let compare ((index 0))
-                      (or (= index (bytevector-length old))
-                          (and (= (bytevector-u8-ref data (+ offset index))
-                                  (bytevector-u8-ref old index))
-                               (compare (+ index 1)))))
-                    (bytevector-copy! new 0 data offset
-                                      (bytevector-length new))
-                    (do ((index (+ offset (bytevector-length new))
-                                (+ index 1)))
-                        ((= index (+ offset (bytevector-length old))))
-                      (bytevector-u8-set! data index 0))
-                    (let ((output (open-file file "wb")))
-                      (put-bytevector output data)
-                      (close-port output)))
-                   (else (search (+ offset 1)))))
-                (chmod file #o555)))))))
-    (native-inputs (list unzip))
+          (add-after 'install 'set-bootstrap-interpreter
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; `patchelf --set-interpreter` fits /tmp/bun-ld.so into the
+              ;; existing .interp section (15 bytes versus the original 28)
+              ;; and therefore leaves every PT_LOAD offset/size unchanged.
+              ;; --no-sort additionally preserves program-header order.  The
+              ;; public Bun receives upstream PR #31024's general fix instead.
+              ;; See bun-elf-investigation.md and:
+              ;; https://github.com/oven-sh/bun/issues/31023
+              ;; https://github.com/NixOS/patchelf/blob/0.18.0/README.md
+              (let ((file (string-append (assoc-ref outputs "out")
+                                         "/libexec/bun/bun"))
+                    (patchelf (string-append (assoc-ref inputs "patchelf")
+                                             "/bin/patchelf")))
+                (invoke patchelf "--no-sort" "--set-interpreter"
+                        "/tmp/bun-ld.so" file)))))))
+    (native-inputs (list patchelf unzip))
     (home-page "https://bun.sh/")
     (synopsis "Stage0 Bun seed for source builds")
     (description
@@ -429,10 +421,6 @@
      (list
       #:tests? #f
       #:strip-binaries? #f
-      ;; The unmodified self-extracting ELF is kept behind a wrapper that
-      ;; supplies ICU.  Rewriting it with patchelf breaks binaries later
-      ;; produced by `bun build --compile`.
-      #:validate-runpath? #f
       #:phases
       #~(modify-phases %standard-phases
           (delete 'bootstrap)
@@ -561,11 +549,25 @@
                 (setenv "CXX"
                         (string-append (assoc-ref inputs "clang-toolchain")
                                        "/bin/clang++"))
-                ;; Bun links ICU dynamically.  Make the freshly linked
-                ;; executable runnable for Ninja's pre-install smoke test;
-                ;; the installed binary receives the equivalent RUNPATH.
-                (setenv "LD_LIBRARY_PATH"
-                        (string-append (assoc-ref inputs "icu4c") "/lib"))
+                ;; Local/source WebKit links system ICU dynamically.  Add the
+                ;; Guix runtime paths during Bun's original link, preserving
+                ;; the linker-produced ELF layout instead of post-processing
+                ;; it with patchelf.  glibc is included because its libc.so
+                ;; linker script can retain ld-linux as an AS_NEEDED entry.
+                (substitute* "scripts/build/flags.ts"
+                  (("export const linkerFlags: Flag\\[] = \\[")
+                   (string-append
+                    "export const linkerFlags: Flag[] = [\n"
+                    "  {\n"
+                    "    flag: [\n"
+                    "      \"-Wl,-rpath,"
+                    (assoc-ref inputs "icu4c") "/lib\",\n"
+                    "      \"-Wl,-rpath,"
+                    (assoc-ref inputs "glibc") "/lib\",\n"
+                    "    ],\n"
+                    "    when: c => c.linux && c.abi === \"gnu\",\n"
+                    "    desc: \"Guix runtime library search paths\",\n"
+                    "  },")))
                 ;; Bun's outer Ninja build starts nested CMake/Ninja builds.
                 ;; Bound the inner WebKit build so the two schedulers cannot
                 ;; overcommit memory nondeterministically.
@@ -645,26 +647,14 @@
                 (invoke "ninja" "-j1" "-C"
                         (string-append build-root "/release")))))
           (replace 'install
-            (lambda* (#:key inputs outputs #:allow-other-keys)
+            (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (build-root (string-append out "/.bun-build"))
-                     (bin (string-append out "/bin"))
-                     (libexec (string-append out "/libexec/bun"))
-                     (real-bun (string-append libexec "/bun"))
-                     (wrapper (string-append bin "/bun")))
+                     (bin (string-append out "/bin")))
                 (mkdir-p bin)
-                (mkdir-p libexec)
                 (install-file (string-append build-root "/release/bun")
-                              libexec)
-                (call-with-output-file wrapper
-                  (lambda (port)
-                    (format port "#!~a~%"
-                            #$(file-append bash-minimal "/bin/sh"))
-                    (format port
-                            "export LD_LIBRARY_PATH=~a/lib${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH~%"
-                            (assoc-ref inputs "icu4c"))
-                    (format port "exec ~a \"$@\"~%" real-bun)))
-                (chmod wrapper #o555)
+                              bin)
+                (chmod (string-append bin "/bun") #o555)
                 (symlink "bun" (string-append bin "/bunx"))
                 (install-file "LICENSE.md"
                               (string-append out "/share/licenses/bun"))
@@ -686,11 +676,44 @@
                  (string-append out "/share/zsh/site-functions/_bun"))
                 (delete-file-recursively build-root))))
           (add-after 'install 'check-built-bun
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((bun (string-append (assoc-ref outputs "out")
-                                        "/bin/bun")))
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((bun (string-append (assoc-ref outputs "out")
+                                         "/bin/bun"))
+                     (patchelf (string-append (assoc-ref inputs "patchelf")
+                                              "/bin/patchelf"))
+                     (source (string-append (getcwd) "/compile-check.ts"))
+                     (compiled (string-append (getcwd) "/compile-check"))
+                     (patched-bun (string-append (getcwd) "/patched-bun"))
+                     (patched-compiled
+                      (string-append (getcwd) "/patched-compile-check"))
+                     (runtime-path
+                      (string-append
+                       (assoc-ref inputs "icu4c") "/lib:"
+                       (assoc-ref inputs "glibc") "/lib:/tmp/"
+                       (make-string 256 #\x))))
+                (unsetenv "LD_LIBRARY_PATH")
                 (invoke bun "--version")
-                (invoke bun "-e" "console.log('ok')")))))))
+                (invoke bun "-e" "console.log('ok')")
+                (call-with-output-file source
+                  (lambda (port)
+                    (display "console.log('compiled-ok')\n" port)))
+                (invoke bun "build" "--compile" source
+                        "--outfile" compiled)
+                (invoke compiled)
+                ;; Regression test for upstream issue #31023 and PR #31024:
+                ;; force patchelf to relocate dynamic metadata and add another
+                ;; writable PT_LOAD, then compile from that modified template.
+                ;; https://github.com/oven-sh/bun/issues/31023
+                ;; https://github.com/oven-sh/bun/pull/31024
+                (copy-file bun patched-bun)
+                (chmod patched-bun #o755)
+                (invoke patchelf "--set-rpath" runtime-path patched-bun)
+                (invoke patched-bun "build" "--compile" source
+                        "--outfile" patched-compiled)
+                (invoke patched-compiled)
+                (for-each delete-file
+                          (list source compiled patched-bun
+                                patched-compiled))))))))
     (native-inputs
      (append
       `(("bun-bootstrap" ,bun-bootstrap)
@@ -711,7 +734,8 @@
         ("git" ,git-minimal)
         ("rust" ,rust)
         ("cargo" ,rust "cargo")
-        ("unzip" ,unzip))
+        ("unzip" ,unzip)
+        ("patchelf" ,patchelf))
       (map (lambda (entry)
              (list (car entry) (cadddr entry)))
            %bun-dependency-archives)))
