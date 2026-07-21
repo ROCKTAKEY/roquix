@@ -67,7 +67,7 @@ by the rust-v8 crate so Guix builds do not attempt to download it during the
 build phase.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.144.5")
+(define %codex-release-version "0.144.6")
 
 (define-public codex
   (package
@@ -83,7 +83,7 @@ build phase.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "12wj80l5w1z3jxavv3y2zqnlmrij2k7mwrgvph9qp2dacwsjrhxz"))))
+       (base32 "0r8k29fvqqjfl05wrcjdw2dy65irzifhv2icfr84553qf636fvjb"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
