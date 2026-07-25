@@ -67,7 +67,7 @@ by the rust-v8 crate so Guix builds do not attempt to download it during the
 build phase.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.144.6")
+(define %codex-release-version "0.145.0")
 
 (define-public codex
   (package
@@ -83,7 +83,7 @@ build phase.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "0r8k29fvqqjfl05wrcjdw2dy65irzifhv2icfr84553qf636fvjb"))))
+       (base32 "1zf945yxymhjyxgq4y8x3pjc77zb75wy1h6lwipis731h832dgpy"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -103,9 +103,10 @@ build phase.")
            perl))
     (arguments
      `(#:install-source? #f
-       #:rust ,rust-1.94
-       #:tests? #f
-       #:cargo-build-flags '("--package" "codex-cli" "--release")
+        #:rust ,rust-1.94
+        #:tests? #f
+        #:parallel-build? #f
+        #:cargo-build-flags '("--package" "codex-cli" "--release")
        #:cargo-install-paths '("cli")
        #:cargo-test-flags '("--"
                             ;; core
@@ -353,10 +354,8 @@ build phase.")
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"[0-9a-f]+\" \\}")
                          ""))
-                      (substitute* "realtime-webrtc/Cargo.toml"
-                        (("libwebrtc = \\{ version = \"0\\.3\\.26\", git = \"https://github.com/juberti-oai/rust-sdks.git\", rev = \"e2d1d1d230c6fc9df171ccb181423f957bb3c1f0\" \\}")
-                         "libwebrtc = \"0.3.26\""))))
-                  (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
+                       ))
+                   (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((bwrap (search-input-file inputs "/bin/bwrap")))
                         (substitute* '("core/src/config/mod.rs"
@@ -406,10 +405,10 @@ build phase.")
                           (error "expected exactly one rusty_v8 archive"
                                  archives))
                         (setenv "RUSTY_V8_ARCHIVE" (car archives)))))
-                  (add-before 'build 'set-release-lto-to-thin
-                    (lambda _
-                      ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
-                      (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")))
+                   (add-before 'build 'set-release-lto-to-thin
+                     (lambda _
+                       ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
+                       (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")))
                   (add-after 'install 'wrap-with-system-bubblewrap-on-path
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Codex checks PATH for a system bwrap before falling
