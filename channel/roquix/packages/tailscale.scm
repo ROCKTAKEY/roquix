@@ -212,7 +212,7 @@ projects and organizations in production.")
 (define-public go-github-com-tailscale-hujson
   (package
     (name "go-github-com-tailscale-hujson")
-    (version "0.0.0-20250605163823-992244df8c5a")
+    (version "0.0.0-20260302212456-ecc657c15afd")
     (source
      (origin
        (method git-fetch)
@@ -221,7 +221,7 @@ projects and organizations in production.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14adnvmdfm2i8nnan3bidgsqshq55z0rys5h55lfwlxi41d2ylg6"))))
+        (base32 "00n8aawxa0r6iyx0w7la7qrsnvayv1myv87v7c3a99b1ds25wfl3"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -362,7 +362,7 @@ interface that is loosly modeled on the iproute2 cli.")
 (define-public go-github-com-tailscale-wireguard-go
   (package
     (name "go-github-com-tailscale-wireguard-go")
-    (version "0.0.0-20251121194102-c6fd943bb437")
+    (version "0.0.0-20260622165914-65d8d42c9a5a")
     (source
      (origin
        (method git-fetch)
@@ -371,7 +371,7 @@ interface that is loosly modeled on the iproute2 cli.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02w9hc6vd7ynlgnwmfxbiqfbrw4zzddajz111fkr879d4ssrr8gy"))))
+        (base32 "09qjm9xqvyfv9rs7j10yxd9sj5nk2liv1kb2cqp8kwkjc3vp7bfb"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -643,12 +643,39 @@ Instance Metadata Service.")
      "This package is a temporary development fork of @code{golang.org/x/net}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-tailscale-gliderssh
+  (package
+    (name "go-github-com-tailscale-gliderssh")
+    (version "0.3.4-0.20260330083525-c1389c70ff89")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tailscale/gliderssh")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fyjp69ad0cnd1pq8p70nnkhyq3iyf6l07n9ig0l3cr8f50kr541"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+       #:tests? #f
+       #:import-path "github.com/tailscale/gliderssh"))
+    (propagated-inputs (list go-github-com-anmitsu-go-shlex
+                             go-golang-org-x-crypto
+                             go-golang-org-x-sys))
+    (home-page "https://github.com/tailscale/gliderssh")
+    (synopsis "Tailscale fork of gliderlabs/ssh")
+    (description
+     "Package gliderssh is a Tailscale fork of the @code{gliderlabs/ssh} library.")
+    (license license:bsd-3)))
+
 ;; Additional package definitions required by existing propagated-inputs.
 
 (define-public go-tailscale-com
   (package
     (name "go-tailscale-com")
-    (version "1.96.4")
+    (version "1.98.9")
     (source
      (origin
        (method git-fetch)
@@ -657,7 +684,7 @@ Instance Metadata Service.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0qqlj6cq43h0pr8jg9g956yz5xgg81959vq2kl7n9yqnixyh8w2n"))))
+        (base32 "0n10cf9navkf0s3rdnrdrvbhysby3vykgc433arsdczryx9r1irb"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -709,6 +736,7 @@ Instance Metadata Service.")
                         go-github-com-pkg-sftp
                         go-github-com-safchain-ethtool
                         go-github-com-skip2-go-qrcode
+                        go-github-com-tailscale-gliderssh
                         go-github-com-tailscale-hujson
                         go-github-com-tailscale-netlink
                         go-github-com-tailscale-peercred
