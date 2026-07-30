@@ -637,6 +637,11 @@
                 ;; Ninja directly.
                 (invoke bootstrap "scripts/build.ts"
                         "--profile=release-local"
+                        ;; Guix's x86_64 baseline must also run on machines
+                        ;; without AVX2, including the Cuirass builder.
+                        #$@(if %bun-aarch64?
+                               '()
+                               '("--baseline"))
                         "--configure-only"
                         (string-append "--build-dir=" build-root "/release")
                         (string-append "--cache-dir=" build-root "/cache"))
