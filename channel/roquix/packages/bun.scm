@@ -641,7 +641,7 @@
                         ;; without AVX2, including my Cuirass builder.
                         #$@(if %bun-aarch64?
                                '()
-                               '("--baseline"))
+                               '("--baseline=true"))
                         "--configure-only"
                         (string-append "--build-dir=" build-root "/release")
                         (string-append "--cache-dir=" build-root "/cache"))
