@@ -26,22 +26,22 @@
 (define rusty-v8-prebuilt-archive
   (package
     (name "rusty-v8-prebuilt-archive")
-    (version "149.2.0")
+    (version "150.4.0")
     (source
      (let* ((archive
              (cond
               ((string=? (%current-system) "aarch64-linux")
                '("librusty_v8_release_aarch64-unknown-linux-gnu.a.gz"
-                 "1igkmyr76iyqhfl46fc3iywsbyyfl8hsa09dcsiw9p34r8km2xzr"))
+                 "1lvx9xjzv7ibqvg5jnaxqaaim0lw4dwfgf6kw0pjfdrkmm97s5xp"))
               (else
                '("librusty_v8_release_x86_64-unknown-linux-gnu.a.gz"
-                 "0nf58l4kaap6w1c3z57p1cnlgpjvxiclgfxqpz47vrxpgmirivca"))))
+                 "0v5hi3s56b6yk7nh5n0wygh7fn0j41yyjz5903r227qv0yvzssaq"))))
             (archive-name (car archive))
             (archive-sha256 (cadr archive)))
        (origin
          (method url-fetch)
          (uri (string-append
-               "https://github.com/denoland/rusty_v8/releases/download/v149.2.0/"
+               "https://github.com/denoland/rusty_v8/releases/download/v150.4.0/"
                archive-name))
          (sha256
           (base32 archive-sha256)))))
@@ -67,7 +67,7 @@ by the rust-v8 crate so Guix builds do not attempt to download it during the
 build phase.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.145.0")
+(define %codex-release-version "0.147.0")
 
 (define-public codex
   (package
@@ -83,7 +83,7 @@ build phase.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "1zf945yxymhjyxgq4y8x3pjc77zb75wy1h6lwipis731h832dgpy"))))
+       (base32 "1yh48zd2896wf2mzin6g82lhz1yya8dal8cqnrxwqbbgkz38x9rl"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -421,4 +421,5 @@ build phase.")
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
+    (properties `((max-silent-time . 9600)))
     (license license:asl2.0)))
