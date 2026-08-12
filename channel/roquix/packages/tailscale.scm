@@ -209,6 +209,60 @@ projects and organizations in production.")
 @@url{https://www.freedesktop.org/software/systemd/man/sd_notify.html,https://www.freedesktop.org/software/systemd/man/sd_notify.html}.")
     (license license:expat)))
 
+(define-public go-github-com-bradfitz-monogok
+  (package
+    (name "go-github-com-bradfitz-monogok")
+    (version "0.0.0-20260630033929-b1eef977b41f")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bradfitz/monogok")
+             (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f0ldkc1fjv75r7q9kljhzdvwiyii8v5zk8qnhrkbdackhbqd9gp"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:tests? #f
+      #:import-path "github.com/bradfitz/monogok"))
+    (home-page "https://github.com/bradfitz/monogok")
+    (synopsis "Build gokrazy appliance images from a Go monorepo")
+    (description
+     "Monogok builds gokrazy appliance images from within a Go monorepo.  This
+package provides its source tree, including the disk layout helpers used by
+Tailscale's flash-appliance command.")
+    (license license:bsd-3)))
+
+(define-public go-github-com-diskfs-go-diskfs-1.9.3
+  (package
+    (name "go-github-com-diskfs-go-diskfs")
+    (version "1.9.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/diskfs/go-diskfs")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zv29cvbzpcgmq96g779ag1gclczixvrh5flwl129msd0wcsw8h8"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:tests? #f
+      #:import-path "github.com/diskfs/go-diskfs"))
+    (propagated-inputs (list go-github-com-google-uuid go-golang-org-x-sys))
+    (home-page "https://github.com/diskfs/go-diskfs")
+    (synopsis "Manipulate disks, disk images, and filesystems in Go")
+    (description
+     "Package diskfs provides Go libraries for creating and manipulating disks,
+disk images, filesystems, and partition tables.")
+    (license license:expat)))
+
 (define-public go-github-com-tailscale-hujson
   (package
     (name "go-github-com-tailscale-hujson")
@@ -362,7 +416,7 @@ interface that is loosly modeled on the iproute2 cli.")
 (define-public go-github-com-tailscale-wireguard-go
   (package
     (name "go-github-com-tailscale-wireguard-go")
-    (version "0.0.0-20260622165914-65d8d42c9a5a")
+    (version "0.0.0-20260715223240-2e01ba5b00f0")
     (source
      (origin
        (method git-fetch)
@@ -371,7 +425,7 @@ interface that is loosly modeled on the iproute2 cli.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09qjm9xqvyfv9rs7j10yxd9sj5nk2liv1kb2cqp8kwkjc3vp7bfb"))))
+        (base32 "1hnbszjhsw5bw6l6w01qfmwks93s484i8j9ifjdqwxf9z9z5q910"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -646,7 +700,7 @@ Instance Metadata Service.")
 (define-public go-github-com-tailscale-gliderssh
   (package
     (name "go-github-com-tailscale-gliderssh")
-    (version "0.3.4-0.20260330083525-c1389c70ff89")
+    (version "0.3.4-0.20260716005906-1a0f895faf28")
     (source
      (origin
        (method git-fetch)
@@ -655,7 +709,7 @@ Instance Metadata Service.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fyjp69ad0cnd1pq8p70nnkhyq3iyf6l07n9ig0l3cr8f50kr541"))))
+        (base32 "0j1y721cj6ddy22ymhh2klyr2yzdc1xh895r8mkrv4f3xgf9n6pc"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -675,7 +729,7 @@ Instance Metadata Service.")
 (define-public go-tailscale-com
   (package
     (name "go-tailscale-com")
-    (version "1.98.9")
+    (version "1.102.2")
     (source
      (origin
        (method git-fetch)
@@ -684,7 +738,7 @@ Instance Metadata Service.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n10cf9navkf0s3rdnrdrvbhysby3vykgc433arsdczryx9r1irb"))))
+        (base32 "1227ck9gdds0kaf0dpcjzq8cz1bfjnj72hk2y7z39qhiy63558xy"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -780,7 +834,10 @@ Instance Metadata Service.")
     ;; build-time closure leaks into profile hooks and can even reproduce the
     ;; "gdk-pixbuf-loaders-cache-file.drv' failed due to signal 11" crash we
     ;; saw from the oversized generated builder here.
-    (native-inputs (package-propagated-inputs go-tailscale-com))
+    (native-inputs
+     (modify-inputs (package-propagated-inputs go-tailscale-com)
+       (append go-github-com-bradfitz-monogok
+               go-github-com-diskfs-go-diskfs-1.9.3)))
     (propagated-inputs '())
     (inputs '())
     (arguments (list
