@@ -21,27 +21,33 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages virtualization)
-  #:use-module (gnu packages textutils))
+  #:use-module (gnu packages regex))
 
+(define %codex-rusty-v8-version "150.4.0")
+
+;; Keep these two packages in sync.  The archive and bindings must come from
+;; the same OpenAI rusty_v8 release and match the target, pointer-compression,
+;; sandbox, and release-profile configuration.
 (define rusty-v8-prebuilt-archive
   (package
     (name "rusty-v8-prebuilt-archive")
-    (version "150.4.0")
+    (version %codex-rusty-v8-version)
     (source
      (let* ((archive
              (cond
               ((string=? (%current-system) "aarch64-linux")
-               '("librusty_v8_release_aarch64-unknown-linux-gnu.a.gz"
-                 "1lvx9xjzv7ibqvg5jnaxqaaim0lw4dwfgf6kw0pjfdrkmm97s5xp"))
+               '("librusty_v8_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.a.gz"
+                 "1fhi51yhpwkd79mr27rmimf4vivyk7zda1dh55q56s2l83npwlfi"))
               (else
-               '("librusty_v8_release_x86_64-unknown-linux-gnu.a.gz"
-                 "0v5hi3s56b6yk7nh5n0wygh7fn0j41yyjz5903r227qv0yvzssaq"))))
+               '("librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+                 "10xm60dl5ywwp0r8nmjha3q59gjf194k6nx4hlw9hskfyb8pap53"))))
             (archive-name (car archive))
             (archive-sha256 (cadr archive)))
        (origin
          (method url-fetch)
          (uri (string-append
-               "https://github.com/denoland/rusty_v8/releases/download/v150.4.0/"
+               "https://github.com/openai/codex/releases/download/rusty-v8-v"
+               %codex-rusty-v8-version "/"
                archive-name))
          (sha256
           (base32 archive-sha256)))))
@@ -65,6 +71,50 @@
      "This helper package installs the prebuilt static library archive used
 by the rust-v8 crate so Guix builds do not attempt to download it during the
 build phase.")
+    (license (list license:expat license:bsd-3))))
+
+(define rusty-v8-prebuilt-binding
+  (package
+    (name "rusty-v8-prebuilt-binding")
+    (version %codex-rusty-v8-version)
+    (source
+     (let* ((binding
+             (cond
+              ((string=? (%current-system) "aarch64-linux")
+               '("src_binding_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.rs"
+                 "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))
+              (else
+               '("src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+                 "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))))
+            (binding-name (car binding))
+            (binding-sha256 (cadr binding)))
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/openai/codex/releases/download/rusty-v8-v"
+               %codex-rusty-v8-version "/"
+               binding-name))
+         (sha256
+          (base32 binding-sha256)))))
+    (build-system trivial-build-system)
+    (supported-systems '("x86_64-linux" "aarch64-linux"))
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+          (let ((out (assoc-ref %outputs "out"))
+                (src (assoc-ref %build-inputs "source")))
+            (mkdir-p (string-append out "/share/rusty-v8"))
+            (copy-file src
+                       (string-append out "/share/rusty-v8/"
+                                      (basename src)))))))
+    (home-page "https://github.com/denoland/rusty_v8")
+    (synopsis "Prebuilt rusty_v8 Rust bindings")
+    (description
+     "This helper package installs the prebuilt Rust bindings matching the
+sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version "0.147.0")
@@ -95,6 +145,7 @@ build phase.")
                                  #:module '(roquix packages rust-crates))))
     (native-inputs
      (list rusty-v8-prebuilt-archive
+           rusty-v8-prebuilt-binding
            pkg-config
            cmake
            ;; Need for tests
@@ -106,8 +157,9 @@ build phase.")
         #:rust ,rust-1.94
         #:tests? #f
         #:parallel-build? #f
-        #:cargo-build-flags '("--package" "codex-cli" "--release")
-       #:cargo-install-paths '("cli")
+        #:cargo-build-flags '("--package" "codex-cli"
+                              "--package" "codex-code-mode-host"
+                              "--release")
        #:cargo-test-flags '("--"
                             ;; core
                             ;; FIXME: There are objects in the response that are either excessive or missing.
@@ -400,15 +452,40 @@ build phase.")
                              (archives
                               (find-files
                                archive-dir
-                               "librusty_v8_release_.*\\.a\\.gz$")))
+                               "librusty_v8_ptrcomp_sandbox_release_.*\\.a\\.gz$"))
+                             (binding-dir
+                              (string-append
+                               (assoc-ref inputs "rusty-v8-prebuilt-binding")
+                               "/share/rusty-v8"))
+                             (bindings
+                              (find-files
+                               binding-dir
+                               "src_binding_ptrcomp_sandbox_release_.*\\.rs$")))
                         (unless (= 1 (length archives))
                           (error "expected exactly one rusty_v8 archive"
                                  archives))
-                        (setenv "RUSTY_V8_ARCHIVE" (car archives)))))
+                        (unless (= 1 (length bindings))
+                          (error "expected exactly one rusty_v8 binding"
+                                 bindings))
+                        (setenv "RUSTY_V8_ARCHIVE" (car archives))
+                        (setenv "RUSTY_V8_SRC_BINDING_PATH" (car bindings)))))
                    (add-before 'build 'set-release-lto-to-thin
                      (lambda _
                        ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
                        (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; The standard phase runs `cargo install` separately
+                      ;; for each workspace member.  That changes Cargo's
+                      ;; feature resolution, recompiles part of the workspace,
+                      ;; and also installs the CLI's auxiliary `logs_client`.
+                      ;; Install only the two binaries built above instead.
+                      (let ((bin (string-append (assoc-ref outputs "out")
+                                                "/bin")))
+                        (mkdir-p bin)
+                        (install-file "target/release/codex" bin)
+                        (install-file "target/release/codex-code-mode-host"
+                                      bin))))
                   (add-after 'install 'wrap-with-system-bubblewrap-on-path
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Codex checks PATH for a system bwrap before falling
