@@ -64,7 +64,7 @@
 (define-public mattermost-desktop
   (package
     (name "mattermost-desktop")
-    (version "6.1.2")
+    (version "6.3.0")
     (source
      (origin
        (method url-fetch)
@@ -76,7 +76,7 @@
              "-linux-x86_64.AppImage"))
        (sha256
         (base32
-         "164h0xbfrw0fq6mlspgxpi1w6vfcz66wgv33zj0sw2bnkz6dqp02"))))
+         "0nxv9dzn24s8ixhbrk9hmk83fqsa13r3jf2zbfaqh01ib5j344x0"))))
     (build-system appimage-build-system)
     (arguments
      (list
