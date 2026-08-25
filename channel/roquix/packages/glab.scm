@@ -8,14 +8,14 @@
 (define-public go-gitlab-com-gitlab-org-cli
   (package
    (name "go-gitlab-com-gitlab-org-cli")
-   (version "1.35.0")
+   (version "1.113.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gitlab.com/gitlab-org/cli/-/releases/v"
-                                version "/downloads/glab_" version "_Linux_x86_64.tar.gz"))
+                                version "/downloads/glab_" version "_linux_amd64.tar.gz"))
             (sha256
              (base32
-              "19n0wg5qjg6ixsk3ysjkx2dl432riijyaazs8vwyjngbx3813fn9"))))
+              "0rvlnh9ql8ijl9gklzlfhlgrjhpfxxb97pr7d85k33q1nagmhrf2"))))
    (build-system binary-build-system)
    (arguments '(#:install-plan
                 '(("glab" "/bin/"))))
