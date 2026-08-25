@@ -117,7 +117,7 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.147.0")
+(define %codex-release-version "0.149.1")
 
 (define-public codex
   (package
@@ -133,7 +133,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "1yh48zd2896wf2mzin6g82lhz1yya8dal8cqnrxwqbbgkz38x9rl"))))
+       (base32 "0sys124nhb4hrw171842w0810yjvsz5n644l47gh34l85grph4lx"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -469,10 +469,15 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                                  bindings))
                         (setenv "RUSTY_V8_ARCHIVE" (car archives))
                         (setenv "RUSTY_V8_SRC_BINDING_PATH" (car bindings)))))
-                   (add-before 'build 'set-release-lto-to-thin
+                   (add-before 'build 'configure-low-memory-release
                      (lambda _
-                       ;; Upstream uses fat LTO, which is prone to OOM in Cuirass.
-                       (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")))
+                       ;; Codex core and TUI have grown too large for even thin
+                       ;; LTO in memory-constrained builders.  Keep release
+                       ;; optimization, but split code generation more finely
+                       ;; and omit debug line tables to reduce peak memory.
+                       (setenv "CARGO_PROFILE_RELEASE_LTO" "false")
+                       (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")
+                       (setenv "CARGO_PROFILE_RELEASE_DEBUG" "false")))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; The standard phase runs `cargo install` separately

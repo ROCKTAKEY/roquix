@@ -1761,6 +1761,16 @@
     (file-name (git-file-name "rust-crossterm" "0.28.1.87db8bf"))
     (sha256 (base32 "0vzgpvbri4m4qydkj50ch468az7myy04qh5z2n500p1f4dysv87a"))))
 
+(define rust-crossterm-0.29.0.45fecb9
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/openai-oss-forks/crossterm")
+          (commit "45fecb9508105988f42fe6ff0441783ed3717f92")))
+    (file-name (git-file-name "rust-crossterm" "0.29.0.45fecb9"))
+    (sha256 (base32 "0ah9057kvfd7y8j23g3xzwbvlai1snsvm3q8p6nlnq3ywm15033i"))))
+
 (define rust-crossterm-0.29.0.f69a4a0
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
@@ -1915,6 +1925,10 @@
   (crate-source "darling" "0.23.0"
                 "179fj6p6ajw4dnkrik51wjhifxwy02x5zhligyymcb905zd17bi5"))
 
+(define rust-darling-0.24.0
+  (crate-source "darling" "0.24.0"
+                "08vx6iikfg7nz88ljnvnb5rqx819ys3si2mclym7xn4hp7qhnjc8"))
+
 (define rust-darling-core-0.20.11
   (crate-source "darling_core" "0.20.11"
                 "0bj1af6xl4ablnqbgn827m43b8fiicgv180749f5cphqdmcvj00d"))
@@ -1927,6 +1941,10 @@
   (crate-source "darling_core" "0.23.0"
                 "1c033vrks38vpw8kwgd5w088dsr511kfz55n9db56prkgh7sarcq"))
 
+(define rust-darling-core-0.24.0
+  (crate-source "darling_core" "0.24.0"
+                "1i38i1vwm2a2p3knsyqd0rm7frkfil5lxqz1600ji0n4j57jfkh8"))
+
 (define rust-darling-macro-0.20.11
   (crate-source "darling_macro" "0.20.11"
                 "1bbfbc2px6sj1pqqq97bgqn6c8xdnb2fmz66f7f40nrqrcybjd7w"))
@@ -1938,6 +1956,10 @@
 (define rust-darling-macro-0.23.0
   (crate-source "darling_macro" "0.23.0"
                 "13fvzji9xyp304mgq720z5l0xgm54qj68jibwscagkynggn88fdc"))
+
+(define rust-darling-macro-0.24.0
+  (crate-source "darling_macro" "0.24.0"
+                "0pimi94crlpzw72s18vi96ysw3il197sdzz0bhrd476ll0ppkxb8"))
 
 (define rust-dashmap-5.5.3
   (crate-source "dashmap" "5.5.3"
@@ -3497,6 +3519,10 @@
   (crate-source "h2" "0.4.13"
                 "0m6w5gg0n0m1m5915bxrv8n4rlazhx5icknkslz719jhh4xdli1g"))
 
+(define rust-h2-0.4.16
+  (crate-source "h2" "0.4.16"
+                "09syqqhvh36b3rwyn8vjhiz597hfki1hcz3hwagb3cs1ifapmwx9"))
+
 (define rust-half-1.8.2
   (crate-source "half" "1.8.2"
                 "1mqbmx2m9qd4lslkb42fzgldsklhv9c4bxsc8j82r80d8m24mfza"))
@@ -4859,6 +4885,10 @@
 (define rust-lru-0.18.1
   (crate-source "lru" "0.18.1"
                 "19m5i0kwfny3iwmwjis4mlp53spnj4059amh01q91vi714a80q8b"))
+
+(define rust-lru-0.18.2
+  (crate-source "lru" "0.18.2"
+                "02nrs4r8jdnmrm08ab6pvsy87gimklr9ks77jm6v5rm79fdjybsx"))
 
 (define rust-lru-slab-0.1.2
   (crate-source "lru-slab" "0.1.2"
@@ -6255,6 +6285,42 @@
   (crate-source "prost-types" "0.14.3"
                 "1mrxrciryfgi6a0vmrgyj3g27r9hdhlgwkq71cgv3icbvg5w94c9"))
 
+(define rust-protoc-bin-vendored-3.2.0
+  (crate-source "protoc-bin-vendored" "3.2.0"
+                "1yk7b9j5y5syk9z6rrw913x4y2h9c0v5i1l1y2snd0n96ggq3hyi"))
+
+(define rust-protoc-bin-vendored-linux-aarch-64-3.2.0
+  (crate-source "protoc-bin-vendored-linux-aarch_64" "3.2.0"
+                "0k0sgvry35w360h77a6g2fg1jyrpwbyldrppg75f7fdm956xyl63"))
+
+(define rust-protoc-bin-vendored-linux-ppcle-64-3.2.0
+  (crate-source "protoc-bin-vendored-linux-ppcle_64" "3.2.0"
+                "03244917l2klk6h26y26slzpjpgb2x804grrqssijkr4qzk66nm5"))
+
+(define rust-protoc-bin-vendored-linux-s390-64-3.2.0
+  (crate-source "protoc-bin-vendored-linux-s390_64" "3.2.0"
+                "1c7k6b629n7shd76ykjabd58xvm4ck10f2ikslsyk222vdjmbfhx"))
+
+(define rust-protoc-bin-vendored-linux-x86-32-3.2.0
+  (crate-source "protoc-bin-vendored-linux-x86_32" "3.2.0"
+                "1xcwvzdnrvhirnk8fjkswrjj6ap0x2mcq7fpij3bfa7f4i5pfm48"))
+
+(define rust-protoc-bin-vendored-linux-x86-64-3.2.0
+  (crate-source "protoc-bin-vendored-linux-x86_64" "3.2.0"
+                "0y2xgvgl38m2zqvc619yp1phlqq39d615kk4lh7p5pw0cma0g2xk"))
+
+(define rust-protoc-bin-vendored-macos-aarch-64-3.2.0
+  (crate-source "protoc-bin-vendored-macos-aarch_64" "3.2.0"
+                "14l03ngh1akdf2d4ld0k69h4scjxhblgx6fry58jwcff4scql9w9"))
+
+(define rust-protoc-bin-vendored-macos-x86-64-3.2.0
+  (crate-source "protoc-bin-vendored-macos-x86_64" "3.2.0"
+                "0mlp55v3356l0l34hqavg7ahds2j0s7qipm4sxqr9yyclznmyx41"))
+
+(define rust-protoc-bin-vendored-win32-3.2.0
+  (crate-source "protoc-bin-vendored-win32" "3.2.0"
+                "18wairb735zfw3g7m5sbmjdj8r9yka9ww7s97r91lhm6miv7j1lm"))
+
 (define rust-psl-2.1.178
   (crate-source "psl" "2.1.178"
                 "1mm00al8ypws37amlx2lvxihwsb3cbxm7rpm0pcm4d83vwdicm2s"))
@@ -6847,6 +6913,10 @@
   (crate-source "rmcp" "3.0.0"
                 "1q0jllawy2ac8dk8hz9c2n69x5hqfwd6ccjzjml964hq7gfvdlpw"))
 
+(define rust-rmcp-3.1.2
+  (crate-source "rmcp" "3.1.2"
+                "1j33dpsp0c53xm93x0019qx6di521hb6c0a2pagsbf9435dxrpf8"))
+
 (define rust-rmcp-macros-0.12.0
   (crate-source "rmcp-macros" "0.12.0"
                 "0nbg1q38ngfxdkbsz2plk595xc0srvbgfqllbjc8xswlljm1vy73"))
@@ -6878,6 +6948,10 @@
 (define rust-rmcp-macros-3.0.0
   (crate-source "rmcp-macros" "3.0.0"
                 "1mmjkys08i3wmxrzc0rrjn5pqh4nw02nsgf27yj60lkr8n9lpap1"))
+
+(define rust-rmcp-macros-3.1.2
+  (crate-source "rmcp-macros" "3.1.2"
+                "08f5py29kc1qq2wmgsnglb42zxlw9g0c4lwazadvahk3s56f5638"))
 
 (define rust-ron-0.10.1
   (crate-source "ron" "0.10.1"
@@ -7666,6 +7740,10 @@
   (crate-source "simd_cesu8" "1.1.1"
                 "0crcbgvyycmazji2vqj9vxn2czdyl3gxmicp4xqdzkc7pdbh3ycl"))
 
+(define rust-simd-cesu8-1.2.0
+  (crate-source "simd_cesu8" "1.2.0"
+                "0865mv3nmd35f1dccjcfj7dncjmmvvdij3j61z4131mz38jiw0qi"))
+
 (define rust-simdutf8-0.1.5
   (crate-source "simdutf8" "0.1.5"
                 "0vmpf7xaa0dnaikib5jlx6y4dxd3hxqz6l830qb079g7wcsgxag3"))
@@ -8085,6 +8163,10 @@
 (define rust-syn-2.0.87
   (crate-source "syn" "2.0.87"
                 "0bd3mfcswvn4jkrp7ich5kk58kmpph8412yxd36nsfnh8vilrai5"))
+
+(define rust-syn-3.0.3
+  (crate-source "syn" "3.0.3"
+                "18srnql3cd39j9q6hf1az02p67rlr1rf6njx9zx4vxj9i3jvmsak"))
 
 (define rust-sync-wrapper-0.1.2
   (crate-source "sync_wrapper" "0.1.2"
@@ -8961,6 +9043,10 @@
   (crate-source "tree-sitter-language" "0.1.7"
                 "10hpwqd45v529p1q23d11k8wms7zifyda5s9yl7xa36ca3qr9680"))
 
+(define rust-tree-sitter-powershell-0.26.4
+  (crate-source "tree-sitter-powershell" "0.26.4"
+                "08ih4hw95cz5dpf2d9fmdlrn9xfswy6vn13qv6kx9pdr8i6k1brz"))
+
 (define rust-tree-sitter-python-0.21.0
   (crate-source "tree-sitter-python" "0.21.0"
                 "1achqgyj89irf4g9hgg7rhs4ij25b4h1ymn4qbw65ybqyrn6q1ml"))
@@ -9719,6 +9805,10 @@
 (define rust-webbrowser-1.0.6
   (crate-source "webbrowser" "1.0.6"
                 "15sc38k0j8ssgr4li6bgavmad8r46h4rc0zs68x3w8c5ywz29w80"))
+
+(define rust-webbrowser-1.2.4
+  (crate-source "webbrowser" "1.2.4"
+                "151gb2nnp2hbn7898hh0q1vffly811lw4brnpi6j26l2f3kmphv2"))
 
 (define rust-webpki-root-certs-1.0.4
   (crate-source "webpki-root-certs" "1.0.4"
@@ -11420,7 +11510,6 @@
                              rust-castaway-0.2.4
                              rust-cbc-0.1.2
                              rust-cc-1.2.55
-                             rust-cesu8-1.1.0
                              rust-cexpr-0.6.0
                              rust-cfg-if-1.0.4
                              rust-cfg-aliases-0.1.1
@@ -11479,7 +11568,7 @@
                              rust-crossbeam-epoch-0.9.20
                              rust-crossbeam-queue-0.3.12
                              rust-crossbeam-utils-0.8.21
-                             rust-crossterm-0.29.0.f69a4a0
+                             rust-crossterm-0.29.0.45fecb9
                              rust-crossterm-winapi-0.9.1
                              rust-crunchy-0.2.4
                              rust-crypto-bigint-0.5.5
@@ -11500,12 +11589,15 @@
                              rust-darling-0.20.11
                              rust-darling-0.21.3
                              rust-darling-0.23.0
+                             rust-darling-0.24.0
                              rust-darling-core-0.20.11
                              rust-darling-core-0.21.3
                              rust-darling-core-0.23.0
+                             rust-darling-core-0.24.0
                              rust-darling-macro-0.20.11
                              rust-darling-macro-0.21.3
                              rust-darling-macro-0.23.0
+                             rust-darling-macro-0.24.0
                              rust-dashmap-6.1.0
                              rust-data-encoding-2.10.0
                              rust-dbus-0.9.10
@@ -11699,7 +11791,7 @@
                              rust-globset-0.4.18
                              rust-group-0.13.0
                              rust-gzip-header-1.0.0
-                             rust-h2-0.4.13
+                             rust-h2-0.4.16
                              rust-half-2.7.1
                              rust-hash32-0.2.1
                              rust-hash32-0.3.1
@@ -11800,8 +11892,10 @@
                              rust-jiff-static-0.2.23
                              rust-jiff-tzdb-0.1.6
                              rust-jiff-tzdb-platform-0.1.3
-                             rust-jni-0.21.1
-                             rust-jni-sys-0.3.0
+                             rust-jni-0.22.4
+                             rust-jni-macros-0.22.4
+                             rust-jni-sys-0.4.1
+                             rust-jni-sys-macros-0.4.1
                              rust-jobserver-0.1.34
                              rust-js-sys-0.3.85
                              rust-jsonptr-0.7.1
@@ -11841,8 +11935,7 @@
                              rust-logos-codegen-0.15.1
                              rust-logos-derive-0.15.1
                              rust-loom-0.7.2
-                             rust-lru-0.16.3
-                             rust-lru-0.18.1
+                             rust-lru-0.18.2
                              rust-lru-slab-0.1.2
                              rust-lsp-types-0.97.0
                              rust-lzma-rs-0.3.0
@@ -11999,6 +12092,15 @@
                              rust-prost-build-0.14.3
                              rust-prost-derive-0.14.3
                              rust-prost-types-0.14.3
+                             rust-protoc-bin-vendored-3.2.0
+                             rust-protoc-bin-vendored-linux-aarch-64-3.2.0
+                             rust-protoc-bin-vendored-linux-ppcle-64-3.2.0
+                             rust-protoc-bin-vendored-linux-s390-64-3.2.0
+                             rust-protoc-bin-vendored-linux-x86-32-3.2.0
+                             rust-protoc-bin-vendored-linux-x86-64-3.2.0
+                             rust-protoc-bin-vendored-macos-aarch-64-3.2.0
+                             rust-protoc-bin-vendored-macos-x86-64-3.2.0
+                             rust-protoc-bin-vendored-win32-3.2.0
                              rust-psl-2.1.184
                              rust-psl-types-2.0.11
                              rust-publicsuffix-2.3.0
@@ -12068,8 +12170,8 @@
                              rust-resolv-conf-0.7.6
                              rust-rfc6979-0.4.0
                              rust-ring-0.17.14
-                             rust-rmcp-3.0.0
-                             rust-rmcp-macros-3.0.0
+                             rust-rmcp-3.1.2
+                             rust-rmcp-macros-3.1.2
                              rust-runfiles-0.1.0.b56cbaa
                              rust-rust-embed-8.11.0
                              rust-rust-embed-impl-8.11.0
@@ -12158,6 +12260,7 @@
                              rust-signal-hook-registry-1.4.8
                              rust-signature-2.2.0
                              rust-simd-adler32-0.3.8
+                             rust-simd-cesu8-1.2.0
                              rust-simdutf8-0.1.5
                              rust-similar-2.7.0
                              rust-simple-asn1-0.6.4
@@ -12212,6 +12315,7 @@
                              rust-symphonia-metadata-0.6.0
                              rust-syn-1.0.109
                              rust-syn-2.0.117
+                             rust-syn-3.0.3
                              rust-sync-wrapper-1.0.2
                              rust-synstructure-0.13.2
                              rust-syntect-5.3.0
@@ -12293,6 +12397,7 @@
                              rust-tree-sitter-0.25.10
                              rust-tree-sitter-bash-0.25.1
                              rust-tree-sitter-language-0.1.7
+                             rust-tree-sitter-powershell-0.26.4
                              rust-tree-magic-mini-3.2.2
                              rust-triomphe-0.1.15
                              rust-try-lock-0.2.5
@@ -12366,7 +12471,7 @@
                              rust-wayland-sys-0.31.8
                              rust-web-sys-0.3.85
                              rust-web-time-1.1.0
-                             rust-webbrowser-1.0.6
+                             rust-webbrowser-1.2.4
                              rust-webpki-root-certs-1.0.5
                              rust-webpki-roots-1.0.5
                              rust-weezl-0.1.12
@@ -12404,44 +12509,35 @@
                              rust-windows-result-0.4.1
                              rust-windows-strings-0.1.0
                              rust-windows-strings-0.5.1
-                             rust-windows-sys-0.45.0
                              rust-windows-sys-0.48.0
                              rust-windows-sys-0.52.0
                              rust-windows-sys-0.59.0
                              rust-windows-sys-0.60.2
                              rust-windows-sys-0.61.2
-                             rust-windows-targets-0.42.2
                              rust-windows-targets-0.48.5
                              rust-windows-targets-0.52.6
                              rust-windows-targets-0.53.5
                              rust-windows-threading-0.2.1
-                             rust-windows-aarch64-gnullvm-0.42.2
                              rust-windows-aarch64-gnullvm-0.48.5
                              rust-windows-aarch64-gnullvm-0.52.6
                              rust-windows-aarch64-gnullvm-0.53.1
-                             rust-windows-aarch64-msvc-0.42.2
                              rust-windows-aarch64-msvc-0.48.5
                              rust-windows-aarch64-msvc-0.52.6
                              rust-windows-aarch64-msvc-0.53.1
-                             rust-windows-i686-gnu-0.42.2
                              rust-windows-i686-gnu-0.48.5
                              rust-windows-i686-gnu-0.52.6
                              rust-windows-i686-gnu-0.53.1
                              rust-windows-i686-gnullvm-0.52.6
                              rust-windows-i686-gnullvm-0.53.1
-                             rust-windows-i686-msvc-0.42.2
                              rust-windows-i686-msvc-0.48.5
                              rust-windows-i686-msvc-0.52.6
                              rust-windows-i686-msvc-0.53.1
-                             rust-windows-x86-64-gnu-0.42.2
                              rust-windows-x86-64-gnu-0.48.5
                              rust-windows-x86-64-gnu-0.52.6
                              rust-windows-x86-64-gnu-0.53.1
-                             rust-windows-x86-64-gnullvm-0.42.2
                              rust-windows-x86-64-gnullvm-0.48.5
                              rust-windows-x86-64-gnullvm-0.52.6
                              rust-windows-x86-64-gnullvm-0.53.1
-                             rust-windows-x86-64-msvc-0.42.2
                              rust-windows-x86-64-msvc-0.48.5
                              rust-windows-x86-64-msvc-0.52.6
                              rust-windows-x86-64-msvc-0.53.1
