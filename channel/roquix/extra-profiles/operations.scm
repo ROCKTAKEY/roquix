@@ -34,6 +34,9 @@
             prepare-reconfiguration
             reconfiguration-arguments
             run-reconfiguration
+            generation-arguments
+            rollback-arguments
+            run-guix-operation
             process-exit-code))
 
 (define-record-type <profile-description>
@@ -183,3 +186,27 @@
   (process-exit-code
    (apply runner guix
           (reconfiguration-arguments request build-arguments))))
+
+(define (require-configured-profile profile)
+  (unless (configured-profile? profile)
+    (error "expected a configured profile" profile))
+  profile)
+
+(define (generation-arguments profile pattern)
+  (require-configured-profile profile)
+  (when (and pattern (not (string? pattern)))
+    (error "expected a generation pattern string" pattern))
+  (list "package"
+        (string-append "--profile=" (configured-profile-path profile))
+        (if pattern
+            (string-append "--list-generations=" pattern)
+            "--list-generations")))
+
+(define (rollback-arguments profile)
+  (require-configured-profile profile)
+  (list "package"
+        (string-append "--profile=" (configured-profile-path profile))
+        "--roll-back"))
+
+(define* (run-guix-operation guix arguments #:key (runner system*))
+  (process-exit-code (apply runner guix arguments)))

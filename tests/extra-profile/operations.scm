@@ -99,6 +99,25 @@
           (prepare-reconfiguration
            profile-only
            #:definitions-root definitions
-           #:profiles-root profiles)))))))
+           #:profiles-root profiles))))
+
+     (let ((configured (resolve-profile profile-only
+                                        #:profiles-root profiles
+                                        #:store-directory store)))
+       (test-equal "generations delegates to the configured mutable profile"
+         (list "package"
+               (string-append "--profile=" profile)
+               "--list-generations")
+         (generation-arguments configured #f))
+       (test-equal "generation patterns remain a single option argument"
+         (list "package"
+               (string-append "--profile=" profile)
+               "--list-generations=2d")
+         (generation-arguments configured "2d"))
+       (test-equal "roll-back delegates to the configured mutable profile"
+         (list "package"
+               (string-append "--profile=" profile)
+               "--roll-back")
+         (rollback-arguments configured))))))
 
 (test-end "extra-profile-operations")
