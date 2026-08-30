@@ -6917,6 +6917,10 @@
   (crate-source "rmcp" "3.1.2"
                 "1j33dpsp0c53xm93x0019qx6di521hb6c0a2pagsbf9435dxrpf8"))
 
+(define rust-rmcp-3.1.3
+  (crate-source "rmcp" "3.1.3"
+                "0x1kh5sif2iz909rskq6cfxia1vxsfrn9gadf5pzic3pz4m0f5sz"))
+
 (define rust-rmcp-macros-0.12.0
   (crate-source "rmcp-macros" "0.12.0"
                 "0nbg1q38ngfxdkbsz2plk595xc0srvbgfqllbjc8xswlljm1vy73"))
@@ -6952,6 +6956,10 @@
 (define rust-rmcp-macros-3.1.2
   (crate-source "rmcp-macros" "3.1.2"
                 "08f5py29kc1qq2wmgsnglb42zxlw9g0c4lwazadvahk3s56f5638"))
+
+(define rust-rmcp-macros-3.1.3
+  (crate-source "rmcp-macros" "3.1.3"
+                "140qjwvvvn1x1m2apym92jwy7yv6l6j84mrsbh6k6d9ssqqp50al"))
 
 (define rust-ron-0.10.1
   (crate-source "ron" "0.10.1"
@@ -12170,8 +12178,8 @@
                              rust-resolv-conf-0.7.6
                              rust-rfc6979-0.4.0
                              rust-ring-0.17.14
-                             rust-rmcp-3.1.2
-                             rust-rmcp-macros-3.1.2
+                             rust-rmcp-3.1.3
+                             rust-rmcp-macros-3.1.3
                              rust-runfiles-0.1.0.b56cbaa
                              rust-rust-embed-8.11.0
                              rust-rust-embed-impl-8.11.0
