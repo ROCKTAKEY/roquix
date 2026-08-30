@@ -13,7 +13,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (profile-name?
@@ -86,6 +85,11 @@
       (%make-profile-name value)
       (raise-extra-profile-error 'invalid-name value #f)))
 
+(define (require-profile-name value)
+  (unless (profile-name? value)
+    (error "expected a parsed profile name" value))
+  value)
+
 (define (absolute-path path)
   (if (absolute-file-name? path)
       path
@@ -119,14 +123,12 @@
   (string-append (home-directory) "/.guix-extra-profiles"))
 
 (define* (manifest-path name #:key (root (definitions-root)))
-  (unless (profile-name? name)
-    (error "expected a parsed profile name" name))
+  (require-profile-name name)
   (string-append (normalize-absolute-path root) "/"
                  (profile-name-value name) "/manifest.scm"))
 
 (define* (profile-path name #:key (root (profiles-root)))
-  (unless (profile-name? name)
-    (error "expected a parsed profile name" name))
+  (require-profile-name name)
   (let ((value (profile-name-value name)))
     (string-append (normalize-absolute-path root) "/" value "/" value)))
 
@@ -156,10 +158,9 @@
   "Resolve NAME's current generation and return a <configured-profile>.
 
 The returned value contains the terminal store directory, not a mutable
-profile link.  Callers that accept only <configured-profile> values therefore
+  profile link.  Callers that accept only <configured-profile> values therefore
 cannot accidentally re-read a generation after it has been snapshotted."
-  (unless (profile-name? name)
-    (error "expected a parsed profile name" name))
+  (require-profile-name name)
   (let ((profile (profile-path name #:root profiles-root))
         (store (normalize-absolute-path store-directory)))
     (let loop ((current profile)
