@@ -190,7 +190,6 @@
 
 (define* (run-reconfiguration request guix build-arguments
                               #:key
-                              dry-run?
                               (runner system*))
   "Run REQUEST with GUIX and return its portable exit code."
   ;; Guix takes <profile>.lock even for --dry-run, so only the containing

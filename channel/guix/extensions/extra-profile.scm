@@ -154,8 +154,7 @@ Manage named extra profiles and compose them into guix shell environments.\n"))
          (let ((status
                 (run-reconfiguration
                  request guix
-                 (reconfigure-invocation-build-arguments invocation)
-                 #:dry-run? (reconfigure-invocation-dry-run? invocation))))
+                 (reconfigure-invocation-build-arguments invocation))))
            (if (zero? status)
                (loop rest)
                (exit status))))))))
