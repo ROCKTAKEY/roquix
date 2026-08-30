@@ -11,7 +11,6 @@
   #:use-module (guix build utils)
   #:use-module (guix store)
   #:use-module (ice-9 ftw)
-  #:use-module (ice-9 match)
   #:use-module (roquix extra-profiles paths)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -77,7 +76,9 @@
     (parse-profile-name value)))
 
 (define (definition-name? name root)
-  (file-exists? (manifest-path name #:root root)))
+  (let ((manifest (manifest-path name #:root root)))
+    (and (file-exists? manifest)
+         (eq? 'regular (stat:type (stat manifest))))))
 
 (define (profile-name-present? name root)
   (lstat-exists? (profile-path name #:root root)))
@@ -113,16 +114,19 @@
   "Return a description without evaluating NAME's definition manifest."
   (let ((manifest (manifest-path name #:root definitions-root))
         (profile (profile-path name #:root profiles-root)))
+    (define manifest-present?
+      (definition-name? name definitions-root))
+
     (guard (condition
             ((extra-profile-error? condition)
              (make-profile-description
-              name manifest (file-exists? manifest) profile
+              name manifest manifest-present? profile
               (extra-profile-error-kind condition) #f)))
       (let ((configured (resolve-profile name
                                          #:profiles-root profiles-root
                                          #:store-directory store-directory)))
         (make-profile-description
-         name manifest (file-exists? manifest) profile 'configured
+         name manifest manifest-present? profile 'configured
          (configured-profile-generation-target configured))))))
 
 (define (write-profile-description description port)
@@ -148,8 +152,7 @@
   "Parse NAME's filesystem state into a reconfiguration request."
   (let ((manifest (manifest-path name #:root definitions-root))
         (profile (profile-path name #:root profiles-root)))
-    (if (and (file-exists? manifest)
-             (eq? 'regular (stat:type (stat manifest))))
+    (if (definition-name? name definitions-root)
         (make-reconfiguration name manifest profile)
         (raise-extra-profile-error 'missing-definition name manifest))))
 
