@@ -3,16 +3,15 @@
   #:use-module (guix gexp)
   #:use-module (guix licenses)
   #:use-module (guix packages)
-  #:export (fixture-profile-a
-            fixture-profile-a-v2
-            fixture-profile-b
-            fixture-project))
+  #:export (fixture-profile-a fixture-profile-a-v2 fixture-profile-b
+                              fixture-project))
 
 (define (fixture-package name version command marker)
   (package
     (name name)
     (version version)
-    (source #f)
+    (source
+     #f)
     (build-system trivial-build-system)
     (arguments
      (list
@@ -21,17 +20,19 @@
           (let ((bin (string-append #$output "/bin")))
             (mkdir #$output)
             (mkdir bin)
-            (for-each
-             (lambda (file value)
-               (let ((program (string-append bin "/" file)))
-                 (call-with-output-file program
-                   (lambda (port)
-                     (format port "#!/bin/sh~%printf '%s\\n' '~a'~%" value)))
-                 (chmod program #o755)))
-             (list #$command "collision")
-             (list #$marker #$marker))))))
+            (for-each (lambda (file value)
+                        (let ((program (string-append bin "/" file)))
+                          (call-with-output-file program
+                            (lambda (port)
+                              (format port "#!/bin/sh~%printf '%s\\n' '~a'~%"
+                                      value)))
+                          (chmod program #o755)))
+                      (list #$command "collision")
+                      (list #$marker
+                            #$marker))))))
     (synopsis "Fixture command for guix extra-profile tests")
-    (description "This package exists only for the extra-profile integration tests.")
+    (description
+     "This package exists only for the extra-profile integration tests.")
     (home-page "https://github.com/ROCKTAKEY/roquix")
     (license expat)))
 

@@ -14,35 +14,37 @@
   #:use-module (roquix extra-profiles paths)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-34)
-  #:export (profile-description?
-            profile-description-name
-            profile-description-manifest-path
-            profile-description-manifest-present?
-            profile-description-profile-path
-            profile-description-status
-            profile-description-generation-target
+  #:export (profile-description? profile-description-name
+                                 profile-description-manifest-path
+                                 profile-description-manifest-present?
+                                 profile-description-profile-path
+                                 profile-description-status
+                                 profile-description-generation-target
 
-            reconfiguration?
-            reconfiguration-name
-            reconfiguration-manifest-path
-            reconfiguration-profile-path
+                                 reconfiguration?
+                                 reconfiguration-name
+                                 reconfiguration-manifest-path
+                                 reconfiguration-profile-path
 
-            list-definition-names
-            list-profile-names
-            describe-profile
-            write-profile-description
-            prepare-reconfiguration
-            reconfiguration-arguments
-            run-reconfiguration
-            generation-arguments
-            rollback-arguments
-            run-guix-operation
-            process-exit-code))
+                                 list-definition-names
+                                 list-profile-names
+                                 describe-profile
+                                 write-profile-description
+                                 prepare-reconfiguration
+                                 reconfiguration-arguments
+                                 run-reconfiguration
+                                 generation-arguments
+                                 rollback-arguments
+                                 run-guix-operation
+                                 process-exit-code))
 
 (define-record-type <profile-description>
-  (make-profile-description name manifest-path manifest-present?
-                            profile-path status generation-target)
+  (make-profile-description name
+                            manifest-path
+                            manifest-present?
+                            profile-path
+                            status
+                            generation-target)
   profile-description?
   (name profile-description-name)
   (manifest-path profile-description-manifest-path)
@@ -52,40 +54,43 @@
   (generation-target profile-description-generation-target))
 
 (define-record-type <reconfiguration>
-  (make-reconfiguration name manifest-path profile-path)
-  reconfiguration?
+  (make-reconfiguration name manifest-path profile-path) reconfiguration?
   (name reconfiguration-name)
   (manifest-path reconfiguration-manifest-path)
   (profile-path reconfiguration-profile-path))
 
 (define (lstat-exists? file)
   (catch 'system-error
-    (lambda ()
-      (lstat file)
-      #t)
-    (lambda args
-      (if (= ENOENT (system-error-errno args))
-          #f
-          (apply throw args)))))
+         (lambda ()
+           (lstat file) #t)
+         (lambda args
+           (if (= ENOENT
+                  (system-error-errno args)) #f
+               (apply throw args)))))
 
 (define (directory-entries directory)
   (if (file-exists? directory)
       (scandir directory
                (lambda (entry)
-                 (not (member entry '("." "..")))))
+                 (not (member entry
+                              '("." "..")))))
       '()))
 
 (define (try-profile-name value)
-  (guard (condition ((extra-profile-error? condition) #f))
-    (parse-profile-name value)))
+  (call-with-extra-profile-error (lambda ()
+                                   (parse-profile-name value))
+                                 (const #f)))
 
 (define (definition-name? name root)
-  (let ((manifest (manifest-path name #:root root)))
+  (let ((manifest (manifest-path name
+                                 #:root root)))
     (and (file-exists? manifest)
-         (eq? 'regular (stat:type (stat manifest))))))
+         (eq? 'regular
+              (stat:type (stat manifest))))))
 
 (define (profile-name-present? name root)
-  (lstat-exists? (profile-path name #:root root)))
+  (lstat-exists? (profile-path name
+                               #:root root)))
 
 (define (names-under root present?)
   (filter-map (lambda (entry)
@@ -100,57 +105,60 @@
           (string<? (profile-name-value left)
                     (profile-name-value right)))))
 
-(define* (list-definition-names
-          #:key
-          (definitions-root (definitions-root)))
+(define* (list-definition-names #:key (definitions-root (definitions-root)))
   "Return sorted parsed names that have definition manifests."
-  (sort-profile-names
-   (names-under definitions-root definition-name?)))
+  (sort-profile-names (names-under definitions-root definition-name?)))
 
-(define* (list-profile-names
-          #:key
-          (definitions-root (definitions-root))
-          (profiles-root (profiles-root)))
+(define* (list-profile-names #:key (definitions-root (definitions-root))
+                             (profiles-root (profiles-root)))
   "Return sorted parsed names found in either definitions or profiles."
-  (sort-profile-names
-   (delete-duplicates
-    (append (names-under definitions-root definition-name?)
-            (names-under profiles-root profile-name-present?))
-    (lambda (left right)
-      (string=? (profile-name-value left)
-                (profile-name-value right))))))
+  (sort-profile-names (delete-duplicates (append (names-under definitions-root
+                                                  definition-name?)
+                                                 (names-under profiles-root
+                                                  profile-name-present?))
+                                         (lambda (left right)
+                                           (string=? (profile-name-value left)
+                                                     (profile-name-value right))))))
 
-(define* (describe-profile
-          name
-          #:key
-          (definitions-root (definitions-root))
-          (profiles-root (profiles-root))
-          (store-directory (%store-prefix)))
+(define* (describe-profile name
+                           #:key (definitions-root (definitions-root))
+                           (profiles-root (profiles-root))
+                           (store-directory (%store-prefix)))
   "Return a description without evaluating NAME's definition manifest."
-  (let ((manifest (manifest-path name #:root definitions-root))
-        (profile (profile-path name #:root profiles-root)))
+  (let ((manifest (manifest-path name
+                                 #:root definitions-root))
+        (profile (profile-path name
+                               #:root profiles-root)))
     (define manifest-present?
       (definition-name? name definitions-root))
 
-    (guard (condition
-            ((extra-profile-error? condition)
-             (make-profile-description
-              name manifest manifest-present? profile
-              (extra-profile-error-kind condition) #f)))
-      (let ((configured (resolve-profile name
-                                         #:profiles-root profiles-root
-                                         #:store-directory store-directory)))
-        (make-profile-description
-         name manifest manifest-present? profile 'configured
-         (configured-profile-generation-target configured))))))
+    (call-with-extra-profile-error (lambda ()
+                                     (let ((configured (resolve-profile name
+                                                        #:profiles-root
+                                                        profiles-root
+                                                        #:store-directory
+                                                        store-directory)))
+                                       (make-profile-description name
+                                        manifest
+                                        manifest-present?
+                                        profile
+                                        'configured
+                                        (configured-profile-generation-target
+                                         configured))))
+                                   (lambda (condition)
+                                     (make-profile-description name
+                                      manifest
+                                      manifest-present?
+                                      profile
+                                      (extra-profile-error-kind condition)
+                                      #f)))))
 
 (define (write-profile-description description port)
   (format port "Name: ~a~%"
           (profile-name-value (profile-description-name description)))
   (format port "Manifest: ~a (~a)~%"
           (profile-description-manifest-path description)
-          (if (profile-description-manifest-present? description)
-              "present"
+          (if (profile-description-manifest-present? description) "present"
               "missing"))
   (format port "Profile: ~a (~a)~%"
           (profile-description-profile-path description)
@@ -159,14 +167,14 @@
     (format port "Generation: ~a~%"
             (profile-description-generation-target description))))
 
-(define* (prepare-reconfiguration
-          name
-          #:key
-          (definitions-root (definitions-root))
-          (profiles-root (profiles-root)))
+(define* (prepare-reconfiguration name
+                                  #:key (definitions-root (definitions-root))
+                                  (profiles-root (profiles-root)))
   "Parse NAME's filesystem state into a reconfiguration request."
-  (let ((manifest (manifest-path name #:root definitions-root))
-        (profile (profile-path name #:root profiles-root)))
+  (let ((manifest (manifest-path name
+                                 #:root definitions-root))
+        (profile (profile-path name
+                               #:root profiles-root)))
     (if (definition-name? name definitions-root)
         (make-reconfiguration name manifest profile)
         (raise-extra-profile-error 'missing-definition name manifest))))
@@ -174,53 +182,55 @@
 (define (reconfiguration-arguments request build-arguments)
   (unless (reconfiguration? request)
     (error "expected a parsed reconfiguration" request))
-  (append
-   (list "package"
-         (string-append "--profile="
-                        (reconfiguration-profile-path request))
-         (string-append "--manifest="
-                        (reconfiguration-manifest-path request)))
-   build-arguments))
+  (append (list "package"
+                (string-append "--profile="
+                               (reconfiguration-profile-path request))
+                (string-append "--manifest="
+                               (reconfiguration-manifest-path request)))
+          build-arguments))
 
 (define (process-exit-code status)
   (cond
-   ((status:exit-val status) => identity)
-   ((status:term-sig status) => (lambda (signal) (+ 128 signal)))
-   (else 1)))
+    ((status:exit-val status)
+     => identity)
+    ((status:term-sig status)
+     =>
+     (lambda (signal)
+       (+ 128 signal)))
+    (else 1)))
 
 (define* (run-reconfiguration request guix build-arguments
-                              #:key
-                              (runner system*))
+                              #:key (runner system*))
   "Run REQUEST with GUIX and return its portable exit code."
   ;; Guix takes <profile>.lock even for --dry-run, so only the containing
   ;; directory is infrastructure required to perform either mode.
   (mkdir-p (dirname (reconfiguration-profile-path request)))
-  (process-exit-code
-   (apply runner guix
-          (reconfiguration-arguments request build-arguments))))
+  (process-exit-code (apply runner guix
+                            (reconfiguration-arguments request build-arguments))))
 
 (define (require-configured-profile profile)
   (unless (configured-profile? profile)
-    (error "expected a configured profile" profile))
-  profile)
+    (error "expected a configured profile" profile)) profile)
 
 (define (profile-operation-arguments profile operation)
   (require-configured-profile profile)
   (list "package"
-        (string-append "--profile=" (configured-profile-path profile))
-        operation))
+        (string-append "--profile="
+                       (configured-profile-path profile)) operation))
 
 (define (generation-arguments profile pattern)
-  (when (and pattern (not (string? pattern)))
+  (when (and pattern
+             (not (string? pattern)))
     (error "expected a generation pattern string" pattern))
-  (profile-operation-arguments
-   profile
-   (if pattern
-       (string-append "--list-generations=" pattern)
-       "--list-generations")))
+  (profile-operation-arguments profile
+                               (if pattern
+                                   (string-append "--list-generations="
+                                                  pattern)
+                                   "--list-generations")))
 
 (define (rollback-arguments profile)
   (profile-operation-arguments profile "--roll-back"))
 
-(define* (run-guix-operation guix arguments #:key (runner system*))
+(define* (run-guix-operation guix arguments
+                             #:key (runner system*))
   (process-exit-code (apply runner guix arguments)))
