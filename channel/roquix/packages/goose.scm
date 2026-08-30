@@ -1,8 +1,8 @@
-(define-module
-  (roquix packages goose)
+(define-module (roquix packages goose)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module ((guix licenses)  #:prefix license:)
+  #:use-module ((guix licenses)
+                #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
   #:use-module (gnu packages rust)
@@ -30,30 +30,19 @@
      (list
       #:rust rust-1.88
       #:install-source? #f
+      #:parallel-tests? #f
       #:cargo-install-paths ''("crates/goose-cli")
+      #:cargo-build-flags ''("--release" "--package" "goose-cli")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'setenv
             (lambda _
               ;; NOTE: Need for test.
-              ;;   The full path should include the word "goose"
-              ;;   for test logging::tests::test_log_directory_creation.
+              ;; The full path should include the word "goose"
+              ;; for test logging::tests::test_log_directory_creation.
               (setenv "GOOSE_PATH_ROOT" "/tmp/goose"))))
-      #:cargo-test-flags
-      ''("--tests"
-         "--"
-         ;; NOTE: Need network
-         "--skip=providers::gcpauth::tests::test_token_refresh_race_condition"
-         "--skip=routes::audio::tests::test_transcribe_endpoint_requires_auth"
-         "--skip=tunnel::lapstone_test::test_tunnel_end_to_end"
-         "--skip=tunnel::lapstone_test::test_tunnel_post_request"
-         ;; FIXME: (code: 5) database is locked
-         "--skip=session::session_manager::tests::test_concurrent_session_creation"
-         )))
-    (inputs (cons* `(,zstd "lib")
-                   sqlite
-                   oniguruma
-                   libxcb
+      #:cargo-test-flags ''("--package" "goose-cli" "--tests")))
+    (inputs (cons* `(,zstd "lib") sqlite oniguruma libxcb
                    (cargo-inputs 'goose-cli
                                  #:module '(roquix packages rust-crates))))
     (native-inputs (list pkg-config))
