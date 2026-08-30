@@ -48,18 +48,6 @@
   (profiles snapshotted-shell-profiles)
   (guix-arguments snapshotted-shell-guix-arguments))
 
-(define (stable-delete-duplicate-names names)
-  (let loop ((input names)
-             (seen '())
-             (result '()))
-    (match input
-      (() (reverse result))
-      ((name rest ...)
-       (let ((value (profile-name-value name)))
-         (if (member value seen)
-             (loop rest seen result)
-             (loop rest (cons value seen) (cons name result))))))))
-
 (define (split-shell-arguments arguments)
   (call-with-values
       (lambda ()
@@ -75,7 +63,7 @@
       (when (null? raw-names)
         (raise-extra-profile-error 'missing-name #f #f))
       (make-shell-invocation
-       (stable-delete-duplicate-names (map parse-profile-name raw-names))
+       (parse-profile-names raw-names)
        guix-arguments))))
 
 (define* (snapshot-shell-invocation

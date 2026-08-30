@@ -17,6 +17,7 @@
   #:use-module (srfi srfi-35)
   #:export (profile-name?
             parse-profile-name
+            parse-profile-names
             profile-name-value
 
             configured-profile?
@@ -85,6 +86,19 @@
            (every profile-name-rest? (string->list value)))
       (%make-profile-name value)
       (raise-extra-profile-error 'invalid-name value #f)))
+
+(define (parse-profile-names values)
+  "Parse VALUES and remove duplicates while preserving their first order."
+  (let loop ((input values)
+             (seen '())
+             (result '()))
+    (match input
+      (() (reverse result))
+      ((value rest ...)
+       (let ((name (parse-profile-name value)))
+         (if (member value seen)
+             (loop rest seen result)
+             (loop rest (cons value seen) (cons name result))))))))
 
 (define (require-profile-name value)
   (unless (profile-name? value)
