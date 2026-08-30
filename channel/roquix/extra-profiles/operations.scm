@@ -192,21 +192,23 @@
     (error "expected a configured profile" profile))
   profile)
 
-(define (generation-arguments profile pattern)
+(define (profile-operation-arguments profile operation)
   (require-configured-profile profile)
+  (list "package"
+        (string-append "--profile=" (configured-profile-path profile))
+        operation))
+
+(define (generation-arguments profile pattern)
   (when (and pattern (not (string? pattern)))
     (error "expected a generation pattern string" pattern))
-  (list "package"
-        (string-append "--profile=" (configured-profile-path profile))
-        (if pattern
-            (string-append "--list-generations=" pattern)
-            "--list-generations")))
+  (profile-operation-arguments
+   profile
+   (if pattern
+       (string-append "--list-generations=" pattern)
+       "--list-generations")))
 
 (define (rollback-arguments profile)
-  (require-configured-profile profile)
-  (list "package"
-        (string-append "--profile=" (configured-profile-path profile))
-        "--roll-back"))
+  (profile-operation-arguments profile "--roll-back"))
 
 (define* (run-guix-operation guix arguments #:key (runner system*))
   (process-exit-code (apply runner guix arguments)))
