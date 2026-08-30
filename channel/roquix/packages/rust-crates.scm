@@ -6913,10 +6913,6 @@
   (crate-source "rmcp" "3.0.0"
                 "1q0jllawy2ac8dk8hz9c2n69x5hqfwd6ccjzjml964hq7gfvdlpw"))
 
-(define rust-rmcp-3.1.2
-  (crate-source "rmcp" "3.1.2"
-                "1j33dpsp0c53xm93x0019qx6di521hb6c0a2pagsbf9435dxrpf8"))
-
 (define rust-rmcp-3.1.3
   (crate-source "rmcp" "3.1.3"
                 "0x1kh5sif2iz909rskq6cfxia1vxsfrn9gadf5pzic3pz4m0f5sz"))
@@ -6952,10 +6948,6 @@
 (define rust-rmcp-macros-3.0.0
   (crate-source "rmcp-macros" "3.0.0"
                 "1mmjkys08i3wmxrzc0rrjn5pqh4nw02nsgf27yj60lkr8n9lpap1"))
-
-(define rust-rmcp-macros-3.1.2
-  (crate-source "rmcp-macros" "3.1.2"
-                "08f5py29kc1qq2wmgsnglb42zxlw9g0c4lwazadvahk3s56f5638"))
 
 (define rust-rmcp-macros-3.1.3
   (crate-source "rmcp-macros" "3.1.3"
