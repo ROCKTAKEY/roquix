@@ -142,14 +142,18 @@
           (apply throw args)))))
 
 (define (ensure-private-directory directory)
-  (let ((metadata (lstat-or-false directory)))
-    (cond
-     ((not metadata)
-      (mkdir-p directory))
-     ((not (eq? 'directory (stat:type metadata)))
-      (raise-extra-profile-error 'unsafe-cache-directory #f directory))))
+  (mkdir-p (dirname directory))
+  (unless (lstat-or-false directory)
+    (catch 'system-error
+      (lambda () (mkdir directory #o700))
+      (lambda args
+        ;; Concurrent creators are expected; the lstat below decides whether
+        ;; the winning filesystem object is safe to use.
+        (unless (= EEXIST (system-error-errno args))
+          (apply throw args)))))
   (let ((metadata (lstat directory)))
-    (unless (= (getuid) (stat:uid metadata))
+    (unless (and (eq? 'directory (stat:type metadata))
+                 (= (getuid) (stat:uid metadata)))
       (raise-extra-profile-error 'unsafe-cache-directory #f directory))
     (chmod directory #o700)))
 
