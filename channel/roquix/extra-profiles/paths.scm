@@ -28,6 +28,7 @@
             extra-profile-error-kind
             extra-profile-error-name
             extra-profile-error-path
+            raise-extra-profile-error
 
             definitions-root
             profiles-root
