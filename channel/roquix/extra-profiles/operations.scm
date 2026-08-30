@@ -193,8 +193,9 @@
                               dry-run?
                               (runner system*))
   "Run REQUEST with GUIX and return its portable exit code."
-  (unless dry-run?
-    (mkdir-p (dirname (reconfiguration-profile-path request))))
+  ;; Guix takes <profile>.lock even for --dry-run, so only the containing
+  ;; directory is infrastructure required to perform either mode.
+  (mkdir-p (dirname (reconfiguration-profile-path request)))
   (process-exit-code
    (apply runner guix
           (reconfiguration-arguments request build-arguments))))
