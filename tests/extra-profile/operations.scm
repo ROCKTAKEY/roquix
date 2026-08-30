@@ -47,6 +47,10 @@
        (map profile-name-value
             (list-profile-names #:definitions-root definitions
                                 #:profiles-root profiles)))
+     (test-equal "reconfigure --all discovery includes definitions only"
+       '("manifest-only")
+       (map profile-name-value
+            (list-definition-names #:definitions-root definitions)))
 
      (let ((manifest-description
             (describe-profile manifest-only

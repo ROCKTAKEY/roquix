@@ -28,6 +28,7 @@
             reconfiguration-manifest-path
             reconfiguration-profile-path
 
+            list-definition-names
             list-profile-names
             describe-profile
             write-profile-description
@@ -86,27 +87,38 @@
 (define (profile-name-present? name root)
   (lstat-exists? (profile-path name #:root root)))
 
+(define (names-under root present?)
+  (filter-map (lambda (entry)
+                (and=> (try-profile-name entry)
+                       (lambda (name)
+                         (and (present? name root) name))))
+              (directory-entries root)))
+
+(define (sort-profile-names names)
+  (sort names
+        (lambda (left right)
+          (string<? (profile-name-value left)
+                    (profile-name-value right)))))
+
+(define* (list-definition-names
+          #:key
+          (definitions-root (definitions-root)))
+  "Return sorted parsed names that have definition manifests."
+  (sort-profile-names
+   (names-under definitions-root definition-name?)))
+
 (define* (list-profile-names
           #:key
           (definitions-root (definitions-root))
           (profiles-root (profiles-root)))
   "Return sorted parsed names found in either definitions or profiles."
-  (define (names-under root present?)
-    (filter-map (lambda (entry)
-                  (and=> (try-profile-name entry)
-                         (lambda (name)
-                           (and (present? name root) name))))
-                (directory-entries root)))
-
-  (sort (delete-duplicates
-         (append (names-under definitions-root definition-name?)
-                 (names-under profiles-root profile-name-present?))
-         (lambda (left right)
-           (string=? (profile-name-value left)
-                     (profile-name-value right))))
-        (lambda (left right)
-          (string<? (profile-name-value left)
-                    (profile-name-value right)))))
+  (sort-profile-names
+   (delete-duplicates
+    (append (names-under definitions-root definition-name?)
+            (names-under profiles-root profile-name-present?))
+    (lambda (left right)
+      (string=? (profile-name-value left)
+                (profile-name-value right))))))
 
 (define* (describe-profile
           name
