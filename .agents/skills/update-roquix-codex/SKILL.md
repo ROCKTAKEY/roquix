@@ -64,5 +64,11 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
 - `cargo-build-system` can treat a bare `origin` in `native-inputs` as a cargo
   source to unpack. Wrap helper archives that are not Rust crates in a small
   package instead of passing the raw `origin` directly.
+- An upstream release can add a target-specific workspace git dependency. A
+  generated origin is not sufficient when the workspace root is not a
+  standalone crate, because Cargo's offline vendor directory cannot provide
+  it. For this Linux-only package, remove Windows-only workspace dependency
+  declarations in a post-vendor phase and confirm the result with the offline
+  full build.
 - If `verify-guix-pull` reports a package-cache or `guix pull` failure, treat
   it as a channel breakage and fix it before closing out the bump.
