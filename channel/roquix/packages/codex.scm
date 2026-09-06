@@ -117,7 +117,7 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.151.0")
+(define %codex-release-version "0.153.4")
 
 (define-public codex
   (package
@@ -133,7 +133,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "1l3524w29xqw24xal27jaqmk6azmf264pk2d7slvmg5yhl1z6ymj"))))
+       (base32 "16mhz8l9zlba4p4qvy8kw26xxivspb4s080zk8vs6xd8jj7q6y4l"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -407,6 +407,15 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"[0-9a-f]+\" \\}")
                          ""))
                        ))
+                  (add-after 'use-guix-vendored-dependencies
+                             'remove-windows-git-dependency
+                    (lambda _
+                      ;; Codex is packaged only for Linux.  This Windows-only
+                      ;; workspace git dependency cannot be provided by Cargo's
+                      ;; offline vendor directory.
+                      (substitute* "sandboxing/Cargo.toml"
+                        (("appcontainer_common = \\{ workspace = true \\}")
+                         ""))))
                    (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((bwrap (search-input-file inputs "/bin/bwrap")))

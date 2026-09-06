@@ -313,6 +313,16 @@
   (crate-source "anyhow" "1.0.99"
                 "001icqvkfl28rxxmk99rm4gvdzxqngj5v50yg2bh3dzcvqfllrxh"))
 
+(define rust-appcontainer-common-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-appcontainer-common" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
 (define rust-approx-0.5.1
   (crate-source "approx" "0.5.1"
                 "1ilpv3dgd58rasslss0labarq7jawxmivk17wsh8wmkdm3q15cfa"))
@@ -1228,6 +1238,10 @@
 (define rust-ciborium-ll-0.2.1
   (crate-source "ciborium-ll" "0.2.1"
                 "0az2vabamfk75m74ylgf6nzqgqgma5yf25bc1ripfg09ri7a5yny"))
+
+(define rust-cidr-0.3.2
+  (crate-source "cidr" "0.3.2"
+                "0a393lfsdqfi8x94s6r5grgw39fzhyjhw20cbl48iqwl0db095ap"))
 
 (define rust-cipher-0.4.4
   (crate-source "cipher" "0.4.4"
@@ -2711,6 +2725,10 @@
 (define rust-fixedbitset-0.5.7
   (crate-source "fixedbitset" "0.5.7"
                 "16fd3v9d2cms2vddf9xhlm56sz4j0zgrk3d2h6v1l7hx760lwrqx"))
+
+(define rust-flatbuffers-25.12.19
+  (crate-source "flatbuffers" "25.12.19"
+                "1wvfm49ybn098zknzlim8xpxrfn2y0sazzqyaggav61vgffq7xim"))
 
 (define rust-flate2-1.1.2
   (crate-source "flate2" "1.1.2"
@@ -4573,6 +4591,26 @@
   (crate-source "lazycell" "1.3.0"
                 "0m8gw7dn30i0zjjpjdyf6pc16c34nl71lpv461mix50x3p70h3c3"))
 
+(define rust-learning-mode-core-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-learning-mode-core" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
+(define rust-learning-mode-windows-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-learning-mode-windows" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
 (define rust-leb128-0.2.5
   (crate-source "leb128" "0.2.5"
                 "0rxxjdn76sjbrb08s4bi7m4x47zg68f71jzgx8ww7j0cnivjckl8"))
@@ -5110,6 +5148,26 @@
 (define rust-multimap-0.10.1
   (crate-source "multimap" "0.10.1"
                 "1150lf0hjfjj4ksb8s3y0hl7a2nqzqlbh0is7vdym2iyjfrfr1qx"))
+
+(define rust-mxc-config-contract-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-mxc-config-contract" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
+(define rust-mxc-telemetry-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-mxc-telemetry" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
 
 (define rust-naga-25.0.1
   (crate-source "naga" "25.0.1"
@@ -6209,6 +6267,17 @@
   (crate-source "proc-macro2" "1.0.95"
                 "0y7pwxv6sh4fgg6s715ygk1i7g3w02c0ljgcsfm046isibkfbcq2"))
 
+(define rust-process-security-environment-spec-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-process-security-environment-spec"
+                              "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
 (define rust-process-wrap-8.2.1
   (crate-source "process-wrap" "8.2.1"
                 "189vzjn8dan18cnb0qlk3b472a6imji8wqlzxj13mwi20hplzvx3"))
@@ -7210,6 +7279,16 @@
 (define rust-same-file-1.0.6
   (crate-source "same-file" "1.0.6"
                 "00h5j1w87dmhnvbv9l8bic3y7xxsnjmssvifw2ayvgx9mb1ivz4k"))
+
+(define rust-sandbox-spec-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-sandbox-spec" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
 
 (define rust-scc-2.4.0
   (crate-source "scc" "2.4.0"
@@ -8895,6 +8974,14 @@
   (crate-source "tower-service" "0.3.3"
                 "1hzfkvkci33ra94xjx64vv3pp0sq346w06fpkcdwjcid7zhvdycd"))
 
+(define rust-tracelogging-1.2.3
+  (crate-source "tracelogging" "1.2.3"
+                "150fwk791iqrkxaqv0j16419p0bwxgy7crzzhbajjjzmydq48cg4"))
+
+(define rust-tracelogging-macros-1.2.3
+  (crate-source "tracelogging_macros" "1.2.3"
+                "0qr573k1xh5pr1mdpvxib0281rxsa6rbnk2ch70kpwsg8s8xiqlm"))
+
 (define rust-tracing-0.1.41
   (crate-source "tracing" "0.1.41"
                 "1l5xrzyjfyayrwhvhldfnwdyligi1mpqm8mzbi2m1d6y6p2hlkkq"))
@@ -9198,6 +9285,10 @@
 (define rust-unicode-categories-0.1.1
   (crate-source "unicode_categories" "0.1.1"
                 "0kp1d7fryxxm7hqywbk88yb9d1avsam9sg76xh36k5qx2arj9v1r"))
+
+(define rust-unicode-general-category-1.1.0
+  (crate-source "unicode-general-category" "1.1.0"
+                "0zv7q4fdnlawjxd75bpxfll33sf3db09xd13sv85pblkq7fkp68b"))
 
 (define rust-unicode-ident-1.0.12
   (crate-source "unicode-ident" "1.0.12"
@@ -10530,6 +10621,16 @@
   (crate-source "writeable" "0.6.2"
                 "1fg08y97n6vk7l0rnjggw3xyrii6dcqg54wqaxldrlk98zdy1pcy"))
 
+(define rust-wxc-common-0.8.0.6cd3d58
+  ;; TODO REVIEW: Define standalone package if this is a workspace.
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/microsoft/mxc")
+          (commit "6cd3d58f05d3447e67109cfb75e042803b843ca4")))
+    (file-name (git-file-name "rust-wxc-common" "0.8.0.6cd3d58"))
+    (sha256 (base32 "0z4wndc2z43rb0drxjlk2gimc0va01i9w2m849b4yqli3zci6jax"))))
+
 (define rust-x11-dl-2.21.0
   (crate-source "x11-dl" "2.21.0"
                 "0vsiq62xpcfm0kn9zjw5c9iycvccxl22jya8wnk18lyxzqj5jwrq"))
@@ -11407,6 +11508,7 @@
                              rust-anstyle-query-1.1.5
                              rust-anstyle-wincon-3.0.11
                              rust-anyhow-1.0.103
+                             rust-appcontainer-common-0.8.0.6cd3d58
                              rust-approx-0.5.1
                              rust-arbitrary-1.4.2
                              rust-arboard-3.6.1
@@ -11520,6 +11622,7 @@
                              rust-chardetng-0.1.17
                              rust-chrono-0.4.43
                              rust-chunked-transfer-1.5.0
+                             rust-cidr-0.3.2
                              rust-cipher-0.4.4
                              rust-clang-sys-1.8.1
                              rust-clap-4.5.58
@@ -11696,6 +11799,7 @@
                              rust-fixed-decimal-0.7.2
                              rust-fixedbitset-0.4.2
                              rust-fixedbitset-0.5.7
+                             rust-flatbuffers-25.12.19
                              rust-flate2-1.1.8
                              rust-float-cmp-0.10.0
                              rust-fluent-0.16.1
@@ -11911,6 +12015,8 @@
                              rust-landlock-0.4.4
                              rust-language-tags-0.3.2
                              rust-lazy-static-1.5.0
+                             rust-learning-mode-core-0.8.0.6cd3d58
+                             rust-learning-mode-windows-0.8.0.6cd3d58
                              rust-leb128fmt-0.1.0
                              rust-libc-0.2.186
                              rust-libdbus-sys-0.2.7
@@ -11961,6 +12067,8 @@
                              rust-moka-0.12.13
                              rust-moxcms-0.7.11
                              rust-multimap-0.10.1
+                             rust-mxc-config-contract-0.8.0.6cd3d58
+                             rust-mxc-telemetry-0.8.0.6cd3d58
                              rust-native-tls-0.2.14
                              rust-ndk-context-0.1.1
                              rust-nibble-vec-0.1.0
@@ -12086,6 +12194,7 @@
                              rust-proc-macro-error2-2.0.1
                              rust-proc-macro2-1.0.106
                              rust-process-wrap-9.0.1
+                             rust-process-security-environment-spec-0.8.0.6cd3d58
                              rust-prodash-31.0.0
                              rust-proptest-1.9.0
                              rust-prost-0.14.3
@@ -12193,6 +12302,7 @@
                              rust-ryu-1.0.22
                              rust-salsa20-0.10.2
                              rust-same-file-1.0.6
+                             rust-sandbox-spec-0.8.0.6cd3d58
                              rust-scc-2.4.0
                              rust-schannel-0.1.28
                              rust-schemafy-0.5.2
@@ -12383,6 +12493,8 @@
                              rust-tower-http-0.6.8
                              rust-tower-layer-0.3.3
                              rust-tower-service-0.3.3
+                             rust-tracelogging-1.2.3
+                             rust-tracelogging-macros-1.2.3
                              rust-tracing-0.1.44
                              rust-tracing-appender-0.2.4
                              rust-tracing-attributes-0.1.31
@@ -12417,6 +12529,7 @@
                              rust-unicase-2.9.0
                              rust-unicode-bidi-0.3.18
                              rust-unicode-bom-2.0.3
+                             rust-unicode-general-category-1.1.0
                              rust-unicode-ident-1.0.22
                              rust-unicode-linebreak-0.1.5
                              rust-unicode-normalization-0.1.25
@@ -12544,6 +12657,7 @@
                              rust-winnow-0.7.14
                              rust-winreg-0.10.1
                              rust-winreg-0.50.0
+                             rust-winreg-0.55.0
                              rust-winsafe-0.0.19
                              rust-winsplit-0.1.0
                              rust-wiremock-0.6.5
@@ -12555,6 +12669,7 @@
                              rust-wit-parser-0.244.0
                              rust-wl-clipboard-rs-0.9.3
                              rust-writeable-0.6.2
+                             rust-wxc-common-0.8.0.6cd3d58
                              rust-x11rb-0.13.2
                              rust-x11rb-protocol-0.13.2
                              rust-x25519-dalek-2.0.1
