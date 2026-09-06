@@ -12,6 +12,160 @@ Write to =.config/guix/channels.scm=:
          %default-channels)
          #+END_SRC
 
+Run =guix pull= and use the resulting =guix=.  Roquix's channel metadata makes
+the extension discoverable as =guix extra-profile=; a channel installation
+does not require =GUIX_EXTENSIONS_PATH= or =GUILE_LOAD_PATH=.
+
+* Named extra profiles
+=guix extra-profile= manages named profiles from declarative manifests and
+combines already-built profile generations with =guix shell=.  It deliberately
+does not re-evaluate a definition manifest while starting a shell.
+
+** Definitions and generated profiles
+A definition named =codex= is stored at:
+
+#+BEGIN_EXAMPLE
+$XDG_CONFIG_HOME/guix/extra-profiles/codex/manifest.scm
+#+END_EXAMPLE
+
+When =XDG_CONFIG_HOME= is unset, the path is
+=~/.config/guix/extra-profiles/codex/manifest.scm=.  Its generated profile is:
+
+#+BEGIN_EXAMPLE
+~/.guix-extra-profiles/codex/codex
+#+END_EXAMPLE
+
+Names must match =[A-Za-z0-9][A-Za-z0-9._+-]*=.  Create or update the profile
+explicitly:
+
+#+BEGIN_SRC sh
+guix extra-profile reconfigure codex
+#+END_SRC
+
+=reconfigure= accepts multiple names, =--all=, =--dry-run=, and the standard
+Guix build options.  =--all= selects definitions only; a migrated generated
+profile without a definition is not reconfigured.
+
+** Shell composition
+Start an interactive shell containing only the current =codex= generation:
+
+#+BEGIN_SRC sh
+guix extra-profile shell codex
+#+END_SRC
+
+The first =--= separates extra-profile names from arguments passed verbatim to
+=guix shell=.  Project manifests must be explicit because the internally added
+manifest disables =guix shell='s manifest auto-detection:
+
+#+BEGIN_SRC sh
+guix extra-profile shell codex -- \
+  -CWNF \
+  -m ./manifest.scm
+#+END_SRC
+
+Use a second =--= before a command executed inside the environment:
+
+#+BEGIN_SRC sh
+guix extra-profile shell codex -- \
+  -CWNF \
+  -m ./manifest.scm \
+  -- codex
+#+END_SRC
+
+Multiple extra profiles are accepted.  Earlier names win file collisions;
+an explicitly supplied project manifest wins collisions with extra profiles:
+
+#+BEGIN_SRC sh
+guix extra-profile shell codex texlive -- \
+  -m ./manifest.scm \
+  -- sh -c 'command -v codex'
+#+END_SRC
+
+=-p= and =--profile= are intentionally passed to =guix shell=, which rejects
+their combination with the internally supplied manifest using its standard
+diagnostic.  Options after the second =--= are command arguments and remain
+unchanged.
+
+At launch, each profile symlink is resolved through its current generation to
+an immutable store directory.  The combined manifest is cached under
+=$XDG_CACHE_HOME/guix/extra-profile/shell-manifests=, or under
+=~/.cache/guix/extra-profile/shell-manifests= when =XDG_CACHE_HOME= is unset.
+The cache directory has mode =0700= and manifest files have mode =0600=.
+
+** Inspection and generation commands
+#+BEGIN_SRC sh
+guix extra-profile list
+guix extra-profile show codex
+guix extra-profile path codex
+guix extra-profile generations codex
+guix extra-profile generations codex 2d
+guix extra-profile roll-back codex
+#+END_SRC
+
+=list= and =show= inspect filesystem state only.  They do not evaluate
+definition manifests or start builds.  =roll-back= changes the mutable profile
+symlink; the next shell launch consequently receives a different cache key.
+
+** Guix Home
+Guix Home can own definition files and XDG locations without performing an
+implicit update.  For example:
+
+#+BEGIN_SRC scheme
+(use-modules (gnu services)
+             (gnu home services)
+             (gnu home services xdg)
+             (guix gexp))
+
+(services
+ (list
+  (simple-service
+   'extra-profile-xdg-directories
+   home-xdg-base-directories-service-type
+   (home-xdg-base-directories-configuration
+    (config-home "$HOME/.config")
+    (cache-home "$HOME/.cache")))
+  (simple-service
+   'extra-profile-definitions
+   home-files-service-type
+   `((".config/guix/extra-profiles/codex/manifest.scm"
+      ,(local-file "./codex-manifest.scm"))))))
+#+END_SRC
+
+The XDG service exports the base-directory environment variables honored by
+=guix extra-profile=.  Do not attach =guix extra-profile reconfigure --all= to
+Home activation: a =guix home reconfigure= changes definitions, while the
+separate extra-profile command intentionally decides when packages advance.
+
+** Migration
+An existing profile already located at
+=~/.guix-extra-profiles/NAME/NAME= is immediately usable by =shell= even when
+its definition is absent.  This supports temporarily unavailable definition
+repositories and preserves the package derivations recorded in the current
+generation.
+
+To make a profile declarative, add its definition at the conventional path and
+run =guix extra-profile reconfigure NAME=.  Profiles stored elsewhere should
+be recreated at the conventional path from a manifest; avoid replacing them
+with a link to another mutable profile because generation listing and rollback
+are defined relative to the conventional profile basename.
+
+** Developing and testing
+Only a local source checkout needs explicit extension paths:
+
+#+BEGIN_SRC sh
+export GUIX_EXTENSIONS_PATH="$PWD/channel/guix/extensions"
+export GUILE_LOAD_PATH="$PWD/channel${GUILE_LOAD_PATH:+:$GUILE_LOAD_PATH}"
+#+END_SRC
+
+Run the isolated unit and integration suite with:
+
+#+BEGIN_SRC sh
+tests/extra-profile/run-tests.sh
+#+END_SRC
+
+The integration test uses temporary HOME and XDG directories and explicit
+profile paths.  It does not modify the user's Guix profile or extra profiles.
+
 * AppImage build system
 =roquix= includes =appimage-build-system= for repackaging Type 2 AppImages as
 Guix packages.
