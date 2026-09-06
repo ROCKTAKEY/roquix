@@ -110,7 +110,7 @@ guix extra-profile shell profile-a -- -- sh -c 'test "$(collision)" = a'
 mkdir -p "$definitions/dry-run"
 cp "$repository/tests/extra-profile/fixtures/profile-a.scm" \
    "$definitions/dry-run/manifest.scm"
-guix extra-profile reconfigure dry-run --dry-run -L "$fixtures"
+guix extra-profile reconfigure dry-run --dry-run --max-jobs=2 -L "$fixtures"
 test ! -e "$HOME/.guix-extra-profiles/dry-run/dry-run"
 
 set +e

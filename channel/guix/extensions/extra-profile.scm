@@ -34,10 +34,13 @@
   (dry-run? reconfigure-invocation-dry-run?)
   (build-arguments reconfigure-invocation-build-arguments))
 
-(define (option-spelling name)
-  (if (char? name)
-      (string #\- name)
-      (string-append "--" name)))
+(define (forwarded-option-spelling name argument)
+  (let ((option (if (char? name)
+                    (string #\- name)
+                    (string-append "--" name))))
+    (if argument
+        (string-append option
+                       (if (char? name) "" "=") argument) option)))
 
 (define (forwarding-build-option original)
   (option (option-names original)
@@ -51,10 +54,7 @@
                           forwarded)
             (values names all? dry-run?
                     (append forwarded
-                            (list (option-spelling name))
-                            (if argument
-                                (list argument)
-                                '()))))))
+                            (list (forwarded-option-spelling name argument)))))))
 
 (define %reconfigure-options
   (append (list (option '("all") #f #f

@@ -20,7 +20,7 @@
   (test-assert "dry-run is retained as state"
                (reconfigure-invocation-dry-run? invocation))
   (test-equal "standard build options are forwarded semantically"
-              '("--dry-run" "-K" "--max-jobs" "2" "-L" "./packages")
+              '("--dry-run" "-K" "--max-jobs=2" "-L./packages")
               (reconfigure-invocation-build-arguments invocation)))
 
 (let ((invocation (parse-reconfigure-arguments '("--all" "--no-grafts"))))
