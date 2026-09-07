@@ -83,6 +83,42 @@
          (display workspace-footer port)
          (close-port port))))
 
+(define-public rust-agent-client-protocol-2.0.0.c97a520
+  (let ((commit "c97a5203d3392f7f231514d84eea014f9f43e6fb"))
+    (hidden-package
+     (package
+       (name "rust-agent-client-protocol")
+       (version (git-version "2.0.0" "0" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/agentclientprotocol/rust-sdk")
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "1m2w1g8x6y48zjk7z0qjy66v34wcmlxql9i9lhkpziy8fbjmqq7b"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list #:skip-build? #t
+              #:install-source? #t
+              #:cargo-package-crates
+              ''("agent-client-protocol-derive"
+                 "agent-client-protocol"
+                 "agent-client-protocol-http")
+              #:cargo-package-flags
+              ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
+       (inputs
+        (cargo-inputs
+         'rust-agent-client-protocol-2.0.0.c97a520
+         #:module '(roquix packages rust-crates)))
+       (home-page "https://github.com/agentclientprotocol/rust-sdk")
+       (synopsis "Rust implementation of the Agent Client Protocol")
+       (description
+        "This package provides the Rust Agent Client Protocol workspace as
+versioned Cargo crates for other Guix Rust packages.")
+       (license license:asl2.0)))))
+
 (define-public rust-runfiles-0.1.0.b56cbaa
   (let ((commit "b56cbaa8465e74127f1ea216f813cd377295ad81")
         (revision "0"))
