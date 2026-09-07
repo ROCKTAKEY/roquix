@@ -38,6 +38,46 @@
 
 (test-begin "extra-profile-shell")
 
+(call-with-temporary-directory (lambda (directory)
+                                 (let ((executable (string-append directory
+                                                    "/guix-command"))
+                                       (command (string-append directory
+                                                 "/profile/bin/guix")))
+                                   (mkdir-p (dirname command))
+                                   (call-with-output-file executable
+                                     (lambda (port)
+                                       (display "#!/bin/sh\n" port)))
+                                   (chmod executable #o755)
+                                   (symlink executable command)
+                                   (test-equal
+                                    "Guix retains its profile path for channel discovery"
+                                    command
+                                    (current-guix-executable command))
+                                   (test-equal
+                                    "a direct executable path remains usable"
+                                    executable
+                                    (current-guix-executable executable))
+                                   (test-equal
+                                    "relative Guix paths are rejected"
+                                    'invalid-guix-executable
+                                    (condition-kind (lambda ()
+                                                      (current-guix-executable
+                                                       "bin/guix"))))
+                                   (chmod executable #o644)
+                                   (test-equal
+                                    "non-executable Guix targets are rejected"
+                                    'invalid-guix-executable
+                                    (condition-kind (lambda ()
+                                                      (current-guix-executable
+                                                       command))))
+                                   (delete-file executable)
+                                   (test-equal
+                                    "broken Guix symlinks are rejected"
+                                    'invalid-guix-executable
+                                    (condition-kind (lambda ()
+                                                      (current-guix-executable
+                                                       command)))))))
+
 (let ((invocation (parse-shell-arguments '("codex" "codex"
                                            "texlive"
                                            "--"

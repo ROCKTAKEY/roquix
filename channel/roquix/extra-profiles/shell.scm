@@ -181,19 +181,23 @@
           (snapshotted-shell-guix-arguments snapshot)))
 
 (define* (current-guix-executable #:optional (command (car (command-line))))
-  "Resolve COMMAND without looking up a possibly different Guix in PATH."
+  "Check COMMAND and preserve its invocation path for channel discovery."
   (unless (absolute-file-name? command)
     (raise-extra-profile-error 'invalid-guix-executable #f command))
-  (let ((target (catch 'system-error
-                       (lambda ()
-                         (canonicalize-path command))
-                       (lambda args
-                         (raise-extra-profile-error 'invalid-guix-executable
-                                                    #f command)))))
+  (let ((executable (catch 'system-error
+                           (lambda ()
+                             (canonicalize-path command))
+                           (lambda args
+                             (raise-extra-profile-error 'invalid-guix-executable
+                                                        #f command)))))
     (if (and (eq? 'regular
-                  (stat:type (stat target)))
-             (access? target X_OK)) target
-        (raise-extra-profile-error 'invalid-guix-executable #f target))))
+                  (stat:type (stat executable)))
+             (access? executable X_OK))
+        ;; (guix describe)'s find-profile uses the invocation path to find
+        ;; the channel manifest.  Executing the store target loses channels.
+        ;; https://codeberg.org/guix/guix/src/branch/master/guix/describe.scm
+        command
+        (raise-extra-profile-error 'invalid-guix-executable #f executable))))
 
 (define* (execute-snapshotted-shell snapshot
                                     #:key cache-root

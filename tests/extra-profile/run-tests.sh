@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-repository=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
+repository=$(CDPATH='' cd -- "$(dirname "$0")/../.." && pwd)
 scheme_test_runner="$repository/tests/extra-profile/run-scheme-test.scm"
 
 if test "$#" -gt 0; then
@@ -21,4 +21,5 @@ do
     "$scheme_test_runner" "$test_file"
 done
 
-exec "$repository/tests/extra-profile/command.sh"
+"$repository/tests/extra-profile/command.sh"
+exec sh "$repository/tests/extra-profile/channel.sh"
