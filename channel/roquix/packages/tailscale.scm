@@ -729,7 +729,7 @@ Instance Metadata Service.")
 (define-public go-tailscale-com
   (package
     (name "go-tailscale-com")
-    (version "1.102.2")
+    (version "1.102.4")
     (source
      (origin
        (method git-fetch)
@@ -738,7 +738,7 @@ Instance Metadata Service.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1227ck9gdds0kaf0dpcjzq8cz1bfjnj72hk2y7z39qhiy63558xy"))))
+        (base32 "0kczp0g2h8clqcagq5bgrfsrr15fgg7q8m6f02sh5x6mvg6a881w"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -746,73 +746,73 @@ Instance Metadata Service.")
       #:tests? #f
       #:import-path "tailscale.com"))
     (propagated-inputs (list go-fyne-io-systray
-                        go-github-com-anmitsu-go-shlex
-                        go-github-com-atotto-clipboard
-                        go-github-com-aws-aws-sdk-go-v2
-                        go-github-com-aws-aws-sdk-go-v2-config
-                        go-github-com-aws-aws-sdk-go-v2-feature-ec2-imds
-                        go-github-com-aws-aws-sdk-go-v2-service-ssm
-                        go-github-com-aws-aws-sdk-go-v2-service-sts
-                        go-github-com-aws-smithy-go
-                        go-github-com-coder-websocket
-                        go-github-com-coreos-go-iptables
-                        go-github-com-creachadair-msync
-                        go-github-com-creack-pty
-                        go-github-com-digitalocean-go-smbios
-                        go-github-com-djherbis-times
-                        go-github-com-fogleman-gg
-                        go-github-com-fxamacker-cbor-v2
-                        go-github-com-gaissmai-bart
-                        go-github-com-go-json-experiment-json
-                        go-github-com-godbus-dbus-v5
-                        go-github-com-golang-groupcache
-                        go-github-com-google-go-tpm-0.9.4
-                        go-github-com-google-nftables
-                        go-github-com-hdevalence-ed25519consensus
-                        go-github-com-huin-goupnp
-                        go-github-com-illarion-gonotify-v3
-                        go-github-com-insomniacslk-dhcp
-                        go-github-com-jellydator-ttlcache-v3
-                        go-github-com-jsimonetti-rtnetlink
-                        go-github-com-kballard-go-shellquote
-                        go-github-com-klauspost-compress
-                        go-github-com-kodeworks-golang-image-ico
-                        go-github-com-kortschak-wol
-                        go-github-com-mattn-go-colorable
-                        go-github-com-mattn-go-isatty
-                        go-github-com-mdlayher-genetlink
-                        go-github-com-mdlayher-netlink
-                        go-github-com-mdlayher-sdnotify
-                        go-github-com-mdlayher-socket
-                        go-github-com-mitchellh-go-ps
-                        go-github-com-peterbourgon-ff-v3
-                        go-github-com-pires-go-proxyproto
-                        go-github-com-pkg-sftp
-                        go-github-com-safchain-ethtool
-                        go-github-com-skip2-go-qrcode
-                        go-github-com-tailscale-gliderssh
-                        go-github-com-tailscale-hujson
-                        go-github-com-tailscale-netlink
-                        go-github-com-tailscale-peercred
-                        go-github-com-tailscale-web-client-prebuilt
-                        go-github-com-tailscale-wireguard-go
-                        go-github-com-tailscale-xnet
-                        go-github-com-toqueteos-webbrowser
-                        go-github-com-vishvananda-netns
-                        go-go4-org-mem
-                        go-go4-org-netipx
-                        go-golang-org-x-crypto
-                        go-golang-org-x-exp
-                        go-golang-org-x-net
-                        go-golang-org-x-oauth2
-                        go-golang-org-x-sync
-                        go-golang-org-x-sys
-                        go-golang-org-x-term
-                        go-golang-org-x-time
-                        go-gvisor-dev-gvisor-for-tailscale
-                        go-k8s-io-client-go
-                        go-sigs-k8s-io-yaml
-                        go-software-sslmate-com-src-go-pkcs12))
+                             go-github-com-anmitsu-go-shlex
+                             go-github-com-atotto-clipboard
+                             go-github-com-aws-aws-sdk-go-v2
+                             go-github-com-aws-aws-sdk-go-v2-config
+                             go-github-com-aws-aws-sdk-go-v2-feature-ec2-imds
+                             go-github-com-aws-aws-sdk-go-v2-service-ssm
+                             go-github-com-aws-aws-sdk-go-v2-service-sts
+                             go-github-com-aws-smithy-go
+                             go-github-com-coder-websocket
+                             go-github-com-coreos-go-iptables
+                             go-github-com-creachadair-msync
+                             go-github-com-creack-pty
+                             go-github-com-digitalocean-go-smbios
+                             go-github-com-djherbis-times
+                             go-github-com-fogleman-gg
+                             go-github-com-fxamacker-cbor-v2
+                             go-github-com-gaissmai-bart
+                             go-github-com-go-json-experiment-json
+                             go-github-com-godbus-dbus-v5
+                             go-github-com-golang-groupcache
+                             go-github-com-google-go-tpm-0.9.4
+                             go-github-com-google-nftables
+                             go-github-com-hdevalence-ed25519consensus
+                             go-github-com-huin-goupnp
+                             go-github-com-illarion-gonotify-v3
+                             go-github-com-insomniacslk-dhcp
+                             go-github-com-jellydator-ttlcache-v3
+                             go-github-com-jsimonetti-rtnetlink
+                             go-github-com-kballard-go-shellquote
+                             go-github-com-klauspost-compress
+                             go-github-com-kodeworks-golang-image-ico
+                             go-github-com-kortschak-wol
+                             go-github-com-mattn-go-colorable
+                             go-github-com-mattn-go-isatty
+                             go-github-com-mdlayher-genetlink
+                             go-github-com-mdlayher-netlink
+                             go-github-com-mdlayher-sdnotify
+                             go-github-com-mdlayher-socket
+                             go-github-com-mitchellh-go-ps
+                             go-github-com-peterbourgon-ff-v3
+                             go-github-com-pires-go-proxyproto
+                             go-github-com-pkg-sftp
+                             go-github-com-safchain-ethtool
+                             go-github-com-skip2-go-qrcode
+                             go-github-com-tailscale-gliderssh
+                             go-github-com-tailscale-hujson
+                             go-github-com-tailscale-netlink
+                             go-github-com-tailscale-peercred
+                             go-github-com-tailscale-web-client-prebuilt
+                             go-github-com-tailscale-wireguard-go
+                             go-github-com-tailscale-xnet
+                             go-github-com-toqueteos-webbrowser
+                             go-github-com-vishvananda-netns
+                             go-go4-org-mem
+                             go-go4-org-netipx
+                             go-golang-org-x-crypto
+                             go-golang-org-x-exp
+                             go-golang-org-x-net
+                             go-golang-org-x-oauth2
+                             go-golang-org-x-sync
+                             go-golang-org-x-sys
+                             go-golang-org-x-term
+                             go-golang-org-x-time
+                             go-gvisor-dev-gvisor-for-tailscale
+                             go-k8s-io-client-go
+                             go-sigs-k8s-io-yaml
+                             go-software-sslmate-com-src-go-pkcs12))
     (home-page "https://tailscale.com")
     (synopsis "Tailscale")
     (description "Package tailscaleroot embeds VERSION.txt into the binary.")
@@ -850,7 +850,7 @@ Instance Metadata Service.")
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
                 #:import-path "tailscale.com/cmd/tailscale"
                 #:unpack-path "tailscale.com"))
-    (synopsis "Tailscale client")
+    (synopsis "Client for the Tailscale mesh VPN")
     (description
      "Build the @code{tailscale} CLI from the Tailscale source tree.")))
 
@@ -875,6 +875,6 @@ Instance Metadata Service.")
                 #:embed-files #~(list ".*\\.html" ".*\\.gz" ".*\\.woff2")
                 #:import-path "tailscale.com/cmd/tailscaled"
                 #:unpack-path "tailscale.com"))
-    (synopsis "Tailscale daemon")
+    (synopsis "Daemon for the Tailscale mesh VPN")
     (description
      "Build the @code{tailscaled} daemon from the Tailscale source tree.")))
