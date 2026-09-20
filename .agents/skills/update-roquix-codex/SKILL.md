@@ -12,7 +12,8 @@ automation that maintains them in sync with the current Guix CLI.
 
 ## Workflow
 
-1. Run the updater from the repository root.
+1. Confirm the latest stable tag with the official GitHub releases API, then
+   run the updater from the repository root.
    - `bash scripts/update-codex.sh rust-vX.Y.Z`
    - Upstream Codex tags use the `rust-v...` prefix.
 2. If `guix import` fails, fix the local updater and the GitHub workflow
@@ -34,6 +35,9 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
      package appends `-roquix` so Guix selects the channel package when the
      official Guix package has the same release version.  Source tags must use
      the unsuffixed release version.
+   - Match `#:rust` to the release's `codex-rs/rust-toolchain.toml`.
+     Check patched source paths against the new tree; remove patches for
+     deleted components instead of silently ignoring missing files.
    - When changing the updater, make it update `%codex-release-version` rather
      than replacing the exported package version expression.
    - If the updater logic changes, `scripts/update-codex.sh` and
@@ -42,9 +46,10 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
    - `guix build -L channel -e '(@ (roquix packages codex) codex)' -n`
 5. Run a full build before closing out the bump.
    - `guix build -K -L channel -e '(@ (roquix packages codex) codex)'`
-   - Expect long logs. `cargo install` in the `install` phase can rebuild a
-     large part of the workspace in release mode even after the earlier
-     `build` phase succeeded.
+   - Capture long logs using `build-guix-packages`. The package builds the
+     CLI and code-mode host together, then installs those binaries directly
+     to preserve Cargo feature resolution and avoid duplicate compilation.
+   - Run the resulting `bin/codex --version` and check the upstream version.
    - If the build fails in `v8` while downloading
      `librusty_v8_release_<target>.a.gz`, package the prebuilt archive as an
      input and set `RUSTY_V8_ARCHIVE` in a pre-build phase instead of relying
@@ -68,7 +73,9 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
   generated origin is not sufficient when the workspace root is not a
   standalone crate, because Cargo's offline vendor directory cannot provide
   it. For this Linux-only package, remove Windows-only workspace dependency
-  declarations in a post-vendor phase and confirm the result with the offline
-  full build.
+  declarations in the consuming member manifests before Cargo resolves them,
+  and confirm the result with the offline full build. Inspect the new tag: the
+  MXC dependencies are consumed by `mxc-sandbox/Cargo.toml`, including
+  `wxc_common` alongside `appcontainer_common` and `learning_mode_windows`.
 - If `verify-guix-pull` reports a package-cache or `guix pull` failure, treat
   it as a channel breakage and fix it before closing out the bump.

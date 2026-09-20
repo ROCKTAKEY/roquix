@@ -117,7 +117,7 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.153.4")
+(define %codex-release-version "0.155.1")
 
 (define-public codex
   (package
@@ -133,7 +133,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "16mhz8l9zlba4p4qvy8kw26xxivspb4s080zk8vs6xd8jj7q6y4l"))))
+       (base32 "08jyrjvhmil8q4ch5zb63b30di3ma8znrfain50i6yawhzmblmc8"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -154,7 +154,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
            perl))
     (arguments
      `(#:install-source? #f
-        #:rust ,rust-1.94
+        #:rust ,rust-1.95
         #:tests? #f
         #:parallel-build? #f
         #:cargo-build-flags '("--package" "codex-cli"
@@ -410,11 +410,13 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                   (add-after 'use-guix-vendored-dependencies
                              'remove-windows-git-dependency
                     (lambda _
-                      ;; Codex is packaged only for Linux.  This Windows-only
-                      ;; workspace git dependency cannot be provided by Cargo's
+                      ;; Codex is packaged only for Linux.  These Windows-only
+                      ;; workspace git dependencies cannot be provided by Cargo's
                       ;; offline vendor directory.
-                      (substitute* "sandboxing/Cargo.toml"
-                        (("appcontainer_common = \\{ workspace = true \\}")
+                      (substitute* "mxc-sandbox/Cargo.toml"
+                        (((string-append
+                           "(appcontainer_common|learning_mode_windows|"
+                           "wxc_common) = \\{ workspace = true \\}"))
                          ""))))
                    (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -430,13 +432,6 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; - suite::client::env_var_overrides_loaded_auth
                       (setenv "USER" "guix")
 
-                      (substitute* '("mcp-server/tests/common/mcp_process.rs")
-                        (("codex_cli_rs/0\\.0\\.0")
-                         ,(string-append "codex_cli_rs/" version))
-                        ;; NOTE: Don't replace "0.0.0" because a version in client_info is also "0.0.0".
-                        ;; Replace only server info.
-                        (("\"version\": \"0.0.0\",")
-                         ,(string-append "\"version\": \"" version "\",")))
                       (substitute* (append (find-files "./*.rs"))
                         (("/bin/sh")
                          (which "sh"))
