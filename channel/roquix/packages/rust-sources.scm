@@ -8,6 +8,36 @@
   #:use-module (guix build-system cargo)
   #:use-module (gnu packages rust))
 
+(define-public rust-h3-workspace-0.0.8.e07e694
+  (let ((commit "e07e69412876f7e26f026bd75a48b2704d8c8283"))
+    (hidden-package
+     (package
+       (name "rust-h3-workspace")
+       (version (git-version "0.0.8" "0" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/hyperium/h3")
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "1kgh4vqwbg9xq1xs9y1fw7r9a04w60jgzhnlnsd8hxzrr00380by"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list #:skip-build? #t
+              #:install-source? #t
+              #:cargo-package-crates
+              ''("h3" "h3-quinn" "h3-datagram")
+              #:cargo-package-flags
+              ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
+       (home-page "https://github.com/hyperium/h3")
+       (synopsis "Pinned h3 workspace crates")
+       (description
+        "This package provides the h3 workspace members used by Codex as
+versioned Cargo crates from its pinned upstream Git revision.")
+       (license license:expat)))))
+
 (define-public rust-sdks-source-modules
   '((guix build utils)
     (ice-9 ftw)))

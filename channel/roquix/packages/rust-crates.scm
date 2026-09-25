@@ -750,6 +750,10 @@
   (crate-source "aws-lc-rs" "1.18.0"
                 "17nx79a6wyx6xx5kj0f09vr0wh1q4agwjxqy6w6swfwwhz62sayf"))
 
+(define rust-aws-lc-rs-1.18.1
+  (crate-source "aws-lc-rs" "1.18.1"
+                "07k2hf51mp5sh47f3dbj5xkygqjr4rrr0j4743llsqwdb03x70dj"))
+
 (define rust-aws-lc-sys-0.30.0
   ;; TODO REVIEW: Check bundled sources.
   (crate-source "aws-lc-sys" "0.30.0"
@@ -774,6 +778,11 @@
   ;; TODO REVIEW: Check bundled sources.
   (crate-source "aws-lc-sys" "0.44.0"
                 "10vlwayxyylnn4vs57xs0iy0rp76k50v7zbabkh78cdvx1xsx7zh"))
+
+(define rust-aws-lc-sys-0.45.0
+  ;; TODO REVIEW: Check bundled sources.
+  (crate-source "aws-lc-sys" "0.45.0"
+                "09qvqgsy424myj9g1xf1jwa726aqaspjq45qc0p9mmzsahxnrzwv"))
 
 (define rust-aws-runtime-1.5.17
   (crate-source "aws-runtime" "1.5.17"
@@ -1663,6 +1672,10 @@
 (define rust-cargo-platform-0.3.3
   (crate-source "cargo-platform" "0.3.3"
                 "1fm418dzcc5rm8qm8a5vlrql7vamflwic3m05vhzl5crfgd6206x"))
+
+(define rust-caseless-0.2.2
+  (crate-source "caseless" "0.2.2"
+                "1n75pz65q9zn5rqq2xlw43dkq69rljnsd73nzpnwi1j08l3xavwb"))
 
 (define rust-cassowary-0.3.0
   (crate-source "cassowary" "0.3.0"
@@ -4833,6 +4846,12 @@
 (define rust-h2-0.4.16
   (crate-source "h2" "0.4.16"
                 "09syqqhvh36b3rwyn8vjhiz597hfki1hcz3hwagb3cs1ifapmwx9"))
+
+(define rust-h3-0.0.8.e07e694
+  package:rust-h3-workspace-0.0.8.e07e694)
+
+(define rust-h3-quinn-0.0.10.e07e694
+  package:rust-h3-workspace-0.0.8.e07e694)
 
 (define rust-half-1.8.2
   (crate-source "half" "1.8.2"
@@ -8635,6 +8654,10 @@
   (crate-source "quinn-proto" "0.11.14"
                 "1660jkxhzi1pnywzs13ifczwrlv6ds9qds111vsnxjciqpz44js3"))
 
+(define rust-quinn-proto-0.11.15
+  (crate-source "quinn-proto" "0.11.15"
+                "0gknq1m2b9g3fsndka2gn7f2k45vb0zdssrh1qpkql7cbdf97jsg"))
+
 (define rust-quinn-proto-0.11.16
   (crate-source "quinn-proto" "0.11.16"
                 "0q75f2wkhc7iw8n0q63jb3zm7206b7774l44r1ixzfb2a80zqjrg"))
@@ -9550,6 +9573,10 @@
   (crate-source "rustls" "0.23.43"
                 "01nsagj78r88pifaz55ln1rw31py5n00h7bnw58h3g1aw1n3i0q2"))
 
+(define rust-rustls-0.23.45
+  (crate-source "rustls" "0.23.45"
+                "0d6n90q52x5cjyxb6bwcnf9hwg6yb31cwr63rk8n5yfjqwqxfh8d"))
+
 (define rust-rustls-cert-file-reader-0.4.2
   (crate-source "rustls-cert-file-reader" "0.4.2"
                 "1zvkb006p1kdqp831fxdshgxl9y31xi152xcn2aszzgxa0m7rd4b"))
@@ -9625,6 +9652,10 @@
 (define rust-rustls-webpki-0.103.13
   (crate-source "rustls-webpki" "0.103.13"
                 "0vkm7z9pnxz5qz66p2kmyy2pwx0g4jnsbqk5xzfhs4czcjl2ki31"))
+
+(define rust-rustls-webpki-0.103.15
+  (crate-source "rustls-webpki" "0.103.15"
+                "1hhanq3lz384v4nccacnjfwsyy99n3yc6m6iw8kljz8yicfwzhzk"))
 
 (define rust-rustls-webpki-0.103.4
   (crate-source "rustls-webpki" "0.103.4"
@@ -15057,8 +15088,8 @@
                              rust-autocfg-1.5.0
                              rust-aws-config-1.8.12
                              rust-aws-credential-types-1.2.11
-                             rust-aws-lc-rs-1.16.2
-                             rust-aws-lc-sys-0.39.0
+                             rust-aws-lc-rs-1.18.1
+                             rust-aws-lc-sys-0.45.0
                              rust-aws-runtime-1.5.17
                              rust-aws-sdk-signin-1.2.0
                              rust-aws-sdk-sso-1.91.0
@@ -15125,6 +15156,7 @@
                              rust-cached-proc-macro-0.25.0
                              rust-cached-proc-macro-types-0.1.1
                              rust-calendrical-calculations-0.2.4
+                             rust-caseless-0.2.2
                              rust-castaway-0.2.4
                              rust-cbc-0.1.2
                              rust-cc-1.2.55
@@ -15432,6 +15464,8 @@
                              rust-gstreamer-sys-0.25.2
                              rust-gzip-header-1.0.0
                              rust-h2-0.4.16
+                             rust-h3-0.0.8.e07e694
+                             rust-h3-quinn-0.0.10.e07e694
                              rust-half-2.7.1
                              rust-hash32-0.2.1
                              rust-hash32-0.3.1
@@ -15781,7 +15815,7 @@
                              rust-quick-xml-0.41.0
                              rust-quickcheck-1.1.0
                              rust-quinn-0.11.9
-                             rust-quinn-proto-0.11.14
+                             rust-quinn-proto-0.11.15
                              rust-quinn-udp-0.5.14
                              rust-quinn-udp-0.6.1
                              rust-quote-1.0.45
@@ -15877,10 +15911,12 @@
                              rust-rusticata-macros-4.1.0
                              rust-rustix-0.38.44
                              rust-rustix-1.1.4
-                             rust-rustls-0.23.36
+                             rust-rustls-0.23.45
                              rust-rustls-native-certs-0.8.3
                              rust-rustls-pki-types-1.14.0
-                             rust-rustls-webpki-0.103.13
+                             rust-rustls-platform-verifier-0.7.0
+                             rust-rustls-platform-verifier-android-0.1.1
+                             rust-rustls-webpki-0.103.15
                              rust-rustversion-1.0.22
                              rust-rustyline-14.0.0
                              rust-ryu-1.0.22

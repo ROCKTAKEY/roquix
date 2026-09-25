@@ -117,7 +117,7 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.155.1")
+(define %codex-release-version "0.156.1")
 
 (define-public codex
   (package
@@ -133,7 +133,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-       (base32 "08jyrjvhmil8q4ch5zb63b30di3ma8znrfain50i6yawhzmblmc8"))))
+       (base32 "1wmfh6jdmjpvadg01k9j4jmpc3zwbv8cd3wwkynj17v6p3kxz78z"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -388,7 +388,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                     (lambda _
                       (chdir "codex-rs")))
                   (add-after 'change-directory-to-rust-source 'use-guix-vendored-dependencies
-                    (lambda* (#:key inputs #:allow-other-keys)
+                    (lambda _
                       (substitute* "Cargo.toml"
                         (("runfiles = \\{ git = \"https://github.com/dzbarsky/rules_rust\", rev = \"b56cbaa8465e74127f1ea216f813cd377295ad81\" \\}")
                          "runfiles = \"0.1.0\"")
@@ -406,7 +406,13 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"[0-9a-f]+\" \\}")
                          ""))
-                       ))
+                      ;; Guix vendors these pinned workspace crates as local
+                      ;; versioned Cargo inputs.
+                      (substitute* "tcp-tunnel/Cargo.toml"
+                        (("h3 = \\{ git = \"https://github.com/hyperium/h3\", rev = \"e07e69412876f7e26f026bd75a48b2704d8c8283\" \\}")
+                         "h3 = \"0.0.8\"")
+                        (("h3-quinn = \\{ git = \"https://github.com/hyperium/h3\", rev = \"e07e69412876f7e26f026bd75a48b2704d8c8283\" \\}")
+                         "h3-quinn = \"0.0.10\""))))
                   (add-after 'use-guix-vendored-dependencies
                              'remove-windows-git-dependency
                     (lambda _
