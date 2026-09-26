@@ -31,6 +31,13 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
 3. Review the diff.
    - Expected package files: `channel/roquix/packages/codex.scm` and
      `channel/roquix/packages/rust-crates.scm`.
+   - After every import, run Guix's `etc/teams/rust/cleanup-crates.sh` across
+     the entire `rust-crates.scm`, changing its hard-coded `FILE` path for this
+     channel. Check removed names for references outside that file; the
+     script counts uses only within `FILE`.
+   - On the final branch, rerun `guix import` with the release's `Cargo.lock`
+     and confirm that `rust-crates.scm` stays unchanged. If it changes, keep
+     the generated result and repeat the import before building.
    - Keep the OpenAI Codex release in `%codex-release-version`.  The exported
      package appends `-roquix` so Guix selects the channel package when the
      official Guix package has the same release version.  Source tags must use

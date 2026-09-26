@@ -155,6 +155,8 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (arguments
      `(#:install-source? #f
         #:rust ,rust-1.95
+        ;; A successful Guix build establishes compilation and installation,
+        ;; but not test coverage: Cargo tests are disabled here.
         #:tests? #f
         #:parallel-build? #f
         #:cargo-build-flags '("--package" "codex-cli"
