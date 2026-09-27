@@ -29,6 +29,8 @@
 ;; Keep these two packages in sync.  The archive and bindings must come from
 ;; the same OpenAI rusty_v8 release and match the target, pointer-compression,
 ;; sandbox, and release-profile configuration.
+;; Cargo treats bare origins in native-inputs as crate sources, so package
+;; these non-crate artifacts as ordinary inputs.
 (define rusty-v8-prebuilt-archive
   (package
     (name "rusty-v8-prebuilt-archive")
@@ -158,11 +160,14 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
            perl))
     (arguments
      `(#:install-source? #f
+        ;; Match codex-rs/rust-toolchain.toml for this release.
         #:rust ,rust-1.95
         ;; A successful Guix build establishes compilation and installation,
         ;; but not test coverage: Cargo tests are disabled here.
         #:tests? #f
         #:parallel-build? #f
+        ;; Build both executables together so Cargo resolves their workspace
+        ;; features once; the daemon package needs both binaries.
         #:cargo-build-flags '("--package" "codex-cli"
                               "--package" "codex-code-mode-host"
                               "--release")
@@ -395,6 +400,8 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       (chdir "codex-rs")))
                   (add-after 'change-directory-to-rust-source 'use-guix-vendored-dependencies
                     (lambda _
+                      ;; Cargo's offline vendor directory resolves these
+                      ;; dependencies through Guix's versioned crate inputs.
                       (substitute* "Cargo.toml"
                         (("runfiles = \\{ git = \"https://github.com/dzbarsky/rules_rust\", rev = \"b56cbaa8465e74127f1ea216f813cd377295ad81\" \\}")
                          "runfiles = \"0.1.0\"")
@@ -412,8 +419,6 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          "")
                         (("tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tungstenite-rs\", rev = \"[0-9a-f]+\" \\}")
                          ""))
-                      ;; Guix vendors these pinned workspace crates as local
-                      ;; versioned Cargo inputs.
                       (substitute* "tcp-tunnel/Cargo.toml"
                         (("h3 = \\{ git = \"https://github.com/hyperium/h3\", rev = \"e07e69412876f7e26f026bd75a48b2704d8c8283\" \\}")
                          "h3 = \"0.0.8\"")
@@ -432,6 +437,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          ""))))
                    (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Guix provides bwrap in the store rather than /usr/bin.
                       (let ((bwrap (search-input-file inputs "/bin/bwrap")))
                         (substitute* '("core/src/config/mod.rs"
                                        "linux-sandbox/src/launcher.rs")
@@ -504,6 +510,9 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; The daemon copies a complete package, so install the
                       ;; layout required by Codex's package validator.
                       ;; https://github.com/openai/codex/blob/rust-v0.157.1/scripts/codex_package/README.md
+                      ;; Keep bin/codex as the executable: daemon installation
+                      ;; compares its bytes with the running CLI before copying.
+                      ;; https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server-daemon/src/prepare_install.rs
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin"))
                              (resources (string-append out "/codex-resources"))

@@ -7,8 +7,9 @@ description: Update roquix's packaged openai/codex release. Use when bumping `ch
 
 ## Overview
 
-Use the repository's existing updater first. Keep the package files and the
-automation that maintains them in sync with the current Guix CLI.
+Use the repository's updater and validate the resulting package and channel.
+Keep package-specific implementation reasons beside the relevant definitions
+in `channel/roquix/packages/codex.scm`.
 
 ## Workflow
 
@@ -17,17 +18,14 @@ automation that maintains them in sync with the current Guix CLI.
    - `bash scripts/update-codex.sh rust-vX.Y.Z`
    - Upstream Codex tags use the `rust-v...` prefix.
 2. If `guix import` fails, fix the local updater and the GitHub workflow
-   together.
-   - Current working form:
+   together. The import command is:
 
-```sh
-guix import --insert=channel/roquix/packages/rust-crates.scm \
-  crate codex \
-  --lockfile="$lockfile"
-```
+   ```sh
+   guix import --insert=channel/roquix/packages/rust-crates.scm \
+     crate codex \
+     --lockfile="$lockfile"
+   ```
 
-   - Do not reintroduce the older `guix import crate --recursive --insert=...`
-     form unless Guix changes back.
 3. Review the diff.
    - Expected package files: `channel/roquix/packages/codex.scm` and
      `channel/roquix/packages/rust-crates.scm`.
@@ -38,13 +36,11 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
    - On the final branch, rerun `guix import` with the release's `Cargo.lock`
      and confirm that `rust-crates.scm` stays unchanged. If it changes, keep
      the generated result and repeat the import before building.
-   - Keep the OpenAI Codex release in `%codex-release-version`.  The exported
-     package appends `-roquix` so Guix selects the channel package when the
-     official Guix package has the same release version.  Source tags must use
-     the unsuffixed release version.
-   - Match `#:rust` to the release's `codex-rs/rust-toolchain.toml`.
-     Check patched source paths against the new tree; remove patches for
-     deleted components instead of silently ignoring missing files.
+   - Confirm that the release version, source tag, source hash, and generated
+     crate inputs all refer to the same upstream release.
+   - Match `#:rust` to the release's `codex-rs/rust-toolchain.toml`. Check each
+     source substitution against the new tree, and update package comments
+     and upstream source links when its reason changes.
    - When changing the updater, make it update `%codex-release-version` rather
      than replacing the exported package version expression.
    - If the updater logic changes, `scripts/update-codex.sh` and
@@ -53,46 +49,19 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
    - `guix build -L channel -e '(@ (roquix packages codex) codex)' -n`
 5. Run a full build before closing out the bump.
    - `guix build -K -L channel -e '(@ (roquix packages codex) codex)'`
-   - Capture long logs using `build-guix-packages`. The package builds the
-     CLI and code-mode host together, then installs those binaries directly
-     to preserve Cargo feature resolution and avoid duplicate compilation.
+   - Capture long logs using `build-guix-packages`.
    - Run the resulting `bin/codex --version` and check the upstream version.
-   - Releases with the app-server daemon require the complete [upstream package
-     layout](https://github.com/openai/codex/blob/main/scripts/codex_package/README.md):
-     `codex-package.json`, both `bin/` executables, `codex-path/rg`, and
-     `codex-resources/bwrap` on Linux. Keep `bin/codex` as the executable itself;
-     the daemon compares its bytes with the running executable when copying the
-     package. Propagate `procps` because its PID backend invokes `ps`.
    - Check daemon startup from a fresh `CODEX_HOME` with
      `tests/codex-daemon-package.sh "$output"` inside a `guix shell` containing
      the Codex package. The script starts the daemon, checks the running
      version, and stops it.
-   - If the build fails in `v8` while downloading
-     `librusty_v8_release_<target>.a.gz`, package the prebuilt archive as an
-     input and set `RUSTY_V8_ARCHIVE` in a pre-build phase instead of relying
-     on network access from the Guix build sandbox.
 6. Validate the channel with `verify-guix-pull`.
    - Use the existing `verify-guix-pull` skill for the temporary-profile
-     `guix pull` check.
-   - Keep this skill focused on the Codex bump itself; do not add another
-     project-local `guix pull` verifier unless the shared workflow becomes
-     unavailable.
+     `guix pull` check. Fix package-cache or pull failures before closing out
+     the bump.
 
 ## Notes
 
 - `guix show codex` may resolve to the official Guix package instead of
   `(roquix packages codex)`. Prefer `guix build -e '(@ (roquix packages codex)
   codex)'` or module-local checks.
-- `cargo-build-system` can treat a bare `origin` in `native-inputs` as a cargo
-  source to unpack. Wrap helper archives that are not Rust crates in a small
-  package instead of passing the raw `origin` directly.
-- An upstream release can add a target-specific workspace git dependency. A
-  generated origin is not sufficient when the workspace root is not a
-  standalone crate, because Cargo's offline vendor directory cannot provide
-  it. For this Linux-only package, remove Windows-only workspace dependency
-  declarations in the consuming member manifests before Cargo resolves them,
-  and confirm the result with the offline full build. Inspect the new tag: the
-  MXC dependencies are consumed by `mxc-sandbox/Cargo.toml`, including
-  `wxc_common` alongside `appcontainer_common` and `learning_mode_windows`.
-- If `verify-guix-pull` reports a package-cache or `guix pull` failure, treat
-  it as a channel breakage and fix it before closing out the bump.
