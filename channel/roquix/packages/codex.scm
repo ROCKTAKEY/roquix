@@ -145,6 +145,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; PID-managed app-server daemons call ps to identify their processes.
+    ;; https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server-daemon/src/backend/pid.rs
     (propagated-inputs (list procps))
     (native-inputs
      (list rusty-v8-prebuilt-archive

@@ -57,6 +57,16 @@ guix import --insert=channel/roquix/packages/rust-crates.scm \
      CLI and code-mode host together, then installs those binaries directly
      to preserve Cargo feature resolution and avoid duplicate compilation.
    - Run the resulting `bin/codex --version` and check the upstream version.
+   - Releases with the app-server daemon require the complete [upstream package
+     layout](https://github.com/openai/codex/blob/main/scripts/codex_package/README.md):
+     `codex-package.json`, both `bin/` executables, `codex-path/rg`, and
+     `codex-resources/bwrap` on Linux. Keep `bin/codex` as the executable itself;
+     the daemon compares its bytes with the running executable when copying the
+     package. Propagate `procps` because its PID backend invokes `ps`.
+   - Check daemon startup from a fresh `CODEX_HOME` with
+     `tests/codex-daemon-package.sh "$output"` inside a `guix shell` containing
+     the Codex package. The script starts the daemon, checks the running
+     version, and stops it.
    - If the build fails in `v8` while downloading
      `librusty_v8_release_<target>.a.gz`, package the prebuilt archive as an
      input and set `RUSTY_V8_ARCHIVE` in a pre-build phase instead of relying
