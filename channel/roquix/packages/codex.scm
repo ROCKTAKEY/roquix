@@ -7,6 +7,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages python)
@@ -138,11 +139,13 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
                    openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
-                   bubblewrap
+                   bubblewrap ripgrep
                    libcap               ; codex-linux-sandbox
                    oniguruma            ; onig-sys
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
+    ;; PID-managed app-server daemons call ps to identify their processes.
+    (propagated-inputs (list procps))
     (native-inputs
      (list rusty-v8-prebuilt-archive
            rusty-v8-prebuilt-binding
@@ -491,27 +494,39 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                        (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")
                        (setenv "CARGO_PROFILE_RELEASE_DEBUG" "false")))
                   (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
+                    (lambda* (#:key inputs outputs system target
+                              #:allow-other-keys)
                       ;; The standard phase runs `cargo install` separately
                       ;; for each workspace member.  That changes Cargo's
                       ;; feature resolution, recompiles part of the workspace,
                       ;; and also installs the CLI's auxiliary `logs_client`.
-                      ;; Install only the two binaries built above instead.
-                      (let ((bin (string-append (assoc-ref outputs "out")
-                                                "/bin")))
+                      ;; The daemon copies a complete package, so install the
+                      ;; layout required by Codex's package validator.
+                      ;; https://github.com/openai/codex/blob/rust-v0.157.1/scripts/codex_package/README.md
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (resources (string-append out "/codex-resources"))
+                             (path (string-append out "/codex-path"))
+                             (architecture
+                              (car (string-split (or target system) #\-))))
                         (mkdir-p bin)
+                        (mkdir-p resources)
+                        (mkdir-p path)
                         (install-file "target/release/codex" bin)
                         (install-file "target/release/codex-code-mode-host"
-                                      bin))))
-                  (add-after 'install 'wrap-with-system-bubblewrap-on-path
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Codex checks PATH for a system bwrap before falling
-                      ;; back to its vendored copy and emitting a warning.
-                      (wrap-program (string-append (assoc-ref outputs "out")
-                                                   "/bin/codex")
-                        `("PATH" ":" prefix
-                          (,(string-append (assoc-ref inputs "bubblewrap")
-                                           "/bin")))))))))
+                                      bin)
+                        (install-file (search-input-file inputs "/bin/bwrap")
+                                      resources)
+                        (install-file (search-input-file inputs "/bin/rg")
+                                      path)
+                        (call-with-output-file
+                            (string-append out "/codex-package.json")
+                          (lambda (port)
+                            (format port
+                                    "{\"layoutVersion\":1,\"version\":~s,\"target\":~s,\"variant\":\"codex\",\"entrypoint\":\"bin/codex\",\"resourcesDir\":\"codex-resources\",\"pathDir\":\"codex-path\"}~%"
+                                    ,%codex-release-version
+                                    (string-append architecture
+                                                   "-unknown-linux-gnu"))))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
