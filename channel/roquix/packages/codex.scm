@@ -503,6 +503,9 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                   (replace 'install
                     (lambda* (#:key inputs outputs system target
                               #:allow-other-keys)
+                      ;; cargo-build-system provides guile-json to build phases.
+                      ;; https://codeberg.org/guix/guix/src/branch/master/guix/build-system/cargo.scm
+                      (use-modules (json))
                       ;; The standard phase runs `cargo install` separately
                       ;; for each workspace member.  That changes Cargo's
                       ;; feature resolution, recompiles part of the workspace,
@@ -532,11 +535,18 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (call-with-output-file
                             (string-append out "/codex-package.json")
                           (lambda (port)
-                            (format port
-                                    "{\"layoutVersion\":1,\"version\":~s,\"target\":~s,\"variant\":\"codex\",\"entrypoint\":\"bin/codex\",\"resourcesDir\":\"codex-resources\",\"pathDir\":\"codex-path\"}~%"
-                                    ,%codex-release-version
-                                    (string-append architecture
-                                                   "-unknown-linux-gnu"))))))))))
+                            (scm->json
+                             (list (cons 'layoutVersion 1)
+                                   (cons 'version ,%codex-release-version)
+                                   (cons 'target
+                                         (string-append architecture
+                                                        "-unknown-linux-gnu"))
+                                   (cons 'variant "codex")
+                                   (cons 'entrypoint "bin/codex")
+                                   (cons 'resourcesDir "codex-resources")
+                                   (cons 'pathDir "codex-path"))
+                             port)
+                            (newline port)))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
     (description "Lightweight coding agent that runs in your terminal")
