@@ -85,6 +85,10 @@ Keep the command and its arguments after a second =--=; the saved options file
 cannot contain that command boundary.  Changes to the saved options take effect
 on the next shell invocation without reconfiguring the profile.
 
+A name can have =shell-arguments.scm= without =manifest.scm= or a built profile.
+It appears in =extra-profile list= and starts a =guix shell= with an empty
+manifest.  =reconfigure --all= still selects only names with =manifest.scm=.
+
 Use a second =--= before a command executed inside the environment:
 
 #+BEGIN_SRC sh

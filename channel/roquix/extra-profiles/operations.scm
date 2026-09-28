@@ -88,6 +88,11 @@
          (eq? 'regular
               (stat:type (stat manifest))))))
 
+(define (shell-arguments-file? name root)
+  (let ((file (shell-arguments-path name #:root root)))
+    (and (file-exists? file)
+         (eq? 'regular (stat:type (stat file))))))
+
 (define (profile-name-present? name root)
   (lstat-exists? (profile-path name
                                #:root root)))
@@ -114,6 +119,8 @@
   "Return sorted parsed names found in either definitions or profiles."
   (sort-profile-names (delete-duplicates (append (names-under definitions-root
                                                   definition-name?)
+                                                 (names-under definitions-root
+                                                  shell-arguments-file?)
                                                  (names-under profiles-root
                                                   profile-name-present?))
                                          (lambda (left right)
@@ -127,6 +134,7 @@
   "Return a description without evaluating NAME's definition manifest."
   (let ((manifest (manifest-path name
                                  #:root definitions-root))
+        (arguments? (shell-arguments-file? name definitions-root))
         (profile (profile-path name
                                #:root profiles-root)))
     (define manifest-present?
@@ -150,7 +158,13 @@
                                       manifest
                                       manifest-present?
                                       profile
-                                      (extra-profile-error-kind condition)
+                                      (if (and arguments?
+                                               (not manifest-present?)
+                                               (eq? 'not-configured
+                                                     (extra-profile-error-kind
+                                                      condition)))
+                                          'arguments-only
+                                          (extra-profile-error-kind condition))
                                       #f)))))
 
 (define (write-profile-description description port)

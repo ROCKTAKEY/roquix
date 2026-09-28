@@ -44,6 +44,11 @@
   (profiles snapshotted-shell-profiles)
   (guix-arguments snapshotted-shell-guix-arguments))
 
+(define-record-type <saved-shell-arguments>
+  (make-saved-shell-arguments present? arguments) saved-shell-arguments?
+  (present? saved-shell-arguments-present?)
+  (arguments saved-shell-arguments-values))
+
 (define-record-type <shell-source>
   (make-shell-source profile arguments) shell-source?
   (profile shell-source-profile)
@@ -79,20 +84,36 @@
 (define (profile-shell-arguments name root)
   (let ((file (shell-arguments-path name #:root root)))
     (if (not (lstat-or-false file))
-        '()
+        (make-saved-shell-arguments #f '())
         (let ((arguments (evaluate-shell-arguments file)))
           (if (and (list? arguments)
                    (every string? arguments)
                    (not (member "--" arguments)))
-              arguments
+              (make-saved-shell-arguments #t arguments)
               (raise-extra-profile-error 'invalid-shell-arguments name file))))))
 
+(define (resolve-shell-profile name profile-root store-directory
+                               definition-root saved-arguments)
+  (call-with-extra-profile-error
+   (lambda ()
+     (resolve-profile name
+                      #:profiles-root profile-root
+                      #:store-directory store-directory))
+   (lambda (condition)
+     (if (and (eq? 'not-configured
+                   (extra-profile-error-kind condition))
+              (saved-shell-arguments-present? saved-arguments)
+              (not (lstat-or-false (manifest-path name
+                                                  #:root definition-root))))
+         #f
+         (raise-exception condition)))))
+
 (define (snapshot-shell-source name profile-root store-directory definition-root)
-  (make-shell-source
-   (resolve-profile name
-                    #:profiles-root profile-root
-                    #:store-directory store-directory)
-   (profile-shell-arguments name definition-root)))
+  (let ((saved (profile-shell-arguments name definition-root)))
+    (make-shell-source
+     (resolve-shell-profile name profile-root store-directory
+                            definition-root saved)
+     (saved-shell-arguments-values saved))))
 
 (define* (snapshot-shell-invocation invocation
                                     #:key (profiles-root (profiles-root))
@@ -106,7 +127,7 @@
                                                store-directory definitions-root))
                       (shell-invocation-names invocation))))
     (make-snapshotted-shell
-     (map shell-source-profile sources)
+     (filter-map shell-source-profile sources)
      (append (append-map shell-source-arguments sources)
              (shell-invocation-guix-arguments invocation)))))
 

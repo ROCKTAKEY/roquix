@@ -34,3 +34,41 @@ printf '(list "-E" "EXTRA_PROFILE_SHELL_SAVED=value with spaces")\n' \
 # shellcheck disable=SC2016
 "$guix" extra-profile shell channel -- -- \
   sh -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "value with spaces"'
+
+arguments_only="$XDG_CONFIG_HOME/guix/extra-profiles/arguments-only"
+mkdir -p "$arguments_only"
+cat >"$arguments_only/shell-arguments.scm" <<'EOF'
+(define home (getenv "HOME"))
+(list "-E" (string-append "EXTRA_PROFILE_TEST_HOME=" home))
+EOF
+test ! -e "$arguments_only/manifest.scm"
+"$guix" extra-profile list | grep '^arguments-only$' >/dev/null
+# The Scheme expression uses HOME before Guix launches the command.
+# shellcheck disable=SC2016
+"$guix" extra-profile shell arguments-only -- -- \
+  sh -c 'test "$EXTRA_PROFILE_TEST_HOME" = "$HOME"'
+
+mkdir -p "$HOME/shared with spaces" "$HOME/exposed with spaces"
+printf '%s\n' shared >"$HOME/shared with spaces/input"
+printf '%s\n' exposed >"$HOME/exposed with spaces/input"
+cat >"$arguments_only/shell-arguments.scm" <<'EOF'
+(let ((home (getenv "HOME")))
+  (list "--container"
+        (string-append "--share=" home "/shared with spaces=/shared-data")
+        (string-append "--expose=" home "/exposed with spaces=/exposed-data")))
+EOF
+# The host profile symlink is not mounted in the container; its store target is.
+container_shell=$(readlink -f "$(command -v sh)")
+# shellcheck disable=SC2016
+"$guix" extra-profile shell arguments-only -- -- "$container_shell" -c '
+  IFS= read -r shared < /shared-data/input
+  IFS= read -r exposed < /exposed-data/input
+  test "$shared" = shared
+  test "$exposed" = exposed
+  printf "%s\n" written > /shared-data/output
+  if (printf "%s\n" forbidden > /exposed-data/output) 2>/dev/null; then
+    exit 1
+  fi
+'
+test "$(cat "$HOME/shared with spaces/output")" = written
+test ! -e "$HOME/exposed with spaces/output"

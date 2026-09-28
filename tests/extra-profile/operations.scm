@@ -31,10 +31,15 @@
                                                               "/store"))
                                         (manifest-only (parse-profile-name
                                                         "manifest-only"))
+                                        (arguments-only (parse-profile-name
+                                                         "arguments-only"))
                                         (profile-only (parse-profile-name
                                                        "profile-only"))
                                         (manifest (manifest-path manifest-only
                                                    #:root definitions))
+                                        (arguments-file (shell-arguments-path
+                                                         arguments-only
+                                                         #:root definitions))
                                         (profile (profile-path profile-only
                                                                #:root profiles))
                                         (generation (string-append profile
@@ -47,13 +52,17 @@
                                      (lambda (port)
                                        (display
                                         "(this manifest is not evaluated" port)))
+                                   (mkdir-p (dirname arguments-file))
+                                   (call-with-output-file arguments-file
+                                     (lambda (port)
+                                       (write '(list "--container") port)))
                                    (mkdir-p (dirname profile))
                                    (symlink (basename generation) profile)
                                    (symlink target generation)
 
                                    (test-equal
                                     "list includes manifest-only and profile-only names"
-                                    '("manifest-only" "profile-only")
+                                    '("arguments-only" "manifest-only" "profile-only")
                                     (map profile-name-value
                                          (list-profile-names
                                                              #:definitions-root
@@ -82,8 +91,16 @@
                                                                definitions
                                                                #:profiles-root
                                                                profiles
-                                                               #:store-directory
-                                                               store)))
+                                                                #:store-directory
+                                                                store)))
+                                     (test-equal
+                                      "an arguments-only definition needs no profile generation"
+                                      'arguments-only
+                                      (profile-description-status
+                                       (describe-profile arguments-only
+                                                         #:definitions-root definitions
+                                                         #:profiles-root profiles
+                                                         #:store-directory store)))
                                      (test-assert
                                       "show represents a manifest-only definition"
                                       (profile-description-manifest-present?

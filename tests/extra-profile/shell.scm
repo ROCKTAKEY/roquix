@@ -186,6 +186,56 @@
           #:profiles-root profiles
           #:store-directory store)))))))
 
+(call-with-temporary-directory
+ (lambda (directory)
+   (let* ((definitions (string-append directory "/definitions"))
+          (options (string-append definitions
+                                  "/sandbox/shell-arguments.scm"))
+          (home (string-append directory "/home with spaces"))
+          (runtime (string-append directory "/runtime")))
+     (mkdir-p (dirname options))
+     (call-with-output-file options
+       (lambda (port)
+         (write '(list "--container"
+                       (string-append "--share=" (getenv "HOME")
+                                      "/work=/workspace")
+                       (string-append "--expose=" (getenv "XDG_RUNTIME_DIR")
+                                      "/socket")) port)))
+     (with-environment-variables
+       (list (list "HOME" home)
+             (list "XDG_RUNTIME_DIR" runtime))
+       (let ((snapshot (snapshot-shell-invocation
+                        (parse-shell-arguments '("sandbox"))
+                        #:definitions-root definitions
+                        #:profiles-root (string-append directory "/profiles")
+                        #:store-directory (string-append directory "/store"))))
+         (test-equal "an arguments-only profile has no generation"
+                     '()
+                     (snapshotted-shell-profiles snapshot))
+         (test-equal
+          "saved expressions use environment variables without splitting arguments"
+          (list "shell" "--manifest=/empty.scm" "--container"
+                (string-append "--share=" home "/work=/workspace")
+                (string-append "--expose=" runtime "/socket"))
+          (guix-shell-arguments snapshot "/empty.scm"))))
+     (call-with-output-file options
+       (lambda (port)
+         (write '(list "--container") port)))
+     (call-with-output-file (string-append definitions
+                                          "/sandbox/manifest.scm")
+       (lambda (port)
+         (write '(packages->manifest '()) port)))
+     (test-equal
+      "a profile with a manifest still requires reconfiguration"
+      'not-configured
+      (condition-kind
+       (lambda ()
+         (snapshot-shell-invocation
+          (parse-shell-arguments '("sandbox"))
+          #:definitions-root definitions
+          #:profiles-root (string-append directory "/profiles")
+          #:store-directory (string-append directory "/store"))))))))
+
 (call-with-temporary-directory (lambda (directory)
                                  (let* ((root (string-append directory
                                                              "/profiles"))
