@@ -44,6 +44,11 @@
   (profiles snapshotted-shell-profiles)
   (guix-arguments snapshotted-shell-guix-arguments))
 
+(define-record-type <shell-source>
+  (make-shell-source profile arguments) shell-source?
+  (profile shell-source-profile)
+  (arguments shell-source-arguments))
+
 (define (split-shell-arguments arguments)
   (call-with-values (lambda ()
                       (break (lambda (argument)
@@ -64,20 +69,46 @@
                       (make-shell-invocation (parse-profile-names raw-names)
                                              guix-arguments))))
 
+(define (evaluate-shell-arguments file)
+  ;; A fresh module keeps user definitions out of the command module.
+  (save-module-excursion
+   (lambda ()
+     (set-current-module (make-fresh-user-module))
+     (primitive-load file))))
+
+(define (profile-shell-arguments name root)
+  (let ((file (shell-arguments-path name #:root root)))
+    (if (not (lstat-or-false file))
+        '()
+        (let ((arguments (evaluate-shell-arguments file)))
+          (if (and (list? arguments)
+                   (every string? arguments)
+                   (not (member "--" arguments)))
+              arguments
+              (raise-extra-profile-error 'invalid-shell-arguments name file))))))
+
+(define (snapshot-shell-source name profile-root store-directory definition-root)
+  (make-shell-source
+   (resolve-profile name
+                    #:profiles-root profile-root
+                    #:store-directory store-directory)
+   (profile-shell-arguments name definition-root)))
+
 (define* (snapshot-shell-invocation invocation
                                     #:key (profiles-root (profiles-root))
-                                    (store-directory (%store-prefix)))
+                                    (store-directory (%store-prefix))
+                                    (definitions-root (definitions-root)))
   "Resolve INVOCATION to immutable generation targets."
   (unless (shell-invocation? invocation)
     (error "expected parsed shell arguments" invocation))
-  (make-snapshotted-shell (map (lambda (name)
-                                 (resolve-profile name
-                                                  #:profiles-root
-                                                  profiles-root
-                                                  #:store-directory
-                                                  store-directory))
-                               (shell-invocation-names invocation))
-                          (shell-invocation-guix-arguments invocation)))
+  (let ((sources (map (lambda (name)
+                        (snapshot-shell-source name profiles-root
+                                               store-directory definitions-root))
+                      (shell-invocation-names invocation))))
+    (make-snapshotted-shell
+     (map shell-source-profile sources)
+     (append (append-map shell-source-arguments sources)
+             (shell-invocation-guix-arguments invocation)))))
 
 (define (require-snapshotted-shell snapshot)
   (unless (snapshotted-shell? snapshot)

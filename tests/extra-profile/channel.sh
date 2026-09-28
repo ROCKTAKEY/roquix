@@ -27,3 +27,10 @@ test "$("$profile/bin/profile-a")" = a2
 # Resolve profile-a inside the composed environment, not in this test driver.
 # shellcheck disable=SC2016
 "$guix" extra-profile shell channel -- -- sh -c 'test "$(profile-a)" = a2'
+
+printf '(list "-E" "EXTRA_PROFILE_SHELL_SAVED=value with spaces")\n' \
+  >"$XDG_CONFIG_HOME/guix/extra-profiles/channel/shell-arguments.scm"
+# Expand the variable inside the Guix shell, after saved options take effect.
+# shellcheck disable=SC2016
+"$guix" extra-profile shell channel -- -- \
+  sh -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "value with spaces"'

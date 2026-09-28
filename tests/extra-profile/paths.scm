@@ -82,6 +82,13 @@
                                                                (manifest-path
                                                                 name))
                                                               (test-equal
+                                                               "saved shell arguments share the definition directory"
+                                                               (string-append
+                                                                xdg-config
+                                                                "/guix/extra-profiles/codex/shell-arguments.scm")
+                                                               (shell-arguments-path
+                                                                name))
+                                                              (test-equal
                                                                "profile path follows HOME"
                                                                (string-append
                                                                 home

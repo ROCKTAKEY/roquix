@@ -63,6 +63,28 @@ guix extra-profile shell codex -- \
   -m ./manifest.scm
 #+END_SRC
 
+Place optional =shell-arguments.scm= beside a profile's =manifest.scm= to apply
+=guix shell= options whenever that profile is selected.  The file is evaluated
+as Guile code, and its final expression must return a list of strings:
+
+#+BEGIN_SRC scheme
+(let ((home (getenv "HOME")))
+  (list "--container"
+        (string-append "--share=" home "/work=/workspace")
+        (string-append "--expose=" home "/.config=/config")))
+#+END_SRC
+
+The expression runs when =extra-profile shell= starts, before Guix creates the
+container.  Each returned string remains one command-line argument, including
+spaces.  Guix mounts =--share= sources read-write and =--expose= sources
+read-only.  A target path after the second equals sign is optional.
+
+For multiple profiles, saved options are applied in the order of the names on
+the command line.  Explicit options after the first =--= follow saved options.
+Keep the command and its arguments after a second =--=; the saved options file
+cannot contain that command boundary.  Changes to the saved options take effect
+on the next shell invocation without reconfiguring the profile.
+
 Use a second =--= before a command executed inside the environment:
 
 #+BEGIN_SRC sh
@@ -128,7 +150,9 @@ implicit update.  For example:
    'extra-profile-definitions
    home-files-service-type
    `((".config/guix/extra-profiles/codex/manifest.scm"
-      ,(local-file "./codex-manifest.scm"))))))
+      ,(local-file "./codex-manifest.scm"))
+     (".config/guix/extra-profiles/codex/shell-arguments.scm"
+      ,(local-file "./codex-shell-arguments.scm"))))))
 #+END_SRC
 
 The XDG service exports the base-directory environment variables honored by

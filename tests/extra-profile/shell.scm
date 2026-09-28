@@ -122,6 +122,70 @@
             (condition-kind (lambda ()
                               (parse-shell-arguments '("codex" "-CWNF")))))
 
+(call-with-temporary-directory
+ (lambda (directory)
+   (let* ((definitions (string-append directory "/definitions"))
+          (profiles (string-append directory "/profiles"))
+          (store (string-append directory "/store"))
+          (first (make-store-profile store "first"))
+          (second (make-store-profile store "second"))
+          (first-options (string-append definitions
+                                        "/profile-a/shell-arguments.scm"))
+          (second-options (string-append definitions
+                                         "/profile-b/shell-arguments.scm")))
+     (link-profile profiles "profile-a" 1 first)
+     (link-profile profiles "profile-b" 1 second)
+     (mkdir-p (dirname first-options))
+     (mkdir-p (dirname second-options))
+     (call-with-output-file first-options
+       (lambda (port)
+         (write '(list "-CWNF" "--share=/path with spaces=/workspace") port)))
+     (call-with-output-file second-options
+       (lambda (port)
+         (write '(list "-E" "FOO=bar baz") port)))
+     (let* ((invocation (parse-shell-arguments
+                         '("profile-a" "profile-b" "--" "-m" "./project.scm"
+                           "--" "sh" "-c" "printf '%s' \"$1\"" "sh" "hello world")))
+            (snapshot (snapshot-shell-invocation
+                       invocation
+                       #:definitions-root definitions
+                       #:profiles-root profiles
+                       #:store-directory store)))
+       (test-equal
+        "stored shell arguments compose in profile order before explicit arguments"
+        '("shell" "--manifest=/combined.scm"
+          "-CWNF" "--share=/path with spaces=/workspace"
+          "-E" "FOO=bar baz"
+          "-m" "./project.scm" "--" "sh" "-c"
+          "printf '%s' \"$1\"" "sh" "hello world")
+        (guix-shell-arguments snapshot "/combined.scm")))
+     (call-with-output-file first-options
+       (lambda (port)
+         (display "(list \"-C\" 42)" port)))
+     (test-equal
+      "stored shell arguments must be a list of strings"
+      'invalid-shell-arguments
+      (condition-kind
+       (lambda ()
+         (snapshot-shell-invocation
+          (parse-shell-arguments '("profile-a"))
+          #:definitions-root definitions
+          #:profiles-root profiles
+          #:store-directory store))))
+     (call-with-output-file first-options
+       (lambda (port)
+         (display "(list \"-C\" \"--\")" port)))
+     (test-equal
+      "stored shell arguments cannot include a command boundary"
+      'invalid-shell-arguments
+      (condition-kind
+       (lambda ()
+         (snapshot-shell-invocation
+          (parse-shell-arguments '("profile-a"))
+          #:definitions-root definitions
+          #:profiles-root profiles
+          #:store-directory store)))))))
+
 (call-with-temporary-directory (lambda (directory)
                                  (let* ((root (string-append directory
                                                              "/profiles"))

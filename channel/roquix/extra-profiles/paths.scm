@@ -33,6 +33,7 @@
                           definitions-root
                           profiles-root
                           manifest-path
+                          shell-arguments-path
                           profile-path
                           resolve-profile))
 
@@ -152,11 +153,18 @@
 (define (profiles-root)
   (string-append (home-directory) "/.guix-extra-profiles"))
 
-(define* (manifest-path name
-                        #:key (root (definitions-root)))
+(define (definition-file-path name root file)
   (require-profile-name name)
   (string-append (normalize-absolute-path root) "/"
-                 (profile-name-value name) "/manifest.scm"))
+                 (profile-name-value name) "/" file))
+
+(define* (manifest-path name
+                        #:key (root (definitions-root)))
+  (definition-file-path name root "manifest.scm"))
+
+(define* (shell-arguments-path name
+                               #:key (root (definitions-root)))
+  (definition-file-path name root "shell-arguments.scm"))
 
 (define* (profile-path name
                        #:key (root (profiles-root)))
