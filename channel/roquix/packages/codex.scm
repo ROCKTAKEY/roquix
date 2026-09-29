@@ -120,7 +120,7 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.157.1")
+(define %codex-release-version "0.159.0")
 
 (define-public codex
   (package
@@ -136,7 +136,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kybl005x7ywr8bwr2gc1m3sbgpi48yp77dhhnkvgn4xa7jlpqqy"))))
+        (base32 "097005scqqfl8n3s810h7nyamz7ypxnvf5lp9yh2dsdr65d2rmmf"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;; clang-toolchain
@@ -147,7 +147,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; PID-managed app-server daemons call ps to identify their processes.
-    ;; https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server-daemon/src/backend/pid.rs
+    ;; https://github.com/openai/codex/blob/rust-v0.159.0/codex-rs/app-server-daemon/src/backend/pid.rs
     (propagated-inputs (list procps))
     (native-inputs
      (list rusty-v8-prebuilt-archive
@@ -512,10 +512,10 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; and also installs the CLI's auxiliary `logs_client`.
                       ;; The daemon copies a complete package, so install the
                       ;; layout required by Codex's package validator.
-                      ;; https://github.com/openai/codex/blob/rust-v0.157.1/scripts/codex_package/README.md
+                      ;; https://github.com/openai/codex/blob/rust-v0.159.0/scripts/codex_package/README.md
                       ;; Keep bin/codex as the executable: daemon installation
                       ;; compares its bytes with the running CLI before copying.
-                      ;; https://github.com/openai/codex/blob/rust-v0.157.1/codex-rs/app-server-daemon/src/prepare_install.rs
+                      ;; https://github.com/openai/codex/blob/rust-v0.159.0/codex-rs/app-server-daemon/src/prepare_install.rs
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin"))
                              (resources (string-append out "/codex-resources"))
