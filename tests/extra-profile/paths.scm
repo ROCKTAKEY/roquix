@@ -5,12 +5,6 @@
              (srfi srfi-35)
              (srfi srfi-64))
 
-(define (call-with-environment variables thunk)
-  (with-environment-variables (map (lambda (variable)
-                                     (list (car variable)
-                                           (cdr variable))) variables)
-                              (thunk)))
-
 (define (condition-kind thunk)
   (catch #t
          (lambda ()
@@ -34,21 +28,20 @@
                              "temporary environments restore variables set by evaluated code"
                              #f
                              (begin
-                               (call-with-environment '()
-                                                      (lambda ()
-                                                        (setenv
-                                                         "ROQUIX_EXTRA_PROFILE_TEST_ENV"
-                                                         "changed")))
+                               (with-environment-variables '()
+                                                           (setenv
+                                                            "ROQUIX_EXTRA_PROFILE_TEST_ENV"
+                                                            "changed"))
                                (getenv "ROQUIX_EXTRA_PROFILE_TEST_ENV"))))
 
 (test-equal "unset HOME and XDG_CONFIG_HOME fall back to the account home"
             (let ((home (passwd:dir (getpwuid (getuid)))))
               (list (string-append home "/.guix-extra-profiles")
                     (string-append home "/.config/guix/extra-profiles")))
-            (call-with-environment '(("HOME" . #f) ("XDG_CONFIG_HOME" . #f))
-                                   (lambda ()
-                                     (list (profiles-root)
-                                           (definitions-root)))))
+            (with-environment-variables '(("HOME" #f)
+                                          ("XDG_CONFIG_HOME" #f))
+                                        (list (profiles-root)
+                                              (definitions-root))))
 
 (test-equal "duplicate names retain their first occurrence and case"
             '("texlive" "codex" "Codex")
@@ -116,41 +109,41 @@
                                                                   "/config"))
                                        (home (string-append directory "/home")))
                                    (mkdir-p home)
-                                   (call-with-environment `(("XDG_CONFIG_HOME"
-                                                             unquote
-                                                             xdg-config)
-                                                            ("HOME" unquote
-                                                             home))
-                                                          (lambda ()
-                                                            (let ((name (parse-profile-name
-                                                                         "codex")))
-                                                              (test-equal
-                                                               "definitions root follows XDG_CONFIG_HOME"
-                                                               (string-append
-                                                                xdg-config
-                                                                "/guix/extra-profiles")
-                                                               (definitions-root))
-                                                              (test-equal
-                                                               "manifest path follows the definitions convention"
-                                                               (string-append
-                                                                xdg-config
-                                                                "/guix/extra-profiles/codex/manifest.scm")
-                                                               (manifest-path
-                                                                name))
-                                                              (test-equal
-                                                               "saved shell arguments share the definition directory"
-                                                               (string-append
-                                                                xdg-config
-                                                                "/guix/extra-profiles/codex/shell-arguments.scm")
-                                                               (shell-arguments-path
-                                                                name))
-                                                              (test-equal
-                                                               "profile path follows HOME"
-                                                               (string-append
-                                                                home
-                                                                "/.guix-extra-profiles/codex/codex")
-                                                               (profile-path
-                                                                name))))))))
+                                   (with-environment-variables (list (list
+                                                                      "XDG_CONFIG_HOME"
+                                                                      xdg-config)
+                                                                     (list
+                                                                      "HOME"
+                                                                      home))
+                                                               (let ((name (parse-profile-name
+                                                                            "codex")))
+                                                                 (test-equal
+                                                                  "definitions root follows XDG_CONFIG_HOME"
+                                                                  (string-append
+                                                                   xdg-config
+                                                                   "/guix/extra-profiles")
+                                                                  (definitions-root))
+                                                                 (test-equal
+                                                                  "manifest path follows the definitions convention"
+                                                                  (string-append
+                                                                   xdg-config
+                                                                   "/guix/extra-profiles/codex/manifest.scm")
+                                                                  (manifest-path
+                                                                   name))
+                                                                 (test-equal
+                                                                  "saved shell arguments share the definition directory"
+                                                                  (string-append
+                                                                   xdg-config
+                                                                   "/guix/extra-profiles/codex/shell-arguments.scm")
+                                                                  (shell-arguments-path
+                                                                   name))
+                                                                 (test-equal
+                                                                  "profile path follows HOME"
+                                                                  (string-append
+                                                                   home
+                                                                   "/.guix-extra-profiles/codex/codex")
+                                                                  (profile-path
+                                                                   name)))))))
 
 (call-with-temporary-directory (lambda (directory)
                                  (let* ((root (string-append directory
@@ -284,8 +277,8 @@
                                                              "/profiles"))
                                         (store (string-append directory
                                                               "/store"))
-                                        (outside (string-append directory
-                                                  "/outside-profile"))
+                                        (outside (string-append store
+                                                  "-other/profile"))
                                         (name (parse-profile-name "profile-a"))
                                         (profile (profile-path name
                                                                #:root root)))
@@ -296,7 +289,7 @@
                                      (const #t))
                                    (symlink outside profile)
                                    (test-equal
-                                    "targets outside the active store are rejected"
+                                    "targets sharing only the store prefix are rejected"
                                     'outside-store
                                     (condition-kind (lambda ()
                                                       (resolve-profile name
@@ -317,5 +310,22 @@
                                                          #:profiles-root root
                                                          #:store-directory
                                                          store))))))))
+
+(call-with-temporary-directory (lambda (directory)
+                                 (let ((root (string-append directory
+                                                            "/regular-file")))
+                                   (call-with-output-file root
+                                     (const #t))
+                                   (test-equal
+                                    "filesystem errors other than ENOENT propagate"
+                                    ENOTDIR
+                                    (catch 'system-error
+                                           (lambda ()
+                                             (resolve-profile (parse-profile-name
+                                                               "codex")
+                                                              #:profiles-root
+                                                              root))
+                                           (lambda arguments
+                                             (system-error-errno arguments)))))))
 
 (test-end "extra-profile-paths")

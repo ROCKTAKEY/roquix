@@ -8,6 +8,8 @@
 ;;; any later version.
 
 (define-module (roquix extra-profiles paths)
+  #:use-module ((guix build utils)
+                #:select (false-if-file-not-found))
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
@@ -108,6 +110,8 @@
 (define (normalize-absolute-path path)
   ;; Avoid 'canonicalize-path' here: generation chains must be inspected one
   ;; link at a time so a cycle or broken link has a precise diagnosis.
+  ;; Guix's 'readlink*' follows the chain without distinguishing those failures.
+  ;; https://codeberg.org/guix/guix/src/branch/master/guix/utils.scm
   (let loop
     ((parts (string-split (absolute-path path) #\/))
      (result '()))
@@ -155,21 +159,15 @@
   (let ((value (profile-name-value name)))
     (string-append (normalize-absolute-path root) "/" value "/" value)))
 
-(define (lstat-or-false file)
-  (catch 'system-error
-         (lambda ()
-           (lstat file))
-         (lambda args
-           (if (= ENOENT
-                  (system-error-errno args)) #f
-               (apply throw args)))))
-
 (define (symlink-target file)
   (let ((target (readlink file)))
     (normalize-absolute-path (if (absolute-file-name? target) target
                                  (string-append (dirname file) "/" target)))))
 
-(define (store-path? path store)
+(define (path-under-store? path store)
+  ;; Guix's 'store-path?' checks a raw prefix, accepting a sibling directory
+  ;; such as /gnu/store-other.  Profile generations must be inside the store.
+  ;; https://codeberg.org/guix/guix/src/branch/master/guix/store.scm
   (string-prefix? (string-append store "/") path))
 
 (define* (resolve-profile name
@@ -191,7 +189,7 @@ cannot accidentally re-read a generation after it has been snapshotted."
        (depth 0))
       (when (member current seen)
         (raise-extra-profile-error 'symlink-cycle name profile))
-      (let ((metadata (lstat-or-false current)))
+      (let ((metadata (false-if-file-not-found (lstat current))))
         (cond
           ((not metadata)
            (raise-extra-profile-error (if (zero? depth)
@@ -211,7 +209,7 @@ cannot accidentally re-read a generation after it has been snapshotted."
            (raise-extra-profile-error 'invalid-profile name profile))
           (else (let ((target (canonicalize-path current)))
                   (cond
-                    ((not (store-path? target store))
+                    ((not (path-under-store? target store))
                      (raise-extra-profile-error 'outside-store name target))
                     ((not (file-exists? (string-append target "/manifest")))
                      (raise-extra-profile-error 'missing-manifest name target))

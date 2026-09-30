@@ -161,6 +161,22 @@
         (guix-shell-arguments snapshot "/combined.scm")))
      (call-with-output-file first-options
        (lambda (port)
+         (write '(begin (define saved-option "--container")
+                       (list saved-option)) port)))
+     (call-with-output-file second-options
+       (lambda (port)
+         (write '(list (if (defined? 'saved-option) "leaked" "isolated")) port)))
+     (test-equal
+      "saved shell argument definitions are isolated between profiles"
+      '("--container" "isolated")
+      (snapshotted-shell-guix-arguments
+       (snapshot-shell-invocation
+        (parse-shell-arguments '("profile-a" "profile-b"))
+        #:definitions-root definitions
+        #:profiles-root profiles
+        #:store-directory store)))
+     (call-with-output-file first-options
+       (lambda (port)
          (display "(list \"-C\" 42)" port)))
      (test-equal
       "stored shell arguments must be a list of strings"

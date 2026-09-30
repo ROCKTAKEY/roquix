@@ -12,6 +12,7 @@
   #:use-module (guix base32)
   #:use-module (guix build utils)
   #:use-module (guix store)
+  #:use-module ((guix ui) #:select (load*))
   #:use-module (guix utils)
   #:use-module (ice-9 textual-ports)
   #:use-module (rnrs bytevectors)
@@ -74,18 +75,14 @@
                       (make-shell-invocation (parse-profile-names raw-names)
                                              guix-arguments))))
 
-(define (evaluate-shell-arguments file)
-  ;; A fresh module keeps user definitions out of the command module.
-  (save-module-excursion
-   (lambda ()
-     (set-current-module (make-fresh-user-module))
-     (primitive-load file))))
-
 (define (profile-shell-arguments name root)
-  (let ((file (shell-arguments-path name #:root root)))
-    (if (not (lstat-or-false file))
-        (make-saved-shell-arguments #f '())
-        (let ((arguments (evaluate-shell-arguments file)))
+  (let ((file (shell-arguments-path name
+                                    #:root root)))
+    (if (not (false-if-file-not-found (lstat file)))
+        (make-saved-shell-arguments #f
+                                    '())
+        (let ((arguments (load* file
+                                '())))
           (if (and (list? arguments)
                    (every string? arguments)
                    (not (member "--" arguments)))
@@ -94,19 +91,25 @@
 
 (define (resolve-shell-profile name profile-root store-directory
                                definition-root saved-arguments)
-  (call-with-extra-profile-error
-   (lambda ()
-     (resolve-profile name
-                      #:profiles-root profile-root
-                      #:store-directory store-directory))
-   (lambda (condition)
-     (if (and (eq? 'not-configured
-                   (extra-profile-error-kind condition))
-              (saved-shell-arguments-present? saved-arguments)
-              (not (lstat-or-false (manifest-path name
-                                                  #:root definition-root))))
-         #f
-         (raise-exception condition)))))
+  (call-with-extra-profile-error (lambda ()
+                                   (resolve-profile name
+                                                    #:profiles-root
+                                                    profile-root
+                                                    #:store-directory
+                                                    store-directory))
+                                 (lambda (condition)
+                                   (if (and (eq? 'not-configured
+                                                 (extra-profile-error-kind
+                                                  condition))
+                                            (saved-shell-arguments-present?
+                                             saved-arguments)
+                                            (not (false-if-file-not-found (lstat
+                                                                           (manifest-path
+                                                                            name
+                                                                            #:root
+                                                                            definition-root)))))
+                                       #f
+                                       (raise-exception condition)))))
 
 (define (snapshot-shell-source name profile-root store-directory definition-root)
   (let ((saved (profile-shell-arguments name definition-root)))
@@ -167,18 +170,9 @@
                      (cache-directory #:ensure? #f))
                  "/extra-profile/shell-manifests"))
 
-(define (lstat-or-false file)
-  (catch 'system-error
-         (lambda ()
-           (lstat file))
-         (lambda args
-           (if (= ENOENT
-                  (system-error-errno args)) #f
-               (apply throw args)))))
-
 (define (ensure-private-directory directory)
   (mkdir-p (dirname directory))
-  (unless (lstat-or-false directory)
+  (unless (false-if-file-not-found (lstat directory))
     (catch 'system-error
            (lambda ()
              (mkdir directory #o700))
@@ -213,7 +207,7 @@
          (file (string-append directory "/"
                               (combined-manifest-key snapshot) ".scm")))
     (ensure-private-directory directory)
-    (let ((metadata (lstat-or-false file)))
+    (let ((metadata (false-if-file-not-found (lstat file))))
       (cond
         ((not metadata)
          (write-cache-file file content))

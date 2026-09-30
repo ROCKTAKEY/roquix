@@ -59,15 +59,6 @@
   (manifest-path reconfiguration-manifest-path)
   (profile-path reconfiguration-profile-path))
 
-(define (lstat-exists? file)
-  (catch 'system-error
-         (lambda ()
-           (lstat file) #t)
-         (lambda args
-           (if (= ENOENT
-                  (system-error-errno args)) #f
-               (apply throw args)))))
-
 (define (directory-entries directory)
   (if (file-exists? directory)
       (scandir directory
@@ -94,8 +85,8 @@
          (eq? 'regular (stat:type (stat file))))))
 
 (define (profile-name-present? name root)
-  (lstat-exists? (profile-path name
-                               #:root root)))
+  (false-if-file-not-found (lstat (profile-path name
+                                                #:root root))))
 
 (define (names-under root present?)
   (filter-map (lambda (entry)
@@ -202,6 +193,8 @@
           build-arguments))
 
 (define (process-exit-code status)
+  ;; Guix's 'status->exit-code' is private to (guix scripts environment).
+  ;; https://codeberg.org/guix/guix/src/branch/master/guix/scripts/environment.scm
   (cond
     ((status:exit-val status)
      => identity)

@@ -127,3 +127,14 @@ status=$?
 set -e
 test "$status" -ne 0
 grep "invalid profile name '-CWNF'" "$test_root/missing-boundary.out" >/dev/null
+
+mkdir -p "$definitions/invalid-options"
+printf '%s\n' '(error "invalid saved options")' \
+  >"$definitions/invalid-options/shell-arguments.scm"
+set +e
+guix extra-profile shell invalid-options -- -- true \
+  >"$test_root/invalid-options.out" 2>&1
+status=$?
+set -e
+test "$status" -eq 1
+grep -F "invalid saved options" "$test_root/invalid-options.out" >/dev/null
