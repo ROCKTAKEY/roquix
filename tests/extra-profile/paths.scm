@@ -6,19 +6,10 @@
              (srfi srfi-64))
 
 (define (call-with-environment variables thunk)
-  (let ((saved (map (lambda (variable)
-                      (cons (car variable)
-                            (getenv (car variable)))) variables)))
-    (dynamic-wind (lambda ()
-                    (for-each (lambda (variable)
-                                (setenv (car variable)
-                                        (cdr variable))) variables)) thunk
-                  (lambda ()
-                    (for-each (lambda (variable)
-                                (if (cdr variable)
-                                    (setenv (car variable)
-                                            (cdr variable))
-                                    (unsetenv (car variable)))) saved)))))
+  (with-environment-variables (map (lambda (variable)
+                                     (list (car variable)
+                                           (cdr variable))) variables)
+                              (thunk)))
 
 (define (condition-kind thunk)
   (catch #t
@@ -37,6 +28,27 @@
                           (packages ())) port))) target))
 
 (test-begin "extra-profile-paths")
+
+(with-environment-variables '(("ROQUIX_EXTRA_PROFILE_TEST_ENV" #f))
+                            (test-equal
+                             "temporary environments restore variables set by evaluated code"
+                             #f
+                             (begin
+                               (call-with-environment '()
+                                                      (lambda ()
+                                                        (setenv
+                                                         "ROQUIX_EXTRA_PROFILE_TEST_ENV"
+                                                         "changed")))
+                               (getenv "ROQUIX_EXTRA_PROFILE_TEST_ENV"))))
+
+(test-equal "unset HOME and XDG_CONFIG_HOME fall back to the account home"
+            (let ((home (passwd:dir (getpwuid (getuid)))))
+              (list (string-append home "/.guix-extra-profiles")
+                    (string-append home "/.config/guix/extra-profiles")))
+            (call-with-environment '(("HOME" . #f) ("XDG_CONFIG_HOME" . #f))
+                                   (lambda ()
+                                     (list (profiles-root)
+                                           (definitions-root)))))
 
 (test-equal "duplicate names retain their first occurrence and case"
             '("texlive" "codex" "Codex")
