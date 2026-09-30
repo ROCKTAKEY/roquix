@@ -2,6 +2,7 @@
              (guix utils)
              (roquix extra-profiles paths)
              (srfi srfi-1)
+             (srfi srfi-35)
              (srfi srfi-64))
 
 (define (call-with-environment variables thunk)
@@ -37,6 +38,43 @@
 
 (test-begin "extra-profile-paths")
 
+(test-equal "duplicate names retain their first occurrence and case"
+            '("texlive" "codex" "Codex")
+            (map profile-name-value
+                 (parse-profile-names '("texlive" "codex" "texlive" "Codex"
+                                        "codex"))))
+
+(test-equal "an empty name list stays empty"
+            '()
+            (parse-profile-names '()))
+
+(test-equal "typed profile errors reach the handler"
+            'invalid-name
+            (call-with-extra-profile-error (lambda ()
+                                             (parse-profile-name ".git"))
+                                           extra-profile-error-kind))
+
+(let ((failure (condition (&message (message "unrelated failure")))))
+  (test-eq "unrelated exceptions propagate without changing their identity"
+           failure
+           (with-exception-handler identity
+                                   (lambda ()
+                                     (call-with-extra-profile-error (lambda ()
+                                                                      (raise-exception
+                                                                       failure))
+                                                                    (const 'unexpected-handler)))
+                                   #:unwind? #t)))
+
+(test-equal "unrelated Guile throws keep their key and arguments"
+            '(unrelated "detail" 42)
+            (catch 'unrelated
+                   (lambda ()
+                     (call-with-extra-profile-error (lambda ()
+                                                      (throw 'unrelated
+                                                             "detail" 42))
+                                                    (const 'unexpected-handler)))
+                   list))
+
 (test-equal "valid profile names are parsed into a distinct type"
             '("codex" "texlive-2026" "C++" "a.b_c")
             (map (compose profile-name-value parse-profile-name)
@@ -53,7 +91,13 @@
             "-codex"
             "a/b"
             "a b"
-            "a\nb"))
+            "a\nb"
+            "éclair"
+            "aé"
+            "１profile"
+            "a１"
+            #f
+            42))
 
 (call-with-temporary-directory (lambda (directory)
                                  (let ((xdg-config (string-append directory

@@ -13,6 +13,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (profile-name? parse-profile-name
                           parse-profile-names
@@ -64,13 +65,9 @@
 
 (define (call-with-extra-profile-error thunk handler)
   "Call THUNK and pass typed extra-profile failures to HANDLER."
-  (catch #t thunk
-         (lambda (key . arguments)
-           (if (and (= 1
-                       (length arguments))
-                    (extra-profile-error? (car arguments)))
-               (handler (car arguments))
-               (apply throw key arguments)))))
+  (guard (failure ((extra-profile-error? failure)
+                   (handler failure)))
+         (thunk)))
 
 (define (ascii-letter? character)
   (or (char<=? #\a character #\z)
