@@ -123,9 +123,7 @@
                                                   shell-arguments-file?)
                                                  (names-under profiles-root
                                                   profile-name-present?))
-                                         (lambda (left right)
-                                           (string=? (profile-name-value left)
-                                                     (profile-name-value right))))))
+                                         profile-name=?)))
 
 (define* (describe-profile name
                            #:key (definitions-root (definitions-root))

@@ -262,6 +262,17 @@
                                           (path (ensure-combined-manifest
                                                  snapshot
                                                  #:cache-root cache)))
+                                     (test-equal
+                                      "combined manifest preserves the Scheme forms and target order"
+                                      `((use-modules (guix profiles))
+                                        (concatenate-manifests (list (profile-manifest ,target-a)
+                                                                     (profile-manifest ,target-b))))
+                                      (call-with-input-string content
+                                                              (lambda (port)
+                                                                (list (read
+                                                                       port)
+                                                                      (read
+                                                                       port)))))
                                      (test-assert
                                       "resolved profiles form a snapshot state"
                                       (snapshotted-shell? snapshot))

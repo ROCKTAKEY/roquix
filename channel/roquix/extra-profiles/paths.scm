@@ -13,11 +13,14 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-13)
+  #:use-module (srfi srfi-14)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (profile-name? parse-profile-name
                           parse-profile-names
                           profile-name-value
+                          profile-name=?
 
                           configured-profile?
                           configured-profile-name
@@ -69,47 +72,30 @@
                    (handler failure)))
          (thunk)))
 
-(define (ascii-letter? character)
-  (or (char<=? #\a character #\z)
-      (char<=? #\A character #\Z)))
+(define %profile-name-initial-characters
+  (char-set-intersection char-set:ascii char-set:letter+digit))
 
-(define (ascii-digit? character)
-  (char<=? #\0 character #\9))
-
-(define (profile-name-initial? character)
-  (or (ascii-letter? character)
-      (ascii-digit? character)))
-
-(define (profile-name-rest? character)
-  (or (profile-name-initial? character)
-      (memv character
-            '(#\. #\_ #\+ #\-))))
+(define %profile-name-characters
+  (char-set-union %profile-name-initial-characters
+                  (string->char-set "._+-")))
 
 (define (parse-profile-name value)
   "Parse VALUE as an extra profile name and return a <profile-name>."
   (if (and (string? value)
-           (positive? (string-length value))
-           (profile-name-initial? (string-ref value 0))
-           (every profile-name-rest?
-                  (string->list value)))
+           (not (string-null? value))
+           (char-set-contains? %profile-name-initial-characters
+                               (string-ref value 0))
+           (string-every %profile-name-characters value))
       (%make-profile-name value)
       (raise-extra-profile-error 'invalid-name value #f)))
 
+(define (profile-name=? left right)
+  (string=? (profile-name-value left)
+            (profile-name-value right)))
+
 (define (parse-profile-names values)
   "Parse VALUES and remove duplicates while preserving their first order."
-  (let loop
-    ((input values)
-     (seen '())
-     (result '()))
-    (match input
-      (() (reverse result))
-      ((value rest ...)
-       (let ((name (parse-profile-name value)))
-         (if (member value seen)
-             (loop rest seen result)
-             (loop rest
-                   (cons value seen)
-                   (cons name result))))))))
+  (delete-duplicates (map-in-order parse-profile-name values) profile-name=?))
 
 (define (require-profile-name value)
   (unless (profile-name? value)
