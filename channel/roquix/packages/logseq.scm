@@ -1,8 +1,5 @@
 (define-module (roquix packages logseq)
   #:use-module (guix packages)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages fonts)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -21,7 +18,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module (roquix build-system appimage)
-  #:use-module (roquix build-system container-launcher))
+  #:use-module (roquix packages appimage-container))
 
 (define %logseq-runpath-inputs
   '("gcc-toolchain"
@@ -160,32 +157,5 @@
 and collaboration.")
     (license license:agpl3)))
 
-
 (define-public logseq-container
-  (package
-    (inherit logseq)
-    (name "logseq-container")
-    (source
-     #f)
-    (build-system container-launcher-build-system)
-    (arguments
-     (list
-      #:payload logseq
-      #:executable "logseq"
-      #:preserve-environment '("HOME" "DISPLAY"
-                               "WAYLAND_DISPLAY"
-                               "XAUTHORITY"
-                               "XDG_RUNTIME_DIR"
-                               "DBUS_SESSION_BUS_ADDRESS"
-                               "PULSE_SERVER"
-                               "XDG_CONFIG_HOME"
-                               "XDG_DATA_HOME"
-                               "XDG_CACHE_HOME")
-      #:share '((environment "HOME")
-                (environment "XDG_RUNTIME_DIR"))
-      #:expose '((environment "XAUTHORITY"))
-      #:network? #t
-      #:no-cwd? #f))
-    (inputs (list coreutils fontconfig font-dejavu font-ipa))
-    (native-inputs '())
-    (propagated-inputs '())))
+  (appimage-container-package logseq))

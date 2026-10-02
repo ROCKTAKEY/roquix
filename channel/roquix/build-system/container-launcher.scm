@@ -49,7 +49,11 @@
   (container-command-arguments
    "/profile" executable
    #:preserve-environment preserve-environment
-   #:set-environment set-environment
+   #:set-environment
+   (map (match-lambda
+          ((name . (? file-like? value)) (cons name "/store/environment-value"))
+          (entry entry))
+        set-environment)
    #:share share #:expose expose
    #:network? network? #:emulate-fhs? emulate-fhs? #:no-cwd? no-cwd?
    #:getenv (lambda (_) "/runtime"))
@@ -74,7 +78,10 @@
                           #:preserve-environment
                           '#$(sexp->gexp preserve-environment)
                           #:set-environment
-                          '#$(sexp->gexp set-environment)
+                          (list #$@(map (match-lambda
+                                          ((name . value)
+                                           #~(cons #$name #$value)))
+                                        set-environment))
                           #:share '#$(sexp->gexp share)
                           #:expose '#$(sexp->gexp expose)
                           #:network? #$network?

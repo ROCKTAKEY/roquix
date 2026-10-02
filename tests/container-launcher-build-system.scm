@@ -4,9 +4,11 @@
              ((guix build syscalls) #:select (mkdtemp!))
              (guix build-system)
              (guix packages)
+             (guix gexp)
              (guix profiles)
              (gnu packages base)
              (rnrs io ports)
+             (srfi srfi-1)
              (srfi srfi-64))
 
 (test-begin "container-launcher-build-system")
@@ -42,6 +44,35 @@
     '("hello" "coreutils")
     (map manifest-entry-name
          (manifest-entries (profile-content runtime-profile)))))
+
+(let* ((environment-file (file-append hello "/bin/hello"))
+       (bag ((build-system-lower container-launcher-build-system)
+             "hello-container"
+             #:payload hello
+             #:executable "hello"
+             #:set-environment (list (cons "APP_FILE" environment-file))
+             #:inputs '()
+             #:native-inputs '()
+             #:outputs '("out")
+             #:system "x86_64-linux"
+             #:target #f))
+       (launcher (cadr (assoc "launcher" (bag-host-inputs bag)))))
+  (test-assert "environment files are pinned as launcher dependencies"
+    (any (lambda (input)
+           (eq? (gexp-input-thing input) environment-file))
+         ((@@ (guix gexp) gexp-inputs) (program-file-gexp launcher)))))
+
+(test-error "environment values must be strings or Guix file references" #t
+  ((build-system-lower container-launcher-build-system)
+   "hello-container"
+   #:payload hello
+   #:executable "hello"
+   #:set-environment '(("APP_FILE" . 42))
+   #:inputs '()
+   #:native-inputs '()
+   #:outputs '("out")
+   #:system "x86_64-linux"
+   #:target #f))
 
 (test-error "container options must be booleans" #t
   ((build-system-lower container-launcher-build-system)

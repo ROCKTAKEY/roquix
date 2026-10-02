@@ -1,7 +1,10 @@
 (use-modules (guix build-system)
              (guix packages)
+             (guix gexp)
              (guix profiles)
+             (gnu packages base)
              (gnu packages fontutils)
+             (roquix packages appimage-container)
              (roquix build container-launcher)
              (srfi srfi-1)
              (srfi srfi-64))
@@ -12,6 +15,9 @@
 
 (define (desktop-environment name)
   (assoc-ref '(("HOME" . "/home/test")
+               ("XDG_CONFIG_HOME" . "/config")
+               ("XDG_DATA_HOME" . "/data")
+               ("XDG_CACHE_HOME" . "/cache")
                ("XDG_RUNTIME_DIR" . "/run/user/1000")
                ("XAUTHORITY" . "/tmp/test-xauthority"))
              name))
@@ -49,15 +55,20 @@
                                (manifest-entries (profile-content profile)))))
            (test-assert "container has the payload, sandbox tools and fonts"
              (every (lambda (name) (member name packages))
-                    (list executable "coreutils" (package-name fontconfig)
+                    (list executable (package-name coreutils-minimal) "util-linux"
+                          (package-name fontconfig)
                           "font-dejavu" "font-ipa"))))
+         (let ((config (assoc-ref (argument-ref wrapper #:set-environment '())
+                                  "FONTCONFIG_FILE")))
+           (test-assert "Fontconfig configuration is pinned to the runtime input"
+             (and (file-append? config)
+                  (eq? (file-append-base config) fontconfig)
+                  (equal? (file-append-suffix config) '("/etc/fonts/fonts.conf")))))
          (let ((command
                 (container-command-arguments
                  "/store/profile" executable
                  #:preserve-environment
                  (argument-ref wrapper #:preserve-environment '())
-                 #:set-environment
-                 (argument-ref wrapper #:set-environment '())
                  #:share (argument-ref wrapper #:share '())
                  #:expose (argument-ref wrapper #:expose '())
                  #:network? (argument-ref wrapper #:network? #f)
@@ -74,6 +85,9 @@
              (every (lambda (option) (member option command))
                     '("--share=/home/test=/home/test"
                       "--share=/run/user/1000=/run/user/1000"
+                      "--share=/config=/config"
+                      "--share=/data=/data"
+                      "--share=/cache=/cache"
                       "--expose=/tmp/test-xauthority=/tmp/test-xauthority")))
            (test-assert "network and X11 abstract sockets are available"
              (member "-N" command))
@@ -82,6 +96,12 @@
  '(((roquix packages feishin) feishin feishin-container)
    ((roquix packages logseq) logseq logseq-container)
    ((roquix packages mattermost) mattermost-desktop mattermost-desktop-container)))
+
+(test-error "non-package payload is rejected at construction" #t
+  (appimage-container-package #f))
+
+(test-error "non-AppImage payload is rejected at construction" #t
+  (appimage-container-package hello))
 
 (let ((runner (test-runner-current)))
   (test-end "appimage-container-packages")
