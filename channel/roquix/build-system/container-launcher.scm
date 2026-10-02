@@ -10,6 +10,9 @@
   #:use-module (roquix build container-launcher)
   #:export (container-launcher-build-system))
 
+;; A wrapper package keeps the payload outside its own output, allowing a
+;; profile containing the payload to be built without a self dependency.
+
 (define (runtime-input->manifest-item input)
   (match input
     ((_ (? package? package)) package)
@@ -25,6 +28,9 @@
                 #:allow-other-keys)
   (unless (package? payload)
     (error "container launcher payload must be a package" payload))
+  (unless (and (string? payload-output)
+               (not (string-null? payload-output)))
+    (error "container launcher payload output must be a name" payload-output))
   (unless (and (string? executable)
                (not (string-null? executable))
                (not (string-index executable #\/)))
@@ -33,6 +39,11 @@
     (error "container launcher takes its files from the payload package" source))
   (when target
     (error "cross-building a container launcher is unsupported" target))
+  (for-each (lambda (name value)
+              (unless (boolean? value)
+                (error "container launcher option must be boolean" name value)))
+            '(network? emulate-fhs? no-cwd?)
+            (list network? emulate-fhs? no-cwd?))
 
   ;; Parse package configuration before lowering it to a derivation.
   (container-command-arguments
@@ -47,8 +58,7 @@
           (profile
             (content (packages->manifest
                       (cons (list payload payload-output)
-                            (map runtime-input->manifest-item inputs)))))
-          )
+                            (map runtime-input->manifest-item inputs))))))
          (launcher
           (program-file
            executable

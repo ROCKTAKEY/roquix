@@ -21,10 +21,20 @@
           (let ((out #$output))
             (mkdir-p (string-append out "/bin"))
             (mkdir-p (string-append out "/share/applications"))
-            (mkdir-p (string-append out "/share/icons"))
+            (mkdir-p (string-append out "/share/icons/hicolor/48x48/apps"))
             (call-with-output-file (string-append out "/bin/test-app")
               (lambda (port)
-                (display "#!/bin/sh\nprintf '%s\\n' \"$@\"\n" port)))
+                (display "#!/bin/sh\n" port)
+                (display "printf 'mode=%s\\n' \"${APP_MODE-unset}\"\n" port)
+                (display
+                 "if [ -f \"${XDG_RUNTIME_DIR-}/container-token\" ]; then printf 'shared=yes\\n'; fi
+"
+                 port)
+                (display
+                 "if [ -f /tmp/roquix-container-fixture-exposed ]; then printf 'exposed=yes\\n'; fi
+"
+                 port)
+                (display "printf '%s\\n' \"$@\"\n" port)))
             (chmod (string-append out "/bin/test-app") #o755)
             (call-with-output-file (string-append out
                                     "/share/applications/test-app.desktop")
@@ -37,7 +47,7 @@
                 (display "DBusActivatable=true\n" port)
                 (display "Icon=test-app\n" port)))
             (call-with-output-file (string-append out
-                                                  "/share/icons/test-app.png")
+                                    "/share/icons/hicolor/48x48/apps/test-app.png")
               (lambda (port)
                 (display "fixture icon" port)))))))
     (home-page "https://example.invalid/container-launcher-fixture")
@@ -56,8 +66,9 @@
     #:payload payload
     #:executable "test-app"
     #:preserve-environment '("DISPLAY" "XDG_RUNTIME_DIR")
+    #:set-environment '(("APP_MODE" . "compact"))
     #:share '((environment "XDG_RUNTIME_DIR"))
-    #:expose '("/tmp")
+    #:expose '("/tmp/roquix-container-fixture-exposed")
     #:network? #t))
   (home-page "https://example.invalid/container-launcher-fixture")
   (synopsis "Fixture for the container launcher build system")

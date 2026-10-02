@@ -4,6 +4,7 @@
              ((guix build syscalls) #:select (mkdtemp!))
              (guix build-system)
              (guix packages)
+             (guix profiles)
              (gnu packages base)
              (rnrs io ports)
              (srfi srfi-64))
@@ -26,6 +27,33 @@
   (test-equal "payload, profile, and launcher are pinned build inputs"
     '("payload" "runtime-profile" "launcher")
     (map car (bag-host-inputs bag))))
+
+(let* ((bag ((build-system-lower container-launcher-build-system)
+             "hello-container"
+             #:payload hello
+             #:executable "hello"
+             #:inputs `(("coreutils" ,coreutils))
+             #:native-inputs '()
+             #:outputs '("out")
+             #:system "x86_64-linux"
+             #:target #f))
+       (runtime-profile (cadr (assoc "runtime-profile" (bag-host-inputs bag)))))
+  (test-equal "package inputs are available inside the container"
+    '("hello" "coreutils")
+    (map manifest-entry-name
+         (manifest-entries (profile-content runtime-profile)))))
+
+(test-error "container options must be booleans" #t
+  ((build-system-lower container-launcher-build-system)
+   "hello-container"
+   #:payload hello
+   #:executable "hello"
+   #:network? 'yes
+   #:inputs '()
+   #:native-inputs '()
+   #:outputs '("out")
+   #:system "x86_64-linux"
+   #:target #f))
 
 (test-equal "explicit environment and mounts become separate arguments"
   '("shell" "-q" "--pure" "-C" "--profile=/store/profile" "--no-cwd"
@@ -68,20 +96,29 @@
          "Icon=app"
          "MimeType=text/plain;")))
 
+(test-error "desktop entries with env prefixes need explicit handling" #t
+  (rewrite-desktop-line "Exec=env MODE=compact /old/app" "/store/wrapper/bin/app"))
+
 (let* ((root (mkdtemp! "/tmp/roquix-container-launcher-XXXXXX"))
        (payload (string-append root "/payload"))
        (output (string-append root "/output"))
        (applications (string-append payload "/share/applications"))
        (desktop-file (string-append applications "/app.desktop"))
+       (nested-applications (string-append applications "/vendor"))
+       (nested-desktop (string-append nested-applications "/other.desktop"))
        (installed-desktop
         (string-append output "/share/applications/app.desktop")))
   (mkdir-p applications)
+  (mkdir-p nested-applications)
   (mkdir-p (string-append payload "/share/icons"))
   (call-with-output-file desktop-file
     (lambda (port)
       (display "[Desktop Entry]\nExec=/old/app %U\n" port)
       (display "[Desktop Action NewWindow]\nExec=/old/app --new\n" port)
       (display "Icon=app\n" port)))
+  (call-with-output-file nested-desktop
+    (lambda (port)
+      (display "[Desktop Entry]\nExec=/old/app --other\n" port)))
   (install-desktop-metadata payload output "app")
   (test-equal "installed desktop actions retain arguments and use the wrapper"
     (string-append "[Desktop Entry]\nExec=" output "/bin/app %U\n"
@@ -91,6 +128,31 @@
   (test-assert "icon directory stays visible in the wrapper package"
     (string=? (readlink (string-append output "/share/icons"))
               (string-append payload "/share/icons")))
+  (test-equal "nested desktop file keeps its desktop ID path"
+    (string-append "[Desktop Entry]\nExec=" output "/bin/app --other\n")
+    (call-with-input-file
+        (string-append output "/share/applications/vendor/other.desktop")
+      get-string-all))
+  (delete-file-recursively root))
+
+(let* ((root (mkdtemp! "/tmp/roquix-container-dbus-XXXXXX"))
+       (payload (string-append root "/payload"))
+       (output (string-append root "/output"))
+       (applications (string-append payload "/share/applications")))
+  (mkdir-p applications)
+  (call-with-output-file (string-append applications "/app.desktop")
+    (lambda (port)
+      (display "[Desktop Entry]\nType=Application\nDBusActivatable=true\n" port)
+      (display "[Desktop Action NewWindow]\nExec=/old/app --new\n" port)))
+  (install-desktop-metadata payload output "app")
+  (test-equal "D-Bus-only desktop entry gains a main launcher Exec"
+    (string-append "[Desktop Entry]\nType=Application\n"
+                   "DBusActivatable=false\nExec=" output "/bin/app\n"
+                   "[Desktop Action NewWindow]\nExec=" output
+                   "/bin/app --new\n")
+    (call-with-input-file
+        (string-append output "/share/applications/app.desktop")
+      get-string-all))
   (delete-file-recursively root))
 
 (let ((runner (test-runner-current)))
