@@ -28,43 +28,74 @@ test "$("$profile/bin/profile-a")" = a2
 # shellcheck disable=SC2016
 "$guix" extra-profile shell channel -- -- sh -c 'test "$(profile-a)" = a2'
 
-printf '(list "-E" "EXTRA_PROFILE_SHELL_SAVED=value with spaces")\n' \
-  >"$XDG_CONFIG_HOME/guix/extra-profiles/channel/shell-arguments.scm"
-# Expand the variable inside the Guix shell, after saved options take effect.
+cat >"$XDG_CONFIG_HOME/guix/extra-profiles/channel/shell.scm" <<'EOF'
+(use-modules (roquix extra-profiles shell-configuration))
+(shell-configuration
+ (pure? #t)
+ (preserve '("^EXTRA_PROFILE_SHELL_KEEP$"))
+ (environment-variables '(("EXTRA_PROFILE_SHELL_SAVED" . "value with spaces=ok"))))
+EOF
+export EXTRA_PROFILE_SHELL_KEEP='inherited spaces'
+export EXTRA_PROFILE_SHELL_DROP=unwanted
+test_shell=$(command -v sh)
+# Check environment settings in the actual Guix process.
 # shellcheck disable=SC2016
 "$guix" extra-profile shell channel -- -- \
-  sh -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "value with spaces"'
+  "$test_shell" -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "value with spaces=ok" &&
+    test "$EXTRA_PROFILE_SHELL_KEEP" = "inherited spaces" &&
+    test "${EXTRA_PROFILE_SHELL_DROP-unset}" = unset'
 
-arguments_only="$XDG_CONFIG_HOME/guix/extra-profiles/arguments-only"
-mkdir -p "$arguments_only"
-cat >"$arguments_only/shell-arguments.scm" <<'EOF'
+shell_only="$XDG_CONFIG_HOME/guix/extra-profiles/shell-only"
+mkdir -p "$shell_only"
+cat >"$shell_only/shell.scm" <<'EOF'
+(use-modules (roquix extra-profiles shell-configuration))
 (define home (getenv "HOME"))
-(list "-E" (string-append "EXTRA_PROFILE_TEST_HOME=" home))
+(shell-configuration
+ (environment-variables (list (cons "EXTRA_PROFILE_TEST_HOME" home)
+                              (cons "EXTRA_PROFILE_SHELL_SAVED" "profile override"))))
 EOF
-test ! -e "$arguments_only/manifest.scm"
-"$guix" extra-profile list | grep '^arguments-only$' >/dev/null
+test ! -e "$shell_only/manifest.scm"
+"$guix" extra-profile list | grep '^shell-only$' >/dev/null
 # The Scheme expression uses HOME before Guix launches the command.
 # shellcheck disable=SC2016
-"$guix" extra-profile shell arguments-only -- -- \
+"$guix" extra-profile shell shell-only -- -- \
   sh -c 'test "$EXTRA_PROFILE_TEST_HOME" = "$HOME"'
+
+# Later profiles override assignments; explicit options follow saved settings.
+# shellcheck disable=SC2016
+"$guix" extra-profile shell channel shell-only -- -- \
+  "$test_shell" -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "profile override"'
+# shellcheck disable=SC2016
+"$guix" extra-profile shell channel shell-only -- \
+  -E 'EXTRA_PROFILE_SHELL_SAVED=explicit override' -- \
+  "$test_shell" -c 'test "$EXTRA_PROFILE_SHELL_SAVED" = "explicit override"'
 
 mkdir -p "$HOME/shared with spaces" "$HOME/exposed with spaces"
 printf '%s\n' shared >"$HOME/shared with spaces/input"
 printf '%s\n' exposed >"$HOME/exposed with spaces/input"
-cat >"$arguments_only/shell-arguments.scm" <<'EOF'
+cat >"$shell_only/shell.scm" <<'EOF'
+(use-modules (roquix extra-profiles shell-configuration))
 (let ((home (getenv "HOME")))
-  (list "--container"
-        (string-append "--share=" home "/shared with spaces=/shared-data")
-        (string-append "--expose=" home "/exposed with spaces=/exposed-data")))
+  (shell-configuration
+   (container? #t)
+   (mounts
+    (list (share (string-append home "/shared with spaces") #:target "/shared-data")
+          (expose (string-append home "/exposed with spaces") #:target "/exposed-data")
+          (share (string-append home "/private/cache") #:target "/cache"
+                 #:on-missing 'create-directory)
+          (expose (string-append home "/absent") #:target "/absent"
+                  #:on-missing 'skip)))))
 EOF
 # The host profile symlink is not mounted in the container; its store target is.
 container_shell=$(readlink -f "$(command -v sh)")
 # shellcheck disable=SC2016
-"$guix" extra-profile shell arguments-only -- -- "$container_shell" -c '
+"$guix" extra-profile shell shell-only -- -- "$container_shell" -c '
   IFS= read -r shared < /shared-data/input
   IFS= read -r exposed < /exposed-data/input
   test "$shared" = shared
   test "$exposed" = exposed
+  test ! -e /absent
+  printf "%s\n" cached > /cache/output
   printf "%s\n" written > /shared-data/output
   if (printf "%s\n" forbidden > /exposed-data/output) 2>/dev/null; then
     exit 1
@@ -72,3 +103,6 @@ container_shell=$(readlink -f "$(command -v sh)")
 '
 test "$(cat "$HOME/shared with spaces/output")" = written
 test ! -e "$HOME/exposed with spaces/output"
+test "$(cat "$HOME/private/cache/output")" = cached
+test "$(stat -c %a "$HOME/private")" = 700
+test "$(stat -c %a "$HOME/private/cache")" = 700

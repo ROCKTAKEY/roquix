@@ -39,7 +39,7 @@
                           definitions-root
                           profiles-root
                           manifest-path
-                          shell-arguments-path
+                          shell-configuration-path
                           profile-path
                           resolve-profile))
 
@@ -155,9 +155,9 @@
                         #:key (root (definitions-root)))
   (definition-file-path name root "manifest.scm"))
 
-(define* (shell-arguments-path name
-                               #:key (root (definitions-root)))
-  (definition-file-path name root "shell-arguments.scm"))
+(define* (shell-configuration-path name
+                                   #:key (root (definitions-root)))
+  (definition-file-path name root "shell.scm"))
 
 (define* (profile-path name
                        #:key (root (profiles-root)))

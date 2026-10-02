@@ -31,14 +31,14 @@
                                                               "/store"))
                                         (manifest-only (parse-profile-name
                                                         "manifest-only"))
-                                        (arguments-only (parse-profile-name
-                                                         "arguments-only"))
+                                        (shell-only (parse-profile-name
+                                                     "shell-only"))
                                         (profile-only (parse-profile-name
                                                        "profile-only"))
                                         (manifest (manifest-path manifest-only
                                                    #:root definitions))
-                                        (arguments-file (shell-arguments-path
-                                                         arguments-only
+                                        (arguments-file (shell-configuration-path
+                                                         shell-only
                                                          #:root definitions))
                                         (profile (profile-path profile-only
                                                                #:root profiles))
@@ -62,7 +62,8 @@
 
                                    (test-equal
                                     "list includes manifest-only and profile-only names"
-                                    '("arguments-only" "manifest-only" "profile-only")
+                                    '("manifest-only" "profile-only"
+                                      "shell-only")
                                     (map profile-name-value
                                          (list-profile-names
                                                              #:definitions-root
@@ -91,16 +92,19 @@
                                                                definitions
                                                                #:profiles-root
                                                                profiles
-                                                                #:store-directory
-                                                                store)))
+                                                               #:store-directory
+                                                               store)))
                                      (test-equal
-                                      "an arguments-only definition needs no profile generation"
-                                      'arguments-only
-                                      (profile-description-status
-                                       (describe-profile arguments-only
-                                                         #:definitions-root definitions
-                                                         #:profiles-root profiles
-                                                         #:store-directory store)))
+                                      "an shell-only definition needs no profile generation"
+                                      'shell-only
+                                      (profile-description-status (describe-profile
+                                                                   shell-only
+                                                                   #:definitions-root
+                                                                   definitions
+                                                                   #:profiles-root
+                                                                   profiles
+                                                                   #:store-directory
+                                                                   store)))
                                      (test-assert
                                       "show represents a manifest-only definition"
                                       (profile-description-manifest-present?

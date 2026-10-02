@@ -182,8 +182,31 @@ Commands:
       ((missing-definition)
        (leave (G_ "definition manifest for profile '~a' does not exist: ~a~%")
               name path))
-      ((invalid-shell-arguments)
-       (leave (G_ "invalid shell arguments for profile '~a': ~a (expected a list of strings without -- as the final value)~%")
+      ((missing-mount-source)
+       (leave (G_ "mount source for profile '~a' does not exist: ~a~%") name
+              path))
+      ((unusable-mount-source)
+       (leave (G_
+               "cannot inspect or prepare mount source for profile '~a': ~a (check permissions and symbolic links)~%")
+              name path))
+      ((mount-source-not-directory)
+       (leave (G_
+               "create-directory requires a directory source for profile '~a': ~a~%")
+              name path))
+      ((conflicting-shell-mount)
+       (leave (G_
+               "conflicting shell mounts from profiles '~a' at target: ~a~%")
+              name path))
+      ((mounts-require-container)
+       (leave (G_ "shell mounts for profile '~a' require (container? #t)~%")
+              name))
+      ((settings-require-container)
+       (leave (G_
+               "shell setting '~a' for profile '~a' requires (container? #t)~%")
+              path name))
+      ((invalid-shell-configuration)
+       (leave (G_
+               "invalid shell configuration for profile '~a': ~a (expected shell-configuration as the final value)~%")
               name path))
       (else (leave (G_ "profile '~a' is unusable: ~a~@[ (~a)~]~%")
                    (or name "?")

@@ -63,31 +63,90 @@ guix extra-profile shell codex -- \
   -m ./manifest.scm
 #+END_SRC
 
-Place optional =shell-arguments.scm= beside a profile's =manifest.scm= to apply
-=guix shell= options whenever that profile is selected.  The file is evaluated
-as Guile code, and its final expression must return a list of strings:
+Place optional =shell.scm= beside a profile's =manifest.scm= to configure
+its shell.  The file is evaluated as Guile code, and its final expression must
+return a =shell-configuration=.  Boolean fields default to =#f= and list fields
+default to empty lists:
 
 #+BEGIN_SRC scheme
+(use-modules (roquix extra-profiles shell-configuration))
+
 (let ((home (getenv "HOME")))
-  (list "--container"
-        (string-append "--share=" home "/work=/workspace")
-        (string-append "--expose=" home "/.config=/config")))
+  (shell-configuration
+   (container? #t)
+   (network? #t)
+   (pure? #t)
+   (preserve '("^TERM$" "^DISPLAY$"))
+   (environment-variables '(("EDITOR" . "emacs")))
+   (extra-options '("--check"))
+   (mounts
+    (list
+     (share (string-append home "/work")
+            #:target "/workspace")
+     (share (string-append home "/.cache/codex")
+            #:target "/cache/codex"
+            #:on-missing 'create-directory)
+     (expose (string-append home "/.config/codex")
+             #:target "/config/codex"
+             #:on-missing 'skip)))))
 #+END_SRC
 
+The basic fields are =container?=, =network?=, =nesting?=, =link-profile?=,
+=writable-root?=, =emulate-fhs?=, and =pure?=.  They accept =#t= or =#f=.
+All except =container?= and =pure?= require an enabled =container?=.
+=preserve= contains regular expressions naming environment variables to inherit;
+they must be valid Guix regexps without an equals sign.  =environment-variables=
+is an association list of string pairs =(name . value)=; values may contain
+spaces and equals signs.  Names must be nonempty and cannot contain an equals
+sign.  All option and environment strings must be NUL-free.
+
 The expression runs when =extra-profile shell= starts, before Guix creates the
-container.  Each returned string remains one command-line argument, including
-spaces.  Guix mounts =--share= sources read-write and =--expose= sources
-read-only.  A target path after the second equals sign is optional.
+container.  Each =extra-options= string remains one command-line argument,
+including spaces.  Specify mounts using =mounts=; =extra-options= cannot contain =--share=,
+=--expose=, or the command boundary =--=.
 
-For multiple profiles, saved options are applied in the order of the names on
-the command line.  Explicit options after the first =--= follow saved options.
-Keep the command and its arguments after a second =--=; the saved options file
-cannot contain that command boundary.  Changes to the saved options take effect
-on the next shell invocation without reconfiguring the profile.
+=share= mounts a host path read-write; =expose= mounts it read-only.  Both accept
+a host source path, optional =#:target=, and optional =#:on-missing=.  Source and
+target paths must be absolute.  The target defaults to the source and is
+normalized so that trailing slashes and =.= or =..= components do not hide
+target conflicts.  Sources retain their spelling to preserve symbolic-link
+resolution; they cannot contain an equals sign because Guix uses it to separate
+source from target.  Directories, files, and sockets can be mounted.
 
-A name can have =shell-arguments.scm= without =manifest.scm= or a built profile.
-It appears in =extra-profile list= and starts a =guix shell= with an empty
-manifest.  =reconfigure --all= still selects only names with =manifest.scm=.
+The missing-source policy defaults to ='error=, which stops shell startup and
+reports the profile name and source path.  ='skip= omits an absent source.
+='create-directory= creates the source and missing parents with mode =0700=;
+existing directory permissions are preserved, and an existing non-directory is
+an error.  Creation is available for both =share= and =expose=, and occurs on
+the host.  Permission errors, broken symbolic links, and non-directory parents
+are errors even with ='skip=.  Missing target mount points inside the container
+are created by Guix.
+
+For multiple profiles, a boolean setting is enabled when any selected profile
+enables it; =#f= contributes no request.  Environment inheritance patterns,
+variable assignments, additional options, and mounts are collected in profile
+order.  Later assignments to the same environment variable take precedence.
+Basic flags are emitted once, followed by inheritance patterns, assignments,
+additional options, and prepared mount arguments.  Container requirements and
+mount conflicts are checked before directories are created.  Identical requests
+for the same target are combined.  Different sources, access modes, or missing-source policies for
+the same target are errors.  Parent mounts precede their children; independent
+requests retain their order except where a parent must be moved before a child.
+
+Mount requests require =(container? #t)= in at least one selected profile.
+Additional options and explicit Guix arguments are passed through without
+being interpreted as configuration fields, so supplying =-C= there does not
+satisfy this requirement.  Saved settings and prepared mount arguments precede explicit arguments after the first =--=.  Keep the
+command and its arguments after a second =--=.  Explicit Guix arguments are
+passed through; the structured mount policies and conflict checks apply to
+saved =mounts= settings.  Guix can still fail at execution if a source changes
+after it has been checked.
+
+Changes to =shell.scm= take effect on the next invocation without reconfiguring
+the profile.  A name can have =shell.scm= without =manifest.scm= or a built
+profile.  It appears in =extra-profile list=, has status =shell-only= in
+=extra-profile show=, and starts a =guix shell= with an empty manifest.
+=reconfigure --all= selects only names with =manifest.scm=.
 
 Use a second =--= before a command executed inside the environment:
 
@@ -155,8 +214,8 @@ implicit update.  For example:
    home-files-service-type
    `((".config/guix/extra-profiles/codex/manifest.scm"
       ,(local-file "./codex-manifest.scm"))
-     (".config/guix/extra-profiles/codex/shell-arguments.scm"
-      ,(local-file "./codex-shell-arguments.scm"))))))
+     (".config/guix/extra-profiles/codex/shell.scm"
+      ,(local-file "./codex-shell.scm"))))))
 #+END_SRC
 
 The XDG service exports the base-directory environment variables honored by
@@ -178,21 +237,18 @@ with a link to another mutable profile because generation listing and rollback
 are defined relative to the conventional profile basename.
 
 ** Developing and testing
-Only a local source checkout needs explicit extension paths:
-
-#+BEGIN_SRC sh
-export GUIX_EXTENSIONS_PATH="$PWD/channel/guix/extensions"
-export GUILE_LOAD_PATH="$PWD/channel${GUILE_LOAD_PATH:+:$GUILE_LOAD_PATH}"
-#+END_SRC
-
-Run the isolated unit and integration suite with:
+Run the isolated unit and integration suite against the working tree with:
 
 #+BEGIN_SRC sh
 tests/extra-profile/run-tests.sh
 #+END_SRC
 
-The integration test uses temporary HOME and XDG directories and explicit
-profile paths.  It does not modify the user's Guix profile or extra profiles.
+The CLI tests use temporary Guix profiles that discover the checkout as a
+channel.  This selects the working-tree modules even when roquix is installed:
+Guix's channel module paths precede =GUILE_LOAD_PATH=.  The channel integration
+test also runs without module-path or extension-path environment overrides.
+Temporary HOME, XDG directories, and generated profile paths keep test state
+separate from the user's Guix profile and extra profiles.
 
 * AppImage build system
 =roquix= includes =appimage-build-system= for repackaging Type 2 AppImages as

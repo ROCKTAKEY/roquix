@@ -12,11 +12,14 @@
   #:use-module (guix base32)
   #:use-module (guix build utils)
   #:use-module (guix store)
-  #:use-module ((guix ui) #:select (load*))
+  #:use-module ((guix ui)
+                #:select (load*))
   #:use-module (guix utils)
   #:use-module (ice-9 textual-ports)
   #:use-module (rnrs bytevectors)
   #:use-module (roquix extra-profiles paths)
+  #:use-module (roquix extra-profiles shell-configuration)
+  #:use-module (roquix extra-profiles shell-mounts)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:export (shell-invocation? shell-invocation-names
@@ -45,15 +48,11 @@
   (profiles snapshotted-shell-profiles)
   (guix-arguments snapshotted-shell-guix-arguments))
 
-(define-record-type <saved-shell-arguments>
-  (make-saved-shell-arguments present? arguments) saved-shell-arguments?
-  (present? saved-shell-arguments-present?)
-  (arguments saved-shell-arguments-values))
-
 (define-record-type <shell-source>
-  (make-shell-source profile arguments) shell-source?
+  (make-shell-source name profile configuration) shell-source?
+  (name shell-source-name)
   (profile shell-source-profile)
-  (arguments shell-source-arguments))
+  (configuration shell-source-configuration))
 
 (define (split-shell-arguments arguments)
   (call-with-values (lambda ()
@@ -75,22 +74,18 @@
                       (make-shell-invocation (parse-profile-names raw-names)
                                              guix-arguments))))
 
-(define (profile-shell-arguments name root)
-  (let ((file (shell-arguments-path name
-                                    #:root root)))
-    (if (not (false-if-file-not-found (lstat file)))
-        (make-saved-shell-arguments #f
-                                    '())
-        (let ((arguments (load* file
-                                '())))
-          (if (and (list? arguments)
-                   (every string? arguments)
-                   (not (member "--" arguments)))
-              (make-saved-shell-arguments #t arguments)
-              (raise-extra-profile-error 'invalid-shell-arguments name file))))))
+(define (profile-shell-configuration name root)
+  (let ((file (shell-configuration-path name
+                                        #:root root)))
+    (and (false-if-file-not-found (lstat file))
+         (let ((configuration (load* file
+                                     '())))
+           (unless (shell-configuration? configuration)
+             (raise-extra-profile-error 'invalid-shell-configuration name file))
+           configuration))))
 
 (define (resolve-shell-profile name profile-root store-directory
-                               definition-root saved-arguments)
+                               definition-root configuration)
   (call-with-extra-profile-error (lambda ()
                                    (resolve-profile name
                                                     #:profiles-root
@@ -100,9 +95,7 @@
                                  (lambda (condition)
                                    (if (and (eq? 'not-configured
                                                  (extra-profile-error-kind
-                                                  condition))
-                                            (saved-shell-arguments-present?
-                                             saved-arguments)
+                                                  condition)) configuration
                                             (not (false-if-file-not-found (lstat
                                                                            (manifest-path
                                                                             name
@@ -111,12 +104,44 @@
                                        #f
                                        (raise-exception condition)))))
 
-(define (snapshot-shell-source name profile-root store-directory definition-root)
-  (let ((saved (profile-shell-arguments name definition-root)))
-    (make-shell-source
-     (resolve-shell-profile name profile-root store-directory
-                            definition-root saved)
-     (saved-shell-arguments-values saved))))
+(define (snapshot-shell-source name profile-root store-directory
+                               definition-root)
+  (let ((configuration (profile-shell-configuration name definition-root)))
+    (make-shell-source name
+                       (resolve-shell-profile name profile-root
+                                              store-directory definition-root
+                                              configuration)
+                       (or configuration
+                           (shell-configuration)))))
+
+(define (shell-source-configuration-entry source)
+  (cons (shell-source-name source)
+        (shell-source-configuration source)))
+
+(define (shell-settings-arguments settings)
+  (append (filter-map (lambda (field)
+                        (and ((cdr field)
+                              settings)
+                             (car field)))
+                      (list (cons "--container" shell-configuration-container?)
+                            (cons "--network" shell-configuration-network?)
+                            (cons "--nesting" shell-configuration-nesting?)
+                            (cons "--link-profile"
+                                  shell-configuration-link-profile?)
+                            (cons "--writable-root"
+                                  shell-configuration-writable-root?)
+                            (cons "--emulate-fhs"
+                                  shell-configuration-emulate-fhs?)
+                            (cons "--pure" shell-configuration-pure?)))
+          (map (lambda (pattern)
+                 (string-append "--preserve=" pattern))
+               (shell-configuration-preserve settings))
+          (append-map (lambda (entry)
+                        (list "-E"
+                              (string-append (car entry) "="
+                                             (cdr entry))))
+                      (shell-configuration-environment-variables settings))
+          (shell-configuration-extra-options settings)))
 
 (define* (snapshot-shell-invocation invocation
                                     #:key (profiles-root (profiles-root))
@@ -125,14 +150,23 @@
   "Resolve INVOCATION to immutable generation targets."
   (unless (shell-invocation? invocation)
     (error "expected parsed shell arguments" invocation))
-  (let ((sources (map (lambda (name)
-                        (snapshot-shell-source name profiles-root
-                                               store-directory definitions-root))
-                      (shell-invocation-names invocation))))
-    (make-snapshotted-shell
-     (filter-map shell-source-profile sources)
-     (append (append-map shell-source-arguments sources)
-             (shell-invocation-guix-arguments invocation)))))
+  (let* ((sources (map-in-order (lambda (name)
+                                  (snapshot-shell-source name profiles-root
+                                                         store-directory
+                                                         definitions-root))
+                                (shell-invocation-names invocation)))
+         (composed (compose-shell-configurations (map
+                                                  shell-source-configuration-entry
+                                                  sources)))
+         (settings (composed-shell-configuration-settings composed))
+         (options (shell-settings-arguments settings))
+         (explicit (shell-invocation-guix-arguments invocation))
+         (plan (composed-shell-configuration-mounts composed)))
+    (make-snapshotted-shell (filter-map shell-source-profile sources)
+                            (append options
+                                    (prepared-shell-mount-arguments (prepare-shell-mounts
+                                                                     plan))
+                                    explicit))))
 
 (define (require-snapshotted-shell snapshot)
   (unless (snapshotted-shell? snapshot)

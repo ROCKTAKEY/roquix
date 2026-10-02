@@ -133,13 +133,46 @@ set -e
 test "$status" -ne 0
 grep "invalid profile name '-CWNF'" "$test_root/missing-boundary.out" >/dev/null
 
+assert_shell_failure() {
+  failure_name=$1
+  failure_message=$2
+  failure_output="$test_root/$failure_name.out"
+  if guix extra-profile shell "$failure_name" -- -- true >"$failure_output" 2>&1; then
+    return 1
+  else
+    failure_status=$?
+  fi
+  test "$failure_status" -eq 1
+  grep -F "$failure_message" "$failure_output" >/dev/null
+}
+
 mkdir -p "$definitions/invalid-options"
 printf '%s\n' '(error "invalid saved options")' \
-  >"$definitions/invalid-options/shell-arguments.scm"
-set +e
-guix extra-profile shell invalid-options -- -- true \
-  >"$test_root/invalid-options.out" 2>&1
-status=$?
-set -e
-test "$status" -eq 1
-grep -F "invalid saved options" "$test_root/invalid-options.out" >/dev/null
+  >"$definitions/invalid-options/shell.scm"
+assert_shell_failure invalid-options "invalid saved options"
+
+mkdir -p "$definitions/missing-source"
+cat >"$definitions/missing-source/shell.scm" <<EOF
+(use-modules (roquix extra-profiles shell-configuration))
+(shell-configuration
+ (container? #t)
+ (mounts (list (share "$test_root/absent"))))
+EOF
+assert_shell_failure missing-source \
+  "mount source for profile 'missing-source' does not exist: $test_root/absent"
+
+mkdir -p "$definitions/invalid-mount-options"
+cat >"$definitions/invalid-mount-options/shell.scm" <<'EOF'
+(use-modules (roquix extra-profiles shell-configuration))
+(shell-configuration (extra-options '("--share=/tmp")))
+EOF
+assert_shell_failure invalid-mount-options \
+  "extra-options must be a list of strings without --, --share or --expose"
+
+mkdir -p "$definitions/network-without-container"
+cat >"$definitions/network-without-container/shell.scm" <<'EOF'
+(use-modules (roquix extra-profiles shell-configuration))
+(shell-configuration (network? #t))
+EOF
+assert_shell_failure network-without-container \
+  "shell setting 'network?' for profile 'network-without-container' requires (container? #t)"

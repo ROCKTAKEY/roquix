@@ -15,6 +15,7 @@ for test_file in \
   "$repository/tests/extra-profile/paths.scm" \
   "$repository/tests/extra-profile/operations.scm" \
   "$repository/tests/extra-profile/shell-configuration.scm" \
+  "$repository/tests/extra-profile/shell-mounts.scm" \
   "$repository/tests/extra-profile/shell.scm" \
   "$repository/tests/extra-profile/command.scm"
 do

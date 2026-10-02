@@ -79,10 +79,12 @@
          (eq? 'regular
               (stat:type (stat manifest))))))
 
-(define (shell-arguments-file? name root)
-  (let ((file (shell-arguments-path name #:root root)))
+(define (shell-configuration-file? name root)
+  (let ((file (shell-configuration-path name
+                                        #:root root)))
     (and (file-exists? file)
-         (eq? 'regular (stat:type (stat file))))))
+         (eq? 'regular
+              (stat:type (stat file))))))
 
 (define (profile-name-present? name root)
   (false-if-file-not-found (lstat (profile-path name
@@ -111,7 +113,7 @@
   (sort-profile-names (delete-duplicates (append (names-under definitions-root
                                                   definition-name?)
                                                  (names-under definitions-root
-                                                  shell-arguments-file?)
+                                                  shell-configuration-file?)
                                                  (names-under profiles-root
                                                   profile-name-present?))
                                          profile-name=?)))
@@ -123,7 +125,7 @@
   "Return a description without evaluating NAME's definition manifest."
   (let ((manifest (manifest-path name
                                  #:root definitions-root))
-        (arguments? (shell-arguments-file? name definitions-root))
+        (shell? (shell-configuration-file? name definitions-root))
         (profile (profile-path name
                                #:root profiles-root)))
     (define manifest-present?
@@ -147,12 +149,12 @@
                                       manifest
                                       manifest-present?
                                       profile
-                                      (if (and arguments?
+                                      (if (and shell?
                                                (not manifest-present?)
                                                (eq? 'not-configured
-                                                     (extra-profile-error-kind
-                                                      condition)))
-                                          'arguments-only
+                                                    (extra-profile-error-kind
+                                                     condition)))
+                                          'shell-only
                                           (extra-profile-error-kind condition))
                                       #f)))))
 

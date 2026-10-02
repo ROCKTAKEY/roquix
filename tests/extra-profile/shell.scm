@@ -3,6 +3,7 @@
              (ice-9 textual-ports)
              (roquix extra-profiles paths)
              (roquix extra-profiles shell)
+             (roquix extra-profiles shell-configuration)
              (srfi srfi-1)
              (srfi srfi-64))
 
@@ -122,135 +123,186 @@
             (condition-kind (lambda ()
                               (parse-shell-arguments '("codex" "-CWNF")))))
 
-(call-with-temporary-directory
- (lambda (directory)
-   (let* ((definitions (string-append directory "/definitions"))
-          (profiles (string-append directory "/profiles"))
-          (store (string-append directory "/store"))
-          (first (make-store-profile store "first"))
-          (second (make-store-profile store "second"))
-          (first-options (string-append definitions
-                                        "/profile-a/shell-arguments.scm"))
-          (second-options (string-append definitions
-                                         "/profile-b/shell-arguments.scm")))
-     (link-profile profiles "profile-a" 1 first)
-     (link-profile profiles "profile-b" 1 second)
-     (mkdir-p (dirname first-options))
-     (mkdir-p (dirname second-options))
-     (call-with-output-file first-options
-       (lambda (port)
-         (write '(list "-CWNF" "--share=/path with spaces=/workspace") port)))
-     (call-with-output-file second-options
-       (lambda (port)
-         (write '(list "-E" "FOO=bar baz") port)))
-     (let* ((invocation (parse-shell-arguments
-                         '("profile-a" "profile-b" "--" "-m" "./project.scm"
-                           "--" "sh" "-c" "printf '%s' \"$1\"" "sh" "hello world")))
-            (snapshot (snapshot-shell-invocation
-                       invocation
-                       #:definitions-root definitions
-                       #:profiles-root profiles
-                       #:store-directory store)))
-       (test-equal
-        "stored shell arguments compose in profile order before explicit arguments"
-        '("shell" "--manifest=/combined.scm"
-          "-CWNF" "--share=/path with spaces=/workspace"
-          "-E" "FOO=bar baz"
-          "-m" "./project.scm" "--" "sh" "-c"
-          "printf '%s' \"$1\"" "sh" "hello world")
-        (guix-shell-arguments snapshot "/combined.scm")))
-     (call-with-output-file first-options
-       (lambda (port)
-         (write '(begin (define saved-option "--container")
-                       (list saved-option)) port)))
-     (call-with-output-file second-options
-       (lambda (port)
-         (write '(list (if (defined? 'saved-option) "leaked" "isolated")) port)))
-     (test-equal
-      "saved shell argument definitions are isolated between profiles"
-      '("--container" "isolated")
-      (snapshotted-shell-guix-arguments
-       (snapshot-shell-invocation
-        (parse-shell-arguments '("profile-a" "profile-b"))
-        #:definitions-root definitions
-        #:profiles-root profiles
-        #:store-directory store)))
-     (call-with-output-file first-options
-       (lambda (port)
-         (display "(list \"-C\" 42)" port)))
-     (test-equal
-      "stored shell arguments must be a list of strings"
-      'invalid-shell-arguments
-      (condition-kind
-       (lambda ()
-         (snapshot-shell-invocation
-          (parse-shell-arguments '("profile-a"))
-          #:definitions-root definitions
-          #:profiles-root profiles
-          #:store-directory store))))
-     (call-with-output-file first-options
-       (lambda (port)
-         (display "(list \"-C\" \"--\")" port)))
-     (test-equal
-      "stored shell arguments cannot include a command boundary"
-      'invalid-shell-arguments
-      (condition-kind
-       (lambda ()
-         (snapshot-shell-invocation
-          (parse-shell-arguments '("profile-a"))
-          #:definitions-root definitions
-          #:profiles-root profiles
-          #:store-directory store)))))))
+(define (write-shell-file file expression)
+  (mkdir-p (dirname file))
+  (call-with-output-file file
+    (lambda (port)
+      (write '(use-modules (roquix extra-profiles shell-configuration)) port)
+      (newline port)
+      (write expression port))))
 
-(call-with-temporary-directory
- (lambda (directory)
-   (let* ((definitions (string-append directory "/definitions"))
-          (options (string-append definitions
-                                  "/sandbox/shell-arguments.scm"))
-          (home (string-append directory "/home with spaces"))
-          (runtime (string-append directory "/runtime")))
-     (mkdir-p (dirname options))
-     (call-with-output-file options
-       (lambda (port)
-         (write '(list "--container"
-                       (string-append "--share=" (getenv "HOME")
-                                      "/work=/workspace")
-                       (string-append "--expose=" (getenv "XDG_RUNTIME_DIR")
-                                      "/socket")) port)))
-     (with-environment-variables
-       (list (list "HOME" home)
-             (list "XDG_RUNTIME_DIR" runtime))
-       (let ((snapshot (snapshot-shell-invocation
-                        (parse-shell-arguments '("sandbox"))
-                        #:definitions-root definitions
-                        #:profiles-root (string-append directory "/profiles")
-                        #:store-directory (string-append directory "/store"))))
-         (test-equal "an arguments-only profile has no generation"
-                     '()
-                     (snapshotted-shell-profiles snapshot))
-         (test-equal
-          "saved expressions use environment variables without splitting arguments"
-          (list "shell" "--manifest=/empty.scm" "--container"
-                (string-append "--share=" home "/work=/workspace")
-                (string-append "--expose=" runtime "/socket"))
-          (guix-shell-arguments snapshot "/empty.scm"))))
-     (call-with-output-file options
-       (lambda (port)
-         (write '(list "--container") port)))
-     (call-with-output-file (string-append definitions
-                                          "/sandbox/manifest.scm")
-       (lambda (port)
-         (write '(packages->manifest '()) port)))
-     (test-equal
-      "a profile with a manifest still requires reconfiguration"
-      'not-configured
-      (condition-kind
-       (lambda ()
-         (snapshot-shell-invocation
-          (parse-shell-arguments '("sandbox"))
-          #:definitions-root definitions
-          #:profiles-root (string-append directory "/profiles")
-          #:store-directory (string-append directory "/store"))))))))
+(call-with-temporary-directory (lambda (directory)
+                                 (let* ((definitions (string-append directory
+                                                      "/definitions"))
+                                        (profiles (string-append directory
+                                                                 "/profiles"))
+                                        (store (string-append directory
+                                                              "/store"))
+                                        (first (make-store-profile store
+                                                                   "first"))
+                                        (second (make-store-profile store
+                                                                    "second"))
+                                        (first-options (string-append
+                                                        definitions
+                                                        "/profile-a/shell.scm"))
+                                        (second-options (string-append
+                                                         definitions
+                                                         "/profile-b/shell.scm")))
+                                   (define (snapshot names)
+                                     (snapshot-shell-invocation (parse-shell-arguments
+                                                                 names)
+                                                                #:definitions-root
+                                                                definitions
+                                                                #:profiles-root
+                                                                profiles
+                                                                #:store-directory
+                                                                store))
+                                   (link-profile profiles "profile-a" 1 first)
+                                   (link-profile profiles "profile-b" 1 second)
+                                   (write-shell-file first-options
+                                                     '(shell-configuration (container?
+                                                                            #t)
+                                                                           (network?
+                                                                            #t)
+                                                                           (nesting?
+                                                                            #t)
+                                                                           (link-profile?
+                                                                            #t)
+                                                                           (writable-root?
+                                                                            #t)
+                                                                           (emulate-fhs?
+                                                                            #t)
+                                                                           (pure?
+                                                                            #t)
+                                                                           (preserve '
+                                                                            ("^TERM$"))
+                                                                           (extra-options '
+                                                                            ("--check"))))
+                                   (write-shell-file second-options
+                                                     '(shell-configuration (container?
+                                                                            #t)
+                                                                           (environment-variables '
+                                                                            (("FOO" . "bar baz")))))
+                                   (test-equal
+                                    "basic fields compose once before extra options and explicit arguments"
+                                    '("shell" "--manifest=/combined.scm"
+                                      "--container"
+                                      "--network"
+                                      "--nesting"
+                                      "--link-profile"
+                                      "--writable-root"
+                                      "--emulate-fhs"
+                                      "--pure"
+                                      "--preserve=^TERM$"
+                                      "-E"
+                                      "FOO=bar baz"
+                                      "--check"
+                                      "-m"
+                                      "./project.scm"
+                                      "--"
+                                      "sh"
+                                      "-c"
+                                      "printf '%s' \"$1\""
+                                      "sh"
+                                      "hello world")
+                                    (guix-shell-arguments (snapshot '("profile-a"
+                                                                      "profile-b"
+                                                                      "--"
+                                                                      "-m"
+                                                                      "./project.scm"
+                                                                      "--"
+                                                                      "sh"
+                                                                      "-c"
+                                                                      "printf '%s' \"$1\""
+                                                                      "sh"
+                                                                      "hello world"))
+                                                          "/combined.scm"))
+                                   (write-shell-file first-options
+                                                     '(begin
+                                                        (define saved-option
+                                                          "--container")
+                                                        (shell-configuration (extra-options
+                                                                              (list
+                                                                               saved-option)))))
+                                   (write-shell-file second-options
+                                                     '(shell-configuration (extra-options
+                                                                            (list
+                                                                             (if
+                                                                              (defined? 'saved-option)
+                                                                              "leaked"
+                                                                              "isolated")))))
+                                   (test-equal
+                                    "saved definitions are isolated between profiles"
+                                    '("--container" "isolated")
+                                    (snapshotted-shell-guix-arguments (snapshot '
+                                                                       ("profile-a"
+                                                                        "profile-b"))))
+                                   (write-shell-file first-options
+                                                     '(list "-C"))
+                                   (test-equal
+                                    "shell.scm must return a structured configuration"
+                                    'invalid-shell-configuration
+                                    (condition-kind (lambda ()
+                                                      (snapshot '("profile-a"))))))))
+
+(call-with-temporary-directory (lambda (directory)
+                                 (let* ((definitions (string-append directory
+                                                      "/definitions"))
+                                        (options (string-append definitions
+                                                  "/sandbox/shell.scm"))
+                                        (home (string-append directory
+                                               "/home with spaces")))
+                                   (define (snapshot)
+                                     (snapshot-shell-invocation (parse-shell-arguments '
+                                                                 ("sandbox"))
+                                                                #:definitions-root
+                                                                definitions
+                                                                #:profiles-root
+                                                                (string-append
+                                                                 directory
+                                                                 "/profiles")
+                                                                #:store-directory
+                                                                (string-append
+                                                                 directory
+                                                                 "/store")))
+                                   (write-shell-file options
+                                                     '(shell-configuration (environment-variables
+                                                                            (list
+                                                                             (cons
+                                                                              "TEST_HOME"
+
+                                                                              (getenv
+                                                                               "HOME"))))))
+                                   (with-environment-variables (list (list
+                                                                      "HOME"
+                                                                      home))
+                                                               (let ((result (snapshot)))
+                                                                 (test-equal
+                                                                  "a shell-only profile has no generation"
+                                                                  '()
+                                                                  (snapshotted-shell-profiles
+                                                                   result))
+                                                                 (test-equal
+                                                                  "saved expressions use environment variables without splitting"
+                                                                  (list
+                                                                   "shell"
+                                                                   "--manifest=/empty.scm"
+                                                                   "-E"
+                                                                   (string-append
+                                                                    "TEST_HOME="
+                                                                    home))
+                                                                  (guix-shell-arguments
+                                                                   result
+                                                                   "/empty.scm"))))
+                                   (call-with-output-file (string-append
+                                                           definitions
+                                                           "/sandbox/manifest.scm")
+                                     (lambda (port)
+                                       (write '(packages->manifest '()) port)))
+                                   (test-equal
+                                    "a profile with a manifest still requires reconfiguration"
+                                    'not-configured
+                                    (condition-kind snapshot)))))
 
 (call-with-temporary-directory (lambda (directory)
                                  (let* ((root (string-append directory
