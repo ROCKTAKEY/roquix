@@ -4191,6 +4191,10 @@
   (crate-source "h2" "0.4.16"
                 "09syqqhvh36b3rwyn8vjhiz597hfki1hcz3hwagb3cs1ifapmwx9"))
 
+(define rust-h2-0.4.19
+  (crate-source "h2" "0.4.19"
+                "05mw60jmsq97vjgj607nxjkx8dl6rxv6jj9i4r2z92056id5x3pg"))
+
 (define rust-h3-0.0.8.e07e694
   package:rust-h3-workspace-0.0.8.e07e694)
 
@@ -13017,7 +13021,7 @@
                              rust-gstreamer-base-sys-0.25.3
                              rust-gstreamer-sys-0.25.2
                              rust-gzip-header-1.0.0
-                             rust-h2-0.4.16
+                             rust-h2-0.4.19
                              rust-h3-0.0.8.e07e694
                              rust-h3-quinn-0.0.10.e07e694
                              rust-half-2.7.1
