@@ -55,10 +55,19 @@ in `channel/roquix/packages/codex.scm`.
    - Run the resulting `bin/codex --version` and check the upstream version.
    - Cargo tests are disabled in this package; distinguish successful builds
      and runtime checks from upstream test-suite coverage.
-   - Check daemon startup from a fresh `CODEX_HOME` with
-     `tests/codex-daemon-package.sh "$output"` inside a `guix shell` containing
-     the Codex package. The script starts the daemon, checks the running
-     version, and stops it.
+   - Check daemon startup from a fresh `CODEX_HOME` in a pure environment.
+     This verifies that process-management tools come from the package's
+     propagated inputs rather than the host PATH.
+
+     ```sh
+     guix shell --pure -L channel \
+       -e '(@ (roquix packages codex) codex)' bash-minimal coreutils \
+       -- sh tests/codex-daemon-package.sh "$output"
+     ```
+
+     The script starts the daemon, checks its running status, and stops it.
+     Confirm that `managedCodexVersion`, `cliVersion`, and `appServerVersion`
+     in the reported JSON all match the requested release.
 6. Validate the channel with `verify-guix-pull`.
    - Use the existing `verify-guix-pull` skill for the temporary-profile
      `guix pull` check. Fix package-cache or pull failures before closing out
