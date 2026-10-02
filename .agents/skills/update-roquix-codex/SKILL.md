@@ -45,12 +45,16 @@ in `channel/roquix/packages/codex.scm`.
      than replacing the exported package version expression.
    - If the updater logic changes, `scripts/update-codex.sh` and
      `.github/workflows/update-codex.yml` should change together.
-4. Validate package resolution.
+4. Validate release identity and package resolution.
+   - Run `guix repl -L channel -- tests/codex/release.scm X.Y.Z`. The test
+     checks both the channel package version and the upstream source tag.
    - `guix build -L channel -e '(@ (roquix packages codex) codex)' -n`
 5. Run a full build before closing out the bump.
    - `guix build -K -L channel -e '(@ (roquix packages codex) codex)'`
    - Capture long logs using `build-guix-packages`.
    - Run the resulting `bin/codex --version` and check the upstream version.
+   - Cargo tests are disabled in this package; distinguish successful builds
+     and runtime checks from upstream test-suite coverage.
    - Check daemon startup from a fresh `CODEX_HOME` with
      `tests/codex-daemon-package.sh "$output"` inside a `guix shell` containing
      the Codex package. The script starts the daemon, checks the running

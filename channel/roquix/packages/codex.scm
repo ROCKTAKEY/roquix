@@ -1,6 +1,7 @@
 (define-module (roquix packages codex)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix licenses)
+                #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
@@ -24,7 +25,8 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages regex))
 
-(define %codex-rusty-v8-version "150.4.0")
+(define %codex-rusty-v8-version
+  "150.4.0")
 
 ;; Keep these two packages in sync.  The archive and bindings must come from
 ;; the same OpenAI rusty_v8 release and match the target, pointer-compression,
@@ -36,24 +38,20 @@
     (name "rusty-v8-prebuilt-archive")
     (version %codex-rusty-v8-version)
     (source
-     (let* ((archive
-             (cond
-              ((string=? (%current-system) "aarch64-linux")
-               '("librusty_v8_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.a.gz"
-                 "1fhi51yhpwkd79mr27rmimf4vivyk7zda1dh55q56s2l83npwlfi"))
-              (else
-               '("librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
-                 "10xm60dl5ywwp0r8nmjha3q59gjf194k6nx4hlw9hskfyb8pap53"))))
+     (let* ((archive (cond
+                       ((string=? (%current-system) "aarch64-linux")
+                        '("librusty_v8_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.a.gz"
+                          "1fhi51yhpwkd79mr27rmimf4vivyk7zda1dh55q56s2l83npwlfi"))
+                       (else '("librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+                               "10xm60dl5ywwp0r8nmjha3q59gjf194k6nx4hlw9hskfyb8pap53"))))
             (archive-name (car archive))
             (archive-sha256 (cadr archive)))
        (origin
          (method url-fetch)
          (uri (string-append
                "https://github.com/openai/codex/releases/download/rusty-v8-v"
-               %codex-rusty-v8-version "/"
-               archive-name))
-         (sha256
-          (base32 archive-sha256)))))
+               %codex-rusty-v8-version "/" archive-name))
+         (sha256 (base32 archive-sha256)))))
     (build-system trivial-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (arguments
@@ -81,24 +79,20 @@ build phase.")
     (name "rusty-v8-prebuilt-binding")
     (version %codex-rusty-v8-version)
     (source
-     (let* ((binding
-             (cond
-              ((string=? (%current-system) "aarch64-linux")
-               '("src_binding_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.rs"
-                 "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))
-              (else
-               '("src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
-                 "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))))
+     (let* ((binding (cond
+                       ((string=? (%current-system) "aarch64-linux")
+                        '("src_binding_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.rs"
+                          "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))
+                       (else '("src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+                               "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))))
             (binding-name (car binding))
             (binding-sha256 (cadr binding)))
        (origin
          (method url-fetch)
          (uri (string-append
                "https://github.com/openai/codex/releases/download/rusty-v8-v"
-               %codex-rusty-v8-version "/"
-               binding-name))
-         (sha256
-          (base32 binding-sha256)))))
+               %codex-rusty-v8-version "/" binding-name))
+         (sha256 (base32 binding-sha256)))))
     (build-system trivial-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (arguments
@@ -120,7 +114,8 @@ build phase.")
 sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
-(define %codex-release-version "0.160.0")
+(define %codex-release-version
+  "0.160.0")
 
 (define-public codex
   (package
@@ -139,261 +134,41 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
         (base32 "0nr65d2va3yw4lvll87h8757vbax2dcl4xwngqcicc5l8bsyylsh"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
-    (inputs (cons* ;; clang-toolchain
-                   openssl `(,zstd "lib") gcc-toolchain libunwind sqlite
-                   bubblewrap ripgrep
-                   libcap               ; codex-linux-sandbox
-                   oniguruma            ; onig-sys
+    (inputs (cons* ;clang-toolchain
+                   openssl
+                   `(,zstd "lib")
+                   gcc-toolchain
+                   libunwind
+                   sqlite
+                   bubblewrap
+                   ripgrep
+                   libcap ;codex-linux-sandbox
+                   oniguruma ;onig-sys
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; PID-managed app-server daemons call ps to identify their processes.
     ;; https://github.com/openai/codex/blob/rust-v0.160.0/codex-rs/app-server-daemon/src/backend/pid.rs
     (propagated-inputs (list procps))
-    (native-inputs
-     (list rusty-v8-prebuilt-archive
-           rusty-v8-prebuilt-binding
-           pkg-config
-           cmake
-           ;; Need for tests
-           python
-           git
-           perl))
+    (native-inputs (list rusty-v8-prebuilt-archive
+                         rusty-v8-prebuilt-binding
+                         pkg-config
+                         cmake
+                         ;; Need for tests
+                         python
+                         git
+                         perl))
     (arguments
      `(#:install-source? #f
-        ;; Match codex-rs/rust-toolchain.toml for this release.
-        #:rust ,rust-1.95
-        ;; A successful Guix build establishes compilation and installation,
-        ;; but not test coverage: Cargo tests are disabled here.
-        #:tests? #f
-        #:parallel-build? #f
-        ;; Build both executables together so Cargo resolves their workspace
-        ;; features once; the daemon package needs both binaries.
-        #:cargo-build-flags '("--package" "codex-cli"
-                              "--package" "codex-code-mode-host"
-                              "--release")
-       #:cargo-test-flags '("--"
-                            ;; core
-                            ;; FIXME: There are objects in the response that are either excessive or missing.
-                            "--skip=suite::compact_resume_fork::compact_resume_after_second_compaction_preserves_history" ; "hello world" message is missing
-                            "--skip=suite::compact_resume_fork::compact_resume_and_fork_preserve_model_history_view" ; "hello world" message is excessive
-
-                            ;; FIXME: Anyhow order of Object is wrong
-                            ;; Diff < left / right > :
-                            ;;  [
-                            ;;      Object {
-                            ;; <        "type": String("message"),
-                            ;; <        "role": String("user"),
-                            ;;          "content": Array [
-                            ;;              Object {
-                            ;; >                "text": String("first manual turn"),
-                            ;;                  "type": String("input_text"),
-                            ;; <                "text": String("FIRST_MANUAL_SUMMARY"),
-                            ;;              },
-                            ;;          ],
-                            ;; >        "role": String("user"),
-                            ;; >        "type": String("message"),
-                            ;;      },
-                            ;;      Object {
-                            ;; <        "type": String("message"),
-                            ;; <        "role": String("user"),
-                            ;;          "content": Array [
-                            ;;              Object {
-                            ;; >                "text": String("FIRST_MANUAL_SUMMARY"),
-                            ;;                  "type": String("input_text"),
-                            ;; <                "text": String("second manual turn"),
-                            ;;              },
-                            ;;          ],
-                            ;; >        "role": String("user"),
-                            ;; >        "type": String("message"),
-                            ;;      },
-                            ;;      Object {
-                            ;; <        "type": String("message"),
-                            ;; <        "role": String("user"),
-                            ;;          "content": Array [
-                            ;;              Object {
-                            ;; >                "text": String("second manual turn"),
-                            ;;                  "type": String("input_text"),
-                            ;; <                "text": String("SECOND_MANUAL_SUMMARY"),
-                            ;;              },
-                            ;;          ],
-                            ;; >        "role": String("user"),
-                            ;; >        "type": String("message"),
-                            ;;      },
-                            ;;      Object {
-                            ;; <        "type": String("message"),
-                            ;; <        "role": String("user"),
-                            ;;          "content": Array [
-                            ;;              Object {
-                            ;; >                "text": String("SECOND_MANUAL_SUMMARY"),
-                            ;;                  "type": String("input_text"),
-                            ;; >            },
-                            ;; >        ],
-                            ;; >        "role": String("user"),
-                            ;; >        "type": String("message"),
-                            ;; >    },
-                            ;; >    Object {
-                            ;; >        "content": Array [
-                            ;; >            Object {
-                            ;;                  "text": String("post compact follow-up"),
-                            ;; >                "type": String("input_text"),
-                            ;;              },
-                            ;;          ],
-                            ;; >        "role": String("user"),
-                            ;; >        "type": String("message"),
-                            ;;      },
-                            ;;  ]
-                            "--skip=suite::compact::manual_compact_twice_preserves_latest_user_messages"
-
-                            ;; NOTE: The kernel must support landlock feature to run these tests.
-                            "--skip=suite::tools::sandbox_denied_shell_returns_original_output"
-                            "--skip=suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir"
-                            "--skip=suite::sandbox::python_multiprocessing_lock_works_under_sandbox"
-                            "--skip=suite::sandbox::sandbox_distinguishes_command_and_policy_cwds"
-                            "--skip=suite::sandbox::python_getpwuid_works_under_sandbox"
-                            "--skip=suite::unified_exec::unified_exec_runs_under_sandbox"
-
-                            ;; FIXME: It seems to be timeout
-                            ;; thread 'suite::view_image::view_image_tool_attaches_local_image' panicked at /tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/core/tests/common/lib.rs:159:14:
-                            ;; timeout waiting for event: Elapsed(())
-                            "--skip=suite::view_image::view_image_tool_attaches_local_image"
-                            "--skip=suite::abort_tasks::interrupt_tool_records_history_entries"
-
-                            ;; NOTE: Seems to depend on time
-                            "--skip=suite::approvals::approval_matrix_covers_all_modes"
-                            "--skip=suite::shell_serialization::shell_command_output_is_not_truncated_over_10k_bytes"
-                            "--skip=suite::shell_serialization::shell_command_output_is_not_truncated_under_10k_bytes"
-                            "--skip=suite::unified_exec::unified_exec_emits_exec_command_end_event"
-
-                            ;; linux-sandbox
-                            ;; NOTE: The kernel must support landlock feature to run these tests.
-                            "--skip=suite::landlock::test_dev_null_write"
-                            "--skip=suite::landlock::test_root_read"
-                            "--skip=suite::landlock::test_timeout"
-                            "--skip=suite::landlock::test_writable_root"
-
-                            ;; tui
-                            ;; NOTE: The paths are replaced to absolute path like "/tmp/guix-build-codex-0.46.0.drv-0/source/codex-rs/tui/example.png".
-                            ;; It seems to be hard to fix, because such a longer path sometimes causes complicated UI change.
-                            "--skip=chatwidget::tests::view_image_tool_call_adds_history_cell"
-                            "--skip=diff_render::tests::ui_snapshot_apply_update_block_relativizes_path"
-
-                            ;; app-server
-                            ;; FIXME: Unknown error occurs in cuirass
-                            ;; thread 'suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow' panicked at app-server/tests/suite/codex_message_processor_flow.rs:148:6:
-                            ;; task_finished_notification resp: unexpected JSONRPCMessage::Request: Request(JSONRPCRequest { id: Integer(0), method: "execCommandApproval", params: Some(Object {"conversationId": String("019a1bf7-6bce-7371-b2a7-c9319d5d5c0d"), "callId": String("call1234"), "command": Array [String("ls")], "cwd": String("/tmp/guix-build-codex-0.48.0.drv-0/.tmpiAoxpP/workdir"), "reason": String("command failed; retry without sandbox?"), "parsedCmd": Array [Object {"type": String("list_files"), "cmd": String("ls"), "path": Null}]}) })
-                            ;; note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-                            "--skip=suite::codex_message_processor_flow::test_codex_jsonrpc_conversation_flow"
-                            ;; FIXME: Unknown error occurs
-;;                             thread 'suite::send_message::test_send_message_raw_notifications_opt_in' panicked at app-server/tests/suite/send_message.rs:316:13:
-;; expected instructions message, got ["<environment_context>\n  <cwd>/tmp/guix-build-codex-0.53.0.drv-0/source/codex-rs/app-server</cwd>\n  <approval_policy>never</approval_policy>\n  <sandbox_mode>danger-full-access</sandbox_mode>\n  <network_access>enabled</network_access>\n</environment_context>"]
-                            "--skip=suite::send_message::test_send_message_raw_notifications_opt_in"
-                            ;; NOTE: The kernel must support landlock feature to run these tests.
-                            "--skip=suite::interrupt::test_shell_command_interruption"
-                            ;; FIXME: Unknown
-                            "--skip=suite::v2::turn_start::turn_start_exec_approval_decline_v2"
-                            ;; FIXME: Seems to be timeout
-                            "--skip=suite::v2::turn_start::command_execution_notifications_include_process_id"
-                            ;; FIXME: Unknown
-                            ;; thread 'suite::approvals::approving_apply_patch_for_session_skips_future_prompts_for_same_file' panicked at core/tests/suite/approvals.rs:596:38:
-                            ;; expected patch approval request before completion
-                            ;; note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-                            "--skip=suite::approvals::approving_apply_patch_for_session_skips_future_prompts_for_same_file"
-                            ;; FIXME: Unknown
-                            ;; Diff < left / right > :
-                            ;; <1
-                            ;; >2
-                            "--skip=suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas"
-
-                            ;; v2
-                            ;; NOTE: The kernel must support landlock feature to run these tests.
-                            "--skip=suite::v2::turn_interrupt::turn_interrupt_aborts_running_turn"
-                            ;; FIXME: Unknown
-                            "--skip=suite::v2::review::review_start_runs_review_turn_and_emits_code_review_item"
-
-                            ;; exec_server
-                            ;; FIXME: No such file or directory (os error 2)
-                            "--skip=suite::accept_elicitation::accept_elicitation_for_prompt_rule"
-                            "--skip=suite::list_tools::list_tools"
-
-                            ;; snapshot
-                            ;; NOTE: Snapshots include version string. It is hard to fix.
-                            "--skip=status::tests::status_snapshot_"
-                            "--skip=shell_snapshot::tests::"
-
-                            ;; FIXME: Uninvestigated
-                            "--skip=codex::tests::rejects_escalated_permissions_when_policy_not_on_request"
-                            "--skip=exec::tests::kill_child_process_group_kills_grandchildren_on_timeout"
-                            "--skip=exec::tests::process_exec_tool_call_respects_cancellation_token"
-                            "--skip=shell::tests::can_run_on_shell_test"
-                            "--skip=shell::tests::detects_bash"
-                            "--skip=shell::tests::detects_sh"
-                            "--skip=suite::shell_serialization::local_shell_call_output_is_structured"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_for_freeform_tool_records_duration::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_for_nonzero_exit::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_is_structured_with_freeform_apply_patch::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_preserves_fixture_json_without_serialization::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_preserves_fixture_json_without_serialization::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_preserves_fixture_json_without_serialization::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_preserves_fixture_json_without_serialization::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_reserializes_truncated_content::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_reserializes_truncated_content::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_reserializes_truncated_content::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_reserializes_truncated_content::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_stays_json_without_freeform_apply_patch::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_stays_json_without_freeform_apply_patch::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_stays_json_without_freeform_apply_patch::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_stays_json_without_freeform_apply_patch::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_localshell_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_shell_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::shell_serialization::shell_output_structures_fixture_with_serialization::shellmodeloutput_shellcommand_expects"
-                            "--skip=suite::tool_harness::shell_tool_executes_command_and_streams_output"
-                            "--skip=suite::tools::shell_escalated_permissions_rejected_then_ok"
-                            "--skip=suite::tools::shell_timeout_handles_background_grandchild_stdout"
-                            "--skip=suite::tools::shell_timeout_includes_timeout_prefix_and_metadata"
-                            "--skip=suite::unified_exec::unified_exec_emits_end_event_when_session_dies_via_stdin"
-                            "--skip=suite::unified_exec::unified_exec_emits_terminal_interaction_for_write_stdin"
-                            "--skip=suite::unified_exec::unified_exec_reuses_session_via_stdin"
-                            "--skip=suite::unified_exec::write_stdin_returns_exit_metadata_and_clears_session"
-                            "--skip=posix::escalate_server::tests::handle_escalate_session_executes_escalated_command"
-                            "--skip=program_resolver::tests::test_resolved_program_executes_successfully"
-                            "--skip=program_resolver::tests::test_unix_executes_script_without_extension"
-                            "--skip=suite::remote_models::remote_models_merge_preserves_bundled_models_on_empty_response"
-                            "--skip=external_editor::tests::run_editor_returns_updated_content"
-
-                            "--skip=suite::user_shell_cmd::user_shell_cmd_can_be_interrupted"
-                            "--skip=external_editor::tests::run_editor_returns_updated_content"
-                            "--skip=tests::pipe_and_pty_share_interface"
-                            "--skip=tests::pipe_process_detaches_from_parent_session"
-
-                            "--skip=registry::tests::hook_executes_program_with_payload_argument_unix"
-                            "--skip=drop_kills_wrapper_process_group"
-
-                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_applies_explicit_path_override"
-                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_does_not_embed_override_values_in_argv"
-                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_keeps_snapshot_path_without_override"
-                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_preserves_unset_override_variables"
-                            "--skip=tools::runtimes::tests::maybe_wrap_shell_lc_with_snapshot_restores_explicit_override_precedence"
-
-                            "--skip=client::tests::execute_build_invokes_runtime_node_with_expected_environment"
-                            )
+       ;; Match codex-rs/rust-toolchain.toml for this release.
+       #:rust ,rust-1.95
+       ;; A successful Guix build establishes compilation and installation,
+       ;; but not test coverage: Cargo tests are disabled here.
+       #:tests? #f
+       #:parallel-build? #f
+       ;; Build both executables together so Cargo resolves their workspace
+       ;; features once; the daemon package needs both binaries.
+       #:cargo-build-flags '("--package" "codex-cli" "--package"
+                             "codex-code-mode-host" "--release")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'change-directory-to-rust-source
                     (lambda _
@@ -424,8 +199,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          "h3 = \"0.0.8\"")
                         (("h3-quinn = \\{ git = \"https://github.com/hyperium/h3\", rev = \"e07e69412876f7e26f026bd75a48b2704d8c8283\" \\}")
                          "h3-quinn = \"0.0.10\""))))
-                  (add-after 'use-guix-vendored-dependencies
-                             'remove-windows-git-dependency
+                  (add-after 'use-guix-vendored-dependencies 'remove-windows-git-dependency
                     (lambda _
                       ;; Codex is packaged only for Linux.  These Windows-only
                       ;; workspace git dependencies cannot be provided by Cargo's
@@ -435,7 +209,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                            "(appcontainer_common|learning_mode_windows|"
                            "wxc_common) = \\{ workspace = true \\}"))
                          ""))))
-                   (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
+                  (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; Guix provides bwrap in the store rather than /usr/bin.
                       (let ((bwrap (search-input-file inputs "/bin/bwrap")))
@@ -462,44 +236,43 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (("/usr/bin/sed")
                          (which "sed"))
                         (("\"command\": \"perl")
-                         (string-append "\"command\": \"" (which "perl"))))))
+                         (string-append "\"command\": \""
+                                        (which "perl"))))))
                   (add-before 'build 'use-local-rusty-v8-archive
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; The `v8` crate downloads this archive during build by
                       ;; default, which fails in the Guix build sandbox.
-                      (let* ((archive-dir
-                              (string-append
-                               (assoc-ref inputs "rusty-v8-prebuilt-archive")
-                               "/share/rusty-v8"))
-                             (archives
-                              (find-files
-                               archive-dir
-                               "librusty_v8_ptrcomp_sandbox_release_.*\\.a\\.gz$"))
-                             (binding-dir
-                              (string-append
-                               (assoc-ref inputs "rusty-v8-prebuilt-binding")
-                               "/share/rusty-v8"))
-                             (bindings
-                              (find-files
-                               binding-dir
-                               "src_binding_ptrcomp_sandbox_release_.*\\.rs$")))
-                        (unless (= 1 (length archives))
+                      (let* ((archive-dir (string-append (assoc-ref inputs
+                                                          "rusty-v8-prebuilt-archive")
+                                                         "/share/rusty-v8"))
+                             (archives (find-files archive-dir
+                                        "librusty_v8_ptrcomp_sandbox_release_.*\\.a\\.gz$"))
+                             (binding-dir (string-append (assoc-ref inputs
+                                                          "rusty-v8-prebuilt-binding")
+                                                         "/share/rusty-v8"))
+                             (bindings (find-files binding-dir
+                                        "src_binding_ptrcomp_sandbox_release_.*\\.rs$")))
+                        (unless (= 1
+                                   (length archives))
                           (error "expected exactly one rusty_v8 archive"
                                  archives))
-                        (unless (= 1 (length bindings))
+                        (unless (= 1
+                                   (length bindings))
                           (error "expected exactly one rusty_v8 binding"
                                  bindings))
-                        (setenv "RUSTY_V8_ARCHIVE" (car archives))
-                        (setenv "RUSTY_V8_SRC_BINDING_PATH" (car bindings)))))
-                   (add-before 'build 'configure-low-memory-release
-                     (lambda _
-                       ;; Codex core and TUI have grown too large for even thin
-                       ;; LTO in memory-constrained builders.  Keep release
-                       ;; optimization, but split code generation more finely
-                       ;; and omit debug line tables to reduce peak memory.
-                       (setenv "CARGO_PROFILE_RELEASE_LTO" "false")
-                       (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")
-                       (setenv "CARGO_PROFILE_RELEASE_DEBUG" "false")))
+                        (setenv "RUSTY_V8_ARCHIVE"
+                                (car archives))
+                        (setenv "RUSTY_V8_SRC_BINDING_PATH"
+                                (car bindings)))))
+                  (add-before 'build 'configure-low-memory-release
+                    (lambda _
+                      ;; Codex core and TUI have grown too large for even thin
+                      ;; LTO in memory-constrained builders.  Keep release
+                      ;; optimization, but split code generation more finely
+                      ;; and omit debug line tables to reduce peak memory.
+                      (setenv "CARGO_PROFILE_RELEASE_LTO" "false")
+                      (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")
+                      (setenv "CARGO_PROFILE_RELEASE_DEBUG" "false")))
                   (replace 'install
                     (lambda* (#:key inputs outputs system target
                               #:allow-other-keys)
@@ -520,8 +293,8 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                              (bin (string-append out "/bin"))
                              (resources (string-append out "/codex-resources"))
                              (path (string-append out "/codex-path"))
-                             (architecture
-                              (car (string-split (or target system) #\-))))
+                             (architecture (car (string-split (or target
+                                                                  system) #\-))))
                         (mkdir-p bin)
                         (mkdir-p resources)
                         (mkdir-p path)
@@ -532,20 +305,21 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                                       resources)
                         (install-file (search-input-file inputs "/bin/rg")
                                       path)
-                        (call-with-output-file
-                            (string-append out "/codex-package.json")
+                        (call-with-output-file (string-append out
+                                                "/codex-package.json")
                           (lambda (port)
-                            (scm->json
-                             (list (cons 'layoutVersion 1)
-                                   (cons 'version ,%codex-release-version)
-                                   (cons 'target
-                                         (string-append architecture
-                                                        "-unknown-linux-gnu"))
-                                   (cons 'variant "codex")
-                                   (cons 'entrypoint "bin/codex")
-                                   (cons 'resourcesDir "codex-resources")
-                                   (cons 'pathDir "codex-path"))
-                             port)
+                            (scm->json (list (cons 'layoutVersion 1)
+                                             (cons 'version
+                                                   ,%codex-release-version)
+                                             (cons 'target
+                                                   (string-append architecture
+                                                    "-unknown-linux-gnu"))
+                                             (cons 'variant "codex")
+                                             (cons 'entrypoint "bin/codex")
+                                             (cons 'resourcesDir
+                                                   "codex-resources")
+                                             (cons 'pathDir "codex-path"))
+                                       port)
                             (newline port)))))))))
     (home-page "https://github.com/openai/codex")
     (synopsis "Lightweight coding agent that runs in your terminal")
