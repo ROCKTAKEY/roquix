@@ -1,9 +1,14 @@
 #!/bin/sh
 set -eu
 
-repository=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
+repository=$(CDPATH='' cd -- "$(dirname "$0")/../.." && pwd)
 test_root=$(mktemp -d)
 trap 'rm -rf "$test_root"' EXIT HUP INT TERM
+
+guix repl -- "$repository/tests/extra-profile/channel-profile.scm" \
+  "$repository" "$test_root" "$(command -v guix)"
+# Channel paths precede GUILE_LOAD_PATH; pin discovery to this working tree.
+export PATH="$test_root/profile/bin:$PATH"
 
 export HOME="$test_root/home"
 export XDG_CONFIG_HOME="$test_root/config"

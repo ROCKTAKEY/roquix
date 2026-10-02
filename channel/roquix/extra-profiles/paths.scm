@@ -60,13 +60,19 @@
                        (name extra-profile-error-name)
                        (path extra-profile-error-path))
 
-(define (raise-extra-profile-error kind name path)
-  (raise-exception (condition (&extra-profile-error (kind kind)
-                                                    (name (if (profile-name?
-                                                               name)
-                                                              (profile-name-value
-                                                               name) name))
-                                                    (path path)))))
+(define* (raise-extra-profile-error kind name path
+                                    #:key message)
+  (let ((failure (condition (&extra-profile-error (kind kind)
+                                                  (name (if (profile-name?
+                                                             name)
+                                                            (profile-name-value
+                                                             name) name))
+                                                  (path path)))))
+    (raise-exception (if message
+                         (make-compound-condition failure
+                                                  (condition (&message (message
+                                                                        message))))
+                         failure))))
 
 (define (call-with-extra-profile-error thunk handler)
   "Call THUNK and pass typed extra-profile failures to HANDLER."
