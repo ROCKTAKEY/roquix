@@ -250,6 +250,61 @@ test also runs without module-path or extension-path environment overrides.
 Temporary HOME, XDG directories, and generated profile paths keep test state
 separate from the user's Guix profile and extra profiles.
 
+* Container launcher build system
+=container-launcher-build-system= installs a wrapper in =bin/= that starts its
+payload inside =guix shell -C=.  =#:payload= is a Guix package providing
+=bin/<executable>=; the wrapper package has no source of its own.  Its
+=inputs= are added to the container profile alongside the payload.
+
+** Try and install the example
+From this checkout, run the executable [[file:examples/hello-container.scm][GNU Hello example]] without installing it:
+
+#+BEGIN_SRC sh
+guix shell -L channel -f examples/hello-container.scm -- hello
+#+END_SRC
+
+Install the wrapper into the default Guix profile for ordinary =hello=
+invocations:
+
+#+BEGIN_SRC sh
+guix package -L channel -f examples/hello-container.scm
+hello
+#+END_SRC
+
+For an application defined as a named channel package, install it with
+=guix install PACKAGE= after =guix pull=.  The installed executable starts the
+container itself; callers do not need to supply =-C=.
+
+** Runtime access
+The wrapper uses a pure container and can preserve selected host environment
+variables.  Add options to the package's =arguments= as needed:
+
+#+BEGIN_SRC scheme
+(arguments
+ (list #:payload application-package
+       #:executable "application"
+       #:preserve-environment '("DISPLAY" "WAYLAND_DISPLAY" "XDG_RUNTIME_DIR")
+       #:set-environment '(("APP_MODE" . "compact"))
+       #:share '((environment "XDG_RUNTIME_DIR")
+                 ("/home/user/work" . "/work"))
+       #:expose '(("/home/user/assets" . "/assets"))
+       #:network? #t))
+#+END_SRC
+
+=#:share= binds a host path read-write; =#:expose= binds it read-only.  A path
+can be an absolute string for the same path inside the container, a
+=SOURCE . TARGET= pair, or =(environment "NAME")= for a path read from the
+environment at launch.  An unset environment variable omits that mount.
+Use existing host paths in place of the example paths.  Network access is
+disabled unless =#:network?= is true; the current directory is hidden by
+default (=#:no-cwd? #t=).
+
+If the payload provides =share/applications/*.desktop=, the wrapper exports
+desktop files and icons from its own output.  Desktop =Exec= and =TryExec=
+entries invoke the container launcher, including desktop actions.  The desktop
+environment must include the installed Guix profile's =share= directory in
+=XDG_DATA_DIRS= to discover them.
+
 * AppImage build system
 =roquix= includes =appimage-build-system= for repackaging Type 2 AppImages as
 Guix packages.
