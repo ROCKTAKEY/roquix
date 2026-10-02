@@ -17,7 +17,10 @@
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages version-control)
-  #:use-module (nongnu packages electron))
+  #:use-module (nongnu packages electron)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fonts)
+  #:use-module (roquix build-system container-launcher))
 
 (define %mattermost-version
   "6.3.1")
@@ -367,3 +370,33 @@
 notifications, multiple servers and desktop integration.  The application and
 its Koffi native module are built from source and use the Nonguix Electron runtime.")
     (license license:asl2.0)))
+
+
+(define-public mattermost-desktop-container
+  (package
+    (inherit mattermost-desktop)
+    (name "mattermost-desktop-container")
+    (source
+     #f)
+    (build-system container-launcher-build-system)
+    (arguments
+     (list
+      #:payload mattermost-desktop
+      #:executable "mattermost-desktop"
+      #:preserve-environment '("HOME" "DISPLAY"
+                               "WAYLAND_DISPLAY"
+                               "XAUTHORITY"
+                               "XDG_RUNTIME_DIR"
+                               "DBUS_SESSION_BUS_ADDRESS"
+                               "PULSE_SERVER"
+                               "XDG_CONFIG_HOME"
+                               "XDG_DATA_HOME"
+                               "XDG_CACHE_HOME")
+      #:share '((environment "HOME")
+                (environment "XDG_RUNTIME_DIR"))
+      #:expose '((environment "XAUTHORITY"))
+      #:network? #t
+      #:no-cwd? #f))
+    (inputs (list coreutils fontconfig font-dejavu font-ipa))
+    (native-inputs '())
+    (propagated-inputs '())))

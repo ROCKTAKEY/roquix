@@ -4,6 +4,9 @@
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages commencement)
@@ -20,7 +23,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages compression)
-  #:use-module (roquix build-system appimage))
+  #:use-module (roquix build-system appimage)
+  #:use-module (roquix build-system container-launcher))
 
 (define %feishin-runpath-inputs
   `(("out" "/lib/feishin/usr/lib")
@@ -142,3 +146,33 @@
 OpenSubsonic servers.  It supports local playback through mpv as well as web
 playback.  This package repackages the official Feishin AppImage for Guix.")
     (license license:gpl3)))
+
+
+(define-public feishin-container
+  (package
+    (inherit feishin)
+    (name "feishin-container")
+    (source
+     #f)
+    (build-system container-launcher-build-system)
+    (arguments
+     (list
+      #:payload feishin
+      #:executable "feishin"
+      #:preserve-environment '("HOME" "DISPLAY"
+                               "WAYLAND_DISPLAY"
+                               "XAUTHORITY"
+                               "XDG_RUNTIME_DIR"
+                               "DBUS_SESSION_BUS_ADDRESS"
+                               "PULSE_SERVER"
+                               "XDG_CONFIG_HOME"
+                               "XDG_DATA_HOME"
+                               "XDG_CACHE_HOME")
+      #:share '((environment "HOME")
+                (environment "XDG_RUNTIME_DIR"))
+      #:expose '((environment "XAUTHORITY"))
+      #:network? #t
+      #:no-cwd? #f))
+    (inputs (list coreutils fontconfig font-dejavu font-ipa))
+    (native-inputs '())
+    (propagated-inputs '())))
