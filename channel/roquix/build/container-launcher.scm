@@ -1,12 +1,30 @@
 (define-module (roquix build container-launcher)
   #:use-module (guix build utils)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-13)
-  #:export (container-command-arguments
+  #:export (seal-inherited-file-descriptors
+            container-command-arguments
             rewrite-desktop-line
             install-desktop-metadata))
+
+(define (seal-inherited-file-descriptors)
+  "Keep only standard input/output/error across the launcher's exec boundary."
+  (for-each
+   (lambda (name)
+     (let ((descriptor (string->number name)))
+       (when (and descriptor (> descriptor 2))
+         (catch 'system-error
+           (lambda ()
+             (fcntl descriptor F_SETFD
+                    (logior FD_CLOEXEC (fcntl descriptor F_GETFD))))
+           (lambda args
+             ;; scandir's own descriptor can already be closed by this point.
+             (unless (= (system-error-errno args) EBADF)
+               (apply throw args)))))))
+   (scandir "/proc/self/fd")))
 
 (define (environment-name? name)
   (and (string? name)
@@ -60,6 +78,7 @@
                                       (network? #f)
                                       (emulate-fhs? #f)
                                       (no-cwd? #t)
+                                      (private-session-bus? #f)
                                       (arguments '())
                                       (getenv getenv))
   "Return the exact argv passed to Guix for the containerized executable."
@@ -86,7 +105,11 @@
           (filter-map (lambda (mapping)
                         (mapping-option "--expose=" mapping getenv))
                       expose)
-          (list "--" (string-append profile "/bin/" executable))
+          (list "--")
+          (if private-session-bus?
+              (list (string-append profile "/bin/dbus-run-session") "--")
+              '())
+          (list (string-append profile "/bin/" executable))
           arguments))
 
 (define (rewrite-desktop-line line launcher)

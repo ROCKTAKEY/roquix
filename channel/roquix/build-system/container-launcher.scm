@@ -8,6 +8,7 @@
   #:use-module (srfi srfi-13)
   #:use-module (gnu packages package-management)
   #:use-module (roquix build container-launcher)
+  #:use-module (roquix build desktop-container)
   #:export (container-launcher-build-system))
 
 ;; A wrapper package keeps the payload outside its own output, allowing a
@@ -24,6 +25,7 @@
                 (preserve-environment '()) (set-environment '())
                 (share '()) (expose '())
                 (network? #f) (emulate-fhs? #f) (no-cwd? #t)
+                desktop-application
                 source inputs native-inputs outputs system target
                 #:allow-other-keys)
   (unless (package? payload)
@@ -44,6 +46,9 @@
                 (error "container launcher option must be boolean" name value)))
             '(network? emulate-fhs? no-cwd?)
             (list network? emulate-fhs? no-cwd?))
+
+  (when desktop-application
+    (parse-desktop-application desktop-application))
 
   ;; Parse package configuration before lowering it to a derivation.
   (container-command-arguments
@@ -68,26 +73,42 @@
            executable
            (with-imported-modules
             '((roquix build container-launcher)
+              (roquix build desktop-container)
               (guix build utils))
             #~(begin
-                (use-modules (roquix build container-launcher))
-                (let ((guix #$(file-append guix "/bin/guix")))
+                (use-modules (roquix build container-launcher)
+                             (roquix build desktop-container))
+                (let ((guix #$(file-append guix "/bin/guix"))
+                      (desktop
+                       (and #$desktop-application
+                            (prepare-desktop-runtime
+                             (parse-desktop-application #$desktop-application)))))
+                  (seal-inherited-file-descriptors)
                   (apply execl guix guix
                          (container-command-arguments
                           #$runtime-profile #$executable
                           #:preserve-environment
                           '#$(sexp->gexp preserve-environment)
                           #:set-environment
-                          (list #$@(map (match-lambda
+                          (append
+                           (if desktop (desktop-runtime-environment desktop) '())
+                           (list #$@(map (match-lambda
                                           ((name . value)
                                            #~(cons #$name #$value)))
-                                        set-environment))
-                          #:share '#$(sexp->gexp share)
-                          #:expose '#$(sexp->gexp expose)
+                                        set-environment)))
+                          #:share
+                          (append (if desktop (desktop-runtime-share desktop) '())
+                                  '#$(sexp->gexp share))
+                          #:expose
+                          (append (if desktop (desktop-runtime-expose desktop) '())
+                                  '#$(sexp->gexp expose))
                           #:network? #$network?
                           #:emulate-fhs? #$emulate-fhs?
                           #:no-cwd? #$no-cwd?
-                          #:arguments (cdr (command-line)))))))))
+                          #:private-session-bus? (and desktop #t)
+                          #:arguments
+                          (append (if desktop (desktop-runtime-arguments desktop) '())
+                                  (cdr (command-line))))))))))
          (builder
           #~(begin
               (use-modules (guix build utils)

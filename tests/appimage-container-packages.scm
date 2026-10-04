@@ -64,35 +64,19 @@
              (and (file-append? config)
                   (eq? (file-append-base config) fontconfig)
                   (equal? (file-append-suffix config) '("/etc/fonts/fonts.conf")))))
-         (let ((command
-                (container-command-arguments
-                 "/store/profile" executable
-                 #:preserve-environment
-                 (argument-ref wrapper #:preserve-environment '())
-                 #:share (argument-ref wrapper #:share '())
-                 #:expose (argument-ref wrapper #:expose '())
-                 #:network? (argument-ref wrapper #:network? #f)
-                 #:no-cwd? (argument-ref wrapper #:no-cwd? #t)
-                 #:getenv desktop-environment)))
-           (test-assert "desktop session, audio and home environment survive"
-             (every (lambda (name)
-                      (member (string-append "^" name "$") command))
-                    '("HOME" "DISPLAY" "WAYLAND_DISPLAY" "XAUTHORITY"
-                      "XDG_RUNTIME_DIR" "DBUS_SESSION_BUS_ADDRESS"
-                      "PULSE_SERVER" "XDG_CONFIG_HOME" "XDG_DATA_HOME"
-                      "XDG_CACHE_HOME")))
-           (test-assert "home and desktop sockets are accessible"
-             (every (lambda (option) (member option command))
-                    '("--share=/home/test=/home/test"
-                      "--share=/run/user/1000=/run/user/1000"
-                      "--share=/config=/config"
-                      "--share=/data=/data"
-                      "--share=/cache=/cache"
-                      "--expose=/tmp/test-xauthority=/tmp/test-xauthority")))
-           (test-assert "network and X11 abstract sockets are available"
-             (member "-N" command))
-           (test-assert "working directory files remain available"
-             (not (member "--no-cwd" command))))))))
+         (test-equal "desktop launcher uses a dedicated persistent home"
+           executable (argument-ref wrapper #:desktop-application #f))
+         (test-equal "host environment is not inherited"
+           '() (argument-ref wrapper #:preserve-environment '()))
+         (test-equal "host directories are not shared by package defaults"
+           '() (argument-ref wrapper #:share '()))
+         (test-equal "host session endpoints are not exposed by package defaults"
+           '() (argument-ref wrapper #:expose '()))
+         (test-assert "host network access is disabled"
+           (not (argument-ref wrapper #:network? #f)))
+         (test-assert "working directory is hidden"
+           (argument-ref wrapper #:no-cwd? #t))))))
+
  '(((roquix packages feishin) feishin feishin-container)
    ((roquix packages logseq) logseq logseq-container)
    ((roquix packages mattermost) mattermost-desktop mattermost-desktop-container)))
