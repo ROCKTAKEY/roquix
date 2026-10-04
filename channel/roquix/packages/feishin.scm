@@ -28,6 +28,9 @@
     "zlib"
     "gtk+"
     "glib"
+    ;; Electron loads libsecret by name for safeStorage password encryption.
+    ;; https://www.electronjs.org/docs/latest/api/safe-storage
+    "libsecret"
     "nspr"
     ("nss" "/lib/nss")
     "dbus"
@@ -106,6 +109,7 @@
                   zlib
                   gtk+
                   glib
+                  libsecret
                   nspr
                   nss
                   dbus
