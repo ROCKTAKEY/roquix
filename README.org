@@ -306,6 +306,8 @@ If no default socket exists, the application starts without audio.
 shares the host network namespace.  Private networking requires unprivileged
 user namespaces and =/dev/net/tun=.  If its bridge cannot start, the launcher
 exits before starting the payload.
+The host's =/etc/resolv.conf= must resolve under =/etc= or =/run= for
+[[https://github.com/rootless-containers/slirp4netns/blob/master/slirp4netns.1.md][slirp4netns's filesystem sandbox]].
 
 =#:set-environment= values can be strings or Guix file-like objects such as
 =(file-append fontconfig "/etc/fonts/fonts.conf")=.  File-like values pin the

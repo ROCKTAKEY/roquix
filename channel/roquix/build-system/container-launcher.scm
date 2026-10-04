@@ -135,7 +135,8 @@
                           (if #$desktop-network?
                               (run-desktop-network
                                (desktop-runtime-network desktop) (cons guix command)
-                               #$(file-append util-linux "/bin/unshare")
+                               #$(and desktop-network?
+                                      (file-append util-linux "/bin/unshare"))
                                #$(and desktop-network?
                                       (file-append slirp4netns "/bin/slirp4netns"))
                                #$network-child)

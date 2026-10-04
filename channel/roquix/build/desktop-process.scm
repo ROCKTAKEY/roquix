@@ -1,5 +1,5 @@
 (define-module (roquix build desktop-process)
-  #:export (call-with-child wait-for-ready wait-for-child))
+  #:export (call-with-child wait-for-condition wait-for-ready wait-for-child))
 
 (define* (spawn-command command environment #:key ready-file)
   (let ((pid (primitive-fork)))
@@ -40,17 +40,23 @@
           (false-if-exception (kill pid SIGTERM))
           (waitpid pid))))))
 
-(define (wait-for-ready wait ready? description)
+(define (wait-for-condition ready? description)
   (let ((deadline (+ (get-internal-real-time)
                      (* 10 internal-time-units-per-second))))
     (let loop ()
-      (unless (zero? (car (wait WNOHANG)))
-        (error "desktop service exited before becoming ready" description))
       (unless (ready?)
         (when (> (get-internal-real-time) deadline)
           (error "desktop service did not become ready" description))
         (usleep 100000)
         (loop)))))
+
+(define (wait-for-ready wait ready? description)
+  (wait-for-condition
+   (lambda ()
+     (unless (zero? (car (wait WNOHANG)))
+       (error "desktop service exited before becoming ready" description))
+     (ready?))
+   description))
 
 (define (wait-for-child wait)
   ;; Guile may defer Scheme signal handlers during a blocking waitpid.

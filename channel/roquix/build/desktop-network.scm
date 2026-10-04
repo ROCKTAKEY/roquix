@@ -30,14 +30,7 @@
         (ready (string-append directory "/network-ready")))
     (call-with-output-file identity
       (lambda (port) (write (getpid) port)))
-    (let ((deadline (+ (get-internal-real-time)
-                       (* 10 internal-time-units-per-second))))
-      (let loop ()
-        (unless (nonempty-file? ready)
-          (when (> (get-internal-real-time) deadline)
-            (error "private network bridge did not become ready"))
-          (usleep 100000)
-          (loop))))
+    (wait-for-condition (lambda () (nonempty-file? ready)) "network bridge")
     (apply execl (car command) command)))
 
 (define (run-desktop-network network command namespace-tool bridge child)

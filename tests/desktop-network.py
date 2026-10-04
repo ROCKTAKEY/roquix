@@ -11,7 +11,9 @@ import tempfile
 import threading
 import unittest
 
-RUNNER = str(Path(sys.argv.pop(1)).resolve())
+runner_path = Path(sys.argv.pop(1))
+CONTAINER_PROBE = str((runner_path.parent / "network-container-probe").resolve())
+RUNNER = str(runner_path.resolve())
 SLIRP = str(Path(sys.argv.pop(1)).resolve())
 
 
@@ -51,10 +53,8 @@ class DesktopNetworkTests(unittest.TestCase):
                     pass
             except OSError:
                 pass
-            internet_address = socket.getaddrinfo("www.gnu.org", 443, socket.AF_INET,
-                                                  socket.SOCK_STREAM)[0][4][0]
             command = (
-                "import socket,ssl,struct,sys,urllib.request\n"
+                "import socket,sys,urllib.request\n"
                 "opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))\n"
                 "assert opener.open('http://'+sys.argv[1]+':'+sys.argv[2],timeout=5).read()==b'lan-ok'\n"
                 "for address in ['127.0.0.1','10.0.2.2']:\n"
@@ -66,22 +66,12 @@ class DesktopNetworkTests(unittest.TestCase):
                 "  try: socket.create_connection((address,int(sys.argv[3])),timeout=2)\n"
                 "  except OSError: pass\n"
                 "  else: raise AssertionError('host IPv6 loopback is reachable')\n"
-                # The runner does not mount resolv.conf; probe slirp's DNS
-                # directly instead of relying on the host's resolver address.
-                "query=struct.pack('!6H',1234,0x100,1,0,0,0)+b'\\x03www\\x03gnu\\x03org\\0\\0\\1\\0\\1'\n"
-                "dns=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);dns.settimeout(5)\n"
-                "dns.sendto(query,('10.0.2.3',53))\n"
-                "header=struct.unpack('!6H',dns.recv(4096)[:12])\n"
-                "assert header[0]==1234 and header[1]&15==0 and header[3]>0\n"
-                "with socket.create_connection((sys.argv[4],443),timeout=15) as connection:\n"
-                " with ssl.create_default_context().wrap_socket(connection,server_hostname='www.gnu.org') as tls:\n"
-                "  tls.sendall(b'HEAD / HTTP/1.1\\r\\nHost: www.gnu.org\\r\\nConnection: close\\r\\n\\r\\n')\n"
-                "  assert tls.recv(4096).startswith(b'HTTP/')\n"
+                "assert opener.open('https://www.gnu.org/',timeout=15).status==200\n"
                 "print('lan-internet=ok')\n"
             )
             result = subprocess.run(
-                [RUNNER, temporary, SLIRP, sys.executable, "-c", command, lan_address, port,
-                 ipv6_port, internet_address],
+                [RUNNER, temporary, SLIRP, CONTAINER_PROBE, temporary, "-c", command,
+                 lan_address, port, ipv6_port],
                 capture_output=True, text=True, timeout=40,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -118,6 +108,7 @@ class DesktopNetworkTests(unittest.TestCase):
                 command = (
                     "import os,socket,sys\n"
                     "assert os.readlink('/proc/self/ns/net') != sys.argv[1]\n"
+                    "assert open('/etc/resolv.conf').read() == 'nameserver 10.0.2.3\\n'\n"
                     "for family,endpoint in [(socket.AF_UNIX,'\\0'+sys.argv[2]),"
                     "(socket.AF_INET,('127.0.0.1',int(sys.argv[3])))]:\n"
                     " s=socket.socket(family);s.settimeout(1)\n"
@@ -127,7 +118,7 @@ class DesktopNetworkTests(unittest.TestCase):
                     "print('network-isolation=ok')\n"
                 )
                 result = subprocess.run(
-                    [RUNNER, str(root), str(bridge), sys.executable, "-c", command,
+                    [RUNNER, str(root), str(bridge), CONTAINER_PROBE, str(root), "-c", command,
                      os.readlink("/proc/self/ns/net"), abstract, str(tcp.getsockname()[1])],
                     capture_output=True, text=True, timeout=15,
                 )

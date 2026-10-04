@@ -148,7 +148,7 @@
            (string-append "XDG_RUNTIME_DIR=" directory)
            (string-append "PULSE_CONFIG_PATH=" directory))
      (lambda (pid wait)
-       (wait-for-ready wait (lambda () (file-exists? socket)) "private desktop socket")
+       (wait-for-ready wait (lambda () (file-exists? socket)) "playback server")
        (procedure
         (%desktop-runtime
          (desktop-runtime-share runtime)
@@ -188,7 +188,7 @@
                (string-append "XDG_RUNTIME_DIR=" directory)
                (string-append "WAYLAND_DISPLAY=" host-display))
          (lambda (pid wait)
-           (wait-for-ready wait (lambda () (file-exists? socket)) "private desktop socket")
+           (wait-for-ready wait (lambda () (file-exists? socket)) "Wayland compositor")
            (let ((private
                   (%desktop-runtime
                    (desktop-runtime-share runtime)
