@@ -18,6 +18,13 @@ WAYLAND_INFO = str(Path(sys.argv.pop(1)).resolve())
 
 
 class DesktopIsolationTests(unittest.TestCase):
+    def wait_for_path(self, process, path):
+        deadline = time.monotonic() + 15
+        while not path.exists():
+            self.assertIsNone(process.poll(), "process exited before creating " + str(path))
+            self.assertLess(time.monotonic(), deadline, "path did not become ready: " + str(path))
+            time.sleep(.05)
+
     @staticmethod
     def stop(process):
         if process.poll() is None:
@@ -67,11 +74,7 @@ class DesktopIsolationTests(unittest.TestCase):
                     start_new_session=True,
                 )
                 self.addCleanup(self.stop, compositor)
-                deadline = time.monotonic() + 10
-                while not (runtime / "wayland-test").exists():
-                    self.assertIsNone(compositor.poll(), "temporary compositor exited")
-                    self.assertLess(time.monotonic(), deadline, "compositor did not start")
-                    time.sleep(.05)
+                self.wait_for_path(compositor, runtime / "wayland-test")
                 control = subprocess.run(
                     [WAYLAND_INFO], env=environment, capture_output=True, text=True, timeout=5,
                 )
@@ -124,11 +127,7 @@ class DesktopIsolationTests(unittest.TestCase):
                 )
                 self.addCleanup(self.stop, interrupted)
                 ready = token.parent / "interrupt-ready"
-                deadline = time.monotonic() + 15
-                while not ready.exists():
-                    self.assertIsNone(interrupted.poll(), "container exited before interrupt")
-                    self.assertLess(time.monotonic(), deadline, "container did not start")
-                    time.sleep(.05)
+                self.wait_for_path(interrupted, ready)
                 os.killpg(interrupted.pid, signal.SIGTERM)
                 interrupted.wait(timeout=5)
                 self.assertEqual(interrupted.returncode, 128 + signal.SIGTERM)
