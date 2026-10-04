@@ -1,0 +1,249 @@
+(use-modules ((guix build syscalls) #:select (mkdtemp!))
+             (guix build utils)
+             (ice-9 popen)
+             (ice-9 regex)
+             (rnrs io ports)
+             (srfi srfi-1)
+             (srfi srfi-13)
+             (srfi srfi-64))
+
+(define (call-with-temporary-directory procedure)
+  (let ((directory (mkdtemp! (string-append (or (getenv "TMPDIR") "/tmp")
+                                          "/t3code-test.XXXXXX"))))
+    (dynamic-wind
+      (lambda () #t)
+      (lambda () (procedure directory))
+      (lambda () (delete-file-recursively directory)))))
+
+(define output
+  (canonicalize-path (cadr (command-line))))
+(define appdir
+  (string-append output "/lib/t3code"))
+
+(define (capture . arguments)
+  (let* ((port (apply open-pipe*
+                      OPEN_READ
+                      "timeout"
+                      "30"
+                      "sh"
+                      "-c"
+                      "exec \"$@\" 2>&1"
+                      "t3code-test"
+                      arguments))
+         (text (get-string-all port))
+         (status (close-pipe port)))
+    (unless (zero? status)
+      (error "command failed" arguments status text)) text))
+
+(define (electron-node directory . arguments)
+  (apply capture
+         "env"
+         "-i"
+         "ELECTRON_RUN_AS_NODE=1"
+         (string-append "HOME=" directory)
+         (string-append appdir "/t3code")
+         arguments))
+
+(define* (launcher-environment #:optional (shell #f))
+  (call-with-temporary-directory (lambda (directory)
+                                   (let ((bin (string-append directory "/bin"))
+                                         (application (string-append directory
+                                                       "/lib/t3code/AppRun")))
+                                     ;; Replacing AppRun avoids opening a user's GUI profile.  These
+                                     ;; checks end at the wrapper environment: AppRun overrides,
+                                     ;; GUI startup, and rendering are outside their scope.
+                                     (copy-recursively (string-append output
+                                                                      "/bin")
+                                                       bin)
+                                     (for-each (lambda (file)
+                                                 (chmod file #o755)
+                                                 (substitute* file
+                                                   (((regexp-quote output))
+                                                    directory)))
+                                               (find-files bin ".*"))
+                                     (mkdir-p (dirname application))
+                                     (call-with-output-file application
+                                       (lambda (port)
+                                         (format port
+                                                 "#!~a --no-auto-compile\n!#\n"
+                                                 (readlink "/proc/self/exe"))
+                                         (write '(begin
+                                                   (use-modules (srfi srfi-13))
+                                                   (write (map (lambda (entry)
+                                                                 (let ((separator
+                                                                        (string-index
+                                                                         entry
+                                                                         #\=)))
+                                                                   (cons (substring
+                                                                          entry
+                                                                          0
+                                                                          separator)
+                                                                         (substring
+                                                                          entry
+                                                                          (+
+                                                                           separator
+                                                                           1)))))
+                                                               (environ))))
+                                                port)))
+                                     (chmod application #o755)
+                                     (call-with-input-string (apply capture
+                                                              "env" "-i"
+                                                              "PATH=/nonexistent"
+                                                              (append (if
+                                                                       shell
+                                                                       (list (string-append
+                                                                              "SHELL="
+                                                                              shell))
+                                                                       '())
+                                                                      (list (string-append
+                                                                             bin
+                                                                             "/t3code"))))
+                                                             read)))))
+
+(define (regular-file? file)
+  (and (file-exists? file)
+       (eq? 'regular
+            (stat:type (stat file)))))
+
+(define (elf-file? file)
+  (and (regular-file? file)
+       (call-with-input-file file
+         (lambda (port)
+           (equal? (get-bytevector-n port 4) #vu8(127 69 76 70))))))
+
+(test-begin "t3code-installed")
+
+(let ((environment (launcher-environment)))
+  ;; AppRun probes sandbox support with `unshare -Ur true`.  The application
+  ;; also delegates shell scripts, Git, SSH, URL opening, and callback MIME
+  ;; registration to external commands; host PATH must not supply them.
+  (for-each (lambda (command)
+              (test-assert (string-append "with no inherited PATH, " command
+                                          " is executable")
+                           (any (lambda (directory)
+                                  (access? (string-append directory "/"
+                                                          command) X_OK))
+                                (string-split (assoc-ref environment "PATH")
+                                              #\:))))
+            '("bash" "true"
+              "unshare"
+              "git"
+              "ssh"
+              "xdg-open"
+              "update-desktop-database"))
+
+  ;; A graphical session can omit SHELL, and Guix need not provide /bin/bash.
+  (test-assert "when SHELL is unset, the default shell is executable"
+               (access? (assoc-ref environment "SHELL") X_OK))
+
+  ;; Guix owns the immutable executable.  This checks the startup flag sent
+  ;; to T3Code, not the application's update implementation.
+  (test-equal
+   "for Guix-managed executables, the auto-update disable flag is true" "true"
+   (assoc-ref environment "T3CODE_DISABLE_AUTO_UPDATE"))
+
+  ;; Pure environments can lack /etc/fonts/fonts.conf and GTK resource paths.
+  ;; These checks require installed resources, not working font/image rendering.
+  (test-assert
+   "without host font settings, the font configuration file exists"
+   (regular-file? (assoc-ref environment "FONTCONFIG_FILE")))
+  (test-assert "without host GTK settings, the pixbuf loader cache exists"
+               (regular-file? (assoc-ref environment "GDK_PIXBUF_MODULE_FILE")))
+  (test-assert
+   "without host GTK settings, the compiled GSettings schemas exist"
+   (regular-file? (string-append (assoc-ref environment "GSETTINGS_SCHEMA_DIR")
+                                 "/gschemas.compiled")))
+
+  ;; MIME data supports file-type lookup in an otherwise empty XDG environment.
+  (test-assert "without host XDG data directories, a MIME cache exists"
+               (any (lambda (directory)
+                      (regular-file? (string-append directory
+                                                    "/mime/mime.cache")))
+                    (string-split (assoc-ref environment "XDG_DATA_DIRS") #\:))))
+
+(test-equal "when SHELL is explicitly set, the launcher preserves its value"
+            "/chosen/login-shell"
+            (assoc-ref (launcher-environment "/chosen/login-shell") "SHELL"))
+
+;; Redistribution must include upstream licensing information.  The marker
+;; check verifies installation, not the full upstream text or its authenticity.
+(test-assert "the installed license file contains the MIT License marker"
+             (string-contains (call-with-input-file (string-append output
+                                                     "/share/licenses/t3code/LICENSE")
+                                get-string-all) "MIT License"))
+
+;; Run the backend with the packaged Electron's Node runtime.  This catches
+;; missing external modules in the staged tree.  The terminal check also
+;; exercises Node-API compatibility, which ldd cannot establish.
+(call-with-temporary-directory (lambda (directory)
+                                 (test-assert
+                                  "the installed backend loads and provides its command-line help"
+                                  (string-contains (electron-node directory
+                                                                  (string-append
+                                                                   appdir
+                                                                   "/resources/app/apps/server/dist/bin.mjs")
+                                                                  "--help")
+                                                   "--port"))
+                                 (test-equal
+                                  "the compiled terminal addon runs a shell and returns its output"
+                                  "guix-pty-contract"
+                                  (electron-node directory "-e"
+                                                 (string-append
+                                                  "const load = require('node:module').createRequire(process.argv[1]);"
+                                                  "const terminal = load('node-pty').spawn(process.argv[2],"
+                                                  " ['-c', 'printf guix-pty-contract'],"
+                                                  " {cwd: process.env.HOME, env: {PATH: '/nonexistent'}});"
+                                                  "let text = ''; terminal.onData(data => {text += data});"
+                                                  "terminal.onExit(({exitCode}) => {process.stdout.write(text);"
+                                                  " process.exitCode = exitCode});")
+                                                 (string-append appdir
+                                                  "/resources/app/apps/server/dist/bin.mjs")
+                                                 (assoc-ref (launcher-environment)
+                                                            "SHELL")))))
+
+;; Native addons can resolve every shared library yet expose the wrong Node-API.
+;; Exercise the installed loaders and APIs, with a mock accessibility provider.
+(let ((script (canonicalize-path (string-append (dirname (current-filename))
+                                                "/native-modules.mjs"))))
+  (for-each (lambda (contract)
+              (call-with-temporary-directory (lambda (directory)
+                                               (test-equal (cdr contract)
+                                                "native-contract-ok"
+                                                (catch #t
+                                                       (lambda ()
+                                                         (electron-node
+                                                          directory script
+                                                          (string-append
+                                                           appdir
+                                                           "/resources/app")
+                                                          (car contract)))
+                                                       (lambda arguments
+                                                         (format (current-error-port)
+                                                                 "~s~%"
+                                                                 arguments) #f))))))
+            '(("fff" . "the installed native file finder indexes and finds a file")
+              ("ffi" . "the installed FFI addon calls a C function")
+              ("keyring" . "the installed keyring addon exposes credential-reading APIs")
+              ("xa11y" . "the installed accessibility addon queries its native mock provider"))))
+
+;; ldd checks DT_NEEDED resolution.  It does not exercise dlopen, native-module
+;; ABI compatibility, or GUI startup; the AppDir's private libraries remain visible.
+(let ((files (filter elf-file?
+                     (find-files appdir ".*"))))
+  (test-assert "the installed application contains ELF files to audit"
+               (pair? files))
+  (for-each (lambda (file)
+              (test-assert (string-append "for "
+                            (substring file
+                                       (+ (string-length appdir) 1))
+                            ", ldd resolves its DT_NEEDED libraries")
+                           (not (string-contains (capture "env"
+                                                          (string-append
+                                                           "LD_LIBRARY_PATH="
+                                                           appdir "/usr/lib")
+                                                          "ldd" file)
+                                                 "not found")))) files))
+
+(let ((runner (test-runner-current)))
+  (test-end "t3code-installed")
+  (exit (if (zero? (test-runner-fail-count runner)) 0 1)))
