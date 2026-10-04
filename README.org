@@ -291,6 +291,11 @@ variables.  Add options to the package's =arguments= as needed:
        #:network? #t))
 #+END_SRC
 
+=#:desktop-application= enables a private persistent home and a dedicated
+nested Weston compositor for the named application.  Add =dbus= to its runtime inputs
+for the private session bus.  The application ID is parsed before lowering,
+and its display endpoint and state directory are checked before launch.
+
 =#:set-environment= values can be strings or Guix file-like objects such as
 =(file-append fontconfig "/etc/fonts/fonts.conf")=.  File-like values pin the
 referenced store item and become absolute paths in the launched environment.
@@ -326,18 +331,50 @@ logseq
 mattermost-desktop
 #+END_SRC
 
-These containers share HOME, the current working directory, and any explicitly
-set =XDG_CONFIG_HOME=, =XDG_DATA_HOME=, =XDG_CACHE_HOME=, and =XDG_RUNTIME_DIR=.
-Applications can read and write files in these locations and retain their
-settings.  The launcher preserves the display, session D-Bus, and audio
-environment, exposes =XAUTHORITY= when set, and enables host networking for
-server access and Linux abstract X11 sockets.  The runtime profile includes
-sandbox helper commands, Fontconfig, DejaVu fonts, and Japanese IPA fonts.
+Each application has a dedicated persistent home under
+=${XDG_STATE_HOME:-$HOME/.local/state}/roquix/containers/<application>=,
+created with mode =0700=.  That directory is mounted as HOME inside the
+container.  Host HOME, the current working directory, and host XDG config,
+data, and cache directories are hidden.
+
+A Wayland session is required.  A dedicated Weston compositor connects to the
+socket selected by =WAYLAND_DISPLAY= and displays the application in its own
+window.  The payload receives only that private compositor's socket and a
+private runtime directory.  The compositor uses software rendering and runs
+without host configuration, a desktop launcher, or a host clipboard bridge.
+The launcher never
+falls back to host X11 or shares the host runtime directory, D-Bus session,
+Secret Service, SSH agent, audio service, GPU, or sound devices.  Each
+container starts its own D-Bus session.  Standard input, output, and error
+remain available; other inherited file descriptors are sealed before exec.
+
+Network access is disabled.  Feishin and Mattermost require a deliberately
+configured network policy before they can connect to their servers; host
+network sharing with =#:network? #t= also grants access to host localhost.
+Audio playback and tray integration require explicit additional access and
+are disabled by these package defaults.  Logseq can keep graphs in its
+private home.  To grant access to an existing graph, derive a package with
+an explicit =#:share= mapping for that graph directory, for example:
+
+#+BEGIN_SRC scheme
+(arguments
+ (substitute-keyword-arguments (package-arguments logseq-container)
+   ((#:share _ '()) '(("/home/user/graphs/work" . "/graphs/work")))))
+#+END_SRC
+
+Display, keyboard, and pointer interaction pass through the private compositor.
+Its protocols operate within the application's own desktop; the payload has
+no direct connection to the host compositor or access to other applications'
+windows and clipboard.  Weston is part of the trusted host-side boundary.
+The container shares the host kernel and Guix's basic runtime devices and
+pseudo-filesystems.  File, process, and network namespaces provide isolation
+from the host; a separate kernel or a syscall filter is not provided.
 
 AppImage package modules use =appimage-container-package= from
 =(roquix packages appimage-container)= to define these variants.  The payload
-keeps its ELF fixups and runtime tool wrappers, while the container package
-provides desktop integration and the shared desktop runtime configuration.
+keeps its ELF fixups and runtime tool wrappers.  The runtime profile includes
+sandbox commands, a private D-Bus session, Fontconfig, DejaVu fonts, and
+Japanese IPA fonts.
 
 ** Design
 - Only Type 2 AppImages are supported.

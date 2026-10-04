@@ -1,12 +1,12 @@
 (define-module (roquix build desktop-container)
   #:use-module (guix build utils)
   #:use-module (ice-9 regex)
+  #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (srfi srfi-9)
   #:export (parse-desktop-application prepare-desktop-runtime
-                                      desktop-runtime-share
-                                      desktop-runtime-expose
-                                      desktop-runtime-environment
-                                      desktop-runtime-arguments))
+            call-with-private-desktop-runtime run-desktop-command
+            desktop-runtime-share desktop-runtime-expose
+            desktop-runtime-environment desktop-runtime-arguments))
 
 (define-record-type <desktop-application>
   (%desktop-application name) desktop-application?
@@ -33,6 +33,38 @@
     (error "desktop host path must be absolute and contain no '='" value))
   value)
 
+(define (selected-wayland-socket getenv uid)
+  (let* ((display (getenv "WAYLAND_DISPLAY"))
+         (socket (cond
+                  ((not (and display (not (string-null? display))))
+                   (error "a Wayland display is required for desktop isolation"))
+                  ((string-prefix? "/" display) (host-path display))
+                  ((string-match "^[A-Za-z0-9_-]+$" display)
+                   (string-append (host-path (getenv "XDG_RUNTIME_DIR"))
+                                  "/" display))
+                  (else (error "invalid Wayland display name" display))))
+         (info (stat socket)))
+    (unless (and (eq? (stat:type info) 'socket) (= (stat:uid info) uid))
+      (error "Wayland endpoint must be a socket owned by the current user" socket))
+    socket))
+
+(define (application-state-directory application home getenv uid)
+  (let* ((base (host-path (or (getenv "XDG_STATE_HOME")
+                             (string-append home "/.local/state"))))
+         (state (string-append base "/roquix/containers/"
+                               (desktop-application-name application))))
+    ;; The payload can alter its state contents. Never follow a state-root
+    ;; symlink on the host, where it could redirect preparation into host files.
+    (mkdir-p (dirname state))
+    (unless (file-exists? state)
+      (mkdir state #o700))
+    (let ((info (lstat state)))
+      (unless (and (eq? (stat:type info) 'directory) (= (stat:uid info) uid))
+        (error "application state must be a directory owned by the current user"
+               state)))
+    (chmod state #o700)
+    state))
+
 (define* (prepare-desktop-runtime application
                                   #:key (getenv getenv)
                                   (home-directory (passwd:dir (getpwuid (getuid))))
@@ -41,47 +73,110 @@
   (unless (desktop-application? application)
     (error "desktop runtime requires a parsed application" application))
   (let* ((home (host-path home-directory))
-         (state-base (host-path (or (getenv "XDG_STATE_HOME")
-                                    (string-append home "/.local/state"))))
-         (state (string-append state-base "/roquix/containers/"
-                               (desktop-application-name application)))
-         (display (getenv "WAYLAND_DISPLAY"))
-         (host-runtime (getenv "XDG_RUNTIME_DIR"))
-         (socket (cond
-                   ((not (and display
-                              (not (string-null? display))))
-                    (error
-                     "a Wayland display is required for desktop isolation"))
-                   ((string-prefix? "/" display)
-                    (host-path display))
-                   ((string-match "^[A-Za-z0-9_-]+$" display)
-                    (string-append (host-path host-runtime) "/" display))
-                   (else (error "invalid Wayland display name" display))))
-         (socket-stat (stat socket))
-         (runtime (string-append "/run/user/"
-                                 (number->string uid))))
-    (unless (and (eq? (stat:type socket-stat)
-                      'socket)
-                 (= (stat:uid socket-stat) uid))
-      (error "Wayland endpoint must be a socket owned by the current user"
-             socket))
-    ;; The payload can alter its state contents. Never follow a state-root
-    ;; symlink on the host, where it could redirect preparation into host files.
-    (mkdir-p (dirname state))
-    (unless (file-exists? state)
-      (mkdir state #o700))
-    (let ((state-stat (lstat state)))
-      (unless (and (eq? (stat:type state-stat)
-                        'directory)
-                   (= (stat:uid state-stat) uid))
-        (error
-         "application state must be a directory owned by the current user"
-         state)))
-    (chmod state #o700)
-    (%desktop-runtime (list (cons state home))
-                      (list (cons socket
-                                  (string-append runtime "/wayland-0")))
-                      (list (cons "XDG_RUNTIME_DIR" runtime)
-                            (cons "WAYLAND_DISPLAY" "wayland-0"))
-                      '("--enable-features=UseOzonePlatform"
-                        "--ozone-platform=wayland" "--disable-dev-shm-usage"))))
+         (socket (selected-wayland-socket getenv uid))
+         (state (application-state-directory application home getenv uid))
+         (runtime (string-append "/run/user/" (number->string uid))))
+    ;; Mapping a single socket avoids granting access to other session services.
+    ;; https://wayland.freedesktop.org/docs/book/Protocol.html#wire-format
+    (%desktop-runtime
+     (list (cons state home))
+     (list (cons socket (string-append runtime "/wayland-0")))
+     (list (cons "XDG_RUNTIME_DIR" runtime)
+           (cons "WAYLAND_DISPLAY" "wayland-0"))
+     '("--enable-features=UseOzonePlatform" "--ozone-platform=wayland"
+       "--disable-dev-shm-usage"))))
+
+(define (spawn-command command environment)
+  (let ((pid (primitive-fork)))
+    (when (zero? pid)
+      (catch #t
+        (lambda ()
+          (setsid)
+          (sigaction SIGINT SIG_DFL)
+          (sigaction SIGTERM SIG_DFL)
+          (when environment (environ environment))
+          (apply execl (car command) command))
+        (lambda arguments (primitive-exit 127))))
+    pid))
+
+(define (call-with-child command environment procedure)
+  (let ((pid (spawn-command command environment))
+        (reaped? #f))
+    (dynamic-wind
+      (lambda () #t)
+      (lambda ()
+        (procedure pid
+                   (lambda (options)
+                     (let ((result (waitpid pid options)))
+                       (unless (zero? (car result)) (set! reaped? #t))
+                       result))))
+      (lambda ()
+        (unless reaped?
+          (false-if-exception (kill (- pid) SIGTERM))
+          ;; A signal may arrive before the child has established its session.
+          (false-if-exception (kill pid SIGTERM))
+          (waitpid pid))))))
+
+(define (wait-for-display socket wait)
+  (let ((deadline (+ (get-internal-real-time)
+                     (* 10 internal-time-units-per-second))))
+    (let loop ()
+      (unless (zero? (car (wait WNOHANG)))
+        (error "private Wayland compositor exited before becoming ready"))
+      (unless (file-exists? socket)
+        (when (> (get-internal-real-time) deadline)
+          (error "private Wayland compositor did not become ready"))
+        (usleep 100000)
+        (loop)))))
+
+(define (run-desktop-command command)
+  "Wait for the container and terminate its process group on interruption."
+  (call-with-child command #f
+    (lambda (pid wait)
+      ;; Guile may defer Scheme signal handlers during a blocking waitpid.
+      (let loop ()
+        (let ((result (wait WNOHANG)))
+          (if (zero? (car result))
+              (begin (usleep 100000) (loop))
+              (cdr result)))))))
+
+(define (call-with-private-desktop-runtime application compositor procedure)
+  "Run PROCEDURE with a compositor that exposes only this application's desktop."
+  (let* ((runtime (prepare-desktop-runtime application))
+         (host-display (car (car (desktop-runtime-expose runtime))))
+         (directory (mkdtemp! "/tmp/roquix-private-display-XXXXXX"))
+         (socket (string-append directory "/wayland-0"))
+         (handlers (map (lambda (signal)
+                          (cons signal
+                                (sigaction signal
+                                           (lambda (signal)
+                                             (throw 'desktop-interrupted signal)))))
+                        (list SIGINT SIGTERM))))
+    (dynamic-wind
+      (lambda () #t)
+      (lambda ()
+        ;; This trusted compositor connects to the host, while the payload sees
+        ;; only its private socket. Kiosk mode and --no-config avoid executing
+        ;; user desktop launchers or bridging the host clipboard/session bus.
+        ;; https://wayland.pages.freedesktop.org/weston/toc/running-weston.html
+        (call-with-child
+         (list compositor "--backend=wayland" "--renderer=pixman"
+               "--shell=kiosk" "--socket=wayland-0" "--no-config"
+               "--idle-time=0" (string-append "--log=" directory "/weston.log"))
+         (list (string-append "HOME=" directory)
+               (string-append "XDG_RUNTIME_DIR=" directory)
+               (string-append "WAYLAND_DISPLAY=" host-display))
+         (lambda (pid wait)
+           (wait-for-display socket wait)
+           (procedure
+            (%desktop-runtime
+             (desktop-runtime-share runtime)
+             (list (cons socket (cdr (car (desktop-runtime-expose runtime)))))
+             (desktop-runtime-environment runtime)
+             (desktop-runtime-arguments runtime))))))
+      (lambda ()
+        (for-each (lambda (handler)
+                    (sigaction (car handler) (car (cdr handler))
+                               (cdr (cdr handler))))
+                  handlers)
+        (delete-file-recursively directory)))))

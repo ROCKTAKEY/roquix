@@ -1,4 +1,4 @@
-"""Run with the built probe executable and a Guix dbus package's bin directory."""
+"""Run with PROBE, DBUS_BIN_DIRECTORY, WESTON, and WAYLAND_INFO paths."""
 
 import os
 from pathlib import Path
@@ -8,10 +8,13 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 PROBE = str(Path(sys.argv.pop(1)).resolve())
 DBUS = Path(sys.argv.pop(1)).resolve()
+WESTON = str(Path(sys.argv.pop(1)).resolve())
+WAYLAND_INFO = str(Path(sys.argv.pop(1)).resolve())
 
 
 class DesktopIsolationTests(unittest.TestCase):
@@ -36,10 +39,8 @@ class DesktopIsolationTests(unittest.TestCase):
             secret.write_text("host-only")
             cwd_secret = cwd / "host-working-directory-secret"
             cwd_secret.write_text("host-only")
-            with socket.socket(socket.AF_UNIX) as wayland, \
-                    socket.socket(socket.AF_UNIX) as host_service, \
+            with socket.socket(socket.AF_UNIX) as host_service, \
                     socket.socket(socket.AF_INET) as host_listener:
-                wayland.bind(str(runtime / "wayland-test"))
                 host_service.bind(str(runtime / "host-service"))
                 host_listener.bind(("127.0.0.1", 0))
                 host_listener.listen()
@@ -59,6 +60,23 @@ class DesktopIsolationTests(unittest.TestCase):
                     XDG_CACHE_HOME=str(root / "host-cache"),
                     SSH_AUTH_SOCK=str(runtime / "host-service"),
                 )
+                compositor = subprocess.Popen(
+                    [WESTON, "--backend=headless", "--renderer=pixman", "--shell=desktop",
+                     "--socket=wayland-test", "--no-config", "--idle-time=0", "--debug"],
+                    env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    start_new_session=True,
+                )
+                self.addCleanup(self.stop, compositor)
+                deadline = time.monotonic() + 10
+                while not (runtime / "wayland-test").exists():
+                    self.assertIsNone(compositor.poll(), "temporary compositor exited")
+                    self.assertLess(time.monotonic(), deadline, "compositor did not start")
+                    time.sleep(.05)
+                control = subprocess.run(
+                    [WAYLAND_INFO], env=environment, capture_output=True, text=True, timeout=5,
+                )
+                self.assertEqual(control.returncode, 0, control.stderr)
+                self.assertIn("weston_debug_v1", control.stdout)
                 bus = subprocess.Popen(
                     [str(DBUS / "dbus-daemon"), "--session", "--nofork",
                      "--print-address=1", "--address=unix:path=" + str(runtime / "bus")],
@@ -86,9 +104,10 @@ class DesktopIsolationTests(unittest.TestCase):
                     if control.returncode == 0:
                         break
                 self.assertEqual(control.returncode, 0, control.stderr.decode())
+                displays = set(Path("/tmp").glob("roquix-private-display-*"))
                 with secret.open("rb") as inherited:
                     result = subprocess.run(
-                        [PROBE, "--host-port=" + str(port), str(secret),
+                        [PROBE, "--require-private-display", "--host-port=" + str(port), str(secret),
                          str(runtime / "host-service"), str(cwd_secret),
                          str(Path.home() / ".ssh")],
                         cwd=cwd, env=environment, pass_fds=(inherited.fileno(),),
@@ -98,6 +117,22 @@ class DesktopIsolationTests(unittest.TestCase):
                 self.assertIn("isolation=ok", result.stdout)
                 token = state / "roquix/containers/isolation-probe/state-token"
                 self.assertEqual(token.read_text(), "state=private\n")
+                self.assertEqual(set(Path("/tmp").glob("roquix-private-display-*")), displays)
+                interrupted = subprocess.Popen(
+                    [PROBE, "--wait-for-interrupt"], cwd=cwd, env=environment,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+                )
+                self.addCleanup(self.stop, interrupted)
+                ready = token.parent / "interrupt-ready"
+                deadline = time.monotonic() + 15
+                while not ready.exists():
+                    self.assertIsNone(interrupted.poll(), "container exited before interrupt")
+                    self.assertLess(time.monotonic(), deadline, "container did not start")
+                    time.sleep(.05)
+                os.killpg(interrupted.pid, signal.SIGTERM)
+                interrupted.wait(timeout=5)
+                self.assertEqual(interrupted.returncode, 128 + signal.SIGTERM)
+                self.assertEqual(set(Path("/tmp").glob("roquix-private-display-*")), displays)
 
 
 if __name__ == "__main__":

@@ -5,22 +5,12 @@
              (gnu packages base)
              (gnu packages fontutils)
              (roquix packages appimage-container)
-             (roquix build container-launcher)
              (srfi srfi-1)
              (srfi srfi-64))
 
 (define (argument-ref package keyword default)
   (let ((entry (memq keyword (package-arguments package))))
     (if entry (cadr entry) default)))
-
-(define (desktop-environment name)
-  (assoc-ref '(("HOME" . "/home/test")
-               ("XDG_CONFIG_HOME" . "/config")
-               ("XDG_DATA_HOME" . "/data")
-               ("XDG_CACHE_HOME" . "/cache")
-               ("XDG_RUNTIME_DIR" . "/run/user/1000")
-               ("XAUTHORITY" . "/tmp/test-xauthority"))
-             name))
 
 (test-begin "appimage-container-packages")
 

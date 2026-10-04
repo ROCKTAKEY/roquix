@@ -2,11 +2,13 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-13)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages freedesktop)
   #:use-module (roquix build container-launcher)
   #:use-module (roquix build desktop-container)
   #:export (container-launcher-build-system))
@@ -72,43 +74,58 @@
           (program-file
            executable
            (with-imported-modules
-            '((roquix build container-launcher)
+            (source-module-closure
+             '((roquix build container-launcher)
               (roquix build desktop-container)
-              (guix build utils))
+               (guix build utils))
+             #:select? (lambda (module) (memq (car module) '(guix roquix))))
             #~(begin
                 (use-modules (roquix build container-launcher)
                              (roquix build desktop-container))
-                (let ((guix #$(file-append guix "/bin/guix"))
-                      (desktop
-                       (and #$desktop-application
-                            (prepare-desktop-runtime
-                             (parse-desktop-application #$desktop-application)))))
+                (let ((guix #$(file-append guix "/bin/guix")))
+                  (define (launch desktop)
+                    (let ((command
+                           (container-command-arguments
+                            #$runtime-profile #$executable
+                            #:preserve-environment
+                            '#$(sexp->gexp preserve-environment)
+                            #:set-environment
+                            (append
+                             (if desktop (desktop-runtime-environment desktop) '())
+                             (list #$@(map (match-lambda
+                                            ((name . value)
+                                             #~(cons #$name #$value)))
+                                          set-environment)))
+                            #:share
+                            (append (if desktop (desktop-runtime-share desktop) '())
+                                    '#$(sexp->gexp share))
+                            #:expose
+                            (append (if desktop (desktop-runtime-expose desktop) '())
+                                    '#$(sexp->gexp expose))
+                            #:network? #$network?
+                            #:emulate-fhs? #$emulate-fhs?
+                            #:no-cwd? #$no-cwd?
+                            #:private-session-bus? (and desktop #t)
+                            #:arguments
+                            (append (if desktop (desktop-runtime-arguments desktop) '())
+                                    (cdr (command-line))))))
+                      (if desktop
+                          (run-desktop-command (cons guix command))
+                          (apply execl guix guix command))))
                   (seal-inherited-file-descriptors)
-                  (apply execl guix guix
-                         (container-command-arguments
-                          #$runtime-profile #$executable
-                          #:preserve-environment
-                          '#$(sexp->gexp preserve-environment)
-                          #:set-environment
-                          (append
-                           (if desktop (desktop-runtime-environment desktop) '())
-                           (list #$@(map (match-lambda
-                                          ((name . value)
-                                           #~(cons #$name #$value)))
-                                        set-environment)))
-                          #:share
-                          (append (if desktop (desktop-runtime-share desktop) '())
-                                  '#$(sexp->gexp share))
-                          #:expose
-                          (append (if desktop (desktop-runtime-expose desktop) '())
-                                  '#$(sexp->gexp expose))
-                          #:network? #$network?
-                          #:emulate-fhs? #$emulate-fhs?
-                          #:no-cwd? #$no-cwd?
-                          #:private-session-bus? (and desktop #t)
-                          #:arguments
-                          (append (if desktop (desktop-runtime-arguments desktop) '())
-                                  (cdr (command-line))))))))))
+                  (if #$desktop-application
+                      (catch 'desktop-interrupted
+                        (lambda ()
+                          (let ((status
+                                 (call-with-private-desktop-runtime
+                                  (parse-desktop-application #$desktop-application)
+                                  #$(and desktop-application
+                                         (file-append weston "/bin/weston"))
+                                  launch)))
+                            (exit (or (status:exit-val status)
+                                      (+ 128 (status:term-sig status))))))
+                        (lambda (key signal) (exit (+ 128 signal))))
+                      (launch #f)))))))
          (builder
           #~(begin
               (use-modules (guix build utils)
