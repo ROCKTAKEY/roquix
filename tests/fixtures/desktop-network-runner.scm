@@ -49,7 +49,7 @@
                     #$probe-profile "python3" #:network? #t
                     #:set-environment
                     (list (cons "SSL_CERT_FILE"
-                                #$(file-append nss-certs "/etc/ssl/certs/ca-certificates.crt")))
+                                #$(file-append probe-profile "/etc/ssl/certs/ca-certificates.crt")))
                     #:expose (list (cons (string-append (cadr (command-line)) "/resolv.conf")
                                          "/etc/resolv.conf"))
                     #:arguments (cddr (command-line)))))))))

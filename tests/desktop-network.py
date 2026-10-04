@@ -10,6 +10,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import urllib.request
 
 runner_path = Path(sys.argv.pop(1))
 CONTAINER_PROBE = str((runner_path.parent / "network-container-probe").resolve())
@@ -20,6 +21,10 @@ SLIRP = str(Path(sys.argv.pop(1)).resolve())
 class DesktopNetworkTests(unittest.TestCase):
     @unittest.skipUnless(Path("/dev/net/tun").exists(), "environment lacks a TUN device")
     def test_real_bridge_reaches_lan_and_internet_but_not_host_loopback(self):
+        internet_url = "https://example.com/"
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(internet_url, timeout=15) as response:
+            self.assertEqual(response.status, 200)
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as route:
             route.connect(("192.0.2.1", 9))
             lan_address = route.getsockname()[0]
@@ -54,7 +59,8 @@ class DesktopNetworkTests(unittest.TestCase):
             except OSError:
                 pass
             command = (
-                "import socket,sys,urllib.request\n"
+                "import os,socket,sys,urllib.request\n"
+                "assert (os.getuid(),os.getgid()) == (int(sys.argv[4]),int(sys.argv[5]))\n"
                 "opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))\n"
                 "assert opener.open('http://'+sys.argv[1]+':'+sys.argv[2],timeout=5).read()==b'lan-ok'\n"
                 "for address in ['127.0.0.1','10.0.2.2']:\n"
@@ -66,12 +72,12 @@ class DesktopNetworkTests(unittest.TestCase):
                 "  try: socket.create_connection((address,int(sys.argv[3])),timeout=2)\n"
                 "  except OSError: pass\n"
                 "  else: raise AssertionError('host IPv6 loopback is reachable')\n"
-                "assert opener.open('https://www.gnu.org/',timeout=15).status==200\n"
+                "assert opener.open(sys.argv[6],timeout=15).status==200\n"
                 "print('lan-internet=ok')\n"
             )
             result = subprocess.run(
                 [RUNNER, temporary, SLIRP, CONTAINER_PROBE, temporary, "-c", command,
-                 lan_address, port, ipv6_port],
+                 lan_address, port, ipv6_port, str(os.getuid()), str(os.getgid()), internet_url],
                 capture_output=True, text=True, timeout=40,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -107,6 +113,7 @@ class DesktopNetworkTests(unittest.TestCase):
                     pass
                 command = (
                     "import os,socket,sys\n"
+                    "assert (os.getuid(),os.getgid()) == (int(sys.argv[4]),int(sys.argv[5]))\n"
                     "assert os.readlink('/proc/self/ns/net') != sys.argv[1]\n"
                     "assert open('/etc/resolv.conf').read() == 'nameserver 10.0.2.3\\n'\n"
                     "for family,endpoint in [(socket.AF_UNIX,'\\0'+sys.argv[2]),"
@@ -119,7 +126,8 @@ class DesktopNetworkTests(unittest.TestCase):
                 )
                 result = subprocess.run(
                     [RUNNER, str(root), str(bridge), CONTAINER_PROBE, str(root), "-c", command,
-                     os.readlink("/proc/self/ns/net"), abstract, str(tcp.getsockname()[1])],
+                     os.readlink("/proc/self/ns/net"), abstract, str(tcp.getsockname()[1]),
+                     str(os.getuid()), str(os.getgid())],
                     capture_output=True, text=True, timeout=15,
                 )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

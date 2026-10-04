@@ -41,9 +41,15 @@
          (ready (string-append directory "/network-ready")))
     ;; Guix shares the *private* network namespace created here. A host network
     ;; namespace would expose abstract Unix sockets as well as local TCP ports.
+    ;; Slirp's sandbox requires UID/GID 0 in the network owner's user namespace.
+    ;; A second user namespace restores the caller's identity before Guix starts.
+    ;; https://github.com/rootless-containers/slirp4netns/blob/v1.3.3/main.c#L414-L429
     (call-with-child
-     (append (list namespace-tool "--user" "--map-current-user" "--net"
-                   child directory) command)
+     (append (list namespace-tool "--user" "--map-root-user" "--net"
+                   child directory namespace-tool "--user"
+                   (string-append "--map-user=" (number->string (getuid)))
+                   (string-append "--map-group=" (number->string (getgid))))
+             command)
      #f
      (lambda (pid wait)
        (wait-for-ready wait (lambda () (nonempty-file? identity)) "network namespace")
