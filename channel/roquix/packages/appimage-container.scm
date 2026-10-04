@@ -6,6 +6,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (roquix build-system appimage)
   #:use-module (roquix build-system container-launcher)
   #:export (appimage-container-package))
@@ -26,9 +27,13 @@
      (list
       #:payload payload
       #:executable (package-name payload)
+      #:desktop-network? #t
+      #:desktop-audio? #t
       ;; Electron's bundled Fontconfig assumes /etc/fonts instead of Guix's
       ;; store configuration, even when fc-match finds its own config.
-      #:set-environment (list (cons "FONTCONFIG_FILE"
+      #:set-environment (list (cons "LD_LIBRARY_PATH"
+                                    (file-append pulseaudio "/lib"))
+                             (cons "FONTCONFIG_FILE"
                                     (file-append fontconfig
                                                  "/etc/fonts/fonts.conf")))
       #:desktop-application (package-name payload)))
@@ -38,6 +43,7 @@
     (inputs (list coreutils-minimal
                   util-linux
                   dbus
+                  pulseaudio
                   fontconfig
                   font-dejavu
                   font-ipa))

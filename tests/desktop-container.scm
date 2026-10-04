@@ -19,6 +19,13 @@
   (mkdir-p host-home)
   (mkdir-p host-runtime)
   (bind endpoint AF_UNIX wayland)
+  (test-assert "playback accepts a local socket owned by the current user"
+    (parse-playback-endpoint (string-append "unix:" wayland)))
+  (test-error "playback cannot use a TCP endpoint" #t
+    (parse-playback-endpoint "tcp:localhost:4713"))
+  (test-error "playback cannot connect to another user's socket" #t
+    (parse-playback-endpoint (string-append "unix:" wayland)
+                             #:uid (+ 1 (getuid))))
   (define (host-environment name)
     (assoc-ref `(("XDG_STATE_HOME" . ,host-state)
                  ("XDG_RUNTIME_DIR" . ,host-runtime)

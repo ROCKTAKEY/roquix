@@ -12,11 +12,20 @@ for argument in "$@"; do
     fi
     ;;
   --host-port=*)
-    if timeout 2 bash -c 'exec 3<>/dev/tcp/127.0.0.1/$1' bash \
-      "${argument#--host-port=}" 2>/dev/null; then
-      echo 'host loopback is reachable'
+    [ "$(curl --noproxy '*' --max-time 3 --fail --silent \
+      "http://127.0.0.1:${argument#--host-port=}/")" = 'server-ok' ]
+    ;;
+  --require-playback)
+    [ -n "${PULSE_SERVER-}" ]
+    sources=$(pactl list short sources)
+    [ "$(printf '%s\n' "$sources" | wc -l)" -eq 1 ]
+    printf '%s\n' "$sources" | grep -q 'playback.monitor'
+    if pactl load-module module-null-source source_name=host-recording; then
+      echo 'audio clients can load recording modules'
       exit 1
     fi
+    yes "$(printf '\100\300')" | head -c 192000 | \
+      pacat --playback --raw --rate=48000 --format=u8 --channels=1
     ;;
   --*) ;;
   *)
@@ -34,7 +43,7 @@ for argument in "$@"; do
   esac
 done
 
-[ -z "${DISPLAY-}${XAUTHORITY-}${PULSE_SERVER-}${XDG_CONFIG_HOME-}${XDG_DATA_HOME-}${XDG_CACHE_HOME-}${SSH_AUTH_SOCK-}" ]
+[ -z "${DISPLAY-}${XAUTHORITY-}${XDG_CONFIG_HOME-}${XDG_DATA_HOME-}${XDG_CACHE_HOME-}${SSH_AUTH_SOCK-}" ]
 [ -S "$XDG_RUNTIME_DIR/wayland-0" ]
 [ ! -e "$XDG_RUNTIME_DIR/host-service" ]
 [ ! -e /dev/dri ] && [ ! -e /dev/snd ]

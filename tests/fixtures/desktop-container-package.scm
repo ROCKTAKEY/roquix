@@ -6,6 +6,8 @@
              (gnu packages bash)
              (gnu packages glib)
              (gnu packages freedesktop)
+             (gnu packages curl)
+             (gnu packages pulseaudio)
              (roquix build-system container-launcher))
 
 (define payload
@@ -37,5 +39,8 @@
   (build-system container-launcher-build-system)
   (arguments (list #:payload payload
                    #:executable "desktop-isolation-probe"
+                   #:network? #t
+                   #:desktop-audio? #t
                    #:desktop-application "isolation-probe"))
-  (inputs (list coreutils-minimal bash-minimal dbus grep wayland-utils)))
+  (inputs (list coreutils-minimal bash-minimal dbus grep wayland-utils
+                curl pulseaudio)))

@@ -1,6 +1,7 @@
-"""Run with PROBE, DBUS_BIN_DIRECTORY, WESTON, and WAYLAND_INFO paths."""
+"""Run with PROBE, DBUS_BIN_DIRECTORY, WESTON, WAYLAND_INFO, and PULSE_BIN_DIRECTORY."""
 
 import os
+import http.server
 from pathlib import Path
 import selectors
 import signal
@@ -9,12 +10,24 @@ import subprocess
 import sys
 import tempfile
 import time
+import threading
 import unittest
 
 PROBE = str(Path(sys.argv.pop(1)).resolve())
 DBUS = Path(sys.argv.pop(1)).resolve()
 WESTON = str(Path(sys.argv.pop(1)).resolve())
 WAYLAND_INFO = str(Path(sys.argv.pop(1)).resolve())
+PULSE = Path(sys.argv.pop(1)).resolve()
+
+
+class Server(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"server-ok")
+
+    def log_message(self, *args):
+        pass
 
 
 class DesktopIsolationTests(unittest.TestCase):
@@ -33,7 +46,7 @@ class DesktopIsolationTests(unittest.TestCase):
         if process.stdout is not None:
             process.stdout.close()
 
-    def test_only_private_state_and_display_are_accessible(self):
+    def test_connections_and_playback_preserve_host_resource_isolation(self):
         with tempfile.TemporaryDirectory(prefix="roquix-isolation-") as temporary:
             root = Path(temporary)
             runtime = root / "runtime"
@@ -47,11 +60,11 @@ class DesktopIsolationTests(unittest.TestCase):
             cwd_secret = cwd / "host-working-directory-secret"
             cwd_secret.write_text("host-only")
             with socket.socket(socket.AF_UNIX) as host_service, \
-                    socket.socket(socket.AF_INET) as host_listener:
+                    http.server.ThreadingHTTPServer(("127.0.0.1", 0), Server) as host_listener:
                 host_service.bind(str(runtime / "host-service"))
-                host_listener.bind(("127.0.0.1", 0))
-                host_listener.listen()
-                port = host_listener.getsockname()[1]
+                threading.Thread(target=host_listener.serve_forever, daemon=True).start()
+                self.addCleanup(host_listener.shutdown)
+                port = host_listener.server_address[1]
                 with socket.create_connection(("127.0.0.1", port), timeout=1):
                     pass
                 environment = dict(
@@ -61,7 +74,7 @@ class DesktopIsolationTests(unittest.TestCase):
                     WAYLAND_DISPLAY="wayland-test",
                     DISPLAY=":123",
                     XAUTHORITY=str(secret),
-                    PULSE_SERVER="unix:" + str(runtime / "host-service"),
+                    PULSE_SERVER="unix:" + str(runtime / "host-audio"),
                     XDG_CONFIG_HOME=str(root / "host-config"),
                     XDG_DATA_HOME=str(root / "host-data"),
                     XDG_CACHE_HOME=str(root / "host-cache"),
@@ -107,16 +120,51 @@ class DesktopIsolationTests(unittest.TestCase):
                     if control.returncode == 0:
                         break
                 self.assertEqual(control.returncode, 0, control.stderr.decode())
+                configuration = root / "host-audio.pa"
+                configuration.write_text(
+                    "load-module module-native-protocol-unix socket=" + str(runtime / "host-audio")
+                    + " auth-anonymous=1\n"
+                    + "load-module module-null-sink sink_name=host-playback\n"
+                    + "load-module module-null-source source_name=host-microphone\n"
+                    + "set-default-sink host-playback\n"
+                )
+                audio = subprocess.Popen(
+                    [str(PULSE / "pulseaudio"), "--daemonize=no", "--use-pid-file=no",
+                     "--exit-idle-time=-1", "--high-priority=no", "--realtime=no", "-n",
+                     "--file=" + str(configuration)],
+                    env=dict(environment, HOME=str(root), PULSE_CONFIG_PATH=str(root)),
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+                )
+                self.addCleanup(self.stop, audio)
+                self.wait_for_path(audio, runtime / "host-audio")
+                control = subprocess.run(
+                    [str(PULSE / "pactl"), "list", "short", "sources"],
+                    env=environment, capture_output=True, text=True, timeout=5,
+                )
+                self.assertEqual(control.returncode, 0, control.stderr)
+                self.assertIn("host-microphone", control.stdout)
+                recording = root / "host-recording.pcm"
+                with recording.open("wb") as output:
+                    recorder = subprocess.Popen(
+                        [str(PULSE / "parec"), "--device=host-playback.monitor", "--raw",
+                         "--format=s16le", "--rate=48000", "--channels=2"],
+                        env=environment, stdout=output, stderr=subprocess.DEVNULL,
+                        start_new_session=True,
+                    )
+                self.addCleanup(self.stop, recorder)
                 displays = set(Path("/tmp").glob("roquix-private-display-*"))
                 with secret.open("rb") as inherited:
                     result = subprocess.run(
-                        [PROBE, "--require-private-display", "--host-port=" + str(port), str(secret),
+                        [PROBE, "--require-playback", "--require-private-display", "--host-port=" + str(port), str(secret),
                          str(runtime / "host-service"), str(cwd_secret),
                          str(Path.home() / ".ssh")],
                         cwd=cwd, env=environment, pass_fds=(inherited.fileno(),),
                         capture_output=True, text=True, timeout=30,
                     )
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.stop(recorder)
+                self.assertGreater(sum(byte != 0 for byte in recording.read_bytes()), 48000,
+                                   "application audio did not reach the host playback sink")
                 self.assertIn("isolation=ok", result.stdout)
                 token = state / "roquix/containers/isolation-probe/state-token"
                 self.assertEqual(token.read_text(), "state=private\n")

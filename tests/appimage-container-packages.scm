@@ -62,8 +62,12 @@
            '() (argument-ref wrapper #:share '()))
          (test-equal "host session endpoints are not exposed by package defaults"
            '() (argument-ref wrapper #:expose '()))
-         (test-assert "host network access is disabled"
+         (test-assert "application server connections are permitted"
+           (argument-ref wrapper #:desktop-network? #f))
+         (test-assert "applications do not share the host network namespace"
            (not (argument-ref wrapper #:network? #f)))
+         (test-assert "application audio playback is permitted"
+           (argument-ref wrapper #:desktop-audio? #f))
          (test-assert "working directory is hidden"
            (argument-ref wrapper #:no-cwd? #t))))))
 

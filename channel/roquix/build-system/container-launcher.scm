@@ -9,8 +9,12 @@
   #:use-module (srfi srfi-13)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages containers)
+  #:use-module (gnu packages linux)
   #:use-module (roquix build container-launcher)
   #:use-module (roquix build desktop-container)
+  #:use-module (roquix build desktop-network)
   #:export (container-launcher-build-system))
 
 ;; A wrapper package keeps the payload outside its own output, allowing a
@@ -27,7 +31,7 @@
                 (preserve-environment '()) (set-environment '())
                 (share '()) (expose '())
                 (network? #f) (emulate-fhs? #f) (no-cwd? #t)
-                desktop-application
+                desktop-application (desktop-audio? #f) (desktop-network? #f)
                 source inputs native-inputs outputs system target
                 #:allow-other-keys)
   (unless (package? payload)
@@ -46,8 +50,13 @@
   (for-each (lambda (name value)
               (unless (boolean? value)
                 (error "container launcher option must be boolean" name value)))
-            '(network? emulate-fhs? no-cwd?)
-            (list network? emulate-fhs? no-cwd?))
+            '(network? emulate-fhs? no-cwd? desktop-audio? desktop-network?)
+            (list network? emulate-fhs? no-cwd? desktop-audio? desktop-network?))
+
+  (when (and (or desktop-audio? desktop-network?) (not desktop-application))
+    (error "desktop audio and networking require a desktop application"))
+  (when (and network? desktop-network?)
+    (error "host network sharing conflicts with private desktop networking"))
 
   (when desktop-application
     (parse-desktop-application desktop-application))
@@ -65,7 +74,23 @@
    #:network? network? #:emulate-fhs? emulate-fhs? #:no-cwd? no-cwd?
    #:getenv (lambda (_) "/runtime"))
 
-  (let* ((runtime-profile
+  (let* ((modules
+          (source-module-closure
+           '((roquix build container-launcher)
+             (roquix build desktop-container)
+             (roquix build desktop-network)
+             (guix build utils))
+           #:select? (lambda (module) (memq (car module) '(guix roquix)))))
+         (network-child
+          (and desktop-network?
+               (program-file
+                "desktop-network-child"
+                (with-imported-modules modules
+                  #~(begin
+                      (use-modules (roquix build desktop-network))
+                      (run-network-child (cadr (command-line))
+                                         (cddr (command-line))))))))
+         (runtime-profile
           (profile
             (content (packages->manifest
                       (cons (list payload payload-output)
@@ -74,14 +99,11 @@
           (program-file
            executable
            (with-imported-modules
-            (source-module-closure
-             '((roquix build container-launcher)
-              (roquix build desktop-container)
-               (guix build utils))
-             #:select? (lambda (module) (memq (car module) '(guix roquix))))
+            modules
             #~(begin
                 (use-modules (roquix build container-launcher)
-                             (roquix build desktop-container))
+                             (roquix build desktop-container)
+                             (roquix build desktop-network))
                 (let ((guix #$(file-append guix "/bin/guix")))
                   (define (launch desktop)
                     (let ((command
@@ -102,7 +124,7 @@
                             #:expose
                             (append (if desktop (desktop-runtime-expose desktop) '())
                                     '#$(sexp->gexp expose))
-                            #:network? #$network?
+                            #:network? #$(or network? desktop-network?)
                             #:emulate-fhs? #$emulate-fhs?
                             #:no-cwd? #$no-cwd?
                             #:private-session-bus? (and desktop #t)
@@ -110,7 +132,14 @@
                             (append (if desktop (desktop-runtime-arguments desktop) '())
                                     (cdr (command-line))))))
                       (if desktop
-                          (run-desktop-command (cons guix command))
+                          (if #$desktop-network?
+                              (run-desktop-network
+                               (desktop-runtime-network desktop) (cons guix command)
+                               #$(file-append util-linux "/bin/unshare")
+                               #$(and desktop-network?
+                                      (file-append slirp4netns "/bin/slirp4netns"))
+                               #$network-child)
+                              (run-desktop-command (cons guix command)))
                           (apply execl guix guix command))))
                   (seal-inherited-file-descriptors)
                   (if #$desktop-application
@@ -121,7 +150,11 @@
                                   (parse-desktop-application #$desktop-application)
                                   #$(and desktop-application
                                          (file-append weston "/bin/weston"))
-                                  launch)))
+                                  launch
+                                  #:audio-daemon
+                                  #$(and desktop-audio?
+                                         (file-append pulseaudio "/bin/pulseaudio"))
+                                  #:network? #$desktop-network?)))
                             (exit (or (status:exit-val status)
                                       (+ 128 (status:term-sig status))))))
                         (lambda (key signal) (exit (+ 128 signal))))

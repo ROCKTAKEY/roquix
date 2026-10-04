@@ -1,24 +1,33 @@
 (define-module (roquix build desktop-container)
   #:use-module (guix build utils)
   #:use-module (ice-9 regex)
+  #:use-module (roquix build desktop-process)
+  #:use-module (roquix build desktop-network)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (srfi srfi-9)
   #:export (parse-desktop-application prepare-desktop-runtime
+            parse-playback-endpoint
             call-with-private-desktop-runtime run-desktop-command
             desktop-runtime-share desktop-runtime-expose
-            desktop-runtime-environment desktop-runtime-arguments))
+            desktop-runtime-environment desktop-runtime-arguments
+            desktop-runtime-network))
 
 (define-record-type <desktop-application>
   (%desktop-application name) desktop-application?
   (name desktop-application-name))
 
 (define-record-type <desktop-runtime>
-  (%desktop-runtime share expose environment arguments)
+  (%desktop-runtime share expose environment arguments network)
   desktop-runtime?
   (share desktop-runtime-share)
   (expose desktop-runtime-expose)
   (environment desktop-runtime-environment)
-  (arguments desktop-runtime-arguments))
+  (arguments desktop-runtime-arguments)
+  (network desktop-runtime-network))
+
+(define-record-type <playback-endpoint>
+  (%playback-endpoint socket) playback-endpoint?
+  (socket playback-endpoint-socket))
 
 (define (parse-desktop-application name)
   (unless (and (string? name)
@@ -32,6 +41,28 @@
                (not (string-contains value "=")))
     (error "desktop host path must be absolute and contain no '='" value))
   value)
+
+(define* (parse-playback-endpoint server #:key (uid (getuid)))
+  (unless (and (string? server) (string-prefix? "unix:/" server))
+    (error "playback requires a local PulseAudio Unix socket" server))
+  (let* ((socket (host-path (substring server 5)))
+         (info (stat socket)))
+    ;; The endpoint becomes a PulseAudio module argument, so reject token and
+    ;; line delimiters before constructing the private server configuration.
+    (when (string-match "[[:space:]\"\\\\]" socket)
+      (error "invalid playback socket path" socket))
+    (unless (and (eq? (stat:type info) 'socket) (= (stat:uid info) uid))
+      (error "playback endpoint must be a socket owned by the current user" socket))
+    (%playback-endpoint socket)))
+
+(define (selected-playback-endpoint)
+  (let ((configured (getenv "PULSE_SERVER"))
+        (runtime (getenv "XDG_RUNTIME_DIR")))
+    (cond
+     (configured (parse-playback-endpoint configured))
+     ((and runtime (file-exists? (string-append runtime "/pulse/native")))
+      (parse-playback-endpoint (string-append "unix:" runtime "/pulse/native")))
+     (else #f))))
 
 (define (selected-wayland-socket getenv uid)
   (let* ((display (getenv "WAYLAND_DISPLAY"))
@@ -84,68 +115,58 @@
      (list (cons "XDG_RUNTIME_DIR" runtime)
            (cons "WAYLAND_DISPLAY" "wayland-0"))
      '("--enable-features=UseOzonePlatform" "--ozone-platform=wayland"
-       "--disable-dev-shm-usage"))))
-
-(define (spawn-command command environment)
-  (let ((pid (primitive-fork)))
-    (when (zero? pid)
-      (catch #t
-        (lambda ()
-          (setsid)
-          (sigaction SIGINT SIG_DFL)
-          (sigaction SIGTERM SIG_DFL)
-          (when environment (environ environment))
-          (apply execl (car command) command))
-        (lambda arguments (primitive-exit 127))))
-    pid))
-
-(define (call-with-child command environment procedure)
-  (let ((pid (spawn-command command environment))
-        (reaped? #f))
-    (dynamic-wind
-      (lambda () #t)
-      (lambda ()
-        (procedure pid
-                   (lambda (options)
-                     (let ((result (waitpid pid options)))
-                       (unless (zero? (car result)) (set! reaped? #t))
-                       result))))
-      (lambda ()
-        (unless reaped?
-          (false-if-exception (kill (- pid) SIGTERM))
-          ;; A signal may arrive before the child has established its session.
-          (false-if-exception (kill pid SIGTERM))
-          (waitpid pid))))))
-
-(define (wait-for-display socket wait)
-  (let ((deadline (+ (get-internal-real-time)
-                     (* 10 internal-time-units-per-second))))
-    (let loop ()
-      (unless (zero? (car (wait WNOHANG)))
-        (error "private Wayland compositor exited before becoming ready"))
-      (unless (file-exists? socket)
-        (when (> (get-internal-real-time) deadline)
-          (error "private Wayland compositor did not become ready"))
-        (usleep 100000)
-        (loop)))))
+       "--disable-dev-shm-usage") #f)))
 
 (define (run-desktop-command command)
   "Wait for the container and terminate its process group on interruption."
   (call-with-child command #f
-    (lambda (pid wait)
-      ;; Guile may defer Scheme signal handlers during a blocking waitpid.
-      (let loop ()
-        (let ((result (wait WNOHANG)))
-          (if (zero? (car result))
-              (begin (usleep 100000) (loop))
-              (cdr result)))))))
+    (lambda (pid wait) (wait-for-child wait))))
 
-(define (call-with-private-desktop-runtime application compositor procedure)
+(define (call-with-private-playback runtime endpoint daemon directory procedure)
+  (let* ((config (string-append directory "/audio.pa"))
+         (socket (string-append directory "/pulse-native"))
+         (target (string-append (assoc-ref (desktop-runtime-environment runtime)
+                                          "XDG_RUNTIME_DIR") "/pulse/native")))
+    ;; A host PulseAudio socket also permits recording and controlling other
+    ;; clients. Only the trusted tunnel connects to it; the payload's server
+    ;; has one playback sink and forbids replacing modules after startup.
+    ;; https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-tunnel-sink-new
+    (call-with-output-file config
+      (lambda (port)
+        (format port "load-module module-native-protocol-unix socket=~a auth-anonymous=1~%"
+                socket)
+        (format port "load-module module-tunnel-sink-new server=unix:~a sink_name=playback~%"
+                (playback-endpoint-socket endpoint))
+        (newline port)))
+    (call-with-child
+     (list daemon "--daemonize=no" "--use-pid-file=no" "--exit-idle-time=-1"
+           "--disallow-module-loading=yes" "--disallow-exit=yes"
+           "--high-priority=no" "--realtime=no" "--disable-shm=yes"
+           "--enable-memfd=no" "--log-target=stderr" "-n"
+           (string-append "--file=" config))
+     (list (string-append "HOME=" directory)
+           (string-append "XDG_RUNTIME_DIR=" directory)
+           (string-append "PULSE_CONFIG_PATH=" directory))
+     (lambda (pid wait)
+       (wait-for-ready wait (lambda () (file-exists? socket)) "private desktop socket")
+       (procedure
+        (%desktop-runtime
+         (desktop-runtime-share runtime)
+         (cons (cons socket target) (desktop-runtime-expose runtime))
+         (cons (cons "PULSE_SERVER" (string-append "unix:" target))
+               (desktop-runtime-environment runtime))
+         (desktop-runtime-arguments runtime)
+         (desktop-runtime-network runtime)))))))
+
+(define* (call-with-private-desktop-runtime application compositor procedure
+                                          #:key audio-daemon (network? #f))
   "Run PROCEDURE with a compositor that exposes only this application's desktop."
   (let* ((runtime (prepare-desktop-runtime application))
          (host-display (car (car (desktop-runtime-expose runtime))))
+         (audio (and audio-daemon (selected-playback-endpoint)))
          (directory (mkdtemp! "/tmp/roquix-private-display-XXXXXX"))
          (socket (string-append directory "/wayland-0"))
+         (network (and network? (prepare-desktop-network directory)))
          (handlers (map (lambda (signal)
                           (cons signal
                                 (sigaction signal
@@ -167,13 +188,17 @@
                (string-append "XDG_RUNTIME_DIR=" directory)
                (string-append "WAYLAND_DISPLAY=" host-display))
          (lambda (pid wait)
-           (wait-for-display socket wait)
-           (procedure
-            (%desktop-runtime
-             (desktop-runtime-share runtime)
-             (list (cons socket (cdr (car (desktop-runtime-expose runtime)))))
-             (desktop-runtime-environment runtime)
-             (desktop-runtime-arguments runtime))))))
+           (wait-for-ready wait (lambda () (file-exists? socket)) "private desktop socket")
+           (let ((private
+                  (%desktop-runtime
+                   (desktop-runtime-share runtime)
+                   (append (if network (desktop-network-expose network) '())
+                           (list (cons socket (cdr (car (desktop-runtime-expose runtime))))))
+                   (desktop-runtime-environment runtime)
+                   (desktop-runtime-arguments runtime) network)))
+             (if audio
+                 (call-with-private-playback private audio audio-daemon directory procedure)
+                 (procedure private))))))
       (lambda ()
         (for-each (lambda (handler)
                     (sigaction (car handler) (car (cdr handler))

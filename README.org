@@ -295,6 +295,17 @@ variables.  Add options to the package's =arguments= as needed:
 nested Weston compositor for the named application.  Add =dbus= to its runtime inputs
 for the private session bus.  The application ID is parsed before lowering,
 and its display endpoint and state directory are checked before launch.
+=#:desktop-audio? #t= enables a private PulseAudio server with a playback
+tunnel to the host's local PulseAudio-compatible socket.  This option requires
+=#:desktop-application=.  The host socket is selected by a =unix:/...=
+=PULSE_SERVER=, or =XDG_RUNTIME_DIR/pulse/native= when that variable is unset.
+If no default socket exists, the application starts without audio.
+=#:desktop-network? #t= enables LAN and Internet connections through
+=slirp4netns= in a separate network namespace.  It requires
+=#:desktop-application= and cannot be combined with =#:network? #t=, which
+shares the host network namespace.  Private networking requires unprivileged
+user namespaces and =/dev/net/tun=.  If its bridge cannot start, the launcher
+exits before starting the payload.
 
 =#:set-environment= values can be strings or Guix file-like objects such as
 =(file-append fontconfig "/etc/fonts/fonts.conf")=.  File-like values pin the
@@ -305,7 +316,7 @@ can be an absolute string for the same path inside the container, a
 =SOURCE . TARGET= pair, or =(environment "NAME")= for a path read from the
 environment at launch.  An unset environment variable omits that mount.
 Use existing host paths in place of the example paths.  Network access is
-disabled unless =#:network?= is true; the current directory is hidden by
+disabled unless =#:network?= or =#:desktop-network?= is true; the current directory is hidden by
 default (=#:no-cwd? #t=).
 
 If the payload provides =share/applications/*.desktop=, the wrapper exports
@@ -344,16 +355,27 @@ private runtime directory.  The compositor uses software rendering and runs
 without host configuration, a desktop launcher, or a host clipboard bridge.
 The launcher never
 falls back to host X11 or shares the host runtime directory, D-Bus session,
-Secret Service, SSH agent, audio service, GPU, or sound devices.  Each
+Secret Service, SSH agent, host audio socket, GPU, or sound devices.  Each
 container starts its own D-Bus session.  Standard input, output, and error
 remain available; other inherited file descriptors are sealed before exec.
 
-Network access is disabled.  Feishin and Mattermost require a deliberately
-configured network policy before they can connect to their servers; host
-network sharing with =#:network? #t= also grants access to host localhost.
-Audio playback and tray integration require explicit additional access and
-are disabled by these package defaults.  Logseq can keep graphs in its
-private home.  To grant access to an existing graph, derive a package with
+LAN and Internet connections are enabled with =#:desktop-network? #t=.
+=slirp4netns= provides outbound networking and DNS in a private network
+namespace, without a fixed list of servers or ports.  The bridge disables
+access to the host loopback interface and provides no port forwards.  Host
+abstract Unix sockets are outside the application's network namespace.
+Services exposed on the host's LAN or public address remain reachable, as do
+other LAN services.  These services must enforce their own authentication.
+Network access also allows the application to transmit data from its private
+home and explicitly shared directories.
+
+Audio playback uses a private PulseAudio server whose only output is a
+playback tunnel to the host's default sink.  The payload can record its own
+playback monitor, but cannot enumerate the host microphone or other clients'
+audio.  Loading additional modules is disabled.  The host can use PulseAudio
+or PipeWire's PulseAudio compatibility server.  The launcher's runtime inputs
+provide the PulseAudio client library.  Tray integration remains disabled.
+Logseq can keep graphs in its private home.  To grant access to an existing graph, derive a package with
 an explicit =#:share= mapping for that graph directory, for example:
 
 #+BEGIN_SRC scheme
@@ -374,7 +396,7 @@ AppImage package modules use =appimage-container-package= from
 =(roquix packages appimage-container)= to define these variants.  The payload
 keeps its ELF fixups and runtime tool wrappers.  The runtime profile includes
 sandbox commands, a private D-Bus session, Fontconfig, DejaVu fonts, and
-Japanese IPA fonts.
+Japanese IPA fonts, along with PulseAudio playback support.
 
 ** Design
 - Only Type 2 AppImages are supported.
