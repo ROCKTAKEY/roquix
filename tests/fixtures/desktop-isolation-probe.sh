@@ -11,9 +11,15 @@ for argument in "$@"; do
       exit 1
     fi
     ;;
-  --host-port=*)
+  --host-netns=*)
+    [ "$(readlink /proc/self/ns/net)" != "${argument#--host-netns=}" ] || {
+      echo 'host network namespace is shared'
+      exit 1
+    }
+    ;;
+  --server-url=*)
     [ "$(curl --noproxy '*' --max-time 3 --fail --silent \
-      "http://127.0.0.1:${argument#--host-port=}/")" = 'server-ok' ]
+      "${argument#--server-url=}")" = 'server-ok' ]
     ;;
   --require-playback)
     [ -n "${PULSE_SERVER-}" ]

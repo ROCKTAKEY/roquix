@@ -39,7 +39,7 @@
   (build-system container-launcher-build-system)
   (arguments (list #:payload payload
                    #:executable "desktop-isolation-probe"
-                   #:network? #t
+                   #:desktop-network? #t
                    #:desktop-audio? #t
                    #:desktop-application "isolation-probe"))
   (inputs (list coreutils-minimal bash-minimal dbus grep wayland-utils

@@ -47,6 +47,9 @@ class DesktopIsolationTests(unittest.TestCase):
             process.stdout.close()
 
     def test_connections_and_playback_preserve_host_resource_isolation(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as route:
+            route.connect(("192.0.2.1", 9))
+            lan_address = route.getsockname()[0]
         with tempfile.TemporaryDirectory(prefix="roquix-isolation-") as temporary:
             root = Path(temporary)
             runtime = root / "runtime"
@@ -60,12 +63,14 @@ class DesktopIsolationTests(unittest.TestCase):
             cwd_secret = cwd / "host-working-directory-secret"
             cwd_secret.write_text("host-only")
             with socket.socket(socket.AF_UNIX) as host_service, \
-                    http.server.ThreadingHTTPServer(("127.0.0.1", 0), Server) as host_listener:
+                    http.server.ThreadingHTTPServer(("0.0.0.0", 0), Server) as host_listener:
                 host_service.bind(str(runtime / "host-service"))
                 threading.Thread(target=host_listener.serve_forever, daemon=True).start()
                 self.addCleanup(host_listener.shutdown)
                 port = host_listener.server_address[1]
                 with socket.create_connection(("127.0.0.1", port), timeout=1):
+                    pass
+                with socket.create_connection((lan_address, port), timeout=1):
                     pass
                 environment = dict(
                     os.environ,
@@ -155,7 +160,9 @@ class DesktopIsolationTests(unittest.TestCase):
                 displays = set(Path("/tmp").glob("roquix-private-display-*"))
                 with secret.open("rb") as inherited:
                     result = subprocess.run(
-                        [PROBE, "--require-playback", "--require-private-display", "--host-port=" + str(port), str(secret),
+                        [PROBE, "--require-playback", "--require-private-display",
+                         "--host-netns=" + os.readlink("/proc/self/ns/net"),
+                         "--server-url=http://" + lan_address + ":" + str(port) + "/", str(secret),
                          str(runtime / "host-service"), str(cwd_secret),
                          str(Path.home() / ".ssh")],
                         cwd=cwd, env=environment, pass_fds=(inherited.fileno(),),
