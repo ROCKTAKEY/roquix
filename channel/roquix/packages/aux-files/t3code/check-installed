@@ -162,6 +162,31 @@
              (regular-file? (string-append output
                              "/share/applications/com.t3tools.T3Code.desktop")))
 
+(let ((script (canonicalize-path (string-append (dirname (current-filename))
+                                                "/desktop-menu"))))
+  (test-assert "the URL handler does not hide or duplicate the menu launcher"
+    (call-with-temporary-directory
+     (lambda (directory)
+       (let ((applications (string-append directory "/data/applications")))
+         (mkdir-p applications)
+         ;; Upstream registers a hidden handler with this identity on startup.
+         ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/apps/desktop/src/app/DesktopLinuxUrlHandler.ts
+         (call-with-output-file
+             (string-append applications "/com.t3tools.T3Code.desktop")
+           (lambda (port)
+             (format port "[Desktop Entry]~%Type=Application~%Name=T3 Code~%Exec=~a/bin/t3code %U~%NoDisplay=true~%MimeType=x-scheme-handler/t3code;~%"
+                     output)))
+         (string-contains
+          (capture "env" "-i"
+                   (string-append "HOME=" directory)
+                   (string-append "XDG_DATA_HOME=" directory "/data")
+                   (string-append "XDG_DATA_DIRS=" output "/share")
+                   "XDG_CURRENT_DESKTOP=sway"
+                   (readlink "/proc/self/exe") "--no-auto-compile"
+                   script (caddr (command-line))
+                   (string-append output "/bin/t3code"))
+          "desktop-menu-contract-ok"))))))
+
 ;; Pre-ready URL-handler registration copies this app-relative path before
 ;; DesktopAssets can resolve the resource-directory icon after readiness.
 (let ((icon (string-append appdir

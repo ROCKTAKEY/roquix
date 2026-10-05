@@ -1,0 +1,39 @@
+(use-modules (system foreign))
+
+(define gio (dynamic-link (cadr (command-line))))
+(define executable (caddr (command-line)))
+
+(define (gio-function name result arguments)
+  (pointer->procedure result (dynamic-func name gio) arguments))
+
+(define application-list
+  ((gio-function "g_app_info_get_all" '* '())))
+(define should-show?
+  (gio-function "g_app_info_should_show" int '(*)))
+(define application-executable
+  (gio-function "g_app_info_get_executable" '* '(*)))
+(define application-id
+  (gio-function "g_app_info_get_id" '* '(*)))
+
+;; GIO applies user-entry precedence and NoDisplay before menu enumeration.
+;; https://docs.gtk.org/gio/method.AppInfo.should_show.html
+(define visible-launchers
+  (let loop ((entries application-list) (launchers '()))
+    (if (null-pointer? entries)
+        launchers
+        (let* ((entry (parse-c-struct entries '(* * *)))
+               (application (car entry)))
+          (loop (cadr entry)
+                (if (and (not (zero? (should-show? application)))
+                         (string=? executable
+                                   (pointer->string
+                                    (application-executable application))))
+                    (cons (pointer->string (application-id application)) launchers)
+                    launchers))))))
+
+((gio-function "g_list_free_full" void '(* *))
+ application-list (dynamic-func "g_object_unref" gio))
+
+(unless (= 1 (length visible-launchers))
+  (error "expected one visible packaged launcher" visible-launchers))
+(display "desktop-menu-contract-ok")

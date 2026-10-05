@@ -972,12 +972,19 @@
             (chmod (string-append bin "/t3code") #o755)
             (mkdir-p (string-append output
                                     "/share/applications"))
-            (call-with-output-file (string-append output
-                                    "/share/applications/com.t3tools.T3Code.desktop")
-              (lambda (port)
-                (format port
-                 "[Desktop Entry]~%Type=Application~%Name=T3 Code~%Exec=~a/bin/t3code %U~%Icon=t3code~%Categories=Development;~%MimeType=x-scheme-handler/t3code;~%StartupWMClass=t3code~%"
-                 output)))))
+            ;; Upstream writes a hidden URL handler under its desktop identity.
+            ;; A distinct menu launcher avoids its user-level NoDisplay override.
+            ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/apps/desktop/src/app/DesktopLinuxUrlHandler.ts
+            (for-each
+             (lambda (entry)
+               (call-with-output-file
+                   (string-append output "/share/applications/" (car entry))
+                 (lambda (port)
+                   (format port
+                    "[Desktop Entry]~%Type=Application~%Name=T3 Code~%Exec=~a/bin/t3code %U~%Icon=t3code~%MimeType=x-scheme-handler/t3code;~%~a"
+                    output (cdr entry)))))
+             '(("t3code.desktop" . "Categories=Development;\nStartupWMClass=t3code\n")
+               ("com.t3tools.T3Code.desktop" . "NoDisplay=true\n")))))
 
         (define (install-cli inputs output dependencies-script)
           (let* ((application (string-append output "/lib/t3code-cli"))
@@ -1044,7 +1051,7 @@
 
         (modify-phases %standard-phases
           (add-after 'validate-runpath 'check-installed
-            (lambda* (#:key tests? outputs #:allow-other-keys)
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
               (when tests?
                 (if #$desktop?
                     (invoke "env"
@@ -1053,9 +1060,10 @@
                             (string-append "GUILE_LOAD_COMPILED_PATH="
                                            (string-join %load-compiled-path ":"))
                             #+(file-append guile-3.0 "/bin/guile")
-                            "--no-auto-compile"
-                            #$(file-append %t3code-installed-tests "/check-installed")
-                            (assoc-ref outputs "out"))
+                        "--no-auto-compile"
+                        #$(file-append %t3code-installed-tests "/check-installed")
+                        (assoc-ref outputs "out")
+                        (search-input-file inputs "/lib/libgio-2.0.so"))
                     (invoke "node"
                             #$(file-append %t3code-installed-tests "/check-cli-installed.mjs")
                             (assoc-ref outputs "out")
