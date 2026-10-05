@@ -852,6 +852,8 @@
             ;; These upstream suites cover the bundle boundary and staged resources.
             ;; GUI/provider suites require a running session or credentials.
             (invoke "vp" "test" "scripts/lib/cli-external-packages.test.ts")
+            (with-directory-excursion "apps/web"
+              (invoke "vp" "test" "src/appearanceFonts.test.ts"))
             (when #$desktop?
               (with-directory-excursion "apps/desktop"
                 (invoke "vp" "test" "scripts/browser-secret-native.test.mjs"
@@ -1005,7 +1007,9 @@
                       '("/bin/bash" "/bin/env" "/bin/git" "/bin/ssh"))))))
 
         (define* (wrap-desktop #:key inputs outputs #:allow-other-keys)
-          (let ((gtk (assoc-ref inputs "gtk+")))
+          (let ((gtk (assoc-ref inputs "gtk+"))
+                (fontconfig-file
+                 (search-input-file inputs "/etc/fonts/fonts.conf")))
             (wrap-program (string-append (assoc-ref outputs "out") "/bin/t3code")
               `("PATH" ":" prefix
                 ,(map (lambda (file)
@@ -1017,7 +1021,12 @@
                         "/bin/xdg-open"
                         "/bin/update-desktop-database")))
               `("FONTCONFIG_FILE" ":" =
-                (,(search-input-file inputs "/etc/fonts/fonts.conf")))
+                (,fontconfig-file))
+              ;; The configuration includes conf.d relative to Fontconfig's
+              ;; search directory, which Electron cannot infer from Guix paths.
+              ;; https://fontconfig.pages.freedesktop.org/fontconfig/fontconfig-user.html
+              `("FONTCONFIG_PATH" ":" =
+                (,(dirname fontconfig-file)))
               `("GDK_PIXBUF_MODULE_FILE" ":" =
                 (,(string-append gtk "/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache")))
               `("GSETTINGS_SCHEMA_DIR" ":" =
@@ -1101,6 +1110,7 @@
       #:phases (t3code-build-phases version %ghostty-revision
                                     %t3code-runtime-dependencies-script)))
     (native-inputs `(("t3code-vite-plus-native" ,t3code-vite-plus-native)
+                     ("xvfb-run" ,xvfb-run)
                      ("t3code-tailwind-native" ,t3code-tailwind-native)
                      ("t3code-lightningcss-native" ,t3code-lightningcss-native)
                      ("pkg-config" ,pkg-config)

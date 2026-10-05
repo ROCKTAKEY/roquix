@@ -1,5 +1,6 @@
 (use-modules ((guix build syscalls) #:select (mkdtemp!))
              (guix build utils)
+             (ice-9 ftw)
              (ice-9 popen)
              (ice-9 regex)
              (rnrs io ports)
@@ -105,6 +106,47 @@
        (eq? 'regular
             (stat:type (stat file)))))
 
+;; A private Electron resource tree exercises the installed renderer's CSS
+;; without opening the application's user profile or starting its backend.
+(define (code-font-output script)
+  (let ((environment (launcher-environment)))
+    (call-with-temporary-directory
+     (lambda (directory)
+       (let* ((runtime (string-append directory "/electron"))
+              (application (string-append runtime "/resources/app"))
+              (executable (string-append runtime "/electron")))
+         (mkdir-p application)
+         (for-each (lambda (file)
+                     (symlink (string-append appdir "/" file)
+                              (string-append runtime "/" file)))
+                   (scandir appdir (lambda (file)
+                                    (not (member file
+                                                 '("." ".." "resources"
+                                                   "t3code" "AppRun"))))))
+         (copy-file (string-append appdir "/t3code") executable)
+         (chmod executable #o755)
+         (install-file script application)
+         (call-with-output-file (string-append application "/package.json")
+           (lambda (port)
+             (display "{\"name\":\"code-font-test\",\"main\":\"code-font.cjs\"}" port)))
+         (apply capture "env" "-i"
+                (append
+                 (filter-map (lambda (variable)
+                               (let ((value (assoc-ref environment variable)))
+                                 (and value
+                                      (string-append variable "=" value))))
+                             '("FONTCONFIG_FILE" "FONTCONFIG_PATH"
+                               "LD_LIBRARY_PATH"))
+                 (list
+                  (string-append "HOME=" directory)
+                  (string-append "XDG_CONFIG_HOME=" directory "/config")
+                  (string-append "XDG_CACHE_HOME=" directory "/cache")
+                  (string-append "XDG_DATA_HOME=" directory "/data")
+                  (which "xvfb-run") "-a"
+                  executable "--no-sandbox" "--disable-gpu"
+                  "--disable-dev-shm-usage" "--ozone-platform=x11"
+                  output))))))))
+
 (define (elf-file? file)
   (and (regular-file? file)
        (call-with-input-file file
@@ -182,6 +224,12 @@
 (test-equal "when SHELL is explicitly set, the launcher preserves its value"
             "/chosen/login-shell"
             (assoc-ref (launcher-environment "/chosen/login-shell") "SHELL"))
+
+(let ((script (canonicalize-path (string-append (dirname (current-filename))
+                                                "/code-font.cjs"))))
+  (test-assert "without host settings, code and generic monospace have equal advances"
+               (string-contains (code-font-output script)
+                                "code-font-contract-ok")))
 
 ;; Redistribution must include upstream licensing information.  The marker
 ;; check verifies installation, not the full upstream text or its authenticity.
