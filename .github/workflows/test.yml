@@ -25,8 +25,10 @@ jobs:
       - run: guix describe
       - name: Test guix extra-profile
         run: tests/extra-profile/run-tests.sh
-      - name: Test T3 Code CLI package
-        run: guix repl -L channel -- tests/t3code-cli-package.scm
+      - name: Test T3 Code Home service
+        run: |
+          guix repl -L channel -- tests/t3code-cli-package.scm
+          guix repl -L channel -- tests/t3code-home-service.scm
       - name: List packages to build
         id: packages-to-build
         run: |
