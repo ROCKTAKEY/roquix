@@ -113,6 +113,24 @@
 
 (test-begin "t3code-installed")
 
+;; Electron's Wayland app_id comes from DesktopEarlyElectronStartup, so the
+;; installed desktop filename must match it for the compositor to find the icon.
+;; https://www.electronjs.org/docs/latest/api/app#appsetdesktopnamename-linux
+(test-assert "the desktop entry matches the application's Linux identity"
+             (regular-file? (string-append output
+                             "/share/applications/com.t3tools.T3Code.desktop")))
+
+;; Pre-ready URL-handler registration copies this app-relative path before
+;; DesktopAssets can resolve the resource-directory icon after readiness.
+(let ((icon (string-append appdir
+                          "/resources/app/apps/desktop/prod-resources/icon.png")))
+  (test-assert "early desktop registration can copy the packaged application icon"
+               (and (regular-file? icon)
+                    (equal? (call-with-input-file icon get-bytevector-all)
+                            (call-with-input-file (string-append appdir
+                                                   "/resources/icon.png")
+                              get-bytevector-all)))))
+
 (let ((environment (launcher-environment)))
   ;; AppRun probes sandbox support with `unshare -Ur true`.  The application
   ;; also delegates shell scripts, Git, SSH, URL opening, and callback MIME

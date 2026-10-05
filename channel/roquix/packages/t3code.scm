@@ -931,16 +931,18 @@
             (install-file
              "native/browser-secret/build/x64/t3-browser-secret"
              (string-append resources "/browser-secret"))
-            (install-file
-             "assets/prod/black-universal-1024.png"
-             (string-append output
-              "/share/icons/hicolor/1024x1024/apps"))
-            (copy-file "assets/prod/black-universal-1024.png"
-                       (string-append resources "/icon.png"))
-            (rename-file (string-append output
-                          "/share/icons/hicolor/1024x1024/apps/black-universal-1024.png")
-                         (string-append output
-                          "/share/icons/hicolor/1024x1024/apps/t3code.png"))
+            ;; Pre-ready desktop registration reads this app-relative icon before
+            ;; the resource resolver is available.
+            ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/apps/desktop/src/app/DesktopPreReadyPlatform.ts
+            (for-each (lambda (target)
+                        (mkdir-p (dirname target))
+                        (copy-file "assets/prod/black-universal-1024.png"
+                                   target))
+                      (list (string-append output
+                             "/share/icons/hicolor/1024x1024/apps/t3code.png")
+                            (string-append resources "/icon.png")
+                            (string-append application
+                             "/apps/desktop/prod-resources/icon.png")))
             (install-file "LICENSE"
                           (string-append output
                            "/share/licenses/t3code"))
@@ -969,7 +971,7 @@
             (mkdir-p (string-append output
                                     "/share/applications"))
             (call-with-output-file (string-append output
-                                    "/share/applications/t3code.desktop")
+                                    "/share/applications/com.t3tools.T3Code.desktop")
               (lambda (port)
                 (format port
                  "[Desktop Entry]~%Type=Application~%Name=T3 Code~%Exec=~a/bin/t3code %U~%Icon=t3code~%Categories=Development;~%MimeType=x-scheme-handler/t3code;~%StartupWMClass=t3code~%"
