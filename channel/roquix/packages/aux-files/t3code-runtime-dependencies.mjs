@@ -2,14 +2,12 @@ import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, symlinkSync 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const [root, destination] = process.argv.slice(2);
+const [root, destination, variant = "desktop"] = process.argv.slice(2);
+if (!["cli", "desktop"].includes(variant)) throw new Error(`Unknown variant: ${variant}`);
 const manifest = (directory) =>
   JSON.parse(readFileSync(path.join(directory, "package.json"), "utf8"));
 const { selectCliRuntimeExternalDependencies } = await import(
   pathToFileURL(path.join(root, "scripts/lib/cli-external-packages.ts"))
-);
-const { selectDesktopRuntimeExternalDependencies } = await import(
-  pathToFileURL(path.join(root, "scripts/lib/desktop-external-packages.ts"))
 );
 const modules = path.join(destination, "node_modules");
 const staged = new Map();
@@ -54,10 +52,14 @@ function stagePackage(source) {
   return target;
 }
 
-for (const [workspace, select] of [
-  ["apps/server", selectCliRuntimeExternalDependencies],
-  ["apps/desktop", selectDesktopRuntimeExternalDependencies],
-]) {
+const workspaces = [["apps/server", selectCliRuntimeExternalDependencies]];
+if (variant === "desktop") {
+  const { selectDesktopRuntimeExternalDependencies } = await import(
+    pathToFileURL(path.join(root, "scripts/lib/desktop-external-packages.ts"))
+  );
+  workspaces.push(["apps/desktop", selectDesktopRuntimeExternalDependencies]);
+}
+for (const [workspace, select] of workspaces) {
   const source = path.join(root, workspace);
   const destinationWorkspace = path.join(destination, workspace);
   const dependencies = select(manifest(source).dependencies);

@@ -15,6 +15,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -632,7 +633,8 @@
                   "roquix/packages/aux-files/t3code/check-installed")))
               #:recursive? #t))
 
-(define (t3code-build-phases version ghostty-revision dependencies-script)
+(define* (t3code-build-phases version ghostty-revision dependencies-script
+                              #:key (desktop? #t))
   (with-extensions (list guile-json-4)
     #~(let ()
         (define (command-output . arguments)
@@ -648,7 +650,7 @@
           ;; the Zig/LLVM toolchain in the installed application's closure.
           (let* ((runtime-inputs (filter-map (lambda (name)
                                                (assoc-ref inputs name))
-                                             '("libc" "gcc-toolchain"
+                                             '("libc" "gcc-toolchain" "gcc:lib"
                                                "zlib"
                                                "gtk+"
                                                "glib"
@@ -677,8 +679,10 @@
                                                "alsa-lib"
                                                "libsecret")))
                  (libraries (append (search-path-as-list '("lib") runtime-inputs)
-                                    (list (string-append (assoc-ref inputs "nss")
-                                                         "/lib/nss"))))
+                                    (if (assoc-ref inputs "nss")
+                                        (list (string-append (assoc-ref inputs "nss")
+                                                             "/lib/nss"))
+                                        '())))
                  (interpreter (search-input-file inputs
                                                  "/lib/ld-linux-x86-64.so.2")))
             (for-each (lambda (file)
@@ -724,13 +728,15 @@
                                           "native dependency absent from locked npm packages"
                                           filename))
                                        (cons source targets)))
-                                   '(("libfff_c.so" . "t3code-fff-native")
-                                     ("ffi-rs.linux-x64-gnu.node" . "t3code-ffi-native")
-                                     ("keyring.linux-x64-gnu.node" . "t3code-keyring-native")
-                                     ("xa11y.linux-x64-gnu.node" . "t3code-xa11y-native")
-                                     ("vite-plus.linux-x64-gnu.node" . "t3code-vite-plus-native")
-                                     ("tailwindcss-oxide.linux-x64-gnu.node" . "t3code-tailwind-native")
-                                     ("lightningcss.linux-x64-gnu.node" . "t3code-lightningcss-native")))))
+                                   (filter (lambda (addon)
+                                             (assoc-ref inputs (cdr addon)))
+                                           '(("libfff_c.so" . "t3code-fff-native")
+                                             ("ffi-rs.linux-x64-gnu.node" . "t3code-ffi-native")
+                                             ("keyring.linux-x64-gnu.node" . "t3code-keyring-native")
+                                             ("xa11y.linux-x64-gnu.node" . "t3code-xa11y-native")
+                                             ("vite-plus.linux-x64-gnu.node" . "t3code-vite-plus-native")
+                                             ("tailwindcss-oxide.linux-x64-gnu.node" . "t3code-tailwind-native")
+                                             ("lightningcss.linux-x64-gnu.node" . "t3code-lightningcss-native"))))))
             ;; Drop unused native tools and optional accelerators too: a transitive
             ;; loader must never silently select an npm prebuild as a fallback.
             (for-each delete-file
@@ -810,7 +816,7 @@
            "-fno-entry"
            "-rdynamic"
            "-femit-bin=apps/web/src/terminal/ghostty/vendor/ghostty-write-pty.wasm")
-          ;; node-pty uses Node-API, so Guix's Node headers also target Electron's Node.
+          ;; Node-API keeps the source-built terminal addon usable by both runtimes.
           ;; Compile the terminal addon instead of using its platform prebuild.
           (with-directory-excursion "apps/server/node_modules/node-pty"
             (delete-file-recursively "prebuilds")
@@ -835,20 +841,22 @@
           (with-directory-excursion "apps/server"
             (invoke "vp" "pack"))
           (copy-recursively "apps/web/dist" "apps/server/dist/client")
-          (with-directory-excursion "apps/desktop"
-            (invoke "node" "scripts/build-browser-secret.mjs")
-            (invoke "node" "scripts/build-preview-annotation-css.mjs")
-            (invoke "vp" "pack")))
+          (when #$desktop?
+            (with-directory-excursion "apps/desktop"
+              (invoke "node" "scripts/build-browser-secret.mjs")
+              (invoke "node" "scripts/build-preview-annotation-css.mjs")
+              (invoke "vp" "pack"))))
 
         (define* (check-application #:key tests? #:allow-other-keys)
           (when tests?
             ;; These upstream suites cover the bundle boundary and staged resources.
             ;; GUI/provider suites require a running session or credentials.
             (invoke "vp" "test" "scripts/lib/cli-external-packages.test.ts")
-            (with-directory-excursion "apps/desktop"
-              (invoke "vp" "test" "scripts/browser-secret-native.test.mjs"
-                      "src/app/DesktopEnvironment.test.ts"
-                      "src/app/DesktopAssets.test.ts"))))
+            (when #$desktop?
+              (with-directory-excursion "apps/desktop"
+                (invoke "vp" "test" "scripts/browser-secret-native.test.mjs"
+                        "src/app/DesktopEnvironment.test.ts"
+                        "src/app/DesktopAssets.test.ts")))))
 
         (define (install-application inputs output version
                                      dependencies-script)
@@ -967,6 +975,33 @@
                  "[Desktop Entry]~%Type=Application~%Name=T3 Code~%Exec=~a/bin/t3code %U~%Icon=t3code~%Categories=Development;~%MimeType=x-scheme-handler/t3code;~%StartupWMClass=t3code~%"
                  output)))))
 
+        (define (install-cli inputs output dependencies-script)
+          (let* ((application (string-append output "/lib/t3code-cli"))
+                 (bin (string-append output "/bin")))
+            (invoke "node" dependencies-script (getcwd) application "cli")
+            (copy-recursively "apps/server/dist"
+                              (string-append application "/apps/server/dist"))
+            (copy-file "apps/server/package.json"
+                       (string-append application "/apps/server/package.json"))
+            (install-file "LICENSE"
+                          (string-append output "/share/licenses/t3code-cli"))
+            (patch-native-files application inputs)
+            (mkdir-p bin)
+            (call-with-output-file (string-append bin "/t3")
+              (lambda (port)
+                (format port
+                 "#!~a~%case \"$(export -p)\" in~%  *\"declare -x SHELL=\"*|*\"export SHELL=\"*) ;;~%  *) unset SHELL ;;~%esac~%export SHELL=\"${SHELL:-~a}\"~%exec ~s ~s \"$@\"~%"
+                 (search-input-file inputs "/bin/sh")
+                 (search-input-file inputs "/bin/bash")
+                 (search-input-file inputs "/bin/node")
+                 (string-append application "/apps/server/dist/bin.mjs"))))
+            (chmod (string-append bin "/t3") #o755)
+            (wrap-program (string-append bin "/t3")
+              `("PATH" ":" prefix
+                ,(map (lambda (file)
+                        (dirname (search-input-file inputs file)))
+                      '("/bin/bash" "/bin/env" "/bin/git" "/bin/ssh"))))))
+
         (define* (wrap-desktop #:key inputs outputs #:allow-other-keys)
           (let ((gtk (assoc-ref inputs "gtk+")))
             (wrap-program (string-append (assoc-ref outputs "out") "/bin/t3code")
@@ -1000,15 +1035,21 @@
           (add-after 'validate-runpath 'check-installed
             (lambda* (#:key tests? outputs #:allow-other-keys)
               (when tests?
-                (invoke "env"
-                        (string-append "GUILE_LOAD_PATH="
-                                       (string-join %load-path ":"))
-                        (string-append "GUILE_LOAD_COMPILED_PATH="
-                                       (string-join %load-compiled-path ":"))
-                        #+(file-append guile-3.0 "/bin/guile")
-                        "--no-auto-compile"
-                        #$(file-append %t3code-installed-tests "/check-installed")
-                        (assoc-ref outputs "out")))))
+                (if #$desktop?
+                    (invoke "env"
+                            (string-append "GUILE_LOAD_PATH="
+                                           (string-join %load-path ":"))
+                            (string-append "GUILE_LOAD_COMPILED_PATH="
+                                           (string-join %load-compiled-path ":"))
+                            #+(file-append guile-3.0 "/bin/guile")
+                            "--no-auto-compile"
+                            #$(file-append %t3code-installed-tests "/check-installed")
+                            (assoc-ref outputs "out"))
+                    (invoke "node"
+                            #$(file-append %t3code-installed-tests "/check-cli-installed.mjs")
+                            (assoc-ref outputs "out")
+                            #$(file-append %t3code-installed-tests "/native-modules.mjs")
+                            #$version)))))
           (delete 'bootstrap)
           (replace 'configure
             configure-application)
@@ -1021,12 +1062,17 @@
             check-application)
           (replace 'install
             (lambda* (#:key inputs outputs #:allow-other-keys)
-              (install-application inputs
-                                   (assoc-ref outputs "out")
-                                   #$version
-                                   #$dependencies-script)))
+              (if #$desktop?
+                  (install-application inputs
+                                       (assoc-ref outputs "out")
+                                       #$version
+                                       #$dependencies-script)
+                  (install-cli inputs (assoc-ref outputs "out")
+                               #$dependencies-script))))
           (add-after 'install 'wrap-desktop
-            wrap-desktop)))))
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (when #$desktop?
+                (wrap-desktop #:inputs inputs #:outputs outputs))))))))
 
 (define-public t3code
   (package
@@ -1119,4 +1165,32 @@ Install the provider command-line tools separately to use their subscriptions.
 This package builds the application, terminal WASM, native helpers, and runtime
 addons from source, including the native build tools.  It uses the upstream
 Electron runtime.")
+    (license license:expat)))
+
+(define-public t3code-cli
+  (package
+    (inherit t3code)
+    (name "t3code-cli")
+    (arguments
+     (substitute-keyword-arguments (package-arguments t3code)
+       ((#:phases phases)
+        (t3code-build-phases %t3code-version %ghostty-revision
+                            %t3code-runtime-dependencies-script
+                            #:desktop? #f))))
+    (inputs (list (list "node" node)
+                  (list "t3code-fff-native" t3code-fff-native)
+                  (list "t3code-ffi-native" t3code-ffi-native)
+                  (list "t3code-keyring-native" t3code-keyring-native)
+                  (list "bash-minimal" bash-minimal)
+                  (list "coreutils-minimal" coreutils-minimal)
+                  (list "git-minimal" git-minimal)
+                  (list "openssh" openssh)
+                  (list "gcc:lib" gcc "lib")))
+    (synopsis "Web interface and command-line server for coding agents")
+    (description
+     "T3 Code provides a Web interface, terminal, Git integration, and remote
+connections for local coding agents.  The t3 command starts the server and
+manages pairing and client authentication.  Install the provider command-line
+tools separately to use their subscriptions.  This package builds the server,
+Web interface, terminal WASM, and native addons from source and runs on Node.js.")
     (license license:expat)))

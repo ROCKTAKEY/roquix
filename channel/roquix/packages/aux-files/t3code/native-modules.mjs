@@ -3,11 +3,10 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 
-const [application, name] = process.argv.slice(2);
-const workspace = name === "fff" ? "server" : "desktop";
+const [application, name, workspace = name === "fff" ? "server" : "desktop"] = process.argv.slice(2);
 const load = createRequire(path.join(application, "apps", workspace, "package.json"));
 
-// These calls cross the installed JS/native boundary using Electron's Node.
+// These calls cross the installed JS/native boundary using the packaged runtime.
 // No desktop session or real credential store is needed.
 switch (name) {
   case "fff": {
@@ -32,7 +31,10 @@ switch (name) {
     break;
   }
   case "ffi": {
-    const { open, load: call, close, DataType } = load("ffi-rs");
+    const ffiLoad = workspace === "server"
+      ? createRequire(load.resolve("@ff-labs/fff-node"))
+      : load;
+    const { open, load: call, close, DataType } = ffiLoad("ffi-rs");
     open({ library: "libc", path: "libc.so.6" });
     try {
       assert.equal(
