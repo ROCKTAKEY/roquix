@@ -20,6 +20,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -628,6 +629,10 @@
   (local-file (canonicalize-path (search-path %load-path
                   "roquix/packages/aux-files/t3code-runtime-dependencies.mjs"))))
 
+(define %t3code-stage-linux-icons-script
+  (local-file (canonicalize-path (search-path %load-path
+                  "roquix/packages/aux-files/t3code-stage-linux-icons.mjs"))))
+
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
                   "roquix/packages/aux-files/t3code/check-installed")))
@@ -845,7 +850,16 @@
             (with-directory-excursion "apps/desktop"
               (invoke "node" "scripts/build-browser-secret.mjs")
               (invoke "node" "scripts/build-preview-annotation-css.mjs")
-              (invoke "vp" "pack"))))
+              (invoke "vp" "pack"))
+            ;; Reuse upstream's asset selection and Linux icon staging without
+            ;; running its AppImage/deb packaging and Electron download steps.
+            ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/scripts/build-desktop-artifact.ts
+            (substitute* "scripts/build-desktop-artifact.ts"
+              (("^function stageLinuxIcons\\(")
+               "export function stageLinuxIcons("))
+            (copy-file #$%t3code-stage-linux-icons-script
+                       "scripts/guix-stage-linux-icons.mjs")
+            (invoke "node" "scripts/guix-stage-linux-icons.mjs" version)))
 
         (define* (check-application #:key tests? #:allow-other-keys)
           (when tests?
@@ -938,13 +952,22 @@
             ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/apps/desktop/src/app/DesktopPreReadyPlatform.ts
             (for-each (lambda (target)
                         (mkdir-p (dirname target))
-                        (copy-file "assets/prod/black-universal-1024.png"
+                        (copy-file "apps/desktop/resources/icon.png"
                                    target))
-                      (list (string-append output
-                             "/share/icons/hicolor/1024x1024/apps/t3code.png")
-                            (string-append resources "/icon.png")
+                      (list (string-append resources "/icon.png")
                             (string-append application
                              "/apps/desktop/prod-resources/icon.png")))
+            ;; Upstream's nominal sizes are indexed by hicolor; the original
+            ;; 1024-pixel resource alone is not discoverable by named lookup.
+            ;; https://specifications.freedesktop.org/icon-theme/0.12/
+            (for-each
+             (lambda (image)
+               (let ((icon (string-append output "/share/icons/hicolor/"
+                                         (basename image ".png")
+                                         "/apps/t3code.png")))
+                 (mkdir-p (dirname icon))
+                 (copy-file image icon)))
+             (find-files "apps/desktop/resources/icons" "\\.png$"))
             (install-file "LICENSE"
                           (string-append output
                            "/share/licenses/t3code"))
@@ -1063,7 +1086,10 @@
                         "--no-auto-compile"
                         #$(file-append %t3code-installed-tests "/check-installed")
                         (assoc-ref outputs "out")
-                        (search-input-file inputs "/lib/libgio-2.0.so"))
+                        (search-input-file inputs "/lib/libgio-2.0.so")
+                        (search-input-file inputs "/lib/libgtk-3.so")
+                        (dirname (dirname (search-input-file inputs
+                                            "/share/icons/hicolor/index.theme"))))
                     (invoke "node"
                             #$(file-append %t3code-installed-tests "/check-cli-installed.mjs")
                             (assoc-ref outputs "out")
@@ -1119,6 +1145,8 @@
                                     %t3code-runtime-dependencies-script)))
     (native-inputs `(("t3code-vite-plus-native" ,t3code-vite-plus-native)
                      ("xvfb-run" ,xvfb-run)
+                     ("hicolor-icon-theme" ,hicolor-icon-theme)
+                     ("imagemagick" ,imagemagick)
                      ("t3code-tailwind-native" ,t3code-tailwind-native)
                      ("t3code-lightningcss-native" ,t3code-lightningcss-native)
                      ("pkg-config" ,pkg-config)

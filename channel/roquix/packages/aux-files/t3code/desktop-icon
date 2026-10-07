@@ -1,0 +1,50 @@
+(use-modules (system foreign))
+
+(define gio (dynamic-link (cadr (command-line))))
+(define gtk (dynamic-link (caddr (command-line))))
+(define desktop-file (list-ref (command-line) 3))
+(define icon-paths (map string->pointer (list-tail (command-line) 4)))
+
+(define (foreign-function library name result arguments)
+  (pointer->procedure result (dynamic-func name library) arguments))
+
+(define application
+  ((foreign-function gio "g_desktop_app_info_new_from_filename" '* '(*))
+   (string->pointer desktop-file)))
+(when (null-pointer? application)
+  (error "the packaged desktop entry cannot be loaded" desktop-file))
+
+(define theme ((foreign-function gtk "gtk_icon_theme_new" '* '())))
+((foreign-function gtk "gtk_icon_theme_set_search_path" void (list '* '* int))
+ theme (make-c-struct (map (lambda (_) '*) icon-paths) icon-paths)
+ (length icon-paths))
+((foreign-function gtk "gtk_icon_theme_set_custom_theme" void '(* *))
+ theme (string->pointer "hicolor"))
+
+;; Named desktop icons must resolve through the standard theme directory index.
+;; https://specifications.freedesktop.org/icon-theme/0.12/
+(define application-icon
+  ((foreign-function gio "g_app_info_get_icon" '* '(*)) application))
+(define lookup-icon
+  (foreign-function gtk "gtk_icon_theme_lookup_by_gicon" '* (list '* '* int int)))
+(define icon-base-size
+  (foreign-function gtk "gtk_icon_info_get_base_size" int '(*)))
+(define load-icon
+  (foreign-function gtk "gtk_icon_info_load_icon" '* '(* *)))
+(define unref
+  (foreign-function gio "g_object_unref" void '(*)))
+
+(define (check-menu-icon size)
+  (let ((icon (lookup-icon theme application-icon size 0)))
+    (when (null-pointer? icon)
+      (error "GTK cannot resolve the packaged desktop icon" desktop-file size))
+    (unless (= size (icon-base-size icon))
+      (error "the menu icon has no matching nominal size" desktop-file size))
+    (let ((pixels (load-icon icon %null-pointer)))
+      (when (null-pointer? pixels)
+        (error "GTK cannot decode the packaged desktop icon" desktop-file size))
+      (for-each unref (list pixels icon)))))
+
+(for-each check-menu-icon '(16 48 512))
+(for-each unref (list theme application))
+(display "desktop-icon-contract-ok")

@@ -106,6 +106,22 @@
        (eq? 'regular
             (stat:type (stat file)))))
 
+(define (desktop-icon-output script)
+  (let ((environment (launcher-environment)))
+    (call-with-temporary-directory
+     (lambda (directory)
+       (capture "env" "-i"
+                (string-append "HOME=" directory)
+                (string-append "GDK_PIXBUF_MODULE_FILE="
+                               (assoc-ref environment "GDK_PIXBUF_MODULE_FILE"))
+                (string-append "XDG_DATA_DIRS="
+                               (assoc-ref environment "XDG_DATA_DIRS"))
+                (readlink "/proc/self/exe") "--no-auto-compile"
+                script (caddr (command-line)) (list-ref (command-line) 3)
+                (string-append output "/share/applications/t3code.desktop")
+                (string-append output "/share/icons")
+                (list-ref (command-line) 4))))))
+
 ;; A private Electron resource tree exercises the installed renderer's CSS
 ;; without opening the application's user profile or starting its backend.
 (define (code-font-output script)
@@ -161,6 +177,12 @@
 (test-assert "the desktop entry matches the application's Linux identity"
              (regular-file? (string-append output
                              "/share/applications/com.t3tools.T3Code.desktop")))
+
+(let ((script (canonicalize-path (string-append (dirname (current-filename))
+                                                "/desktop-icon"))))
+  (test-assert "GTK resolves and decodes menu icons at standard sizes through hicolor"
+               (string-contains (desktop-icon-output script)
+                                "desktop-icon-contract-ok")))
 
 (let ((script (canonicalize-path (string-append (dirname (current-filename))
                                                 "/desktop-menu"))))
