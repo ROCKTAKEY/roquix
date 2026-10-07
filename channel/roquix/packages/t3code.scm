@@ -635,7 +635,7 @@
 
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
-                  "roquix/packages/aux-files/t3code/check-installed")))
+                  "roquix/packages/aux-files/t3code/package-tests/check-installed")))
               #:recursive? #t))
 
 (define* (t3code-build-phases version ghostty-revision dependencies-script
