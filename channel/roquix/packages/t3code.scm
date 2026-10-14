@@ -43,7 +43,7 @@
   #:use-module (nongnu packages electron))
 
 (define %t3code-version
-  "0.0.44")
+  "0.0.45")
 
 (define %t3code-source
   (origin
@@ -52,7 +52,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0hmv83j46nq3bmmr0nc9bva2jmniwf7knsngpadszq4ip93cry0z"))))
+    (sha256 (base32 "1grchi88dadh8lr41c1fx1ki84r3r98jawyy7rx7097pi0yzk18k"))))
 
 (define* (native-library name
                          version
@@ -172,24 +172,24 @@
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/rolldown/rolldown/tar.gz/5b4746e442989d770c606ce08d2737e6aafbd25d")
+     "https://codeload.github.com/rolldown/rolldown/tar.gz/8df421985114ecfaf52cce038d4a5a6ea8c05408")
     (file-name "t3code-vite-plus-rolldown.tar.gz")
-    (sha256 (base32 "1b2qsb91k5avlbi4yifl52lgxadyjgjgd0ccfln54lks9n1s8fi0"))))
+    (sha256 (base32 "1116pwfy847h69ixmzzwsh173bk0x5cnb1q35xk5qhxwcmg6rnlr"))))
 
 (define %vite-task-source
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/d05b1dcdbaabaa69643ee0b89cebe3cd390957e9")
+     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/7d69d6577ecf6bd83deee32186de59918a712873")
     (file-name "t3code-vite-task.tar.gz")
-    (sha256 (base32 "105avw30wqjpz9xgzrm2f16rfsns3xm1yrj0izdy1r7yhjcr21yl"))))
+    (sha256 (base32 "0lr4dm73vhd07ns9qyc3g1g8hnbgx7aannbpdhqvyf089gcy8jvn"))))
 
 (define t3code-vite-plus-native
   (let ((library (native-library "t3code-vite-plus-native"
-                  "0.3.3"
+                  "1.0.0"
                   "voidzero-dev/vite-plus"
-                  "v0.3.3"
-                  "1ijkifs9wia2mfk1v1yjdbma024mz2h9nzkk6ij2gda1i6zxalsv"
+                  "v1.0.0"
+                  "14ji1q21mdv05hawwzfsj5ygdbrgmp72ah3glxdya565l0czzs9a"
                   "."
                   "vite-plus-cli"
                   "libvite_plus_cli.so"
@@ -211,7 +211,7 @@
                   ;; Vite Task's unpublished members omit version requirements,
                   ;; so cargo package cannot normalize them into registry crates.
                   ;; Keep its workspace separate to preserve inherited manifests.
-                  ;; https://github.com/voidzero-dev/vite-task/blob/d05b1dcdbaabaa69643ee0b89cebe3cd390957e9/crates/fspy/Cargo.toml
+                  ;; https://github.com/voidzero-dev/vite-task/blob/7d69d6577ecf6bd83deee32186de59918a712873/crates/fspy/Cargo.toml
                   (mkdir "rolldown")
                   (invoke "tar"
                           "xf"
@@ -475,7 +475,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0jb2nahqjkpwib93lnlhpdvc7aq3qa1a60q584pq66dhrzgjx384"))))
+    (sha256 (base32 "0286cn87422c5kigndmibhrrsg3x06fx7iqqb00c1cj2grm4nljb"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))

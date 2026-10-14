@@ -6933,17 +6933,9 @@
   (crate-source "monostate" "0.1.18"
                 "0rzgfqn1p7lfrx6hv6pnkdffkc5sgckbf5wgj3qvxmf9yrrs4h9k"))
 
-(define rust-monostate-1.0.3
-  (crate-source "monostate" "1.0.3"
-                "1jfcm8r23wrjhch3v7s7pi91dqsfkxc3fwhjrqpv5c9b67gxzi7x"))
-
 (define rust-monostate-impl-0.1.18
   (crate-source "monostate-impl" "0.1.18"
                 "1sg7wsfnz8smn8wpd3gl9xbiimbgl978s1jr5ycvymxgh1anvnz4"))
-
-(define rust-monostate-impl-1.0.3
-  (crate-source "monostate-impl" "1.0.3"
-                "0ns3zl6lq0jkxc2zipy043iyws8qql9z0crh98v7fk24xfg48mm6"))
 
 (define rust-more-asserts-0.3.1
   (crate-source "more-asserts" "0.3.1"
@@ -7687,6 +7679,10 @@
   (crate-source "oid-registry" "0.8.1"
                 "1dxm6qkkkk4dq3ln1v83d80k8bvicm6mspsxrj3n06yy7pzhrx0j"))
 
+(define rust-omnipath-0.1.6
+  (crate-source "omnipath" "0.1.6"
+                "0xd5a4xwsfmhzk59v6wz65f59rk16d7gvkg90w1qhb0jg08b7bc0"))
+
 (define rust-once-cell-1.18.0
   (crate-source "once_cell" "1.18.0"
                 "0vapcd5ambwck95wyz3ymlim35jirgnqn9a0qmi19msymv95v2yx"))
@@ -7941,93 +7937,93 @@
   (crate-source "owo-colors" "4.4.0"
                 "1n59zda1s3q2md3i9gpv3vq51ssm6jfyzc8313n804mflss5pi0k"))
 
-(define rust-oxc-0.150.0
-  (crate-source "oxc" "0.150.0"
-                "03w1pq399r6wb8i71wgz1hkbw6al8nhmmmhnds2d1fnn4wmsalx6"))
+(define rust-oxc-0.151.0
+  (crate-source "oxc" "0.151.0"
+                "1bi31swqkxla6yrvq35v79vz92mc5brzkil2yjqm7xd2158a7ha0"))
 
-(define rust-oxc-allocator-0.150.0
-  (crate-source "oxc_allocator" "0.150.0"
-                "0vd1pwlpy7c38815v9ghjgqrc6ga3gscbp0q99nkp0gh8fmflpcc"))
+(define rust-oxc-allocator-0.151.0
+  (crate-source "oxc_allocator" "0.151.0"
+                "13a3pczljccrqji6s6yxays8d7hwvwngy4a5qzxjhp6411z822wc"))
 
-(define rust-oxc-ast-0.150.0
-  (crate-source "oxc_ast" "0.150.0"
-                "0bcpad6c525xjb882ilwn5c5qibc3kn5l1j50482p8vh3ndzzxby"))
+(define rust-oxc-ast-0.151.0
+  (crate-source "oxc_ast" "0.151.0"
+                "0l67psixni0fck44h8819kjcxkzkgrkg5cjmb1mq5q9p4fmglbr0"))
 
-(define rust-oxc-ast-macros-0.150.0
-  (crate-source "oxc_ast_macros" "0.150.0"
-                "05qdl733si0pd3pwx1g8wcvq7xpnizsyjnqmvd9m8frq1rvbb1n5"))
+(define rust-oxc-ast-macros-0.151.0
+  (crate-source "oxc_ast_macros" "0.151.0"
+                "14z0430g0y2ql68d8q7gn25mikac6cbcsilmayr2jpz9fh3gjjz9"))
 
-(define rust-oxc-ast-visit-0.150.0
-  (crate-source "oxc_ast_visit" "0.150.0"
-                "0x0ac3fj6g691snab62sib8yn2n2zav9hfl32slrkq8hws10mkzh"))
+(define rust-oxc-ast-visit-0.151.0
+  (crate-source "oxc_ast_visit" "0.151.0"
+                "18qdrg87v98v8l074ma1i6b82cw38d8syv13v0fnvzpgmal9g33b"))
 
 (define rust-oxc-browserslist-5.0.1
   (crate-source "oxc-browserslist" "5.0.1"
                 "0r6qv06fnq51p99qasqag2j2va7filffvz99ingzdr3hm3d20rs5"))
 
-(define rust-oxc-cfg-0.150.0
-  (crate-source "oxc_cfg" "0.150.0"
-                "19wz4n8p0lnd3a96fwm7fl3xs98m376akxzhfxbvl54mn8dsh63n"))
+(define rust-oxc-cfg-0.151.0
+  (crate-source "oxc_cfg" "0.151.0"
+                "1iwsm1vvnfva3qpn8b2bxnf2r3bcna983qrl1lqnj256km4f0cjs"))
 
-(define rust-oxc-codegen-0.150.0
-  (crate-source "oxc_codegen" "0.150.0"
-                "1dcp17xxqgvqzsbg54bj2pbawwc8h5m26fr6m1zmqlpjmd48h0bs"))
+(define rust-oxc-codegen-0.151.0
+  (crate-source "oxc_codegen" "0.151.0"
+                "0idzm8r8rzkvg89d9bibrp5zaxfzxmg5qd3mg6q3szywlsllqbq7"))
 
-(define rust-oxc-compat-0.150.0
-  (crate-source "oxc_compat" "0.150.0"
-                "19iiq698r3vjnnhn53nrj7qj309lvflsgwxy9cgilsc01lr07kza"))
+(define rust-oxc-compat-0.151.0
+  (crate-source "oxc_compat" "0.151.0"
+                "04v1vs7d9laxhm87lkz1d9fh3aapclciyjqdnv0yhgnkvyp7g79c"))
 
-(define rust-oxc-data-structures-0.150.0
-  (crate-source "oxc_data_structures" "0.150.0"
-                "0l348brbzvl360y5jvd3ffhnw5dqr4sz4j1dmhxlxi1zfrpgh8ac"))
+(define rust-oxc-data-structures-0.151.0
+  (crate-source "oxc_data_structures" "0.151.0"
+                "0phznxfw5li1ag6lsy9wvp8alglss44fny81jxph7ynribgdb4sd"))
 
-(define rust-oxc-diagnostics-0.150.0
-  (crate-source "oxc_diagnostics" "0.150.0"
-                "1jwpj1hqk22ag83l8pg1zgjs8rk2y9hwm1s5c0bjrz895aha54zm"))
+(define rust-oxc-diagnostics-0.151.0
+  (crate-source "oxc_diagnostics" "0.151.0"
+                "1m8qg7pxl9gvl42q2vcd6npca275nspxdgl9sr1pwndqjazqvf8f"))
 
-(define rust-oxc-ecmascript-0.150.0
-  (crate-source "oxc_ecmascript" "0.150.0"
-                "1k7i4230c7nvvnvn6dbhl2gi1fx8z68l4dw126brm6hlfad8scpa"))
+(define rust-oxc-ecmascript-0.151.0
+  (crate-source "oxc_ecmascript" "0.151.0"
+                "0ihj5kzx7mfdc69m7jm2gdl30gd37xijg06cbjxv9vc4dlh376c9"))
 
-(define rust-oxc-estree-0.150.0
-  (crate-source "oxc_estree" "0.150.0"
-                "06cmbxsplyhdwsxcrdqfmx4nc651h136jy8s4qk81b77s0a3bmfw"))
+(define rust-oxc-estree-0.151.0
+  (crate-source "oxc_estree" "0.151.0"
+                "18g122s9g009rsa1cvdrn9g3gyd4kwxdb6aa694rs529bdqqi27h"))
 
 (define rust-oxc-index-5.0.0
   (crate-source "oxc_index" "5.0.0"
                 "0vi9nqkj6qrgch85p1r5gf0hsdxfsiw7vk0sll4ljx63wsz8860r"))
 
-(define rust-oxc-isolated-declarations-0.150.0
-  (crate-source "oxc_isolated_declarations" "0.150.0"
-                "1vim955ky9a8n5cblxv4i2q8m1cv3zng2vyhr2l61j32jlpnl6yp"))
+(define rust-oxc-isolated-declarations-0.151.0
+  (crate-source "oxc_isolated_declarations" "0.151.0"
+                "0g4ldgxwdkll11c79699xhjdi6vf3i0rcigbv1b9w8lmv37bzbg3"))
 
-(define rust-oxc-mangler-0.150.0
-  (crate-source "oxc_mangler" "0.150.0"
-                "1x7h47iyzyf918zzr84y2ca5ylmp7jsi5gz1p08kpr7drf73qwvv"))
+(define rust-oxc-mangler-0.151.0
+  (crate-source "oxc_mangler" "0.151.0"
+                "0wlb8rbznpwiqcifv4ckn3fzx6s667jifv5m1l1iwy8cqpk271zg"))
 
-(define rust-oxc-minifier-0.150.0
-  (crate-source "oxc_minifier" "0.150.0"
-                "060d3qfqgg40maisb3qlbny9jckg6i9d1cga69w1h0d4w47yjy2g"))
+(define rust-oxc-minifier-0.151.0
+  (crate-source "oxc_minifier" "0.151.0"
+                "1kmyabfn1fg1xa15pydg54yq72sya1gvwij1zavpr8aj6mq8x64d"))
 
-(define rust-oxc-minify-napi-0.150.0
-  (crate-source "oxc_minify_napi" "0.150.0"
-                "1cmmpw8y3bjzyljmkqgv3s7d8mr1ghclpw9j667zc4mrsya1wr5l"))
+(define rust-oxc-minify-napi-0.151.0
+  (crate-source "oxc_minify_napi" "0.151.0"
+                "0li8dgm9ili9j57gf16w8vk30npbl8p377hbc75arix0nmd48ckd"))
 
-(define rust-oxc-napi-0.150.0
-  (crate-source "oxc_napi" "0.150.0"
-                "198x4p6nn3hnam73j79321iv8yf4952jgp7hazdpfqaxmq730yl9"))
+(define rust-oxc-napi-0.151.0
+  (crate-source "oxc_napi" "0.151.0"
+                "10262k0sh7wi7hy0ib3narl1nsw6p1kfqs7c2hpq90ha40pcg73q"))
 
-(define rust-oxc-parser-0.150.0
-  (crate-source "oxc_parser" "0.150.0"
-                "1hp7s5pzxrqirk544nrf1i4vh2jqk8hfpm6x3hvvw6hf29iky224"))
+(define rust-oxc-parser-0.151.0
+  (crate-source "oxc_parser" "0.151.0"
+                "1576k9d7phdnkw57q3vs5x8pp5kyi1nwla4lh49gsy18s1pzcqdl"))
 
-(define rust-oxc-parser-napi-0.150.0
-  (crate-source "oxc_parser_napi" "0.150.0"
-                "0macrrp5xg4b63flkx1b61xvjqwd16ylva8q85pm126ai4lc8nsb"))
+(define rust-oxc-parser-napi-0.151.0
+  (crate-source "oxc_parser_napi" "0.151.0"
+                "1283skgp7v3n1nmv81dj1qk0nhr75librdww97dz54hb0q0g7a8i"))
 
-(define rust-oxc-regular-expression-0.150.0
-  (crate-source "oxc_regular_expression" "0.150.0"
-                "176yn4jxv5b3zfpy2p7hf58gn7132zicryn12dd4vlgllffsm3xz"))
+(define rust-oxc-regular-expression-0.151.0
+  (crate-source "oxc_regular_expression" "0.151.0"
+                "14z2h2jaqgy3zjx69x8f0d4c9cy1yg4imz22i62i4vga2jyvgdqm"))
 
 (define rust-oxc-resolver-11.24.3
   (crate-source "oxc_resolver" "11.24.3"
@@ -8037,41 +8033,41 @@
   (crate-source "oxc_resolver_napi" "11.24.3"
                 "1f9prp85nk7prar7hqz0g1sgyjvahvw8x76jzkny1bn7grbnrvnd"))
 
-(define rust-oxc-semantic-0.150.0
-  (crate-source "oxc_semantic" "0.150.0"
-                "1r04v47xy2z1hamcq0i5gdq51piz6a6h60m88d9hwqlnhadb4hmv"))
+(define rust-oxc-semantic-0.151.0
+  (crate-source "oxc_semantic" "0.151.0"
+                "0y5zb8j551dgmbbqpq0ij53fha1z90n9majx9jl3yz6gmyaxw1fi"))
 
 (define rust-oxc-sourcemap-8.1.0
   (crate-source "oxc_sourcemap" "8.1.0"
                 "04gaiqyvpyijpvfs0vz0m348ymda9nk479p1alngjw42qy364ckk"))
 
-(define rust-oxc-span-0.150.0
-  (crate-source "oxc_span" "0.150.0"
-                "0hva6gr7a33gz28m9v83mbkfy67a2sjagzjikdakb0dgp3wphhb7"))
+(define rust-oxc-span-0.151.0
+  (crate-source "oxc_span" "0.151.0"
+                "02b3p6xcv04vnn36bki1a4v0462l6vhxhn56ylya5i579vm1x9r0"))
 
-(define rust-oxc-str-0.150.0
-  (crate-source "oxc_str" "0.150.0"
-                "07h6wn9c68816gx5wr329ad9j98pznnb6w1bgnkgd82fsxp3dasz"))
+(define rust-oxc-str-0.151.0
+  (crate-source "oxc_str" "0.151.0"
+                "0vr1bp9nk3xda27kdxydi2adhimcjjqr02qisif33fwfax6cr4bb"))
 
-(define rust-oxc-syntax-0.150.0
-  (crate-source "oxc_syntax" "0.150.0"
-                "1sb2jcdyvrids4y77q8vsj1lni7qwaldy89ykq9n73gm5kinj1xf"))
+(define rust-oxc-syntax-0.151.0
+  (crate-source "oxc_syntax" "0.151.0"
+                "0plh29xgw2nwxfw1g48z6wafk859p3vbgq9r5gnr0ig1pvi4m7bi"))
 
-(define rust-oxc-transform-napi-0.150.0
-  (crate-source "oxc_transform_napi" "0.150.0"
-                "122mg06n8vc5dhakq3c7a4yd7lnz38x5pr7sr0jqdjqjh1pprdhs"))
+(define rust-oxc-transform-napi-0.151.0
+  (crate-source "oxc_transform_napi" "0.151.0"
+                "1dficb66kiqd3xxmbm7avralsff20biy1mjyp4kn6gfy9hv0prc2"))
 
-(define rust-oxc-transformer-0.150.0
-  (crate-source "oxc_transformer" "0.150.0"
-                "0hvm689lm8q61rf4agvb240ym7wypappm44lkjaym4svhapvnxbm"))
+(define rust-oxc-transformer-0.151.0
+  (crate-source "oxc_transformer" "0.151.0"
+                "0acav66x6xn7jl7fd2fin0y4098mk428ws2n6l89yv9f08n3y78c"))
 
-(define rust-oxc-transformer-plugins-0.150.0
-  (crate-source "oxc_transformer_plugins" "0.150.0"
-                "1wgll0mma92n41la87y34s5dmg7jsjiizc71wdawhph895jxxx8v"))
+(define rust-oxc-transformer-plugins-0.151.0
+  (crate-source "oxc_transformer_plugins" "0.151.0"
+                "1zn4xcx2mgn6yzmhc3lz15df763kj89x32mbmva92a68kyz2wnyv"))
 
-(define rust-oxc-traverse-0.150.0
-  (crate-source "oxc_traverse" "0.150.0"
-                "1y28vwck2cc7nyqpbra9gfg6z6pfj68saxzchchbiyriy4lccp5f"))
+(define rust-oxc-traverse-0.151.0
+  (crate-source "oxc_traverse" "0.151.0"
+                "08ws6pv5z472nakdcr5jrmijfl813ncjlw1gcgvw4qngf8p28b4b"))
 
 (define rust-p256-0.13.2
   (crate-source "p256" "0.13.2"
@@ -10913,6 +10909,10 @@
 (define rust-static-assertions-1.1.0
   (crate-source "static_assertions" "1.1.0"
                 "0gsl6xmw10gvn3zs1rv99laj5ig7ylffnh71f9l34js4nr4r7sx2"))
+
+(define rust-static-cell-2.1.1
+  (crate-source "static_cell" "2.1.1"
+                "08scqzz4lnpfb07icwmvfi5sjckicrngi1jbvbh5wmzsnhmqjc05"))
 
 (define rust-static-interner-0.1.2
   (crate-source "static_interner" "0.1.2"
@@ -20251,8 +20251,6 @@
                                                rust-miniz-oxide-0.8.9
                                                rust-miniz-oxide-0.9.1
                                                rust-mio-1.2.3
-                                               rust-monostate-1.0.3
-                                               rust-monostate-impl-1.0.3
                                                rust-napi-3.12.6
                                                rust-napi-build-2.4.3
                                                rust-napi-derive-3.6.7
@@ -20291,6 +20289,7 @@
                                                rust-objc2-core-services-0.3.2
                                                rust-objc2-encode-4.1.0
                                                rust-ocb3-0.1.0
+                                               rust-omnipath-0.1.6
                                                rust-once-cell-1.21.4
                                                rust-once-cell-polyfill-1.70.2
                                                rust-oorandom-11.1.5
@@ -20306,39 +20305,39 @@
                                                rust-ouroboros-macro-0.18.5
                                                rust-outref-0.5.2
                                                rust-owo-colors-4.4.0
-                                               rust-oxc-0.150.0
+                                               rust-oxc-0.151.0
                                                rust-oxc-browserslist-5.0.1
-                                               rust-oxc-allocator-0.150.0
-                                               rust-oxc-ast-0.150.0
-                                               rust-oxc-ast-macros-0.150.0
-                                               rust-oxc-ast-visit-0.150.0
-                                               rust-oxc-cfg-0.150.0
-                                               rust-oxc-codegen-0.150.0
-                                               rust-oxc-compat-0.150.0
-                                               rust-oxc-data-structures-0.150.0
-                                               rust-oxc-diagnostics-0.150.0
-                                               rust-oxc-ecmascript-0.150.0
-                                               rust-oxc-estree-0.150.0
+                                               rust-oxc-allocator-0.151.0
+                                               rust-oxc-ast-0.151.0
+                                               rust-oxc-ast-macros-0.151.0
+                                               rust-oxc-ast-visit-0.151.0
+                                               rust-oxc-cfg-0.151.0
+                                               rust-oxc-codegen-0.151.0
+                                               rust-oxc-compat-0.151.0
+                                               rust-oxc-data-structures-0.151.0
+                                               rust-oxc-diagnostics-0.151.0
+                                               rust-oxc-ecmascript-0.151.0
+                                               rust-oxc-estree-0.151.0
                                                rust-oxc-index-5.0.0
-                                               rust-oxc-isolated-declarations-0.150.0
-                                               rust-oxc-mangler-0.150.0
-                                               rust-oxc-minifier-0.150.0
-                                               rust-oxc-minify-napi-0.150.0
-                                               rust-oxc-napi-0.150.0
-                                               rust-oxc-parser-0.150.0
-                                               rust-oxc-parser-napi-0.150.0
-                                               rust-oxc-regular-expression-0.150.0
+                                               rust-oxc-isolated-declarations-0.151.0
+                                               rust-oxc-mangler-0.151.0
+                                               rust-oxc-minifier-0.151.0
+                                               rust-oxc-minify-napi-0.151.0
+                                               rust-oxc-napi-0.151.0
+                                               rust-oxc-parser-0.151.0
+                                               rust-oxc-parser-napi-0.151.0
+                                               rust-oxc-regular-expression-0.151.0
                                                rust-oxc-resolver-11.24.3
                                                rust-oxc-resolver-napi-11.24.3
-                                               rust-oxc-semantic-0.150.0
+                                               rust-oxc-semantic-0.151.0
                                                rust-oxc-sourcemap-8.1.0
-                                               rust-oxc-span-0.150.0
-                                               rust-oxc-str-0.150.0
-                                               rust-oxc-syntax-0.150.0
-                                               rust-oxc-transform-napi-0.150.0
-                                               rust-oxc-transformer-0.150.0
-                                               rust-oxc-transformer-plugins-0.150.0
-                                               rust-oxc-traverse-0.150.0
+                                               rust-oxc-span-0.151.0
+                                               rust-oxc-str-0.151.0
+                                               rust-oxc-syntax-0.151.0
+                                               rust-oxc-transform-napi-0.151.0
+                                               rust-oxc-transformer-0.151.0
+                                               rust-oxc-transformer-plugins-0.151.0
+                                               rust-oxc-traverse-0.151.0
                                                rust-p256-0.13.2
                                                rust-p384-0.13.1
                                                rust-p521-0.13.3
@@ -20511,6 +20510,7 @@
                                                rust-stable-deref-trait-1.2.1
                                                rust-stackalloc-1.2.2
                                                rust-static-assertions-1.1.0
+                                               rust-static-cell-2.1.1
                                                rust-str-indices-0.4.4
                                                rust-streaming-iterator-0.1.9
                                                rust-string-cache-0.8.9
