@@ -95,7 +95,7 @@ try {
     body: JSON.stringify({ credential }),
   });
   assert.equal(replay.status, 401, "a consumed startup token cannot pair another client");
-  assert.ok(existsSync(path.join(home, "userdata/state.sqlite")));
+  assert.ok(existsSync(path.join(home, "userdata/statev2.sqlite")));
   assert.match(run("pair", "--base-dir", home), /Pairing URL:/);
   assert.match(run("auth", "session", "list", "--base-dir", home, "--json"), /browser-session-cookie/);
   console.log("CLI, native modules, terminal, Web UI, and pairing contracts passed.");

@@ -43,7 +43,7 @@
   #:use-module (nongnu packages electron))
 
 (define %t3code-version
-  "0.0.45")
+  "0.1.0")
 
 (define %t3code-source
   (origin
@@ -52,7 +52,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "1grchi88dadh8lr41c1fx1ki84r3r98jawyy7rx7097pi0yzk18k"))))
+    (sha256 (base32 "0yd8jhissmmivp090b4h7vbflx9zmbw1khlan4zxipjmnvjci7y3"))))
 
 (define* (native-library name
                          version
@@ -111,13 +111,13 @@
     (license license-value)))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
-;; https://registry.npmjs.org/@ff-labs/fff-node/0.9.4
+;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
 (define t3code-fff-native
   (native-library "t3code-fff-native"
-                  "0.9.4"
+                  "0.11.0"
                   "dmtrKovalenko/fff"
-                  "7d7910b6ba78ea8406671eaac8cdb5eb9850d9d1"
-                  "0zrhp8axn4bgg89wyb0d01qk2lfk1ljl3ap244mrjhf6sm2m2v7n"
+                  "95fd777c2529fc7b4d7572dabff64cc07268f2c5"
+                  "0r3cx85k1k3q42r91wn0d3lz0x7rjq5jll3b8wiinmvjqiy6vnfj"
                   "."
                   "fff-c"
                   "libfff_c.so"
@@ -319,7 +319,7 @@
 (define electron-for-t3code
   (package
     (inherit electron-41)
-    (version "44.4.2")
+    (version "44.4.5")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -327,7 +327,7 @@
              "https://github.com/electron/electron/releases/download/v"
              version "/electron-v" version "-linux-x64.zip"))
        (sha256
-        (base32 "0dily7qrqh0mcfpb5rvxsvzwraczix3r1c3jz13scafsfwz0cwdd"))))))
+        (base32 "104pc0akcs33xywhrb9nw6sz0w8zaq7m71ggvbxq6ckcqh76ln04"))))))
 
 (define %ghostty-revision
   "9f62873bf195e4d8a762d768a1405a5f2f7b1697")
@@ -475,7 +475,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0286cn87422c5kigndmibhrrsg3x06fx7iqqb00c1cj2grm4nljb"))))
+    (sha256 (base32 "0a26dx2xbsl33w5fixfz0m162844dmmah3jrrsqbpnq6r7c4c64j"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))

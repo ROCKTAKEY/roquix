@@ -4424,9 +4424,9 @@
   (crate-source "git-version-macro" "0.3.9"
                 "1h1s08fgh9bkwnc2hmjxcldv69hlxpq7a09cqdxsd5hb235hq0ak"))
 
-(define rust-git2-0.20.4
-  (crate-source "git2" "0.20.4"
-                "0azykjpk3j6s354z23jkyq3r3pbmlw9ha1zsxkw5cnnpi1h2b23v"))
+(define rust-git2-0.21.0
+  (crate-source "git2" "0.21.0"
+                "0bmqga9vlyx5sdlr0i28z0362s89xv9i4qcv20vvx9j54y9vzpfx"))
 
 (define rust-gix-0.73.0
   (crate-source "gix" "0.73.0"
@@ -6352,10 +6352,10 @@
   (crate-source "libffi-sys" "4.1.0"
                 "1fxg4sdd5d3gf0i02l186ykd95kan5fvfl232iaij28mrvag3m3i"))
 
-(define rust-libgit2-sys-0.18.3+1.9.2
+(define rust-libgit2-sys-0.18.7+1.9.6
   ;; TODO REVIEW: Check bundled sources.
-  (crate-source "libgit2-sys" "0.18.3+1.9.2"
-                "11rlbyihj3k35mnkxxz4yvsnlx33a4r9srl66c5vp08pp72arcy9"))
+  (crate-source "libgit2-sys" "0.18.7+1.9.6"
+                "12ad5zmffzbivn57d47lg2kgjprqsz0kq8i4lsqzlkwz9cg3kir3"))
 
 (define rust-libloading-0.8.6
   (crate-source "libloading" "0.8.6"
@@ -7135,9 +7135,9 @@
   (crate-source "negentropy" "0.5.1"
                 "1akc6vsy9hdvym5zqxjxkzsq9amp7yl133rrrzykwl5502s57hw1"))
 
-(define rust-neo-frizbee-0.10.2
-  (crate-source "neo_frizbee" "0.10.2"
-                "07f32a9cii3yi7h0iqylf2linr4qq9rdz0iayywq601smlqhg3kj"))
+(define rust-neo-frizbee-0.13.3
+  (crate-source "neo_frizbee" "0.13.3"
+                "09pd7axvn3a3ry0cgyh5qpfqgs7kaqda483icpdssbilkgkd03gv"))
 
 (define rust-netdev-0.45.0
   (crate-source "netdev" "0.45.0"
@@ -8897,6 +8897,26 @@
 (define rust-pxfm-0.1.30
   (crate-source "pxfm" "0.1.30"
                 "1slrnbxd0nc96sny6x50ss1sm9ci0gig0fp1w8mw0pkgm5prapfm"))
+
+(define rust-pyo3-0.29.2
+  (crate-source "pyo3" "0.29.2"
+                "12qy2y44mfk21p3q451miv0vibx8540nfrxhp5i2dqvkyknxv226"))
+
+(define rust-pyo3-build-config-0.29.2
+  (crate-source "pyo3-build-config" "0.29.2"
+                "1s9hx992m7vhdwmxdva4nxmild564kz1gx7rc1p3zl2b3gj2f47l"))
+
+(define rust-pyo3-ffi-0.29.2
+  (crate-source "pyo3-ffi" "0.29.2"
+                "09xkl9aj170d15qkdrq43rxvhw27qwzs7cy369s0dbgy4rask4g5"))
+
+(define rust-pyo3-macros-0.29.2
+  (crate-source "pyo3-macros" "0.29.2"
+                "072ajah34vd7ilja9f5f8vgg2fr7j7dhs8rw5kplxn0wzil5h8kk"))
+
+(define rust-pyo3-macros-backend-0.29.2
+  (crate-source "pyo3-macros-backend" "0.29.2"
+                "0lj90a4lilgvm5k0c3x457rn1wvy7qm7vm3xflb65yj96ym7a5ap"))
 
 (define rust-qrcode-0.14.1
   (crate-source "qrcode" "0.14.1"
@@ -14515,9 +14535,9 @@
   (crate-source "zlib-rs" "0.6.8"
                 "04j158293bx73kv5pj1i89ai411q7fxc9zwk3wkpqgb9gj7fas5j"))
 
-(define rust-zlob-1.4.1
-  (crate-source "zlob" "1.4.1"
-                "1dn7dnar54gvaq4m6gap5s6hyhpjcvha09vnibvpllmk5l384vj6"))
+(define rust-zlob-1.6.5
+  (crate-source "zlob" "1.6.5"
+                "1npvzhg6fli1hz0aylwv081yzypgj9dgi56r0z7ssrgizaycznby"))
 
 (define rust-zmij-1.0.19
   (crate-source "zmij" "1.0.19"
@@ -18985,7 +19005,7 @@
                                          rust-anstyle-parse-1.0.0
                                          rust-anstyle-query-1.1.5
                                          rust-anstyle-wincon-3.0.11
-                                         rust-anyhow-1.0.102
+                                         rust-anyhow-1.0.103
                                          rust-arrayref-0.3.9
                                          rust-arrayvec-0.7.6
                                          rust-async-trait-0.1.89
@@ -19023,7 +19043,7 @@
                                          rust-criterion-plot-0.5.0
                                          rust-crossbeam-channel-0.5.15
                                          rust-crossbeam-deque-0.8.6
-                                         rust-crossbeam-epoch-0.9.18
+                                         rust-crossbeam-epoch-0.9.20
                                          rust-crossbeam-queue-0.3.12
                                          rust-crossbeam-utils-0.8.21
                                          rust-crunchy-0.2.4
@@ -19063,7 +19083,7 @@
                                          rust-getrandom-0.2.17
                                          rust-getrandom-0.3.4
                                          rust-getrandom-0.4.2
-                                         rust-git2-0.20.4
+                                         rust-git2-0.21.0
                                          rust-glidesort-0.1.2
                                          rust-glob-0.3.3
                                          rust-globset-0.4.18
@@ -19096,7 +19116,6 @@
                                          rust-is-terminal-polyfill-1.70.2
                                          rust-itertools-0.10.5
                                          rust-itertools-0.13.0
-                                         rust-itertools-0.14.0
                                          rust-itoa-1.0.17
                                          rust-jobserver-0.1.34
                                          rust-js-sys-0.3.91
@@ -19105,7 +19124,7 @@
                                          rust-lazy-static-1.5.0
                                          rust-leb128fmt-0.1.0
                                          rust-libc-0.2.183
-                                         rust-libgit2-sys-0.18.3+1.9.2
+                                         rust-libgit2-sys-0.18.7+1.9.6
                                          rust-libloading-0.8.9
                                          rust-libmimalloc-sys-0.1.44
                                          rust-libredox-0.1.14
@@ -19117,14 +19136,14 @@
                                          rust-log-0.4.29
                                          rust-matchers-0.2.0
                                          rust-memchr-2.8.0
-                                         rust-memmap2-0.9.10
+                                         rust-memmap2-0.9.11
                                          rust-mimalloc-0.1.48
                                          rust-minimal-lexical-0.2.1
                                          rust-mio-1.1.1
                                          rust-mlua-0.11.6
                                          rust-mlua-sys-0.10.0
                                          rust-mlua-derive-0.11.0
-                                         rust-neo-frizbee-0.10.2
+                                         rust-neo-frizbee-0.13.3
                                          rust-nix-0.31.2
                                          rust-nom-7.1.3
                                          rust-notify-9.0.0-rc.4
@@ -19155,12 +19174,18 @@
                                          rust-plotters-0.3.7
                                          rust-plotters-backend-0.3.7
                                          rust-plotters-svg-0.3.7
+                                         rust-portable-atomic-1.13.1
                                          rust-potential-utf-0.1.4
                                          rust-powerfmt-0.2.0
                                          rust-ppv-lite86-0.2.21
                                          rust-prettyplease-0.2.37
                                          rust-proc-macro2-1.0.106
                                          rust-proptest-1.11.0
+                                         rust-pyo3-0.29.2
+                                         rust-pyo3-build-config-0.29.2
+                                         rust-pyo3-ffi-0.29.2
+                                         rust-pyo3-macros-0.29.2
+                                         rust-pyo3-macros-backend-0.29.2
                                          rust-quick-error-1.2.3
                                          rust-quote-1.0.45
                                          rust-r-efi-5.3.0
@@ -19172,7 +19197,6 @@
                                          rust-rand-core-0.6.4
                                          rust-rand-core-0.9.5
                                          rust-rand-xorshift-0.4.0
-                                         rust-raw-cpuid-11.6.0
                                          rust-rayon-1.11.0
                                          rust-rayon-core-1.13.0
                                          rust-redox-syscall-0.5.18
@@ -19210,6 +19234,7 @@
                                          rust-syn-2.0.117
                                          rust-synchronoise-1.0.1
                                          rust-synstructure-0.13.2
+                                         rust-target-lexicon-0.13.5
                                          rust-tempfile-3.27.0
                                          rust-thiserror-1.0.69
                                          rust-thiserror-2.0.18
@@ -19298,7 +19323,7 @@
                                          rust-zerotrie-0.2.3
                                          rust-zerovec-0.11.5
                                          rust-zerovec-derive-0.11.2
-                                         rust-zlob-1.4.1
+                                         rust-zlob-1.6.5
                                          rust-zmij-1.0.21))
                      (t3code-ffi-native =>
                                         (list rust-aho-corasick-1.1.3
