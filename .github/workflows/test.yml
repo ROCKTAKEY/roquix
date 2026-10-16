@@ -29,6 +29,7 @@ jobs:
         run: |
           guix repl -L channel -- tests/t3code-cli-package.scm
           guix repl -L channel -- tests/t3code-home-service.scm
+          guix shell node -- node --test tests/t3code-runtime-dependencies.mjs
       - name: List packages to build
         id: packages-to-build
         run: |

@@ -38,14 +38,19 @@ function stagePackage(source) {
     dereference: false,
     filter: (file) => path.basename(file) !== "node_modules",
   });
-  const dependencies = { ...metadata.dependencies, ...metadata.optionalDependencies };
+  // External consumers resolve peers from disk, using their own pnpm resolution.
+  const dependencies = {
+    ...metadata.peerDependencies, ...metadata.dependencies, ...metadata.optionalDependencies,
+  };
   for (const name of Object.keys(dependencies).sort()) {
     const dependency = findDependency(source, name);
     // Some npm packages incorrectly label their musl binding as glibc.
     // Guix uses glibc, so never install a musl fallback beside that binding.
     if (dependency && !name.endsWith("-musl"))
       linkDependency(target, name, stagePackage(dependency));
-    else if (!(name in (metadata.optionalDependencies ?? {}))) {
+    else if (!(name in (metadata.optionalDependencies ?? {})) &&
+      (name in (metadata.dependencies ?? {}) ||
+        !metadata.peerDependenciesMeta?.[name]?.optional)) {
       throw new Error(`Missing runtime dependency ${metadata.name} -> ${name}`);
     }
   }
