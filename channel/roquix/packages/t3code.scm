@@ -8,6 +8,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages commencement)
+  #:use-module (gnu packages chromium)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
@@ -1095,6 +1096,16 @@
                             (assoc-ref outputs "out")
                             #$(file-append %t3code-installed-tests "/native-modules.mjs")
                             #$version)))))
+          (add-after 'unpack 'use-guix-preview-browser
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The downloaded Chrome for Testing assumes an FHS loader.  Both
+              ;; preview tabs and HTML rendering share this service layer.
+              ;; https://github.com/pingdotgg/t3code/blob/v0.1.0/apps/server/src/preview/PreviewBrowser.ts
+              (let ((chromium (search-input-file inputs "/bin/chromium")))
+                (substitute* "apps/server/src/preview/PreviewBrowser.ts"
+                  (("return yield\\* makePreviewBrowser\\(\\{ baseDir: config.baseDir \\}\\);")
+                   (format #f "return PreviewBrowser.of({ executable: Effect.succeed(~s), installed: Effect.succeed(Option.some(~s)) });"
+                           chromium chromium))))))
           (delete 'bootstrap)
           (replace 'configure
             configure-application)
@@ -1158,6 +1169,7 @@
                      ("spdx-licenses" ,%spdx-licenses)))
     ;; Playwright ships a Node CLI whose installed shebang must remain usable.
     (inputs (list node
+                  ungoogled-chromium
                   electron-for-t3code
                   t3code-fff-native
                   t3code-ffi-native
@@ -1226,6 +1238,7 @@ Electron runtime.")
                             %t3code-runtime-dependencies-script
                             #:desktop? #f))))
     (inputs (list (list "node" node)
+                  (list "ungoogled-chromium" ungoogled-chromium)
                   (list "t3code-fff-native" t3code-fff-native)
                   (list "t3code-ffi-native" t3code-ffi-native)
                   (list "t3code-keyring-native" t3code-keyring-native)
