@@ -3,15 +3,24 @@
              (guix gexp)
              (guix monads)
              (guix store)
-             (guix utils)
              (guix build utils)
-             (guix build gnu-build-system)
              ((guix build syscalls) #:select (mkdtemp!))
              (ice-9 textual-ports)
              (srfi srfi-13)
              (roquix packages t3code)
              (srfi srfi-1)
              (srfi srfi-64))
+
+(define (package-phases package)
+  (let ((module (make-fresh-user-module))
+        (phases (apply (lambda* (#:key phases #:allow-other-keys) phases)
+                       (package-arguments package))))
+    (module-use! module (resolve-interface '(guix build utils)))
+    (module-use! module (resolve-interface '(guix build gnu-build-system)))
+    (with-store store
+      (eval (lowered-gexp-sexp
+             (run-with-store store (lower-gexp phases #:graft? #f)))
+            module))))
 
 (test-begin "t3code-cli-package")
 
@@ -51,20 +60,8 @@
             (lambda (port)
               (display "return yield* makePreviewBrowser({ baseDir: config.baseDir });"
                        port)))
-          (let* ((expression (with-store store
-                               (lowered-gexp-sexp
-                                (run-with-store store
-                                  (lower-gexp
-                                   (apply (lambda* (#:key phases #:allow-other-keys) phases)
-                                          (package-arguments t3code))
-                                   #:graft? #f)))))
-                 (module (make-fresh-user-module))
-                 (phases (begin
-                           (module-use! module (resolve-interface '(guix build utils)))
-                           (module-use! module (resolve-interface '(guix build gnu-build-system)))
-                           (eval expression module))))
-            ((assoc-ref phases 'use-guix-preview-browser)
-             #:inputs `(("ungoogled-chromium" . ,directory))))
+          ((assoc-ref (package-phases t3code) 'use-guix-preview-browser)
+           #:inputs `(("ungoogled-chromium" . ,directory)))
           (let ((patched (call-with-input-file source get-string-all)))
             (test-assert "the preview service resolves the packaged browser without downloading"
               (and (string-contains patched

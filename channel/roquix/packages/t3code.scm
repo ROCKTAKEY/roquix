@@ -1104,7 +1104,12 @@
               (let ((chromium (search-input-file inputs "/bin/chromium")))
                 (substitute* "apps/server/src/preview/PreviewBrowser.ts"
                   (("return yield\\* makePreviewBrowser\\(\\{ baseDir: config.baseDir \\}\\);")
-                   (format #f "return PreviewBrowser.of({ executable: Effect.succeed(~s), installed: Effect.succeed(Option.some(~s)) });"
+                   (format #f
+                           (string-append
+                            "return PreviewBrowser.of({~%"
+                            "      executable: Effect.succeed(~s),~%"
+                            "      installed: Effect.succeed(Option.some(~s)),~%"
+                            "    });")
                            chromium chromium))))))
           (delete 'bootstrap)
           (replace 'configure
