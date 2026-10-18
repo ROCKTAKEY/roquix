@@ -16,6 +16,48 @@ Run =guix pull= and use the resulting =guix=.  Roquix's channel metadata makes
 the extension discoverable as =guix extra-profile=; a channel installation
 does not require =GUIX_EXTENSIONS_PATH= or =GUILE_LOAD_PATH=.
 
+* lllmmm Home service
+The =(roquix home services lllmmm)= module runs lllmmm as a user Shepherd
+service and installs it in the Home profile:
+
+#+BEGIN_SRC scheme
+(use-modules (gnu home)
+             (gnu services)
+             (roquix home services lllmmm))
+
+(home-environment
+ (services (list (service home-lllmmm-service-type))))
+#+END_SRC
+
+Before activating the service, prepare =lllmmm/lllmmm.toml= under
+=$XDG_CONFIG_HOME=, or =~/.config= when that variable is unset, empty, or
+relative.  The file must configure at least one model with an existing model
+file.  Backend executables such as =llama-server= must be available on the
+service's =PATH= or named by absolute path in the TOML configuration.
+Backend-specific environment variables can be set in =models.env=.
+
+Use =home-lllmmm-configuration= to select another =lllmmm= package, an
+absolute =config-file= path, or an absolute =log-file= path.  The log defaults
+to =lllmmm.log= in Shepherd's user log directory.  For example:
+
+#+BEGIN_SRC scheme
+(service home-lllmmm-service-type
+         (home-lllmmm-configuration
+          (config-file "/home/alice/config/lllmmm.toml")))
+#+END_SRC
+
+=config-file= also accepts a Guix file-like object such as =plain-file= or
+=local-file=.  Relative paths in TOML resolve against the configuration
+file's directory.  A configuration stored in =/gnu/store= therefore needs
+an absolute writable =state_dir= and absolute model paths.
+
+The =stop-timeout= field defaults to 30 seconds.  It must exceed the TOML
+=shutdown_timeout_secs= plus the server's five-second HTTP drain margin, so
+lllmmm can reap its backend processes before Shepherd sends =SIGKILL=.
+
+The service starts automatically.  Use =herd status lllmmm=,
+=herd stop lllmmm=, and =herd start lllmmm= to manage it.
+
 * Named extra profiles
 =guix extra-profile= manages named profiles from declarative manifests and
 combines already-built profile generations with =guix shell=.  It deliberately
