@@ -1,0 +1,71 @@
+Preserve root cgroup identity when checking resident expert RAM.
+
+Appending an empty relative cgroup path creates a trailing path component.
+The host root has no memory.max; retaining its identity preserves the root
+exception without bypassing child cgroup limits or the RAM headroom guard.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -95,6 +95,9 @@
+ 
+ if(STRATA_BUILD_CONVERSATION_TESTS)
+   enable_testing()
++  add_executable(cgroup_path_test tests/core/cgroup_path_test.cpp)
++  target_include_directories(cgroup_path_test PRIVATE include)
++  add_test(NAME cgroup_path_test COMMAND cgroup_path_test)
+   add_executable(conversation_cache_test src/core/conversation_cache_test.cpp)
+   target_include_directories(conversation_cache_test PRIVATE include)
+   add_test(NAME conversation_cache_test COMMAND conversation_cache_test)
+--- a/src/core/expert_source.cpp
++++ b/src/core/expert_source.cpp
+@@ -1,5 +1,6 @@
+ // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
+ #include "strata/core/expert_source.hpp"
++#include "strata/core/cgroup_path.hpp"
+ #include "strata/core/foresight_swap.hpp"
+ #include "strata/core/on_device.hpp"
+ #include "strata/core/remote_experts.hpp"
+@@ -262,7 +263,7 @@
+                 if (c == "memory") v1_path = line.substr(c2 + 1);
+             continue;
+         }
+-        auto path = (root / line.substr(4)).lexically_normal();
++        auto path = detail::cgroup_memory_path(root, line.substr(4));
+         if (path.string().rfind(root.string(), 0) != 0 || !std::filesystem::is_directory(path)) return false;
+         v2 = true;
+         while (path.string().rfind(root.string(), 0) == 0) {
+--- /dev/null
++++ b/include/strata/core/cgroup_path.hpp
+@@ -0,0 +1,13 @@
++#pragma once
++
++#include <filesystem>
++#include <string>
++
++namespace strata::core::detail {
++inline std::filesystem::path cgroup_memory_path(const std::filesystem::path& root,
++                                               const std::string& relative) {
++    // Appending an empty path adds a trailing component, making it unequal to root.
++    // The host root has no memory.max and must reach the root-only exception.
++    return relative.empty() ? root : (root / relative).lexically_normal();
++}
++}
+--- /dev/null
++++ b/tests/core/cgroup_path_test.cpp
+@@ -0,0 +1,16 @@
++#include "strata/core/cgroup_path.hpp"
++
++#include <iostream>
++
++int main() {
++    const std::filesystem::path root("/sys/fs/cgroup");
++    if (strata::core::detail::cgroup_memory_path(root, "") != root) {
++        std::cerr << "The root cgroup must retain its identity for the host memory-limit exception\n";
++        return 1;
++    }
++    if (strata::core::detail::cgroup_memory_path(root, "user.slice/session.scope") !=
++        root / "user.slice/session.scope") {
++        std::cerr << "Child cgroups must keep their path for ancestor memory-limit checks\n";
++        return 1;
++    }
++}

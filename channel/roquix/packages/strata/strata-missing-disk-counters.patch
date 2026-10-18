@@ -1,0 +1,49 @@
+Handle unavailable disk devices in container telemetry and setup tests.
+
+Guix build sandboxes can expose no disk devices.  Preserve the existing
+unknown-measurement representation when psutil returns no counters.
+The rotational-disk check returns None when sysfs is unavailable; allow
+that result in its integration test without requiring /sys/block.
+
+--- a/serve/telemetry.py
++++ b/serve/telemetry.py
+@@ -301,6 +301,8 @@
+         try:
+             c = self.ps.disk_io_counters()
+         except (OSError, RuntimeError):
++            return None, None
++        if c is None:
+             return None, None
+         t = time.time()
+         prev, self._disk_prev = self._disk_prev, (t, c.read_bytes, c.write_bytes)
+--- a/serve/test_server.py
++++ b/serve/test_server.py
+@@ -1790,6 +1790,16 @@
+                 (hw / "power1_input").write_text("120000000\n")
+             (hw / "power1_cap").write_text("300000000\n")
+ 
++    def test_missing_disk_counters(self):
++        from serve import telemetry
++        with tempfile.TemporaryDirectory() as directory, \
++                mock.patch.object(telemetry, "SYSFS", directory), \
++                mock.patch.object(telemetry.threading, "Thread"), \
++                mock.patch("psutil.disk_io_counters", return_value=None):
++            sample = telemetry.Telemetry(amd=True).sample()
++        self.assertIsNone(sample["disk_read_mb"])
++        self.assertIsNone(sample["disk_write_mb"])
++
+     def test_readings(self):
+         from serve import telemetry
+         with tempfile.TemporaryDirectory() as d:
+--- a/tools/test_setup_choices.py
++++ b/tools/test_setup_choices.py
+@@ -315,7 +315,8 @@
+         if not sys.platform.startswith("linux"):
+             self.assertIsNone(setup.rotational_disk(__file__))   # Windows: never
+             return
+-        self.assertIn(setup.rotational_disk(__file__), (None,) + tuple(os.listdir("/sys/block")))
++        disks = tuple(os.listdir("/sys/block")) if os.path.isdir("/sys/block") else ()
++        self.assertIn(setup.rotational_disk(__file__), (None,) + disks)
+ 
+ 
+ class VramReserve(unittest.TestCase):

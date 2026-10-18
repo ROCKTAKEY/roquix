@@ -1,0 +1,26 @@
+Keep shared-memory declarations valid for HIP Clang.
+
+Clang rejects alignas after HIP's shared-memory attribute as a type
+attribute.  Put alignas first while preserving the 16-byte alignment.
+https://github.com/Niko1221/Strata/blob/v0.1.45/src/kernels/cuda/iq_kernels.cu
+
+--- a/src/kernels/cuda/iq_kernels.cu
++++ b/src/kernels/cuda/iq_kernels.cu
+@@ -1853,7 +1853,7 @@
+                                                                             float* __restrict__ gate, float* __restrict__ up, int rb) {
+     const int ng = *n_groups;
+     if (blockIdx.y >= ng) return;
+-    __shared__ alignas(16) int4 s_u[ED_NC * 2 * ED_XB];
++    alignas(16) __shared__ int4 s_u[ED_NC * 2 * ED_XB];
+     __shared__ float s_ds[ED_NC * ED_XB];
+     STRATA_SHARED_ALIGN16_U32(s_grid_buf, EdGrid<TG>::words);
+     const int tid = threadIdx.x;
+@@ -2040,7 +2040,7 @@
+     if (blockIdx.y >= ng) return;
+     constexpr int LANES = TD == 20 ? 8 : 16;
+     constexpr int RPP = (256 / LANES) * R;   // rows per pass
+-    __shared__ alignas(16) int4 s_u[ED_NC * 2 * ED_HB];
++    alignas(16) __shared__ int4 s_u[ED_NC * 2 * ED_HB];
+     __shared__ float s_ds[ED_NC * ED_HB];
+     const int tid = threadIdx.x;
+     const int sw = tid / LANES, t = tid % LANES;

@@ -1,0 +1,486 @@
+Use the Guix-provided engine and dependencies from a writable setup directory.
+
+Model preparation and configuration writing remain upstream operations.
+The package owns executables and libraries; user state owns model paths.
+Runtime compilation tests exercise the corresponding packaged-engine contract.
+
+--- a/setup.py
++++ b/setup.py
+@@ -56,9 +56,12 @@
+ import urllib.error
+ import urllib.request
+ import zipfile
++from dataclasses import dataclass
++from typing import Any
+ from pathlib import Path
+ 
+-ROOT = Path(__file__).resolve().parent
++PACKAGE_ROOT = Path(__file__).resolve().parent
++ROOT = PACKAGE_ROOT
+ WIN = os.name == "nt"
+ # #214: every Hugging Face file comes from a fixed commit of its repository (the `sha` of
+ # https://huggingface.co/api/models/<repo> when this was pinned), so a checkout installs the same files on any
+@@ -1992,44 +1995,7 @@
+ 
+ 
+ def get_llama_cpp():
+-    """llama.cpp at the pinned commit (ggml for the build, gguf-py for the tools, mtmd for images), as a zip: no git."""
+-    llama = ROOT / "third_party" / "llama.cpp"
+-    if (llama / "ggml" / "CMakeLists.txt").exists() and (llama / "gguf-py").is_dir():
+-        return llama
+-    z = ROOT / "third_party" / f"llama.cpp-{LLAMA_CPP_COMMIT[:7]}.zip"
+-    download(LLAMA_CPP_ZIP, z, "llama.cpp source")
+-    tmp = ROOT / "third_party" / "_unpack"
+-    shutil.rmtree(tmp, ignore_errors=True)
+-    try:
+-        with zipfile.ZipFile(z) as f:
+-            # llama.cpp's own web UI (tools/ui) is not used, and its deep paths passed Windows' 260-character limit in a
+-            # folder like Downloads\Strata-main\Strata-main (#206)
+-            f.extractall(tmp, [m for m in f.namelist() if "/tools/ui/" not in m])
+-    except zipfile.BadZipFile:
+-        # #1797: do not let the .done mark make every later run reuse a damaged source archive.
+-        try:
+-            drop_archive(z)
+-        except OSError as e:
+-            warn(f"cannot remove damaged {z.name} ({e}): delete it and its .done mark before running setup again")
+-        raise
+-    top = next(tmp.iterdir())
+-    shutil.rmtree(llama, ignore_errors=True)
+-    # PR #63: on Windows a rename can fail with PermissionError while an antivirus scanner still holds a file of the
+-    # fresh unpack; shutil.move falls back to copy-and-delete, and a few retries let the scanner finish.  The target
+-    # is `llama` itself - moving into its parent would keep the zip's `llama.cpp-<sha>` folder name.
+-    for attempt in range(5):
+-        try:
+-            shutil.move(str(top), str(llama))
+-            break
+-        except PermissionError:
+-            if attempt == 4:
+-                raise
+-            shutil.rmtree(llama, ignore_errors=True)   # a partial copy from the failed attempt
+-            time.sleep(2)
+-    shutil.rmtree(tmp, ignore_errors=True)
+-    z.unlink(missing_ok=True)
+-    z.with_name(z.name + ".done").unlink(missing_ok=True)
+-    return llama
++    return PACKAGE_ROOT / "third_party/llama.cpp"
+ 
+ 
+ def req_name(line: str) -> str:
+@@ -2057,21 +2023,7 @@
+ 
+ 
+ def pip_install(packages, what):
+-    """pip install into .venv, skipped when the same list was installed before.  An install from before the pinned
+-    requirements (#214) recorded bare names: those packages are kept as they are (nothing is reinstalled), and the
+-    pinned dependencies it already has count as installed."""
+-    stamp = Path(sys.prefix) / ".strata-pip.json"
+-    have = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else []
+-    bare = {p.lower() for p in have if req_name(p) == p.lower()}
+-    need = [p for p in packages if p not in have and req_name(p) not in bare
+-            and not (bare and "==" in p and _installed(req_name(p)))]
+-    if not need:
+-        ok(f"{what} already installed")
+-        return
+-    say(f"  Installing {what} ...")
+-    run([sys.executable, "-m", "pip", "install", "--quiet", "--disable-pip-version-check", *need])
+-    stamp.write_text(json.dumps(sorted(set(have) | set(need)), indent=0))
+-    ok(f"{what} installed")
++    ok(f"{what} supplied by Guix")
+ 
+ 
+ def cuda_lib_dirs(toolkit=13):
+@@ -3071,59 +3023,8 @@
+ 
+ 
+ def build_engine_hip(gpu, llama, vision="none") -> Path:
+-    """Compile the HIP engine for this AMD GPU into engine/ (again only when its source changed: a `git pull`).
+-    gpu["archs"]: every architecture it needs code for (the cards of a layer split), else gpu["arch"].  vision "cpu"
+-    (#304): the image encoder too, for the CPU (there is no HIP encoder build yet)."""
+-    eng = ROOT / "engine"
+-    eng.mkdir(exist_ok=True)
+-    stamp = eng / "BUILD.json"
+-    meta = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else {}
+-    src, vsrc = source_hash(ENGINE_SOURCES), source_hash(VISION_SOURCES)
+-    archs = sorted(set(gpu.get("archs") or [gpu["arch"]]))
+-    has_archs = set(archs) <= set(meta.get("archs", []))
+-    floor = cpu_floor(cpu_info()[1])                     # "" on an AVX2 CPU: the normal engine
+-    engine_ok = meta.get("backend") == "hip" and (eng / EXE).exists() and meta.get("src") == src and has_archs and \
+-        (meta.get("isa_floor") or "") == floor and not stale_binary(eng / EXE)
+-    vision_ok = vision == "none" or ((eng / VEXE).exists() and meta.get("vision_src") == vsrc)
+-    if engine_ok and vision_ok:
+-        ok("engine already built for this PC")
+-        return eng
+-    if engine_ok:
+-        return build_vision_cpu(eng, stamp, meta, llama, vsrc)
+-    if not (shutil.which("c++") or shutil.which("g++")) or not shutil.which("git"):
+-        fail("a C++ compiler and git are needed to compile the AMD engine",
+-             "Ubuntu/Debian: sudo apt install build-essential git   Fedora: sudo dnf install gcc-c++ git")
+-    root, dirs = rocm_root(archs)
+-    libs = [str(Path(d).parent) for d in dirs[1:]]
+-    bitcode = next((p for p in (root / "lib" / "llvm" / "amdgcn" / "bitcode", root / "amdgcn" / "bitcode") if p.is_dir()),
+-                   root / "amdgcn" / "bitcode")
+-    os.environ.update({"HIP_PLATFORM": "amd", "HIP_COMPILER": "clang", "HIP_RUNTIME": "rocclr", "ROCM_PATH": str(root),
+-                       "HIP_PATH": str(root)})
+-    os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(dirs + [os.environ.get("LD_LIBRARY_PATH", "")]).rstrip(os.pathsep)
+-    os.environ["PATH"] = os.pathsep.join([str(root / "bin"), str(root / "llvm" / "bin"), os.environ.get("PATH", "")])
+-    say("  The engine's source changed: compiling it again (only what changed, a few minutes) ..."
+-        if meta.get("backend") == "hip" and (eng / EXE).exists() and has_archs
+-        else f"  Compiling the Strata engine for your AMD GPU{'s' if len(archs) > 1 else ''} ({', '.join(archs)}; "
+-             "10-20 minutes, once) ...")
+-    cmake_build(ROOT, ROOT / "build-hip", "strata",
+-                ["-DSTRATA_ENABLE_HIP=ON", "-DSTRATA_ENABLE_CUDA=OFF", "-DSTRATA_BUILD_TESTS=OFF",
+-                 "-DSTRATA_PREFILL_MMQ=ON", "-DSTRATA_Q6K_EXPERTS=ON", "-DSTRATA_MMQ_KQUANTS=ON", "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
+-                 f"-DCMAKE_HIP_COMPILER={root / 'llvm' / 'bin' / 'clang++'}", f"-DCMAKE_HIP_COMPILER_ROCM_ROOT={root}",
+-                 "-DCMAKE_PREFIX_PATH=" + ";".join([str(root), *libs]),
+-                 f"-DCMAKE_HIP_FLAGS=--rocm-path={root} --rocm-device-lib-path={bitcode}",
+-                 f"-DSTRATA_GGML_DIR={llama}", *isa_floor_defs(floor, ROOT / "build-hip", meta)], None, "")
+-    if stale_binary(ROOT / "build-hip" / EXE):            # #2054: no stamp for a binary of another version
+-        fail(f"the engine build finished without a new engine ({EXE} is version "
+-             f"{binary_engine_version(ROOT / 'build-hip' / EXE)}, this source is {source_version()}): "
+-             "the installed engine is left as it was", "delete the folder build-hip and run this again")
+-    shutil.copy2(ROOT / "build-hip" / EXE, eng / EXE)
+-    meta = {"source": "local-hip", "backend": "hip", "version": source_version(), "archs": archs, "vision": "none",
+-            "lib_dirs": dirs, "src": src, **({"isa_floor": floor} if floor else {})}
+-    if vision != "none":
+-        return build_vision_cpu(eng, stamp, meta, llama, vsrc)
+-    stamp.write_text(json.dumps(meta, indent=1))
+-    ok(f"engine compiled: {eng / EXE}")
+-    return eng
++    package = PackagedStrata.load(PACKAGE_ROOT)
++    return PreparedStrata(package, ROOT).engine_for(gpu, vision)
+ 
+ 
+ def hip_vision(asked) -> str:
+@@ -3705,94 +3606,8 @@
+ 
+ 
+ def update_installed_engine(url_base, toolkit=None) -> None:
+-    """An installed ready-made engine older than MIN_ENGINE is replaced before the model starts, so a plain
+-    START-HERE.bat on an existing install picks up a new release.  If that cannot happen (no internet, the model
+-    still running, no ready-made engine for this GPU) the installed engine is kept and starts as before.
+-    toolkit None: engine/, then the experimental CUDA 12 engine in engine-cuda12/ when one is installed."""
+-    if toolkit is None:
+-        update_installed_engine(url_base, 13)
+-        if (engine_dir(12) / "BUILD.json").exists():
+-            update_installed_engine(url_base, 12)
+-        return
+-    eng = engine_dir(toolkit)
+-    info = eng / "BUILD.json"
+-    if not info.exists() or not (eng / EXE).exists():
+-        return
+-    meta_text = info.read_text(encoding="utf-8")
+-    meta = json.loads(meta_text)
+-    if meta.get("backend") == "hip" and WIN:           # AMD on Windows: the ready-made HIP engine, when older
+-        ver = tuple(int(x) for x in str(meta.get("version", "0")).split(".")[:4] if x.isdigit())
+-        if meta.get("source") == "prebuilt" and ver < WIN_HIP_MIN_ENGINE:
+-            try:
+-                g = next((x for x in amd_gpus() if amd_problem(x) is None), None)
+-                if g is None:
+-                    raise RuntimeError("no supported AMD GPU found")
+-                say(f"  Updating the ready-made AMD engine ({meta.get('version')} -> "
+-                    f"{'.'.join(map(str, WIN_HIP_MIN_ENGINE))} or newer) ...")
+-                if get_prebuilt_hip(url_base, g, updating=True) is None:
+-                    raise RuntimeError("not published yet")
+-            except (Exception, SystemExit) as e:
+-                warn(f"could not update the AMD engine{'' if isinstance(e, SystemExit) else f' ({e})'}: "
+-                     "starting the installed one")
+-        return
+-    if meta.get("backend") == "hip":                   # AMD: compiled here, again when its source changed
+-        if meta.get("src") != source_hash(ENGINE_SOURCES) or stale_binary(eng / EXE):
+-            try:
+-                usable = [x for x in amd_gpus() if amd_problem(x) is None]
+-                g = next((x for x in usable if x["arch"] in meta.get("archs", [])), usable[0] if usable else None)
+-                if g is None:
+-                    raise RuntimeError("no supported AMD GPU found")
+-                # every architecture it was built for (a layer split across two families keeps both)
+-                build_engine_hip({**g, "archs": [x for x in meta.get("archs", []) if x in AMD_ARCHS] or [g["arch"]]},
+-                                 get_llama_cpp(), meta.get("vision") or "none")
+-            except (Exception, SystemExit) as e:
+-                warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: "
+-                     "starting the installed one")
+-        return
+-    ver = tuple(int(x) for x in str(meta.get("version", "0")).split(".")[:4] if x.isdigit())
+-    local = meta.get("source") == "local"
+-    vision = meta.get("vision") or "none"
+-    if local:                                          # compiled here: is it older than the source (a git pull)?
+-        if meta.get("src") == source_hash(ENGINE_SOURCES) and not stale_binary(eng / EXE) and \
+-                (vision == "none" or meta.get("vision_src") == source_hash(VISION_SOURCES)):
+-            return
+-    elif ver >= MIN_ENGINE:
+-        return
+-    try:                                               # a running engine cannot be replaced (Windows keeps it locked)
+-        for x in (EXE, VEXE):
+-            if (eng / x).exists():
+-                with open(eng / x, "r+b"):
+-                    pass
+-    except OSError:
+-        warn(f"engine {meta.get('version') or ''} is in use: close the model window and run this again to update it")
+-        return
+-    gpu = update_engine_gpu(toolkit)
+-    if local:
+-        try:                                           # a failed compile must not stop the model from starting
+-            if gpu is None:
+-                raise RuntimeError("no NVIDIA GPU found")
+-            gpu = {**gpu, "archs": sorted({int(gpu["arch"]), *(int(x) for x in meta.get("archs", []))})}
+-            if int(toolkit) == 12:                     # the cards it was compiled for (the main GPU may be newer)
+-                gpu["archs"] = sorted({int(x) for x in meta.get("archs", [])}) or gpu["archs"]
+-            build_engine(gpu, vision, False, get_llama_cpp(), toolkit=toolkit)
+-        except (Exception, SystemExit) as e:
+-            warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: starting the installed one")
+-        return
+-    new = None
+-    if gpu is not None:
+-        try:
+-            if int(toolkit) == 12:                     # the cards the CUDA 12 engine serves, not the newest one
+-                gpu = {**gpu, "archs": [x for x in (int(a) for a in meta.get("archs", [])) if x < CUDA13_MIN_ARCH]
+-                       or [int(gpu["arch"])]}
+-            new = get_prebuilt(url_base, gpu, "gpu", updating=True, toolkit=toolkit)
+-        except Exception as e:                         # a failed download must not stop the model from starting
+-            warn(f"updating the engine failed ({e})")
+-    if new is None:
+-        if not info.exists():
+-            info.write_text(meta_text)                 # get_prebuilt drops it before downloading: put it back
+-        warn(f"could not update the engine: starting the installed {meta.get('version')}")
+-        return
+-    pip_cuda_libs(toolkit)
++    package = PackagedStrata.load(PACKAGE_ROOT)
++    PreparedStrata(package, ROOT).refresh_engine_configurations()
+ 
+ 
+ def pip_cuda_libs(toolkit=13) -> None:
+@@ -5975,6 +5790,118 @@
+     say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
+         "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
+     return 0
++
++
++@dataclass(frozen=True)
++class SetupRequest:
++    arguments: tuple[str, ...]
++
++    @classmethod
++    def parse(cls, arguments: list[str]) -> "SetupRequest":
++        parser = argparse.ArgumentParser(prog="strata-setup", add_help=False)
++        parser.add_argument("--backend", choices=["hip"])
++        parser.add_argument("--vision", choices=["none", "no"])
++        parser.add_argument("--build", action="store_true")
++        parser.add_argument("--prebuilt")
++        options, _ = parser.parse_known_args(arguments)
++        if options.build or options.prebuilt is not None:
++            parser.error("Guix manages the engine; use guix upgrade strata-hip")
++        return cls(("--vision", "none", *arguments))
++
++
++@dataclass(frozen=True)
++class PackagedStrata:
++    root: Path
++    architectures: tuple[str, ...]
++    library_directories: tuple[str, ...]
++
++    @classmethod
++    def load(cls, root: Path) -> "PackagedStrata":
++        root = root.resolve()
++        metadata = json.loads((root / "engine/BUILD.json").read_text())
++        if not isinstance(metadata, dict) or metadata.get("backend") != "hip":
++            raise ValueError("the Guix package must provide a HIP engine")
++        if not (root / "engine/strata").is_file():
++            raise ValueError("the packaged Strata engine is missing")
++        return cls(
++            root,
++            cls._metadata_strings(metadata, "archs"),
++            cls._metadata_strings(metadata, "lib_dirs"),
++        )
++
++    @staticmethod
++    def _metadata_strings(metadata: dict[str, Any], key: str) -> tuple[str, ...]:
++        values = metadata.get(key)
++        if not isinstance(values, list) or not values or any(
++            not isinstance(value, str) or not value for value in values
++        ):
++            raise ValueError(f"invalid packaged {key}: expected nonempty strings")
++        return tuple(values)
++
++    def engine_for(self, gpu: dict[str, Any], vision: str) -> Path:
++        for architecture in gpu.get("archs") or [gpu["arch"]]:
++            if architecture not in self.architectures:
++                raise ValueError(f"the packaged engine does not support {architecture}")
++        if vision != "none" and not (self.root / "engine/strata-vision").is_file():
++            raise ValueError(
++                "this package does not include the optional vision encoder"
++            )
++        return self.root / "engine"
++
++    def prepare(self, state: Path) -> "PreparedStrata":
++        state = state.expanduser().resolve()
++        if state == self.root or state.is_relative_to(self.root):
++            raise ValueError("Strata state must be outside the package directory")
++        resources = (
++            "tools",
++            "serve",
++            "data",
++            "engine",
++            "third_party",
++            "CMakeLists.txt",
++            "requirements.txt",
++        )
++        # Upstream resolves tools relative to ROOT and writes configurations there.
++        # https://github.com/Niko1221/Strata/blob/v0.1.34/setup.py
++        for name in resources:
++            target = state / name
++            if target.exists() and not target.is_symlink():
++                raise ValueError(f"refusing to replace user file: {target}")
++        state.mkdir(parents=True, exist_ok=True)
++        for name in resources:
++            target = state / name
++            if target.is_symlink():
++                target.unlink()
++            target.symlink_to(self.root / name)
++        return PreparedStrata(self, state)
++
++
++@dataclass(frozen=True)
++class PreparedStrata:
++    package: PackagedStrata
++    state: Path
++
++    def engine_for(self, gpu: dict[str, Any], vision: str) -> Path:
++        self.package.engine_for(gpu, vision)
++        return self.state / "engine"
++
++    def refresh_engine_configurations(self) -> None:
++        for path in installed_configs():
++            config = json.loads(path.read_text(encoding="utf-8-sig"))
++            config["exe"] = str(self.state / "engine/strata")
++            config["lib_dirs"] = list(self.package.library_directories)
++            write_config(path, config)
++
++
++def prepare_guix_setup(arguments: list[str]) -> list[str]:
++    global ROOT
++    request = SetupRequest.parse(arguments)
++    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
++    state = Path(os.environ.get("STRATA_STATE_DIR", data_home / "strata"))
++    prepared = PackagedStrata.load(PACKAGE_ROOT).prepare(state)
++    ROOT = prepared.state
++    data_directory = load_settings().get("data_dir", str(ROOT / "models-data"))
++    return ["--backend", "hip", "--data-dir", data_directory, *request.arguments]
+ 
+ 
+ def main() -> int:
+@@ -7157,7 +7084,11 @@
+ 
+ if __name__ == "__main__":
+     try:
++        sys.argv[1:] = prepare_guix_setup(sys.argv[1:])
+         sys.exit(main())
++    except (OSError, ValueError, TypeError) as error:
++        print(f"strata-setup: {error}", file=sys.stderr)
++        sys.exit(1)
+     except KeyboardInterrupt:
+         say("\nstopped.")
+         sys.exit(1)
+--- a/tools/test_setup_amd.py
++++ b/tools/test_setup_amd.py
+@@ -153,40 +153,24 @@
+                         cfg.unlink()
+                         (sysroot / "include/hip/hip_runtime.h").unlink()
+ 
+-    def test_build_for_every_arch(self):
+-        """build_engine_hip compiles for the set of the chosen cards' archs and records it in BUILD.json."""
+-        calls = {}
+-        saved = {k: getattr(setup, k) for k in ("ROOT", "rocm_root", "cmake_build", "source_hash", "source_version",
+-                                                "ok", "shutil")}
++    def test_uses_every_packaged_arch_without_compiling(self):
++        import json
+         with tempfile.TemporaryDirectory() as d:
+             root = Path(d)
+-
+-            def fake_build(src, bdir, target, defs, vcvars, bat):
+-                calls["defs"] = defs
+-                (bdir).mkdir(parents=True, exist_ok=True)
+-                (bdir / setup.EXE).write_text("engine")
+-
+-            class Sh:
+-                which = staticmethod(lambda name: "/usr/bin/" + name)
+-                copy2 = staticmethod(lambda a, b: Path(b).write_text(Path(a).read_text()))
+-            setup.ROOT, setup.cmake_build, setup.ok, setup.shutil = root, fake_build, lambda *a: None, Sh
+-            setup.source_hash, setup.source_version = (lambda *a: "h"), (lambda: "0.1.31")
+-            setup.rocm_root = lambda archs: (calls.setdefault("archs", archs) and root, [str(root / "lib")])
++            (root / "engine").mkdir()
++            (root / "engine/strata").touch()
++            (root / "engine/BUILD.json").write_text(json.dumps({
++                "backend": "hip", "archs": ["gfx1201", "gfx1100"],
++                "lib_dirs": ["/store/rocm/lib"]}))
++            saved_root, saved_package = setup.ROOT, setup.PACKAGE_ROOT
++            setup.ROOT = setup.PACKAGE_ROOT = root
+             try:
+-                setup.build_engine_hip({"arch": "gfx1201", "archs": ["gfx1201", "gfx1100", "gfx1201"]}, root)
+-                self.assertEqual(calls["archs"], ["gfx1100", "gfx1201"])
+-                self.assertIn("-DCMAKE_HIP_ARCHITECTURES=gfx1100;gfx1201", calls["defs"])
+-                import json
+-                self.assertEqual(json.loads((root / "engine" / "BUILD.json").read_text())["archs"],
+-                                 ["gfx1100", "gfx1201"])
+-                calls.clear()                            # one of those cards alone: already built, no compile
+-                setup.build_engine_hip({"arch": "gfx1100"}, root)
+-                self.assertNotIn("defs", calls)
+-                setup.build_engine_hip({"arch": "gfx1101"}, root)   # another arch: compiled again
+-                self.assertIn("-DCMAKE_HIP_ARCHITECTURES=gfx1101", calls["defs"])
++                self.assertEqual(setup.build_engine_hip(
++                    {"archs": ["gfx1201", "gfx1100"]}, root), root / "engine")
++                with self.assertRaisesRegex(ValueError, "gfx1101"):
++                    setup.build_engine_hip({"arch": "gfx1101"}, root)
+             finally:
+-                for k, v in saved.items():
+-                    setattr(setup, k, v)
++                setup.ROOT, setup.PACKAGE_ROOT = saved_root, saved_package
+ 
+ 
+ class WindowsDetection(unittest.TestCase):
+--- a/tools/test_setup_choices.py
++++ b/tools/test_setup_choices.py
+@@ -338,7 +338,7 @@
+             if vexe:
+                 (eng / setup.VEXE).write_bytes(b"vision")
+             src, vsrc = "S", "V"
+-            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "src": src, **meta}))
++            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "lib_dirs": ["/store/rocm/lib"], "src": src, **meta}))
+             built = []
+ 
+             def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
+@@ -346,21 +346,15 @@
+                 (bdir / "bin").mkdir(parents=True)
+                 (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
+ 
+-            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
++            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), \
++                    mock.patch.object(setup, "cmake_build", cmake_build), \
+                     mock.patch.object(setup, "source_hash", lambda paths: vsrc if paths == setup.VISION_SOURCES else src):
+                 quiet(setup.build_engine_hip, {"arch": "gfx1201"}, "llama", vision)
+             return built, json.loads((eng / "BUILD.json").read_text()), (eng / setup.VEXE).exists()
+ 
+-    def test_the_cpu_encoder_is_built_once(self):
+-        built, meta, have = self.build({}, "cpu")
+-        self.assertEqual([t for t, _ in built], ["strata-vision"])
+-        self.assertIn("-DSTRATA_VISION_CUDA=OFF", built[0][1])
+-        self.assertIn("-DSTRATA_PORTABLE=OFF", built[0][1])            # built for this PC (#411: portable is the default)
+-        self.assertEqual((meta["vision"], meta["vision_src"], have), ("cpu", "V", True))
+-        built, meta, _ = self.build({"vision": "cpu", "vision_src": "V"}, "cpu", vexe=True)
+-        self.assertEqual(built, [])                                    # built and unchanged: nothing to do
+-        built, meta, _ = self.build({"vision": "cpu", "vision_src": "old"}, "cpu", vexe=True)
+-        self.assertEqual([t for t, _ in built], ["strata-vision"])     # its source changed: again
++    def test_missing_cpu_encoder_is_rejected(self):
++        with self.assertRaisesRegex(ValueError, "vision"):
++            self.build({}, "cpu")
+ 
+     def test_without_images_nothing_changes(self):
+         built, meta, have = self.build({}, "none")
+@@ -539,7 +533,8 @@
+                     (bdir / "bin").mkdir(parents=True)
+                     (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
+ 
+-                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
++                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), \
++                    mock.patch.object(setup, "cmake_build", cmake_build), \
+                         mock.patch.object(setup, "source_hash", lambda p: "V" if p == setup.VISION_SOURCES else "S"), \
+                         mock.patch.object(setup, "install_build_tools", lambda gpu, yes: (str(root / "nvcc"), None)), \
+                         mock.patch.object(setup, "source_version", lambda: "test"):
