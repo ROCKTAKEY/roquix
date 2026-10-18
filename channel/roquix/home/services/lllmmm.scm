@@ -51,6 +51,15 @@ the Shepherd log directory.")
 than the TOML shutdown_timeout_secs plus the server's five-second HTTP drain
 margin so lllmmm can reap its backend process groups."))
 
+(define (home-lllmmm-config-file config)
+  (or (home-lllmmm-configuration-config-file config)
+      #~(let ((xdg (getenv "XDG_CONFIG_HOME")))
+          (string-append
+           (if (and xdg (string-prefix? "/" xdg))
+               xdg
+               (string-append (getenv "HOME") "/.config"))
+           "/lllmmm/lllmmm.toml"))))
+
 (define (home-lllmmm-shepherd-service config)
   (list
    (shepherd-service
@@ -62,13 +71,7 @@ margin so lllmmm can reap its backend process groups."))
         (list #$(file-append (home-lllmmm-configuration-lllmmm config)
                             "/bin/lllmmm")
               "--config"
-              #$(or (home-lllmmm-configuration-config-file config)
-                    #~(let ((xdg (getenv "XDG_CONFIG_HOME")))
-                        (string-append
-                         (if (and xdg (string-prefix? "/" xdg))
-                             xdg
-                             (string-append (getenv "HOME") "/.config"))
-                         "/lllmmm/lllmmm.toml")))
+              #$(home-lllmmm-config-file config)
               "serve")
         #:directory (getenv "HOME")
         #:log-file #$(or (home-lllmmm-configuration-log-file config)
