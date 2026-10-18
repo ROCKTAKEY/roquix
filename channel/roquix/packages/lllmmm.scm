@@ -28,7 +28,19 @@
                  (lambda _
                    (copy-recursively
                     "examples"
-                    (string-append #$output "/share/doc/lllmmm/examples")))))))
+                    (string-append #$output "/share/doc/lllmmm/examples"))))
+               (add-after 'install-examples 'check-installed
+                 (lambda* (#:key tests? #:allow-other-keys)
+                   (when tests?
+                     (invoke "sh"
+                             #$(local-file
+                                (canonicalize-path
+                                 (search-path
+                                  %load-path
+                                  (string-append
+                                   "roquix/packages/lllmmm/"
+                                   "package-tests/check-installed.sh"))))
+                             #$output)))))))
     (native-inputs (list python))
     (inputs (cargo-inputs 'lllmmm #:module '(roquix packages rust-crates)))
     (home-page "https://github.com/ROCKTAKEY/lllmmm")

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-package=${1:-$(guix build -L channel lllmmm)}
+package=${1:?package output is required}
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT HUP INT TERM
 
