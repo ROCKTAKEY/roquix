@@ -68,6 +68,9 @@ in `channel/roquix/packages/codex.scm`.
      The script starts the daemon, checks its running status, and stops it.
      Confirm that `managedCodexVersion`, `cliVersion`, and `appServerVersion`
      in the reported JSON all match the requested release.
+     Check for a surviving `pid-update-loop` from this temporary `CODEX_HOME`:
+     in 0.163.0 it can outlive `daemon stop`. Terminate only the test-owned
+     helper and verify that it exits.
 6. Validate the channel with `verify-guix-pull`.
    - Use the existing `verify-guix-pull` skill for the temporary-profile
      `guix pull` check. Fix package-cache or pull failures before closing out
