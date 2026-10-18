@@ -56,6 +56,8 @@
     ("libffmpeg.so" ,%mattermost-desktop-runpath-inputs)
     ("libvk_swiftshader.so" ,%mattermost-desktop-runpath-inputs)
     ("libvulkan.so.1" ,%mattermost-desktop-runpath-inputs)
+    ("resources/app.asar.unpacked/node_modules/@koromix/koffi-linux-x64/linux_x64/koffi.node"
+     ("gcc-toolchain"))
     ("usr/lib/libXss.so.1" ,%mattermost-desktop-runpath-inputs)
     ("usr/lib/libXtst.so.6" ,%mattermost-desktop-runpath-inputs)
     ("usr/lib/libgconf-2.so.4" ,%mattermost-desktop-runpath-inputs)
@@ -64,7 +66,7 @@
 (define-public mattermost-desktop
   (package
     (name "mattermost-desktop")
-    (version "6.3.0")
+    (version "6.3.1")
     (source
      (origin
        (method url-fetch)
@@ -76,7 +78,7 @@
              "-linux-x86_64.AppImage"))
        (sha256
         (base32
-         "0nxv9dzn24s8ixhbrk9hmk83fqsa13r3jf2zbfaqh01ib5j344x0"))))
+         "1q96m114khj6g1h0ibigmwkjfg29w405vl12anv4yavifc06769n"))))
     (build-system appimage-build-system)
     (arguments
      (list
