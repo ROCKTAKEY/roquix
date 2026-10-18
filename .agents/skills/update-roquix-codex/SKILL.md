@@ -1,6 +1,6 @@
 ---
 name: update-roquix-codex
-description: Update roquix's packaged openai/codex release. Use when bumping `channel/roquix/packages/codex.scm`, regenerating `channel/roquix/packages/rust-crates.scm` from upstream `codex-rs/Cargo.lock`, fixing `scripts/update-codex.sh` or `.github/workflows/update-codex.yml`, or validating the bump with `guix build` and the existing `verify-guix-pull` workflow.
+description: Update roquix's packaged openai/codex release. Use when bumping `channel/roquix/packages/codex.scm`, regenerating `channel/roquix/packages/rust-crates.scm` from upstream `codex-rs/Cargo.lock`, fixing `scripts/update-codex.sh`, or validating the bump with `guix build` and the existing `verify-guix-pull` workflow.
 ---
 
 # Update Roquix Codex
@@ -17,8 +17,7 @@ in `channel/roquix/packages/codex.scm`.
    run the updater from the repository root.
    - `bash scripts/update-codex.sh rust-vX.Y.Z`
    - Upstream Codex tags use the `rust-v...` prefix.
-2. If `guix import` fails, fix the local updater and the GitHub workflow
-   together. The import command is:
+2. If `guix import` fails, fix the local updater. The import command is:
 
    ```sh
    guix import --insert=channel/roquix/packages/rust-crates.scm \
@@ -42,9 +41,10 @@ in `channel/roquix/packages/codex.scm`.
      source substitution against the new tree, and update package comments
      and upstream source links when its reason changes.
    - When changing the updater, make it update `%codex-release-version` rather
-     than replacing the exported package version expression.
-   - If the updater logic changes, `scripts/update-codex.sh` and
-     `.github/workflows/update-codex.yml` should change together.
+     than replacing the exported package version expression. Accept Scheme
+     formatting with the value on a separate line.
+   - Run `python3 tests/codex/test-update.py` for updater changes; this regression
+     test also runs in `.github/workflows/test.yml`.
 4. Validate release identity and package resolution.
    - Run `guix repl -L channel -- tests/codex/release.scm X.Y.Z`. The test
      checks both the channel package version and the upstream source tag.
