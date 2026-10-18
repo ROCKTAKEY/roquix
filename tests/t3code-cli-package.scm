@@ -31,6 +31,24 @@
   (and (equal? (package-version t3code) (package-version t3code-cli))
        (eq? (package-source t3code) (package-source t3code-cli))))
 
+(for-each
+ (lambda (package name base)
+   (test-equal "session sharing is separately installable"
+     name (package-name package))
+   (test-equal "session sharing uses an immutable commit of the requested fork"
+     (string-append "https://codeload.github.com/ROCKTAKEY/t3code/tar.gz/"
+                    "90a462292b828b8987d9e1825d408b5c6324afb4")
+     (origin-uri (package-source package)))
+   (test-assert "the fork version identifies its pinned revision"
+     (and (string-prefix? "0.1.0-" (package-version package))
+          (string-contains (package-version package) "90a4622")))
+   (test-equal "the fork reuses the release JavaScript dependencies"
+     (assoc-ref (package-native-inputs base) "node-modules")
+     (assoc-ref (package-native-inputs package) "node-modules")))
+ (list t3code-rocktakey t3code-cli-rocktakey)
+ '("t3code-rocktakey" "t3code-cli-rocktakey")
+ (list t3code t3code-cli))
+
 (test-assert "the CLI needs no Electron runtime or desktop capture helpers"
   (not (any (lambda (input)
               (member (car input)

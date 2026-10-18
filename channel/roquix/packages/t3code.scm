@@ -1,6 +1,7 @@
 (define-module (roquix packages t3code)
   #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (guix packages)
@@ -1260,3 +1261,49 @@ manages pairing and client authentication.  Install the provider command-line
 tools separately to use their subscriptions.  This package builds the server,
 Web interface, terminal WASM, and native addons from source and runs on Node.js.")
     (license license:expat)))
+
+;; Pin feat/codex-session-sharing so branch updates cannot change the build.
+(define %t3code-rocktakey-commit
+  "90a462292b828b8987d9e1825d408b5c6324afb4")
+
+(define %t3code-rocktakey-version
+  (git-version "0.1.0" "0" %t3code-rocktakey-commit))
+
+(define %t3code-rocktakey-source
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://codeload.github.com/ROCKTAKEY/t3code/tar.gz/"
+          %t3code-rocktakey-commit))
+    (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
+                              ".tar.gz"))
+    (sha256 (base32 "1l8csgbc20dp33frjyl650dx7kg5f5fdv229597vc3aq365i3d4m"))))
+
+(define* (t3code-rocktakey-package base
+                                   #:key (desktop? #t))
+  (package
+    (inherit base)
+    (name (string-append (package-name base) "-rocktakey"))
+    (version %t3code-rocktakey-version)
+    (source
+     %t3code-rocktakey-source)
+    (arguments
+     (substitute-keyword-arguments (package-arguments base)
+       ((#:phases phases)
+        (t3code-build-phases version %ghostty-revision
+                             %t3code-runtime-dependencies-script
+                             #:desktop? desktop?))))
+    ;; The lockfile, workspace manifests, and native sources match 0.1.0.
+    (home-page "https://github.com/ROCKTAKEY/t3code")
+    (synopsis (if desktop?
+               "Desktop interface for coding agents with Codex session sharing"
+               "Web interface for coding agents with Codex session sharing"))
+    (description (string-append (package-description base)
+                  "  This variant includes Codex session sharing from the
+feat/codex-session-sharing branch of ROCKTAKEY's fork."))))
+
+(define-public t3code-rocktakey
+  (t3code-rocktakey-package t3code))
+
+(define-public t3code-cli-rocktakey
+  (t3code-rocktakey-package t3code-cli
+                            #:desktop? #f))
