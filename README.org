@@ -351,5 +351,10 @@ An AppImage package may need =#:ld-library-path-inputs= for modules that are
 loaded later by name rather than through normal ELF =NEEDED= resolution, such
 as NSS modules under =lib/nss=.
 
+* Strata with AMD HIP
+=strata-hip= provides the Strata inference engine, model preparation tools,
+and a local server using Guix-managed AMD HIP dependencies.  See
+[[file:channel/roquix/packages/strata/README.org][Strata usage]] for hardware requirements, model setup, and server commands.
+
 * License
   This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].

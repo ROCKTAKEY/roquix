@@ -1,0 +1,139 @@
+#+title: Strata with AMD HIP
+
+=strata-hip= packages Strata 0.1.45, its pinned llama.cpp sources, model
+preparation tools, and the local server.  It supports x86_64 Linux with AVX2
+and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
+=gfx1201=.  This includes the RX 7800 XT (=gfx1101=).  Upstream considers
+=gfx1030= support experimental.
+
+Use =~/.local/share/strata= for configurations and runtime state.
+Keep model weights and prepared packs under =~/models/strata=.
+Setup remembers the model directory in
+=~/.config/strata/settings.json= (or under =XDG_CONFIG_HOME=).
+
+Build the package and check the GPU without downloading a model:
+
+#+begin_src sh
+guix build -L channel strata-hip --max-jobs=1 --cores=4
+guix shell -L channel strata-hip -- strata-device --selftest
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup --check
+#+end_src
+
+Run the interactive setup to choose and prepare a supported model:
+
+#+begin_src sh
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup
+#+end_src
+
+For an explicit text model setup, select a writable directory with enough
+space for the model and its prepared files (upstream estimates 70–120 GB):
+
+#+begin_src sh
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup \
+  --family qwen --model IQ2_XS --context 131072 --kv-streaming on --port 18095 \
+  --data-dir "$HOME/models/strata" --no-start --yes
+#+end_src
+
+The model sources follow [[https://github.com/Niko1221/Strata/blob/477ac13cbe8e582c20484871ce459d20d82df09d/docs/MODELS.md][Strata's model recommendations]].  For 64 GB RAM,
+upstream recommends =IQ2_XS=.  =IQ3_S= needs more free RAM; =Coder= is the
+coding-oriented variant and setup calls its single available size =IQ1_M=.
+The GGUF files come from the ISTA-DASLab repositories selected by Strata.
+
+Prepare these additional models under the same model directory:
+
+#+begin_src sh
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup \
+  --family qwen --model IQ3_S --context 32768 --port 18096 --low-ram resident \
+  --data-dir "$HOME/models/strata" \
+  --experimental-speed-projection off --no-start --yes
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup \
+  --family coder --model IQ1_M --context 131072 --kv-streaming on --port 18097 \
+  --data-dir "$HOME/models/strata" \
+  --experimental-speed-projection off --no-start --yes
+#+end_src
+
+=--low-ram resident= keeps experts absent from GPU memory in RAM.
+When the whole complement exceeds available RAM, Strata retains
+a frequently used subset in RAM and reads the remaining experts from disk.
+On AMD, setup selects pageable resident memory.  Both modes preserve
+Strata's memory-limit checks.  The Guix package handles the Linux root cgroup
+when detecting available RAM.  For =IQ3_S= with enough free RAM for all
+experts and engine overhead, omit =--low-ram resident= to use normal setup
+placement.
+
+The shared lookup shard and MTP files can be reused between these models.
+Configurations are named =strata-iq2_xs.json=, =strata-iq3_s.json=, and
+=strata-coder-iq1_m.json=.  The examples assign a separate port to each model:
+
+| Model | Port | OpenAI-compatible base URL |
+|-------+------+----------------------------|
+| IQ2_XS | 18095 | http://127.0.0.1:18095/v1 |
+| IQ3_S | 18096 | http://127.0.0.1:18096/v1 |
+| Coder IQ1_M | 18097 | http://127.0.0.1:18097/v1 |
+
+Select the corresponding configuration and port when launching
+=strata-server=.  On a 16 GB GPU, run one model at a time.
+
+The explicit setup commands use a 131,072-token context for =IQ2_XS= and
+=Coder=, with int8 KV streaming and 32,768 resident KV cells in VRAM.
+=IQ3_S= uses 32,768 tokens.  The context includes the prompt, chat history,
+tool results, and generated output together.  Configure each client's
+context limit to match its server.
+
+The package includes text inference.  The optional image encoder is not
+included.  Strata supports Qwen3.8-Flash-Next, Qwen3.6-35B-A3B, and the
+variants listed by =strata-setup --help=; it does not load arbitrary GGUF
+models.  Supported Unsloth quantizations are described in the upstream
+model recommendations linked above.
+
+The commands above store model configurations, logs, and run scripts in
+=~/.local/share/strata=.  =STRATA_STATE_DIR= selects this directory;
+=--data-dir= selects the separate model directory, remembered in
+=~/.config/strata/settings.json= by default.  Python dependencies and the
+engine are supplied by Guix.  Update the package through Guix and run setup
+with these environment variables to refresh the engine links.
+
+The package also supports other directories through =STRATA_STATE_DIR=.
+Without that variable, it follows =XDG_DATA_HOME= and defaults to
+=~/.local/share/strata=.
+
+Run the setup command for the chosen model again to start it on its assigned
+port.  The server provides OpenAI- and Anthropic-compatible APIs and a local
+web page.  Choose the command for the prepared configuration:
+
+#+begin_src sh
+guix shell -L channel strata-hip -- strata-server \
+  --config "$HOME/.local/share/strata/strata-iq2_xs.json" \
+  --host 127.0.0.1 --port 18095 --idle-unload 900
+guix shell -L channel strata-hip -- strata-server \
+  --config "$HOME/.local/share/strata/strata-iq3_s.json" \
+  --host 127.0.0.1 --port 18096 --idle-unload 900
+guix shell -L channel strata-hip -- strata-server \
+  --config "$HOME/.local/share/strata/strata-coder-iq1_m.json" \
+  --host 127.0.0.1 --port 18097 --idle-unload 900
+#+end_src
+
+=strata-server= requires an explicit =--port=; the =port= in each JSON
+configuration is used by setup and its generated run scripts.  For Claude
+Code, use the chosen model's base URL without =/v1= as =ANTHROPIC_BASE_URL=.
+
+OpenAI clients can use =/v1/chat/completions= and =/v1/responses=.
+Responses supports streaming and function tools; clients send the full
+conversation in each request.  The package includes =jsonschema= to validate
+structured answers.  The upstream
+[[https://github.com/Niko1221/Strata/blob/477ac13cbe8e582c20484871ce459d20d82df09d/docs/DETAILS.md#the-responses-api-and-codex-cli][Responses and Codex instructions]] describe the provider configuration.
+
+In a Guix container, share =/dev/kfd= and =/dev/dri=, expose =/sys=, and share
+the writable state and model directories.  Enable networking for the initial
+model download.  The host must provide an AMD GPU driver and permission to
+access the GPU devices.
