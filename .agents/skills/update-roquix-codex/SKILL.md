@@ -43,8 +43,7 @@ in `channel/roquix/packages/codex.scm`.
    - When changing the updater, make it update `%codex-release-version` rather
      than replacing the exported package version expression. Accept Scheme
      formatting with the value on a separate line.
-   - Run `python3 tests/codex/test-update.py` for updater changes; this regression
-     test also runs in `.github/workflows/test.yml`.
+   - Run `python3 tests/codex/test-update.py` locally for updater changes.
 4. Validate release identity and package resolution.
    - Run `guix repl -L channel -- tests/codex/release.scm X.Y.Z`. The test
      checks both the channel package version and the upstream source tag.
