@@ -149,6 +149,37 @@ versioned Cargo crates from its pinned upstream Git revision.")
 versioned Cargo crates for other Guix Rust packages.")
        (license license:asl2.0)))))
 
+(define-public rust-rmcp-workspace-3.5.1.4048ac4
+  (hidden-package
+   (package
+     (name "rust-rmcp-workspace")
+     (version (git-version "3.5.1" "0"
+                           "4048ac40e958fb1a7d614617a2ae8d26666ee2fa"))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/modelcontextprotocol/rust-sdk")
+              (commit "4048ac40e958fb1a7d614617a2ae8d26666ee2fa")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "1kqgg3j24b4gcky96r63ps6jf9n0810c52pab5v421bjwc9axca5"))))
+     (build-system cargo-build-system)
+     (arguments
+      (list #:skip-build? #t
+            #:install-source? #t
+            ;; Package the macro crate first so rmcp's workspace dependency
+            ;; resolves to the same pinned SDK revision in the vendor directory.
+            #:cargo-package-crates ''("rmcp-macros" "rmcp")
+            #:cargo-package-flags
+            ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
+     (home-page "https://github.com/modelcontextprotocol/rust-sdk")
+     (synopsis "Pinned Rust Model Context Protocol SDK crates")
+     (description
+      "This package provides the MCP SDK workspace members used by Codex as
+versioned Cargo crates from its pinned upstream Git revision.")
+     (license license:asl2.0))))
+
 (define-public rust-runfiles-0.1.0.b56cbaa
   (let ((commit "b56cbaa8465e74127f1ea216f813cd377295ad81")
         (revision "0"))

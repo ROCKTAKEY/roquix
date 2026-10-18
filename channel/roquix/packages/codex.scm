@@ -115,7 +115,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version
-  "0.160.0")
+  "0.163.0")
 
 (define-public codex
   (package
@@ -131,7 +131,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0nr65d2va3yw4lvll87h8757vbax2dcl4xwngqcicc5l8bsyylsh"))))
+        (base32 "1l1wglkmxsmchkgyifqx6j322101791x002y92mfpjw945z5vbqm"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;clang-toolchain
@@ -147,7 +147,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; PID-managed app-server daemons call ps to identify their processes.
-    ;; https://github.com/openai/codex/blob/rust-v0.160.0/codex-rs/app-server-daemon/src/backend/pid.rs
+    ;; https://github.com/openai/codex/blob/rust-v0.163.0/codex-rs/app-server-daemon/src/backend/pid.rs
     (propagated-inputs (list procps))
     (native-inputs (list rusty-v8-prebuilt-archive
                          rusty-v8-prebuilt-binding
@@ -178,13 +178,13 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; Cargo's offline vendor directory resolves these
                       ;; dependencies through Guix's versioned crate inputs.
                       (substitute* "Cargo.toml"
+                        (("rmcp = \\{ git = \"https://github.com/modelcontextprotocol/rust-sdk\", rev = \"[0-9a-f]+\", ")
+                         "rmcp = { ")
                         (("runfiles = \\{ git = \"https://github.com/dzbarsky/rules_rust\", rev = \"b56cbaa8465e74127f1ea216f813cd377295ad81\" \\}")
                          "runfiles = \"0.1.0\"")
                         (("nucleo = \\{ git = \"https://github.com/helix-editor/nucleo.git\", rev = \"4253de9faabb4e5c6d81d946a5e35a90f87347ee\" \\}")
                          "nucleo = \"0.5.0\"")
-                        (("ratatui = \\{ git = \"https://github.com/nornagon/ratatui\", rev = \"[0-9a-f]+\" \\}")
-                         "")
-                        (("crossterm = \\{ git = \"https://github.com/nornagon/crossterm\", rev = \"[0-9a-f]+\" \\}")
+                        (("crossterm = \\{ git = \"https://github.com/openai-oss-forks/crossterm\", rev = \"[0-9a-f]+\" \\}")
                          "")
                         (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"[0-9a-f]+\" \\}")
                          "")
@@ -209,14 +209,6 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                            "(appcontainer_common|learning_mode_windows|"
                            "wxc_common) = \\{ workspace = true \\}"))
                          ""))))
-                  (add-after 'change-directory-to-rust-source 'patch-system-bwrap-path
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; Guix provides bwrap in the store rather than /usr/bin.
-                      (let ((bwrap (search-input-file inputs "/bin/bwrap")))
-                        (substitute* '("core/src/config/mod.rs"
-                                       "linux-sandbox/src/launcher.rs")
-                          (("/usr/bin/bwrap")
-                           bwrap)))))
                   (add-after 'change-directory-to-rust-source 'fix-test
                     (lambda _
                       ;; Tese tests need environments variable named USER.
@@ -285,10 +277,10 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; and also installs the CLI's auxiliary `logs_client`.
                       ;; The daemon copies a complete package, so install the
                       ;; layout required by Codex's package validator.
-                      ;; https://github.com/openai/codex/blob/rust-v0.160.0/scripts/codex_package/README.md
+                      ;; https://github.com/openai/codex/blob/rust-v0.163.0/scripts/codex_package/README.md
                       ;; Keep bin/codex as the executable: daemon installation
                       ;; compares its bytes with the running CLI before copying.
-                      ;; https://github.com/openai/codex/blob/rust-v0.160.0/codex-rs/app-server-daemon/src/prepare_install.rs
+                      ;; https://github.com/openai/codex/blob/rust-v0.163.0/codex-rs/app-server-daemon/src/prepare_install.rs
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin"))
                              (resources (string-append out "/codex-resources"))
