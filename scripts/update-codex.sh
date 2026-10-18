@@ -43,7 +43,7 @@ perl -0pi -e '
   my $version = $ENV{VERSION} // die "VERSION is required\n";
   my $base32 = $ENV{BASE32} // die "BASE32 is required\n";
 
-  s{(\(define %codex-release-version ")[^"]*("\))}
+  s{(\(define %codex-release-version\s+")[^"]*("\))}
    {$1 . $version . $2}se
     or die "Failed to update codex version\n";
 
@@ -52,7 +52,7 @@ perl -0pi -e '
     or die "Failed to update codex source hash\n";
 ' "${PACKAGE_FILE}"
 
-if ! grep -q "(define %codex-release-version \"${VERSION}\")" "${PACKAGE_FILE}"; then
+if ! perl -0ne 'exit !/\(define %codex-release-version\s+"\Q$ENV{VERSION}\E"\)/' "${PACKAGE_FILE}"; then
   echo "Failed to update version in ${PACKAGE_FILE}" >&2
   mv "${tmp_backup}" "${PACKAGE_FILE}"
   exit 1

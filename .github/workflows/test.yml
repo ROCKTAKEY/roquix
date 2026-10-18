@@ -25,6 +25,8 @@ jobs:
       - run: guix describe
       - name: Test guix extra-profile
         run: tests/extra-profile/run-tests.sh
+      - name: Test Codex updater
+        run: python3 tests/codex/test-update.py
       - name: Test T3 Code Home service
         run: |
           guix repl -L channel -- tests/t3code-cli-package.scm
