@@ -20,7 +20,7 @@
   (test-assert "Bun package lock snapshot is registered"
                (assoc '%bun-1.0.30-bun-error-npm-inputs entries))
   (test-assert "OpenCode lock snapshot is registered"
-               (assoc '%opencode-1.18.3-npm-inputs entries)))
+               (assoc '%opencode-2.0.32-npm-inputs entries)))
 
 (let ((source (call-with-input-file generated-file get-string-all)))
   (test-assert "imported HTTP origins use SHA-256"

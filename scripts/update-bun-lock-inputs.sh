@@ -29,7 +29,11 @@ import_lock()
     fi
 
     echo "importing $lock"
-    "$@"
+    (
+        # Guix's source editor resolves module-relative locations from cwd.
+        cd "$channel"
+        "$@"
+    )
 }
 
 import_bun_version()
