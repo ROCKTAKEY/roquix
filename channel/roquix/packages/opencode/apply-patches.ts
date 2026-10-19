@@ -17,6 +17,7 @@ for (const file of new Bun.Glob("**/node_modules/**/package.json").scanSync({
   onlyFiles: true,
   followSymlinks: false,
 })) {
+  if (!/(^|\/)node_modules\/(?:@[^/]+\/)?[^/]+\/package\.json$/.test(file)) continue
   const manifest = await Bun.file(file).json()
   if (!path.dirname(file).endsWith(`node_modules/${manifest.name}`)) continue
   const patch = patches.find(({ name, version }) =>

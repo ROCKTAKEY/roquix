@@ -22,6 +22,7 @@ test("upstream patches follow the pinned version across nested installations", a
         JSON.stringify({ name: "fixture", version }))
       await Bun.write(path.join(root, directory, "value.txt"), "original\n")
     }
+    await Bun.write(path.join(root, "node_modules/unrelated/test/invalid/package.json"), "invalid fixture")
     const child = Bun.spawn([process.execPath, helper], { cwd: root, stdout: "pipe", stderr: "pipe" })
     const error = await new Response(child.stderr).text()
     expect(await child.exited, error).toBe(0)
