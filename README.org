@@ -295,6 +295,14 @@ variables.  Add options to the package's =arguments= as needed:
 nested Weston compositor for the named application.  Add =dbus= to its runtime inputs
 for the private session bus.  The application ID is parsed before lowering,
 and its display endpoint and state directory are checked before launch.
+=#:desktop-temporary-directory= selects an existing disk-backed base directory
+on the runtime host (default ="/var/tmp"=).  Desktop launches create an owned
+=0700= directory under =BASE/roquix-tmp-UID/BOOT-ID/run-XXXXXX= and mount it
+read-write at =/tmp=.  The base must be writable by the launching user;
+=tmpfs= and =ramfs= bases are rejected because they would keep large temporary
+files in memory.  For example, add
+=#:desktop-temporary-directory "/home/user/.cache/app-tmp"= to the package's
+=arguments= after creating that directory on disk.
 =#:desktop-audio? #t= enables a private PulseAudio server with a playback
 tunnel to the host's local PulseAudio-compatible socket.  This option requires
 =#:desktop-application=.  The host socket is selected by a =unix:/...=
@@ -351,6 +359,15 @@ Each application has a dedicated persistent home under
 created with mode =0700=.  That directory is mounted as HOME inside the
 container.  Host HOME, the current working directory, and host XDG config,
 data, and cache directories are hidden.
+
+Each launch has a separate disk-backed =/tmp=, including simultaneous launches
+of the same application.  This keeps Electron's temporary files and its
+=--disable-dev-shm-usage= fallback off tmpfs.  The launcher removes this
+directory on normal exit, startup failure, and handled interruption.  A killed
+launcher can leave live application descendants, so directories left during
+the current OS boot are retained.  The next launch using the same base reclaims
+directories from previous boots, when those processes can no longer exist.
+The host's =/tmp= contents and other launches' temporary directories are hidden.
 
 A Wayland session is required.  A dedicated Weston compositor connects to the
 socket selected by =WAYLAND_DISPLAY= and displays the application in its own

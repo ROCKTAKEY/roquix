@@ -3,6 +3,7 @@
   #:use-module (ice-9 regex)
   #:use-module (roquix build desktop-process)
   #:use-module (roquix build desktop-network)
+  #:use-module (roquix build desktop-temporary)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (srfi srfi-9)
   #:export (parse-desktop-application prepare-desktop-runtime
@@ -159,7 +160,25 @@
          (desktop-runtime-network runtime)))))))
 
 (define* (call-with-private-desktop-runtime application compositor procedure
-                                          #:key audio-daemon (network? #f))
+                                          #:key audio-daemon (network? #f)
+                                          (temporary-directory "/var/tmp"))
+  (call-with-desktop-temporary-directory
+   (parse-temporary-base temporary-directory)
+   (lambda (temporary)
+     (call-with-private-desktop-services
+      application compositor
+      (lambda (runtime)
+        (procedure
+         (%desktop-runtime
+          (cons (cons temporary "/tmp") (desktop-runtime-share runtime))
+          (desktop-runtime-expose runtime)
+          (desktop-runtime-environment runtime)
+          (desktop-runtime-arguments runtime)
+          (desktop-runtime-network runtime))))
+      #:audio-daemon audio-daemon #:network? network?))))
+
+(define* (call-with-private-desktop-services application compositor procedure
+                                           #:key audio-daemon (network? #f))
   "Run PROCEDURE with a compositor that exposes only this application's desktop."
   (let* ((runtime (prepare-desktop-runtime application))
          (host-display (car (car (desktop-runtime-expose runtime))))

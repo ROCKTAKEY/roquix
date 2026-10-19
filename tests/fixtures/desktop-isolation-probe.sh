@@ -1,6 +1,21 @@
 #!/bin/sh
 set -eu
 
+for argument in "$@"; do
+case "$argument" in
+  --temporary-probe|--temporary-probe-once)
+    case "$(stat -f -c %T /tmp)" in
+      tmpfs|ramfs) echo 'temporary storage is memory-backed'; exit 1 ;;
+    esac
+    [ ! -e /tmp/temporary-token ]
+    printf '%s\n' "$$" >/tmp/temporary-token
+    printf 'temporary-ready\n'
+    [ "$argument" = --temporary-probe-once ] || sleep 60
+    exit 0
+    ;;
+esac
+done
+
 command -v bash >/dev/null
 for argument in "$@"; do
   case "$argument" in

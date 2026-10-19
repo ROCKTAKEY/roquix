@@ -15,6 +15,7 @@
   #:use-module (roquix build container-launcher)
   #:use-module (roquix build desktop-container)
   #:use-module (roquix build desktop-network)
+  #:use-module (roquix build desktop-temporary)
   #:export (container-launcher-build-system))
 
 ;; A wrapper package keeps the payload outside its own output, allowing a
@@ -32,6 +33,7 @@
                 (share '()) (expose '())
                 (network? #f) (emulate-fhs? #f) (no-cwd? #t)
                 desktop-application (desktop-audio? #f) (desktop-network? #f)
+                (desktop-temporary-directory "/var/tmp")
                 source inputs native-inputs outputs system target
                 #:allow-other-keys)
   (unless (package? payload)
@@ -59,7 +61,8 @@
     (error "host network sharing conflicts with private desktop networking"))
 
   (when desktop-application
-    (parse-desktop-application desktop-application))
+    (parse-desktop-application desktop-application)
+    (parse-temporary-base desktop-temporary-directory))
 
   ;; Parse package configuration before lowering it to a derivation.
   (container-command-arguments
@@ -155,6 +158,7 @@
                                   #:audio-daemon
                                   #$(and desktop-audio?
                                          (file-append pulseaudio "/bin/pulseaudio"))
+                                  #:temporary-directory #$desktop-temporary-directory
                                   #:network? #$desktop-network?)))
                             (exit (or (status:exit-val status)
                                       (+ 128 (status:term-sig status))))))

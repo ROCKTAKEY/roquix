@@ -86,6 +86,15 @@
    #:system "x86_64-linux"
    #:target #f))
 
+(test-error "desktop temporary storage must have an absolute base" #t
+  ((build-system-lower container-launcher-build-system)
+   "hello-container"
+   #:payload hello #:executable "hello"
+   #:desktop-application "hello"
+   #:desktop-temporary-directory "relative"
+   #:inputs '() #:native-inputs '() #:outputs '("out")
+   #:system "x86_64-linux" #:target #f))
+
 (test-equal "explicit environment and mounts become separate arguments"
   '("shell" "-q" "--pure" "-C" "--profile=/store/profile" "--no-cwd"
     "-N" "-F" "-E" "^DISPLAY$" "-E" "APP_MODE=compact"
