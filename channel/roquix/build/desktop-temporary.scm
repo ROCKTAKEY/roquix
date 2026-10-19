@@ -18,7 +18,7 @@
     (error "temporary base must be an absolute path without '='" path))
   (%temporary-base path))
 
-(define (private-directory path)
+(define (ensure-private-directory path)
   (catch 'system-error
     (lambda () (mkdir path #o700))
     (lambda args
@@ -35,7 +35,7 @@
        (string-match "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
                      value)))
 
-(define (prepare-temporary-storage base)
+(define (disk-storage-path base)
   (unless (temporary-base? base)
     (error "temporary storage requires a parsed base" base))
   (let ((path (temporary-base-path base)))
@@ -44,24 +44,31 @@
     ;; https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html
     (when (memv (file-system-type (statfs path)) '(#x01021994 #x858458f6))
       (error "temporary base must not be tmpfs or ramfs" path))
-    (let* ((owner (private-directory
-                   (string-append path "/roquix-tmp-" (number->string (getuid)))))
-           (boot (call-with-input-file "/proc/sys/kernel/random/boot_id" read-line)))
-      (unless (boot-id? boot) (error "invalid kernel boot ID" boot))
-      (call-with-port
-          (open (string-append owner "/.lock")
-                (logior O_CREAT O_RDWR O_NOFOLLOW O_CLOEXEC) #o600)
-        (lambda (lock)
-          (fcntl-flock lock 'write-lock)
-          ;; A killed launcher can leave live payload descendants. Only a new
-          ;; kernel boot proves those processes can no longer use these files.
-          ;; Serialize reclamation so simultaneous launches cannot race deletes.
-          (for-each
-           (lambda (name)
-             (unless (string=? name boot)
-               (delete-file-recursively (string-append owner "/" name))))
-           (scandir owner boot-id?))
-          (private-directory (string-append owner "/" boot)))))))
+    path))
+
+(define (prepare-boot-directory owner)
+  (let ((boot (call-with-input-file "/proc/sys/kernel/random/boot_id" read-line)))
+    (unless (boot-id? boot) (error "invalid kernel boot ID" boot))
+    (call-with-port
+        (open (string-append owner "/.lock")
+              (logior O_CREAT O_RDWR O_NOFOLLOW O_CLOEXEC) #o600)
+      (lambda (lock)
+        (fcntl-flock lock 'write-lock)
+        ;; A killed launcher can leave live payload descendants. Only a new
+        ;; kernel boot proves those processes can no longer use these files.
+        ;; Serialize reclamation so simultaneous launches cannot race deletes.
+        (for-each
+         (lambda (name)
+           (unless (string=? name boot)
+             (delete-file-recursively (string-append owner "/" name))))
+         (scandir owner boot-id?))
+        (ensure-private-directory (string-append owner "/" boot))))))
+
+(define (prepare-temporary-storage base)
+  (prepare-boot-directory
+   (ensure-private-directory
+    (string-append (disk-storage-path base) "/roquix-tmp-"
+                   (number->string (getuid))))))
 
 (define (call-with-desktop-temporary-directory base procedure)
   (let* ((storage (prepare-temporary-storage base))
