@@ -1,0 +1,98 @@
+Backport Bun 1.3.14's BUN_ZIG_PATH support to 1.3.13.  This lets an
+offline build use a compiler and standard library built from the pinned
+oven-sh/zig source rather than downloading a release binary.
+
+Reference:
+https://github.com/oven-sh/bun/blob/bun-v1.3.14/scripts/build/zig.ts
+
+diff --git a/scripts/build/zig.ts b/scripts/build/zig.ts
+index cc38679..00cea1b 100644
+--- a/scripts/build/zig.ts
++++ b/scripts/build/zig.ts
+@@ -17,8 +17,8 @@
+ 
+ import { existsSync, readFileSync, symlinkSync } from "node:fs";
+ import { mkdir, readdir, rename, rm, writeFile } from "node:fs/promises";
+-import { availableParallelism } from "node:os";
+-import { resolve } from "node:path";
++import { availableParallelism, homedir } from "node:os";
++import { join, resolve } from "node:path";
+ import type { Config, OS } from "./config.ts";
+ import { downloadWithRetry, extractZip } from "./download.ts";
+ import { assert } from "./error.ts";
+@@ -164,7 +164,12 @@ export function codegenEmbed(cfg: Config): boolean {
+  * commit pin is global and changing it affects everything.
+  */
+ function zigPath(cfg: Config): string {
+-  return resolve(cfg.vendorDir, "zig");
++  const env = process.env.BUN_ZIG_PATH;
++  if (!env) return resolve(cfg.vendorDir, "zig");
++  if (env === "~" || env.startsWith("~/") || env.startsWith("~\\")) {
++    return join(homedir(), env.slice(1));
++  }
++  return resolve(cfg.cwd, env);
+ }
+ 
+ function zigExecutable(cfg: Config): string {
+@@ -310,29 +315,39 @@ export function emitZig(n: Ninja, cfg: Config, inputs: ZigBuildInputs): string[] {
+   // ─── Download compiler ───
+   const zigDest = zigPath(cfg);
+   const zigExe = zigExecutable(cfg);
+-  const safe = zigCompilerSafe(cfg);
+-  const url = zigDownloadUrl(cfg, safe);
+-  // Commit + safe go into the stamp content, so switching either retriggers.
+-  const stamp = resolve(zigDest, ".zig-commit");
++  const envOverride = process.env.BUN_ZIG_PATH;
++  if (envOverride) {
++    assert(existsSync(zigExe), `BUN_ZIG_PATH='${envOverride}' but no zig executable at ${zigExe}`, {
++      hint: "Point $BUN_ZIG_PATH at a directory containing zig and lib/",
++    });
++    assert(existsSync(resolve(zigDest, "lib")), `BUN_ZIG_PATH='${envOverride}' but no lib/ dir at ${zigDest}`, {
++      hint: "The Zig compiler and its source-built standard library must be installed together",
++    });
++  } else {
++    const safe = zigCompilerSafe(cfg);
++    const url = zigDownloadUrl(cfg, safe);
++    // Commit + safe go into the stamp content, so switching either retriggers.
++    const stamp = resolve(zigDest, ".zig-commit");
+ 
+-  n.build({
+-    outputs: [stamp],
+-    implicitOutputs: [zigExe],
+-    rule: "zig_fetch",
+-    inputs: [],
+-    // Only fetch-cli.ts. This file (zig.ts) has emitZig and other logic
+-    // unrelated to download — editing those shouldn't re-download the
+-    // compiler. The URL/commit are in the rule's vars so changing those
+-    // already retriggers via ninja's command tracking.
+-    implicitInputs: [fetchCliPath],
+-    vars: {
+-      url,
+-      dest: zigDest,
+-      // Safe is encoded in the commit stamp (not just URL) so the CLI
+-      // can short-circuit correctly when safe doesn't change.
+-      commit: `${cfg.zigCommit}${safe ? "-safe" : ""}`,
+-    },
+-  });
++    n.build({
++      outputs: [stamp],
++      implicitOutputs: [zigExe],
++      rule: "zig_fetch",
++      inputs: [],
++      // Only fetch-cli.ts. This file (zig.ts) has emitZig and other logic
++      // unrelated to download — editing those shouldn't re-download the
++      // compiler. The URL/commit are in the rule's vars so changing those
++      // already retriggers via ninja's command tracking.
++      implicitInputs: [fetchCliPath],
++      vars: {
++        url,
++        dest: zigDest,
++        // Safe is encoded in the commit stamp (not just URL) so the CLI
++        // can short-circuit correctly when safe doesn't change.
++        commit: `${cfg.zigCommit}${safe ? "-safe" : ""}`,
++      },
++    });
++  }
+   n.phony("zig-compiler", [zigExe]);
+ 
+   // ─── Build ───

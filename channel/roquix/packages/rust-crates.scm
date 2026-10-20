@@ -14627,6 +14627,214 @@
   (crate-source "zvariant_utils" "4.2.0"
                 "18q80094ci64myzvcp0g2l3c6mnx7b3hsii8lfabc853c51jkl5s"))
 
+(define rust-cc-1.4.0
+  (crate-source "cc" "1.4.0"
+                "1fc26n76n7gr37m2q0xw5l8jpn4sd33hvyppmwhv6v4fcyxq3pas"))
+
+(define rust-convert-case-0.4.0
+  (crate-source "convert_case" "0.4.0"
+                "03jaf1wrsyqzcaah9jf8l1iznvdw5mlsca2qghhzr9w27sddaib2"))
+
+(define rust-cssparser-0.27.2
+  (crate-source "cssparser" "0.27.2"
+                "02nbm690rmkaz1ca0383qq7mc1g066w3s85f17pdihnda79njjvm"))
+
+(define rust-cssparser-0.29.6
+  (crate-source "cssparser" "0.29.6"
+                "1yp0zl5cmw9x95np9a51153fdb1ng8fgzwyssg7hr5dmki0h6ggr"))
+
+(define rust-cssparser-0.35.0
+  (crate-source "cssparser" "0.35.0"
+                "1am2mj4rddlbmi08drk7gv9m8vw47zgicld48kwp451sfgfix42f"))
+
+(define rust-cssparser-0.36.0
+  (crate-source "cssparser" "0.36.0"
+                "1ljplaynfd8p9y00ypy84il27n1q9rz5pdnsb7b3pf5bq3wirrns"))
+
+(define rust-cssparser-macros-0.6.1
+  (crate-source "cssparser-macros" "0.6.1"
+                "0cfkzj60avrnskdmaf7f8zw6pp3di4ylplk455zrzaf19ax8id8k"))
+
+(define rust-derive-more-0.99.18
+  (crate-source "derive_more" "0.99.18"
+                "1kmz7bsjn9jh04nplqdr6bjyi90qkqjlxb8lm5zzvnp46y0qfcsz"))
+
+(define rust-derive-more-0.99.20
+  (crate-source "derive_more" "0.99.20"
+                "0zvz94kbc5d4r817wni1l7xk8f289nhf73vqk677p5rxlij4pnvf"))
+
+(define rust-dtoa-1.0.10
+  (crate-source "dtoa" "1.0.10"
+                "016gid01rarcdv57h049d7nr9daxc2hc2gqzx0mji57krywd7bfn"))
+
+(define rust-dtoa-1.0.11
+  (crate-source "dtoa" "1.0.11"
+                "1405jvczpxf1zd3nsvw02r50hr2k6argq6jkgdf04prd9s1g8g2c"))
+
+(define rust-foldhash-0.1.4
+  (crate-source "foldhash" "0.1.4"
+                "0vsxw2iwpgs7yy6l7pndm7b8nllaq5vdxwnmjn1qpm5kyzhzvlm0"))
+
+(define rust-getrandom-0.1.16
+  (crate-source "getrandom" "0.1.16"
+                "1kjzmz60qx9mn615ks1akjbf36n3lkv27zfwbcam0fzmj56wphwg"))
+
+(define rust-hashbrown-0.13.2
+  (crate-source "hashbrown" "0.13.2"
+                "03ji3n19j4b6mf2wlla81vsixcmlivglp6hgk79d1pcxfcrw38s3"))
+
+(define rust-itoa-0.4.8
+  (crate-source "itoa" "0.4.8"
+                "1m1dairwyx8kfxi7ab3b5jc71z1vigh9w4shnhiajji9avzr26dp"))
+
+(define rust-lazycell-1.3.0
+  (crate-source "lazycell" "1.3.0"
+                "0m8gw7dn30i0zjjpjdyf6pc16c34nl71lpv461mix50x3p70h3c3"))
+
+(define rust-libc-0.2.169
+  (crate-source "libc" "0.2.169"
+                "02m253hs8gw0m1n8iyrsc4n15yzbqwhddi7w1l0ds7i92kdsiaxm"))
+
+(define rust-nodrop-0.1.14
+  (crate-source "nodrop" "0.1.14"
+                "1fz1v9r8ijacf0hlq0pdv5l9mz8vgqg1snmhvpjmi9aci1b4mvvj"))
+
+(define rust-phf-0.10.1
+  (crate-source "phf" "0.10.1"
+                "0naj8n5nasv5hj5ldlva3cl6y3sv7zp3kfgqylhbrg55v3mg3fzs"))
+
+(define rust-phf-0.8.0
+  (crate-source "phf" "0.8.0"
+                "04pyv8bzqvw69rd5dynd5nb85py1hf7wa4ixyhrvdz1l5qin3yrx"))
+
+(define rust-phf-codegen-0.13.1
+  (crate-source "phf_codegen" "0.13.1"
+                "1qfnsl2hiny0yg4lwn888xla5iwccszgxnx8dhbwl6s2h2fpzaj9"))
+
+(define rust-phf-codegen-0.8.0
+  (crate-source "phf_codegen" "0.8.0"
+                "05d8w7aqqjb6039pfm6404gk5dlwrrf97kiy1n21212vb1hyxzyb"))
+
+(define rust-phf-generator-0.10.0
+  (crate-source "phf_generator" "0.10.0"
+                "1mlq6hlajsvlsx6rhw49g9ricsm017lrxmgmmbk85sxm7f4qaljx"))
+
+(define rust-phf-generator-0.8.0
+  (crate-source "phf_generator" "0.8.0"
+                "09i5338d1kixq6a60fcayz6awgxjlxcfw9ic5f02abbgr067ydhp"))
+
+(define rust-phf-macros-0.10.0
+  (crate-source "phf_macros" "0.10.0"
+                "1q5ljwvb10dx188i6jxzckqfimjw5pm2p4kkvmhg2q6m9lcg7zaq"))
+
+(define rust-phf-macros-0.8.0
+  (crate-source "phf_macros" "0.8.0"
+                "170qm6yqn6b9mjlwb2xmm3iad9d5nzwgfawfwy7zr7s2zwcdwvvz"))
+
+(define rust-phf-shared-0.10.0
+  (crate-source "phf_shared" "0.10.0"
+                "15n02nc8yqpd8hbxngblar2g53p3nllc93d8s8ih3p5cf7bnlydn"))
+
+(define rust-phf-shared-0.8.0
+  (crate-source "phf_shared" "0.8.0"
+                "1xssnqrrcn0nr9ayqrnm8xm37ac4xvwcx8pax7jxss7yxawzh360"))
+
+(define rust-proc-macro-hack-0.5.20+deprecated
+  (crate-source "proc-macro-hack" "0.5.20+deprecated"
+                "0s402hmcs3k9nd6rlp07zkr1lz7yimkmcwcbgnly2zr44wamwdyw"))
+
+(define rust-proc-macro2-1.0.92
+  (crate-source "proc-macro2" "1.0.92"
+                "1c1vjy5wg8iy7kxsxda564qf4ljp0asysmbn2i7caj177x5m9lrp"))
+
+(define rust-quote-1.0.38
+  (crate-source "quote" "1.0.38"
+                "1k0s75w61k6ch0rs263r4j69b7vj1wadqgb9dia4ylc9mymcqk8f"))
+
+(define rust-rand-0.7.3
+  (crate-source "rand" "0.7.3"
+                "00sdaimkbz491qgi6qxkv582yivl32m2jd401kzbn94vsiwicsva"))
+
+(define rust-rand-chacha-0.2.2
+  (crate-source "rand_chacha" "0.2.2"
+                "00il36fkdbsmpr99p9ksmmp6dn1md7rmnwmz0rr77jbrca2yvj7l"))
+
+(define rust-rand-core-0.5.1
+  (crate-source "rand_core" "0.5.1"
+                "06bdvx08v3rkz451cm7z59xwwqn1rkfh6v9ay77b14f8dwlybgch"))
+
+(define rust-rand-hc-0.2.0
+  (crate-source "rand_hc" "0.2.0"
+                "0g31sqwpmsirdlwr0svnacr4dbqyz339im4ssl9738cjgfpjjcfa"))
+
+(define rust-rand-pcg-0.2.1
+  (crate-source "rand_pcg" "0.2.1"
+                "0ab4h6s6x3py833jk61lwadq83qd1c8bih2hgi6yps9rnv0x1aqn"))
+
+(define rust-safemem-0.3.3
+  (crate-source "safemem" "0.3.3"
+                "0wp0d2b2284lw11xhybhaszsczpbq1jbdklkxgifldcknmy3nw7g"))
+
+(define rust-selectors-0.22.0
+  (crate-source "selectors" "0.22.0"
+                "1zhjpvww238lh4nz7kdw4ywlpmjbmzvrm76w1jyacjxci4c0ycnz"))
+
+(define rust-selectors-0.24.0
+  (crate-source "selectors" "0.24.0"
+                "05il06smqbhf7p18fawm5fd0pmdkysvmyih455lh17cnh20mfdqc"))
+
+(define rust-selectors-0.30.0
+  (crate-source "selectors" "0.30.0"
+                "0rcsjcqxw9gsd7z36vjmrjv7dvb6c994zq49qll4synalyl4px1x"))
+
+(define rust-selectors-0.33.0
+  (crate-source "selectors" "0.33.0"
+                "1dsg2sxhff1v84ajcslsplffcwqkg7rw39cynzhk4x8l6q63bvzy"))
+
+(define rust-servo-arc-0.1.1
+  (crate-source "servo_arc" "0.1.1"
+                "0cjljr9znwahry6p95xvd3p4pmy24wlf6gbfidnmglg002w3i0nr"))
+
+(define rust-servo-arc-0.2.0
+  (crate-source "servo_arc" "0.2.0"
+                "0hgp453zvrj7ry501jhxlcph0hc42gc26zyfwn8ys3yziwps8anm"))
+
+(define rust-servo-arc-0.4.1
+  (crate-source "servo_arc" "0.4.1"
+                "1r1djwfnmlpia4j6wqngpv4qwipnkkar119qc05mmn9vh0ra6ki0"))
+
+(define rust-servo-arc-0.4.3
+  (crate-source "servo_arc" "0.4.3"
+                "0c2rl0r9x4kbppwlcrd5bnwds612na179im7kb37vqadncxbh3qp"))
+
+(define rust-siphasher-1.0.1
+  (crate-source "siphasher" "1.0.1"
+                "17f35782ma3fn6sh21c027kjmd227xyrx06ffi8gw4xzv9yry6an"))
+
+(define rust-syn-2.0.103
+  (crate-source "syn" "2.0.103"
+                "1s517h7zk5bwkfq0y08z7cig6cly3wxdmwhjyapxcvwx10q7wc74"))
+
+(define rust-syn-2.0.94
+  (crate-source "syn" "2.0.94"
+                "1wvigzkkcbxhvwyzvyk86iabjh3x835f41mx2q1b3a6y3jzc0ywq"))
+
+(define rust-thin-slice-0.1.1
+  (crate-source "thin-slice" "0.1.1"
+                "0g4z51g3yarah89ijpakbwhrrknw6d7k3ry0m1zqcn3hbhiq3alf"))
+
+(define rust-thiserror-2.0.9
+  (crate-source "thiserror" "2.0.9"
+                "1k5j0ri0kjrnlblv5ikaglbkg1sxxwh0qrxbidxgc38rs0zn8wph"))
+
+(define rust-thiserror-impl-2.0.9
+  (crate-source "thiserror-impl" "2.0.9"
+                "1m77z5vb4w7xn7y12zxnbwncva4bwbi45y45xvkf5aki20kzll3v"))
+
+(define rust-wasi-0.9.0+wasi-snapshot-preview1
+  (crate-source "wasi" "0.9.0+wasi-snapshot-preview1"
+                "06g5v3vrdapfzvfq662cij7v8a1flwr2my45nnncdv2galrdzkfc"))
+
 (define ssss-separator 'end-of-crates)
 
 
@@ -15096,6 +15304,279 @@
                                   rust-zlib-rs-0.5.1
                                   rust-zune-core-0.4.12
                                   rust-zune-jpeg-0.4.20))
+                     (bun-lol-html-1.0 =>
+                                       (list rust-ahash-0.8.12
+                                        rust-bitflags-1.3.2
+                                        rust-bitflags-2.13.1
+                                        rust-byteorder-1.5.0
+                                        rust-cc-1.4.0
+                                        rust-cfg-if-1.0.4
+                                        rust-convert-case-0.4.0
+                                        rust-cssparser-0.27.2
+                                        rust-cssparser-macros-0.6.1
+                                        rust-derive-more-0.99.20
+                                        rust-dtoa-1.0.11
+                                        rust-dtoa-short-0.3.5
+                                        rust-encoding-rs-0.8.35
+                                        rust-find-msvc-tools-0.1.9
+                                        rust-fxhash-0.2.1
+                                        rust-getrandom-0.1.16
+                                        rust-hashbrown-0.13.2
+                                        rust-itoa-0.4.8
+                                        rust-lazy-static-1.5.0
+                                        rust-lazycell-1.3.0
+                                        rust-libc-0.2.189
+                                        rust-log-0.4.33
+                                        rust-matches-0.1.10
+                                        rust-memchr-2.8.3
+                                        rust-mime-0.3.17
+                                        rust-nodrop-0.1.14
+                                        rust-once-cell-1.21.4
+                                        rust-phf-0.8.0
+                                        rust-phf-codegen-0.8.0
+                                        rust-phf-generator-0.8.0
+                                        rust-phf-macros-0.8.0
+                                        rust-phf-shared-0.8.0
+                                        rust-ppv-lite86-0.2.21
+                                        rust-precomputed-hash-0.1.1
+                                        rust-proc-macro-hack-0.5.20+deprecated
+                                        rust-proc-macro2-1.0.107
+                                        rust-quote-1.0.47
+                                        rust-rand-0.7.3
+                                        rust-rand-chacha-0.2.2
+                                        rust-rand-core-0.5.1
+                                        rust-rand-hc-0.2.0
+                                        rust-rand-pcg-0.2.1
+                                        rust-rustc-version-0.4.1
+                                        rust-safemem-0.3.3
+                                        rust-selectors-0.22.0
+                                        rust-semver-1.0.28
+                                        rust-servo-arc-0.1.1
+                                        rust-shlex-2.0.1
+                                        rust-siphasher-0.3.11
+                                        rust-smallvec-1.15.2
+                                        rust-stable-deref-trait-1.2.1
+                                        rust-syn-1.0.109
+                                        rust-syn-2.0.119
+                                        rust-thin-slice-0.1.1
+                                        rust-thiserror-1.0.69
+                                        rust-thiserror-impl-1.0.69
+                                        rust-unicode-ident-1.0.24
+                                        rust-version-check-0.9.5
+                                        rust-wasi-0.9.0+wasi-snapshot-preview1
+                                        rust-zerocopy-0.8.55
+                                        rust-zerocopy-derive-0.8.55))
+                     (bun-lol-html-1.2.0 =>
+                                         (list rust-ahash-0.8.12
+                                          rust-bitflags-1.3.2
+                                          rust-bitflags-2.13.1
+                                          rust-byteorder-1.5.0
+                                          rust-cc-1.4.0
+                                          rust-cfg-if-1.0.4
+                                          rust-convert-case-0.4.0
+                                          rust-cssparser-0.27.2
+                                          rust-cssparser-macros-0.6.1
+                                          rust-derive-more-0.99.20
+                                          rust-dtoa-1.0.11
+                                          rust-dtoa-short-0.3.5
+                                          rust-encoding-rs-0.8.35
+                                          rust-find-msvc-tools-0.1.9
+                                          rust-fxhash-0.2.1
+                                          rust-getrandom-0.1.16
+                                          rust-hashbrown-0.13.2
+                                          rust-itoa-0.4.8
+                                          rust-lazy-static-1.5.0
+                                          rust-lazycell-1.3.0
+                                          rust-libc-0.2.189
+                                          rust-log-0.4.33
+                                          rust-matches-0.1.10
+                                          rust-memchr-2.8.3
+                                          rust-mime-0.3.17
+                                          rust-nodrop-0.1.14
+                                          rust-once-cell-1.21.4
+                                          rust-phf-0.8.0
+                                          rust-phf-codegen-0.8.0
+                                          rust-phf-generator-0.8.0
+                                          rust-phf-macros-0.8.0
+                                          rust-phf-shared-0.8.0
+                                          rust-ppv-lite86-0.2.21
+                                          rust-precomputed-hash-0.1.1
+                                          rust-proc-macro-hack-0.5.20+deprecated
+                                          rust-proc-macro2-1.0.107
+                                          rust-quote-1.0.47
+                                          rust-rand-0.7.3
+                                          rust-rand-chacha-0.2.2
+                                          rust-rand-core-0.5.1
+                                          rust-rand-hc-0.2.0
+                                          rust-rand-pcg-0.2.1
+                                          rust-rustc-version-0.4.1
+                                          rust-selectors-0.22.0
+                                          rust-semver-1.0.28
+                                          rust-servo-arc-0.1.1
+                                          rust-shlex-2.0.1
+                                          rust-siphasher-0.3.11
+                                          rust-smallvec-1.15.2
+                                          rust-stable-deref-trait-1.2.1
+                                          rust-syn-1.0.109
+                                          rust-syn-2.0.119
+                                          rust-thin-slice-0.1.1
+                                          rust-thiserror-1.0.69
+                                          rust-thiserror-impl-1.0.69
+                                          rust-unicode-ident-1.0.24
+                                          rust-version-check-0.9.5
+                                          rust-wasi-0.9.0+wasi-snapshot-preview1
+                                          rust-zerocopy-0.8.55
+                                          rust-zerocopy-derive-0.8.55))
+                     (bun-lol-html-1.2.17 =>
+                                          (list rust-allocator-api2-0.2.21
+                                           rust-bitflags-1.3.2
+                                           rust-bitflags-2.6.0
+                                           rust-byteorder-1.5.0
+                                           rust-cfg-if-1.0.0
+                                           rust-convert-case-0.4.0
+                                           rust-cssparser-0.29.6
+                                           rust-cssparser-macros-0.6.1
+                                           rust-derive-more-0.99.18
+                                           rust-dtoa-1.0.9
+                                           rust-dtoa-short-0.3.5
+                                           rust-encoding-rs-0.8.35
+                                           rust-equivalent-1.0.1
+                                           rust-foldhash-0.1.4
+                                           rust-fxhash-0.2.1
+                                           rust-getrandom-0.1.16
+                                           rust-getrandom-0.2.15
+                                           rust-hashbrown-0.15.2
+                                           rust-itoa-1.0.14
+                                           rust-libc-0.2.169
+                                           rust-log-0.4.22
+                                           rust-matches-0.1.10
+                                           rust-memchr-2.7.4
+                                           rust-mime-0.3.17
+                                           rust-nodrop-0.1.14
+                                           rust-phf-0.8.0
+                                           rust-phf-0.10.1
+                                           rust-phf-codegen-0.8.0
+                                           rust-phf-generator-0.8.0
+                                           rust-phf-generator-0.10.0
+                                           rust-phf-macros-0.10.0
+                                           rust-phf-shared-0.8.0
+                                           rust-phf-shared-0.10.0
+                                           rust-ppv-lite86-0.2.20
+                                           rust-precomputed-hash-0.1.1
+                                           rust-proc-macro-hack-0.5.20+deprecated
+                                           rust-proc-macro2-1.0.92
+                                           rust-quote-1.0.38
+                                           rust-rand-0.7.3
+                                           rust-rand-0.8.5
+                                           rust-rand-chacha-0.2.2
+                                           rust-rand-chacha-0.3.1
+                                           rust-rand-core-0.5.1
+                                           rust-rand-core-0.6.4
+                                           rust-rand-hc-0.2.0
+                                           rust-rand-pcg-0.2.1
+                                           rust-rustc-version-0.4.1
+                                           rust-selectors-0.24.0
+                                           rust-semver-1.0.24
+                                           rust-servo-arc-0.2.0
+                                           rust-siphasher-0.3.11
+                                           rust-smallvec-1.13.2
+                                           rust-stable-deref-trait-1.2.0
+                                           rust-syn-1.0.109
+                                           rust-syn-2.0.94
+                                           rust-thiserror-2.0.9
+                                           rust-thiserror-impl-2.0.9
+                                           rust-unicode-ident-1.0.14
+                                           rust-wasi-0.9.0+wasi-snapshot-preview1
+                                           rust-wasi-0.11.0+wasi-snapshot-preview1
+                                           rust-zerocopy-0.7.35
+                                           rust-zerocopy-derive-0.7.35))
+                     (bun-lol-html-1.3.1 =>
+                                         (list rust-allocator-api2-0.2.21
+                                          rust-bitflags-2.9.1
+                                          rust-byteorder-1.5.0
+                                          rust-cfg-if-1.0.1
+                                          rust-cssparser-0.35.0
+                                          rust-cssparser-macros-0.6.1
+                                          rust-derive-more-2.1.1
+                                          rust-derive-more-impl-2.1.1
+                                          rust-dtoa-1.0.10
+                                          rust-dtoa-short-0.3.5
+                                          rust-encoding-rs-0.8.35
+                                          rust-equivalent-1.0.2
+                                          rust-foldhash-0.1.5
+                                          rust-fxhash-0.2.1
+                                          rust-hashbrown-0.15.4
+                                          rust-itoa-1.0.15
+                                          rust-libc-0.2.174
+                                          rust-log-0.4.27
+                                          rust-memchr-2.7.5
+                                          rust-mime-0.3.17
+                                          rust-new-debug-unreachable-1.0.6
+                                          rust-phf-0.11.3
+                                          rust-phf-codegen-0.11.3
+                                          rust-phf-generator-0.11.3
+                                          rust-phf-macros-0.11.3
+                                          rust-phf-shared-0.11.3
+                                          rust-precomputed-hash-0.1.1
+                                          rust-proc-macro2-1.0.95
+                                          rust-quote-1.0.40
+                                          rust-rand-0.8.5
+                                          rust-rand-core-0.6.4
+                                          rust-rustc-version-0.4.1
+                                          rust-selectors-0.30.0
+                                          rust-semver-1.0.28
+                                          rust-servo-arc-0.4.1
+                                          rust-siphasher-1.0.1
+                                          rust-smallvec-1.15.1
+                                          rust-stable-deref-trait-1.2.0
+                                          rust-syn-2.0.103
+                                          rust-thiserror-2.0.12
+                                          rust-thiserror-impl-2.0.12
+                                          rust-unicode-ident-1.0.18))
+                     (bun-lol-html-1.3.13 =>
+                                          (list rust-allocator-api2-0.2.21
+                                           rust-bitflags-2.11.0
+                                           rust-cfg-if-1.0.4
+                                           rust-cssparser-0.36.0
+                                           rust-cssparser-macros-0.6.1
+                                           rust-derive-more-2.1.1
+                                           rust-derive-more-impl-2.1.1
+                                           rust-dtoa-1.0.11
+                                           rust-dtoa-short-0.3.5
+                                           rust-encoding-rs-0.8.35
+                                           rust-equivalent-1.0.2
+                                           rust-fastrand-2.3.0
+                                           rust-foldhash-0.2.0
+                                           rust-hashbrown-0.16.1
+                                           rust-itoa-1.0.17
+                                           rust-libc-0.2.182
+                                           rust-log-0.4.29
+                                           rust-memchr-2.8.0
+                                           rust-mime-0.3.17
+                                           rust-new-debug-unreachable-1.0.6
+                                           rust-phf-0.13.1
+                                           rust-phf-codegen-0.13.1
+                                           rust-phf-generator-0.13.1
+                                           rust-phf-macros-0.13.1
+                                           rust-phf-shared-0.13.1
+                                           rust-precomputed-hash-0.1.1
+                                           rust-proc-macro2-1.0.106
+                                           rust-quote-1.0.44
+                                           rust-rustc-hash-2.1.1
+                                           rust-rustc-version-0.4.1
+                                           rust-selectors-0.33.0
+                                           rust-semver-1.0.27
+                                           rust-serde-1.0.228
+                                           rust-serde-core-1.0.228
+                                           rust-serde-derive-1.0.228
+                                           rust-servo-arc-0.4.3
+                                           rust-siphasher-1.0.2
+                                           rust-smallvec-1.15.1
+                                           rust-stable-deref-trait-1.2.1
+                                           rust-syn-2.0.117
+                                           rust-thiserror-2.0.18
+                                           rust-thiserror-impl-2.0.18
+                                           rust-unicode-ident-1.0.24))
                      (codex =>
                             (list rust-inflector-0.11.4
                              rust-addr2line-0.25.1
