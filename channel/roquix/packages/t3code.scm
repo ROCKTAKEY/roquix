@@ -1262,9 +1262,9 @@ tools separately to use their subscriptions.  This package builds the server,
 Web interface, terminal WASM, and native addons from source and runs on Node.js.")
     (license license:expat)))
 
-;; Pin feat/codex-session-sharing so branch updates cannot change the build.
+;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "90a462292b828b8987d9e1825d408b5c6324afb4")
+  "65394d4d9dd0009e5d2fb28878af059a26278bed")
 
 (define %t3code-rocktakey-version
   (git-version "0.1.0" "0" %t3code-rocktakey-commit))
@@ -1276,7 +1276,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "1l8csgbc20dp33frjyl650dx7kg5f5fdv229597vc3aq365i3d4m"))))
+    (sha256 (base32 "09d20yx0759sbrbq2spzrjqn52px0hzccpmaxhsqcwib76f0n63i"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
@@ -1292,14 +1292,14 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
         (t3code-build-phases version %ghostty-revision
                              %t3code-runtime-dependencies-script
                              #:desktop? desktop?))))
-    ;; The lockfile, workspace manifests, and native sources match 0.1.0.
+    ;; The lockfile, workspace dependencies, and native sources match 0.1.0.
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
-               "Desktop interface for coding agents with Codex session sharing"
-               "Web interface for coding agents with Codex session sharing"))
+               "Desktop coding agents with Codex and OpenCode session sharing"
+               "Web coding agents with Codex and OpenCode session sharing"))
     (description (string-append (package-description base)
-                  "  This variant includes Codex session sharing from the
-feat/codex-session-sharing branch of ROCKTAKEY's fork."))))
+                  "  This variant includes Codex and OpenCode session sharing
+from the feat/opencode-session-sharing branch of ROCKTAKEY's fork."))))
 
 (define-public t3code-rocktakey
   (t3code-rocktakey-package t3code))
