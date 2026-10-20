@@ -17,8 +17,7 @@
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages version-control)
-  #:use-module (nongnu packages electron)
-  #:use-module (roquix packages appimage-container))
+  #:use-module (nongnu packages electron))
 
 (define %mattermost-version
   "6.3.1")
@@ -368,6 +367,3 @@
 notifications, multiple servers and desktop integration.  The application and
 its Koffi native module are built from source and use the Nonguix Electron runtime.")
     (license license:asl2.0)))
-
-(define-public mattermost-desktop-container
-  (appimage-container-package mattermost-desktop))

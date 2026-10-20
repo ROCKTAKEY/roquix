@@ -342,16 +342,15 @@ environment must include the installed Guix profile's =share= directory in
 Guix packages.
 
 ** Desktop container packages
-=feishin-container=, =logseq-container=, and =mattermost-desktop-container=
+=feishin-container= and =logseq-container=
 start the corresponding AppImage packages inside a Guix container.  Install
 one variant per application; each provides the original command name and
 its desktop entry:
 
 #+BEGIN_SRC sh
-guix install -L channel feishin-container logseq-container mattermost-desktop-container
+guix install -L channel feishin-container logseq-container
 feishin
 logseq
-mattermost-desktop
 #+END_SRC
 
 Each application has a dedicated persistent home under

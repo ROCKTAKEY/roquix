@@ -72,8 +72,7 @@
            (argument-ref wrapper #:no-cwd? #t))))))
 
  '(((roquix packages feishin) feishin feishin-container)
-   ((roquix packages logseq) logseq logseq-container)
-   ((roquix packages mattermost) mattermost-desktop mattermost-desktop-container)))
+   ((roquix packages logseq) logseq logseq-container)))
 
 (test-error "non-package payload is rejected at construction" #t
   (appimage-container-package #f))
