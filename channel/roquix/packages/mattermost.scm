@@ -291,6 +291,49 @@
                     ,(map (lambda (name)
                             (string-append (assoc-ref inputs name) "/lib"))
                           '("libnotify" "pulseaudio" "libappindicator")))))))
+          (add-after 'install 'harden-electron
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Use upstream's Linux fuse policy, allowing the unpacked app
+              ;; directory installed here instead of requiring an ASAR archive.
+              ;; https://github.com/mattermost/desktop/blob/v6.3.1/scripts/afterpack.js
+              (substitute* "scripts/afterpack.js"
+                (("\\[FuseV1Options.OnlyLoadAppFromAsar\\]: true")
+                 "[FuseV1Options.OnlyLoadAppFromAsar]: false"))
+              (let ((appdir (string-append (assoc-ref outputs "out")
+                                          "/lib/mattermost-desktop")))
+                (make-file-writable
+                 (string-append appdir "/mattermost-desktop"))
+                (invoke "node" "-e"
+                        (string-append
+                         "require('./scripts/afterpack.js').default({"
+                         "appOutDir: process.argv[1],"
+                         "electronPlatformName: 'linux',"
+                         "packager: {executableName: 'mattermost-desktop'},"
+                         "targets: []});")
+                        appdir))))
+          (add-after 'strip 'check-electron-fuses
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Check the final executable even when application tests are
+              ;; disabled: a runtime upgrade must not silently undo hardening.
+              (invoke "node" "-e"
+                      (string-append
+                       "const assert = require('node:assert/strict');"
+                       "const {getCurrentFuseWire, FuseVersion, FuseV1Options: F}"
+                       " = require('@electron/fuses');"
+                       "getCurrentFuseWire(process.argv[1]).then(wire => {"
+                       "assert.equal(wire.version, FuseVersion.V1);"
+                       "for (const name of ['RunAsNode',"
+                       "'EnableNodeOptionsEnvironmentVariable',"
+                       "'EnableNodeCliInspectArguments',"
+                       "'GrantFileProtocolExtraPrivileges',"
+                       "'EnableEmbeddedAsarIntegrityValidation',"
+                       "'OnlyLoadAppFromAsar'])"
+                       "assert.equal(wire[F[name]], '0'.charCodeAt(0), name);"
+                       "assert.equal(wire[F.EnableCookieEncryption],"
+                       "'1'.charCodeAt(0), 'EnableCookieEncryption');"
+                       "}).catch(error => {console.error(error); process.exit(1);});")
+                      (string-append (assoc-ref outputs "out")
+                                     "/lib/mattermost-desktop/mattermost-desktop"))))
           (add-after 'install 'check-installed-modules
             (lambda* (#:key outputs tests? #:allow-other-keys)
               (when tests?
