@@ -1,0 +1,34 @@
+From: Guix Zig package maintainers
+Subject: [PATCH] zig build: respect PKG_CONFIG on dev.1828
+
+Adapt the official Guix patches for the Build API at Zig dev.1828:
+
+  https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/zig-0.11-build-respect-PKG_CONFIG-env-var.patch
+  https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/zig-0.12-build-respect-PKG_CONFIG-env-var.patch
+
+The upstream change is d263f1ec0eb988f0e4ed1859351f5040f590996b.
+
+diff --git a/lib/std/Build/Step/Compile.zig b/lib/std/Build/Step/Compile.zig
+--- a/lib/std/Build/Step/Compile.zig
++++ b/lib/std/Build/Step/Compile.zig
+@@ -876,8 +876,9 @@ fn runPkgConfig(self: *Compile, lib_name: []const u8) !PkgConfigResult {
+     };
+ 
+     var code: u8 = undefined;
++    const pkg_config_exe = b.env_map.get("PKG_CONFIG") orelse "pkg-config";
+     const stdout = if (b.runAllowFail(&[_][]const u8{
+-        "pkg-config",
++        pkg_config_exe,
+         pkg_name,
+         "--cflags",
+         "--libs",
+@@ -2295,7 +2296,8 @@ fn execPkgConfigList(self: *std.Build, out_code: *u8) (PkgConfigError || RunErr
+ }
+ 
+ fn execPkgConfigList(self: *std.Build, out_code: *u8) (PkgConfigError || RunError)![]const PkgConfigPkg {
+-    const stdout = try self.runAllowFail(&[_][]const u8{ "pkg-config", "--list-all" }, out_code, .Ignore);
++    const pkg_config_exe = self.env_map.get("PKG_CONFIG") orelse "pkg-config";
++    const stdout = try self.runAllowFail(&[_][]const u8{ pkg_config_exe, "--list-all" }, out_code, .Ignore);
+     var list = ArrayList(PkgConfigPkg).init(self.allocator);
+     errdefer list.deinit();
+     var line_it = mem.tokenizeAny(u8, stdout, "\r\n");

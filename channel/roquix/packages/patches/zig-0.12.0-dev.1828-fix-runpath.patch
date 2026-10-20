@@ -1,0 +1,38 @@
+Backport the libc RUNPATH part of Guix's official Zig 0.11 patch to
+Zig 0.12.0-dev.1828.
+
+Reference:
+https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/zig-0.11-fix-runpath.patch
+
+dev.1828 defaults each_lib_rpath to is_native_os.  That is insufficient when
+the native target is spelled explicitly (as CMake does for stage3), so retain
+the official Guix detection as well.
+
+diff --git a/src/Compilation.zig b/src/Compilation.zig
+--- a/src/Compilation.zig
++++ b/src/Compilation.zig
+@@ -1944,6 +1944,6 @@ pub fn create(gpa: Allocator, options: InitOptions) !*Compilation {
+             .llvm_cpu_features = llvm_cpu_features,
+             .skip_linker_dependencies = options.skip_linker_dependencies,
+-            .each_lib_rpath = options.each_lib_rpath orelse options.is_native_os,
++            .each_lib_rpath = std.zig.system.NativePaths.isGuix(arena) or options.each_lib_rpath orelse options.is_native_os,
+             .build_id = build_id,
+             .cache_mode = cache_mode,
+             .disable_lld_caching = options.disable_lld_caching or cache_mode == .whole,
+
+diff --git a/src/link/Elf.zig b/src/link/Elf.zig
+--- a/src/link/Elf.zig
++++ b/src/link/Elf.zig
+@@ -2673,6 +2673,12 @@ fn linkWithLLD(self: *Elf, comp: *Compilation, prog_node: *std.Progress.Node) !v
+                     }
+                 }
+             }
++            if (self.base.options.link_libc and self.base.options.link_mode == .Dynamic) {
++                if (self.base.options.libc_installation) |libc_installation| {
++                    try argv.append("-rpath");
++                    try argv.append(libc_installation.crt_dir.?);
++                }
++            }
+         }
+ 
+         for (self.base.options.lib_dirs) |lib_dir| {
