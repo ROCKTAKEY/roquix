@@ -1,0 +1,9 @@
+{
+  "name": "bun-build-system-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "bun run build.ts"
+  }
+}
