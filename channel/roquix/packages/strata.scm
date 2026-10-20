@@ -6,6 +6,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -18,7 +19,7 @@
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.1.45/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.1/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -38,19 +39,21 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.1.45")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://codeload.github.com/Niko1221/Strata/tar.gz/"
-             "477ac13cbe8e582c20484871ce459d20d82df09d"))
+             "90767252f420e25223c739d604145ad15911d48b"))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "1jgkj2460xrczjs3dpa6f9l28aqsx4cdr9jz37ws1g99xvb5pdkp"))
+        (base32 "0qcaw01mmkqfp67gp8s6fcxs8my20jp6vwj232av8ha8advabwlb"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-align.patch")
                       (strata-resource-path "strata-hip-sampler.patch")
+                      (strata-resource-path "strata-hip-lifeline.patch")
+                      (strata-resource-path "strata-hip-monitor.patch")
                       (strata-resource-path "strata-missing-disk-counters.patch")
                       (strata-resource-path "strata-cgroup-root.patch")))
        (modules '((guix build utils)))
@@ -155,7 +158,7 @@
                 (for-each (lambda (name)
                             (copy-recursively (string-append source "/" name)
                                               (string-append share "/" name)))
-                          '("serve" "tools" "data"))
+                          '("serve" "tools" "data" "strata_control"))
                 (for-each (lambda (name)
                             (install-file (string-append source "/" name)
                                           share))
@@ -191,6 +194,8 @@
                                           (caddr entry))))
                               (chmod program #o755)
                               (wrap-program program
+                                `("PATH" ":" prefix
+                                  (,(string-append #$procps "/bin")))
                                 `("GUIX_PYTHONPATH" ":" prefix
                                   (,(getenv "GUIX_PYTHONPATH")))
                                 `("SSL_CERT_FILE" =
@@ -212,6 +217,7 @@
                   hipblas
                   hipblas-common
                   hipblaslt
+                  procps
                   python
                   python-numpy
                   python-jinja2

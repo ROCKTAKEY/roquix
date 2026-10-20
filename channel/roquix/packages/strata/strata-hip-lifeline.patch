@@ -1,0 +1,51 @@
+Keep process identity stable across scheduler state changes.
+
+The portable watcher compares process start times to avoid killing a reused PID.
+Running and sleeping states can change between probes of the same process;
+zombie states only indicate that it has already exited.
+
+--- a/serve/lifeline.py
++++ b/serve/lifeline.py
+@@ -103,7 +103,8 @@
+         out = subprocess.run(["ps", "-o", "lstart=,stat=", "-p", str(p)], capture_output=True, text=True, timeout=5).stdout.strip()
+     except Exception:
+         return None
+-    return None if not out or out.endswith("Z") else "s:" + out
++    started, _, state = out.rpartition(" ")
++    return None if not started or state.startswith("Z") else "s:" + started
+ os.set_blocking(0, True)
+ data = b""
+ while True:
+@@ -139,7 +140,8 @@
+                              timeout=5).stdout.strip()
+     except (OSError, subprocess.SubprocessError):
+         return ""
+-    return "" if not out or out.endswith("Z") else "s:" + out
++    started, _, state = out.rpartition(" ")
++    return "" if not started or state.startswith("Z") else "s:" + started
+ 
+ 
+ def _watch(child: subprocess.Popen) -> None:
+--- a/serve/test_lifeline.py
++++ b/serve/test_lifeline.py
+@@ -98,6 +98,20 @@
+         self.assertTrue(self.wait_gone(info["child"]), f"the child outlived a killed server ({info['mechanism']})")
+         return info["mechanism"]
+ 
++    def test_process_identity_survives_scheduler_state_changes(self):
++        from unittest.mock import patch
++        from types import SimpleNamespace
++        from serve import lifeline
++        started = "Tue Oct 20 17:00:00 2026"
++        with patch.object(lifeline.subprocess, "run", side_effect=[
++                SimpleNamespace(stdout=started + " R"),
++                SimpleNamespace(stdout=started + " S"),
++                SimpleNamespace(stdout=started + " Z+")]):
++            token = lifeline._start_token(123)
++            self.assertTrue(token)
++            self.assertEqual(token, lifeline._start_token(123))
++            self.assertEqual("", lifeline._start_token(123))
++
+     def test_a_child_ends_when_its_server_is_killed(self):
+         self.assertIn(self._killed_parent_takes_the_child(), ("job", "pdeathsig", "watcher"))
+ 

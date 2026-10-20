@@ -1,8 +1,8 @@
 #+title: Strata with AMD HIP
 
-=strata-hip= packages Strata 0.1.45, its pinned llama.cpp sources, model
-preparation tools, and the local server.  It supports x86_64 Linux with AVX2
-and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
+=strata-hip= packages Strata 0.2.1 (engine 0.1.46), its pinned llama.cpp
+sources, model preparation tools, and the local server.  It supports x86_64
+Linux with AVX2 and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
 =gfx1201=.  This includes the RX 7800 XT (=gfx1101=).  Upstream considers
 =gfx1030= support experimental.
 
@@ -40,7 +40,7 @@ guix shell -L channel strata-hip -- env \
   --data-dir "$HOME/models/strata" --no-start --yes
 #+end_src
 
-The model sources follow [[https://github.com/Niko1221/Strata/blob/477ac13cbe8e582c20484871ce459d20d82df09d/docs/MODELS.md][Strata's model recommendations]].  For 64 GB RAM,
+The model sources follow [[https://github.com/Niko1221/Strata/blob/90767252f420e25223c739d604145ad15911d48b/docs/MODELS.md][Strata's model recommendations]].  For 64 GB RAM,
 upstream recommends =IQ2_XS=.  =IQ3_S= needs more free RAM; =Coder= is the
 coding-oriented variant and setup calls its single available size =IQ1_M=.
 The GGUF files come from the ISTA-DASLab repositories selected by Strata.
@@ -131,7 +131,7 @@ OpenAI clients can use =/v1/chat/completions= and =/v1/responses=.
 Responses supports streaming and function tools; clients send the full
 conversation in each request.  The package includes =jsonschema= to validate
 structured answers.  The upstream
-[[https://github.com/Niko1221/Strata/blob/477ac13cbe8e582c20484871ce459d20d82df09d/docs/DETAILS.md#the-responses-api-and-codex-cli][Responses and Codex instructions]] describe the provider configuration.
+[[https://github.com/Niko1221/Strata/blob/90767252f420e25223c739d604145ad15911d48b/docs/DETAILS.md#the-responses-api-and-codex-cli][Responses and Codex instructions]] describe the provider configuration.
 
 In a Guix container, share =/dev/kfd= and =/dev/dri=, expose =/sys=, and share
 the writable state and model directories.  Enable networking for the initial

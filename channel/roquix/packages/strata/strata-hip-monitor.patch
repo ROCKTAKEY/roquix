@@ -1,0 +1,17 @@
+Wait for request accounting before inspecting completed monitor records.
+
+The client can receive the HTTP body before the handler finishes its accounting.
+A bounded wait keeps the completion assertion independent of thread scheduling.
+
+--- a/serve/test_monitor.py
++++ b/serve/test_monitor.py
+@@ -181,6 +181,9 @@
+             release.set()
+             self.assertEqual(first.result()[0], 200)
+             self.assertEqual(second.result()[0], 200)
++        deadline = time.monotonic() + 5
++        while any(r["state"] != "completed" for r in self.svc.api_requests) and time.monotonic() < deadline:
++            time.sleep(0.01)
+         records = list(self.svc.api_requests)
+         self.assertGreater(records[0]["load_s"], 0.02)
+         self.assertGreater(records[1]["queue_s"], 0.02)

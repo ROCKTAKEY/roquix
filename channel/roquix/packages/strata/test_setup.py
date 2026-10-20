@@ -30,6 +30,9 @@ class SetupTests(unittest.TestCase):
         (self.package / "CMakeLists.txt").touch()
         (self.package / "requirements.txt").touch()
         shutil.copy2(SOURCE / "setup.py", self.package / "setup.py")
+        shutil.copytree(SOURCE / "strata_control", self.package / "strata_control")
+        self.addCleanup(setattr, sys, "path", sys.path[:])
+        sys.path.insert(0, str(self.package))
         spec = importlib.util.spec_from_file_location("strata_setup", self.package / "setup.py")
         self.adapter = importlib.util.module_from_spec(spec)
         sys.modules[spec.name] = self.adapter

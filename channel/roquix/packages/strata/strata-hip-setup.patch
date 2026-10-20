@@ -6,31 +6,35 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 
 --- a/setup.py
 +++ b/setup.py
-@@ -56,9 +56,12 @@
- import urllib.error
+@@ -60,13 +60,16 @@
+ import urllib.parse
  import urllib.request
  import zipfile
 +from dataclasses import dataclass
 +from typing import Any
  from pathlib import Path
  
+ from strata_control import acquisition
+ from strata_control import draft_layer
+ from strata_control import user_args
+ 
 -ROOT = Path(__file__).resolve().parent
 +PACKAGE_ROOT = Path(__file__).resolve().parent
 +ROOT = PACKAGE_ROOT
- WIN = os.name == "nt"
- # #214: every Hugging Face file comes from a fixed commit of its repository (the `sha` of
- # https://huggingface.co/api/models/<repo> when this was pinned), so a checkout installs the same files on any
-@@ -1992,44 +1995,7 @@
+ # The desktop app runs this installer under Strata Control (its bundled Python, STRATA_CONTROL_INSTALL=1). The source
+ # (tools/, data/, serve/) stays in ROOT, inside the app; everything the install writes (run configs, logs, third_party,
+ # the data folder beside it) goes to home(), a per-user folder (STRATA_INSTALL_DIR). In that mode it installs no Python
+@@ -2749,44 +2752,7 @@
  
  
  def get_llama_cpp():
 -    """llama.cpp at the pinned commit (ggml for the build, gguf-py for the tools, mtmd for images), as a zip: no git."""
--    llama = ROOT / "third_party" / "llama.cpp"
+-    llama = home() / "third_party" / "llama.cpp"
 -    if (llama / "ggml" / "CMakeLists.txt").exists() and (llama / "gguf-py").is_dir():
 -        return llama
--    z = ROOT / "third_party" / f"llama.cpp-{LLAMA_CPP_COMMIT[:7]}.zip"
+-    z = home() / "third_party" / f"llama.cpp-{LLAMA_CPP_COMMIT[:7]}.zip"
 -    download(LLAMA_CPP_ZIP, z, "llama.cpp source")
--    tmp = ROOT / "third_party" / "_unpack"
+-    tmp = home() / "third_party" / "_unpack"
 -    shutil.rmtree(tmp, ignore_errors=True)
 -    try:
 -        with zipfile.ZipFile(z) as f:
@@ -66,13 +70,19 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def req_name(line: str) -> str:
-@@ -2057,21 +2023,7 @@
+@@ -2821,28 +2787,7 @@
  
  
- def pip_install(packages, what):
+ def pip_install(packages, what, extra=()):
 -    """pip install into .venv, skipped when the same list was installed before.  An install from before the pinned
 -    requirements (#214) recorded bare names: those packages are kept as they are (nothing is reinstalled), and the
 -    pinned dependencies it already has count as installed."""
+-    if CONTROL:                                        # the app ships these (hash-locked); nothing is installed here
+-        missing = control_missing_packages()
+-        if missing:
+-            fail("this copy of Strata Control lacks " + ", ".join(missing), "reinstall the Strata app")
+-        ok(f"{what}: bundled with the app")
+-        return
 -    stamp = Path(sys.prefix) / ".strata-pip.json"
 -    have = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else []
 -    bare = {p.lower() for p in have if req_name(p) == p.lower()}
@@ -81,21 +91,23 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    if not need:
 -        ok(f"{what} already installed")
 -        return
+-    acquisition.require(what)
 -    say(f"  Installing {what} ...")
--    run([sys.executable, "-m", "pip", "install", "--quiet", "--disable-pip-version-check", *need])
+-    run([sys.executable, "-m", "pip", "install", "--quiet", "--disable-pip-version-check", *extra, *need])
 -    stamp.write_text(json.dumps(sorted(set(have) | set(need)), indent=0))
 -    ok(f"{what} installed")
 +    ok(f"{what} supplied by Guix")
  
  
- def cuda_lib_dirs(toolkit=13):
-@@ -3071,59 +3023,8 @@
+ NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
+@@ -3920,61 +3865,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
 -    """Compile the HIP engine for this AMD GPU into engine/ (again only when its source changed: a `git pull`).
 -    gpu["archs"]: every architecture it needs code for (the cards of a layer split), else gpu["arch"].  vision "cpu"
 -    (#304): the image encoder too, for the CPU (there is no HIP encoder build yet)."""
+-    acquisition.require("an engine build")
 -    eng = ROOT / "engine"
 -    eng.mkdir(exist_ok=True)
 -    stamp = eng / "BUILD.json"
@@ -106,12 +118,13 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    floor = cpu_floor(cpu_info()[1])                     # "" on an AVX2 CPU: the normal engine
 -    engine_ok = meta.get("backend") == "hip" and (eng / EXE).exists() and meta.get("src") == src and has_archs and \
 -        (meta.get("isa_floor") or "") == floor and not stale_binary(eng / EXE)
--    vision_ok = vision == "none" or ((eng / VEXE).exists() and meta.get("vision_src") == vsrc)
+-    vision_ok = vision == "none" or ((eng / VEXE).exists() and meta.get("vision_src") == vsrc and
+-                                     (vision != "gpu" or ((eng / HVEXE).exists() and set(archs) <= set(meta.get("vision_archs", [])))))
 -    if engine_ok and vision_ok:
 -        ok("engine already built for this PC")
 -        return eng
 -    if engine_ok:
--        return build_vision_cpu(eng, stamp, meta, llama, vsrc)
+-        return build_vision_hip(eng, stamp, meta, llama, vsrc, archs, vision)
 -    if not (shutil.which("c++") or shutil.which("g++")) or not shutil.which("git"):
 -        fail("a C++ compiler and git are needed to compile the AMD engine",
 -             "Ubuntu/Debian: sudo apt install build-essential git   Fedora: sudo dnf install gcc-c++ git")
@@ -142,7 +155,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    meta = {"source": "local-hip", "backend": "hip", "version": source_version(), "archs": archs, "vision": "none",
 -            "lib_dirs": dirs, "src": src, **({"isa_floor": floor} if floor else {})}
 -    if vision != "none":
--        return build_vision_cpu(eng, stamp, meta, llama, vsrc)
+-        return build_vision_hip(eng, stamp, meta, llama, vsrc, archs, vision)
 -    stamp.write_text(json.dumps(meta, indent=1))
 -    ok(f"engine compiled: {eng / EXE}")
 -    return eng
@@ -150,8 +163,8 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +    return PreparedStrata(package, ROOT).engine_for(gpu, vision)
  
  
- def hip_vision(asked) -> str:
-@@ -3705,94 +3606,8 @@
+ def hip_vision(asked, vram_gb: float = 0.0) -> str:
+@@ -4641,94 +4533,8 @@
  
  
  def update_installed_engine(url_base, toolkit=None) -> None:
@@ -248,7 +261,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -5975,6 +5790,118 @@
+@@ -7133,6 +6939,119 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -317,6 +330,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +        resources = (
 +            "tools",
 +            "serve",
++            "strata_control",
 +            "data",
 +            "engine",
 +            "third_party",
@@ -366,8 +380,8 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +    return ["--backend", "hip", "--data-dir", data_directory, *request.arguments]
  
  
- def main() -> int:
-@@ -7157,7 +7084,11 @@
+ def mac_vision(asked, model: str, ram: float) -> str:
+@@ -8611,7 +8530,11 @@
  
  if __name__ == "__main__":
      try:
@@ -376,9 +390,9 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +    except (OSError, ValueError, TypeError) as error:
 +        print(f"strata-setup: {error}", file=sys.stderr)
 +        sys.exit(1)
-     except KeyboardInterrupt:
-         say("\nstopped.")
-         sys.exit(1)
+     except acquisition.AcquisitionRefused as e:         # a start that would have installed something: said, not done
+         say(f"\n  [X]  {e}")
+         sys.exit(e.exit_code)
 --- a/tools/test_setup_amd.py
 +++ b/tools/test_setup_amd.py
 @@ -153,40 +153,24 @@
@@ -438,7 +452,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  class WindowsDetection(unittest.TestCase):
 --- a/tools/test_setup_choices.py
 +++ b/tools/test_setup_choices.py
-@@ -338,7 +338,7 @@
+@@ -336,7 +336,7 @@
              if vexe:
                  (eng / setup.VEXE).write_bytes(b"vision")
              src, vsrc = "S", "V"
@@ -447,7 +461,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
              built = []
  
              def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
-@@ -346,21 +346,15 @@
+@@ -344,21 +344,15 @@
                  (bdir / "bin").mkdir(parents=True)
                  (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  
@@ -474,7 +488,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
      def test_without_images_nothing_changes(self):
          built, meta, have = self.build({}, "none")
-@@ -539,7 +533,8 @@
+@@ -565,7 +559,8 @@
                      (bdir / "bin").mkdir(parents=True)
                      (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  
