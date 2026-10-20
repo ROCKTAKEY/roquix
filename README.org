@@ -16,6 +16,146 @@ Run =guix pull= and use the resulting =guix=.  Roquix's channel metadata makes
 the extension discoverable as =guix extra-profile=; a channel installation
 does not require =GUIX_EXTENSIONS_PATH= or =GUILE_LOAD_PATH=.
 
+* Bun and OpenCode
+After adding this channel and running =guix pull=, install Bun or OpenCode with:
+
+#+BEGIN_SRC sh
+guix install bun
+guix install opencode
+#+END_SRC
+
+These packages support =x86_64-linux=.
+
+** Importing dependencies
+=guix import-bun= generates Guix dependency definitions from =bun.lock= or
+=bun.lockb=. Run it using the Guix profile produced by =guix pull= with this
+channel. Importing requires network access to download dependency sources and
+compute their hashes.
+
+For a text lockfile, provide a source tree containing =bun.lock= and the
+project's =package.json=. The generated Scheme expression is written to
+standard output:
+
+#+BEGIN_SRC sh
+guix import-bun /path/to/project/bun.lock
+#+END_SRC
+
+The definition name is derived from the project name and version as
+=%NAME-VERSION-npm-inputs=. If the root manifest has no version and exactly
+one workspace has the same package name, that workspace supplies the version.
+
+Use =--insert= to add or update definitions in an existing module. The target
+file must already exist. Definitions with the same name are replaced:
+
+#+BEGIN_SRC sh
+guix import-bun --insert=channel/roquix/packages/bun-lock-inputs.scm \
+  /path/to/project/bun.lock
+#+END_SRC
+
+Use =--project= when dependencies belong under a monorepo subdirectory:
+
+#+BEGIN_SRC sh
+guix import-bun /path/to/project/bun.lock --project=packages/example
+#+END_SRC
+
+This prefixes dependency installation paths with =packages/example= and adds
+=example= to the generated definition name.
+
+For a binary lockfile, specify the project source root with =--source=.
+Conversion requires the roquix Bun package; Guix builds it if no substitute
+is available:
+
+#+BEGIN_SRC sh
+guix import-bun /path/to/project/bun.lockb --source=/path/to/project
+#+END_SRC
+
+For a subproject's binary lockfile, specify both the source root and the
+installation prefix:
+
+#+BEGIN_SRC sh
+guix import-bun /path/to/project/packages/example/bun.lockb \
+  --source=/path/to/project --project=packages/example
+#+END_SRC
+
+Run =guix import-bun --help= to list the available options.
+
+** Packaging Bun projects
+Use =bun-build-system= from =(roquix build-system bun)= in Guix package
+definitions. It runs =bun run build= and =bun test= by default. Specify the
+files to install with =#:install-plan=.
+
+Import the following modules in your package definition:
+
+#+BEGIN_SRC scheme
+(use-modules (guix packages)
+             (guix gexp)
+             (roquix build-system bun))
+#+END_SRC
+
+The following package fields install the contents of =dist/= at the root
+of the package output:
+
+#+BEGIN_SRC scheme
+(build-system bun-build-system)
+(arguments
+ (list #:install-plan #~'(("dist/" "./"))))
+#+END_SRC
+
+| Argument          | Default             | Purpose                                                    |
+|-------------------+---------------------+------------------------------------------------------------|
+| =#:bun=           | roquix's =bun=      | Bun package to use                                         |
+| =#:build-command= | =("run" "build")=   | Arguments passed to Bun; =#f= skips the command              |
+| =#:test-command=  | =("test")=          | Test arguments passed to Bun; =#f= skips the command         |
+| =#:node-modules=  | =#f=                | Dependency tree to use during the build                     |
+| =#:install-plan=  | =#f=                | Required for the standard install phase; copy-build-system format |
+
+Commands can be customized using gexps:
+
+#+BEGIN_SRC scheme
+(arguments
+ (list #:build-command #~'("run" "build:release")
+       #:test-command #~'("test" "test/unit")
+       #:install-plan #~'(("dist/" "./"))))
+#+END_SRC
+
+The build environment cannot download dependencies, so first use
+=guix import-bun= to generate their source definitions. In the following
+example, =source= is the application's source and =%example-npm-inputs= is
+the generated dependency list:
+
+#+BEGIN_SRC scheme
+(define modules
+  (bun-node-modules
+   source
+   %example-npm-inputs
+   #:name "example-node-modules"))
+#+END_SRC
+
+Add =#:node-modules modules= to the package's =arguments=. Dependencies are
+available in the build directory; =#:install-plan= determines which files
+are installed in the package output.
+
+=bun-node-modules= freezes the lockfile and disables dependency lifecycle
+scripts by default. Use =#:install-flags= to select workspaces:
+
+#+BEGIN_SRC scheme
+(bun-node-modules
+ source
+ %example-npm-inputs
+ #:install-flags '("--filter" "./packages/example"))
+#+END_SRC
+
+For projects where =bun install= requests additional registry metadata,
+create the dependency tree directly from the lockfile's installation paths:
+
+#+BEGIN_SRC scheme
+(bun-node-modules-from-layout
+ %example-npm-inputs
+ #:name "example-node-modules")
+#+END_SRC
+
+Workspaces in the source tree are linked according to =bun.lock=.
+
 * Named extra profiles
 =guix extra-profile= manages named profiles from declarative manifests and
 combines already-built profile generations with =guix shell=.  It deliberately
