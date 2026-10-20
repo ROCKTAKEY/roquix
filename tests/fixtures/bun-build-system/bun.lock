@@ -1,0 +1,12 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "bun-build-system-fixture"
+    },
+    "packages/workspace": {
+      "name": "fixture-workspace"
+    }
+  },
+  "packages": {}
+}
