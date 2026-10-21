@@ -66,6 +66,7 @@
                          library
                          filename
                          #:key (tests? #f)
+                         (rust rust-1.95)
                          (features '())
                          (license-value license:expat))
   (package
@@ -82,7 +83,7 @@
     (build-system cargo-build-system)
     (arguments
      (list
-      #:rust rust-1.95
+      #:rust rust
       #:install-source? #f
       #:features `',features
       ;; Node-API addons need a Node host. Runtime APIs are exercised by
@@ -276,7 +277,7 @@
                       (package-inputs library))))))
 
 (define t3code-oxc-transform-react-native
-  (let ((library (native-library "t3code-oxc-transform-react-native"
+  (native-library "t3code-oxc-transform-react-native"
                   "0.152.0"
                   "oxc-project/oxc"
                   "dfbc0d1ea752f021ba4a68e4703b3a9031082a46"
@@ -284,12 +285,8 @@
                   "."
                   "oxc_transform_react_napi"
                   "liboxc_transform_react_napi.so"
-                  "transform-react.linux-x64-gnu.node")))
-    (package
-      (inherit library)
-      (arguments
-       (substitute-keyword-arguments (package-arguments library)
-         ((#:rust _) rust-1.96))))))
+                  "transform-react.linux-x64-gnu.node"
+                  #:rust rust-1.96))
 
 (define t3code-tailwind-native
   (native-library "t3code-tailwind-native"
