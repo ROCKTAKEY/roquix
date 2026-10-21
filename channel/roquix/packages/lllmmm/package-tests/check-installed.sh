@@ -2,6 +2,7 @@
 set -eu
 
 package=${1:?package output is required}
+version=${2:?package version is required}
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT HUP INT TERM
 
@@ -9,7 +10,7 @@ lllmmm() {
     env -i HOME="$scratch" "$package/bin/lllmmm" "$@"
 }
 
-test "$(lllmmm --version)" = 'lllmmm 0.1.0'
+test "$(lllmmm --version)" = "lllmmm $version"
 test -f "$package/share/doc/lllmmm/examples/lllmmm.toml"
 test -f "$package/share/doc/lllmmm/examples/strata/iq3_s.json"
 

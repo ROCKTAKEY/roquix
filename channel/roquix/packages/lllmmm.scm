@@ -40,7 +40,7 @@
                                   (string-append
                                    "roquix/packages/lllmmm/"
                                    "package-tests/check-installed.sh"))))
-                             #$output)))))))
+                             #$output #$version)))))))
     (native-inputs (list python))
     (inputs (cargo-inputs 'lllmmm #:module '(roquix packages rust-crates)))
     (home-page "https://github.com/ROCKTAKEY/lllmmm")
