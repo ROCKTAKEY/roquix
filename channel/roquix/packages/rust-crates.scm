@@ -434,9 +434,17 @@
   (crate-source "ash" "0.38.0+1.3.281"
                 "0vx4yf689v1rc680jvy8bnysx5sgd8f33wnp2vqaizh0v0v4kd0b"))
 
+(define rust-askama-0.14.0
+  (crate-source "askama" "0.14.0"
+                "1i3m3dzshx46v94w24chl6xg7xjyf350gqzzyijy46vp9f3n6lzp"))
+
 (define rust-askama-0.16.0
   (crate-source "askama" "0.16.0"
                 "1p5d30z0q1wlnlzcqd6hn1l9ljf5vhvsi8yh36h8gn7d4m8q5gzi"))
+
+(define rust-askama-derive-0.14.0
+  (crate-source "askama_derive" "0.14.0"
+                "0kx9sfych8m7cswcs75jhq0cy9pqn7iah1w4lvl8hc781wh9g4qj"))
 
 (define rust-askama-derive-0.16.0
   (crate-source "askama_derive" "0.16.0"
@@ -445,6 +453,10 @@
 (define rust-askama-macros-0.16.0
   (crate-source "askama_macros" "0.16.0"
                 "06mf8jz3pav9kf8r1jryj500bzf69kplq4pnf4cs8fdxqk9b28qf"))
+
+(define rust-askama-parser-0.14.0
+  (crate-source "askama_parser" "0.14.0"
+                "0n235ljbvbvlhwr54s675x1z6lgbjmzrfrq1c8rg5snmncq5dayn"))
 
 (define rust-askama-parser-0.16.0
   (crate-source "askama_parser" "0.16.0"
@@ -18486,6 +18498,9 @@
                                    rust-anstyle-query-1.1.5
                                    rust-anstyle-wincon-3.0.11
                                    rust-anyhow-1.0.104
+                                   rust-askama-0.14.0
+                                   rust-askama-derive-0.14.0
+                                   rust-askama-parser-0.14.0
                                    rust-async-stream-0.3.6
                                    rust-async-stream-impl-0.3.6
                                    rust-async-trait-0.1.92
@@ -18494,6 +18509,7 @@
                                    rust-axum-core-0.5.6
                                    rust-base64-0.22.1
                                    rust-base64-0.23.1
+                                   rust-basic-toml-0.1.10
                                    rust-bitflags-2.13.2
                                    rust-bumpalo-3.20.3
                                    rust-bytes-1.12.1
@@ -18567,6 +18583,7 @@
                                    rust-regex-automata-0.4.18
                                    rust-regex-syntax-0.8.11
                                    rust-reqwest-0.12.28
+                                   rust-rustc-hash-2.1.3
                                    rust-rustix-1.1.5
                                    rust-rustversion-1.0.23
                                    rust-ryu-1.0.23
