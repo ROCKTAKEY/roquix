@@ -16,6 +16,7 @@
         (phases (apply (lambda* (#:key phases #:allow-other-keys) phases)
                        (package-arguments package))))
     (module-use! module (resolve-interface '(guix build utils)))
+    (module-use! module (resolve-interface '(ice-9 ftw)))
     (module-use! module (resolve-interface '(guix build gnu-build-system)))
     (with-store store
       (eval (lowered-gexp-sexp
@@ -27,6 +28,9 @@
 (test-equal "the CLI is a separately installable package"
   "t3code-cli" (package-name t3code-cli))
 
+(test-equal "the desktop packages the stable release"
+  "0.1.1" (package-version t3code))
+
 (test-assert "CLI and desktop use the same pinned source release"
   (and (equal? (package-version t3code) (package-version t3code-cli))
        (eq? (package-source t3code) (package-source t3code-cli))))
@@ -37,11 +41,11 @@
      name (package-name package))
    (test-equal "session sharing uses an immutable commit of the requested fork"
      (string-append "https://codeload.github.com/ROCKTAKEY/t3code/tar.gz/"
-                    "65394d4d9dd0009e5d2fb28878af059a26278bed")
+                    "161cfef694df9c4a80de9e73529b56ac1ed6986e")
      (origin-uri (package-source package)))
    (test-assert "the fork version identifies its pinned revision"
-     (and (string-prefix? "0.1.0-" (package-version package))
-          (string-contains (package-version package) "65394d4")))
+     (and (string-prefix? "0.1.1-" (package-version package))
+          (string-contains (package-version package) "161cfef")))
    (test-equal "the fork reuses the release JavaScript dependencies"
      (assoc-ref (package-native-inputs base) "node-modules")
      (assoc-ref (package-native-inputs package) "node-modules")))
@@ -87,6 +91,22 @@
                    (string-contains patched
                      (format #f "installed: Effect.succeed(Option.some(~s))" browser))
                    (not (string-contains patched "makePreviewBrowser("))))))))
+    (lambda () (delete-file-recursively directory))))
+
+(let ((directory (mkdtemp! "/tmp/t3code-vite-peers.XXXXXX")))
+  (dynamic-wind
+    (lambda () #t)
+    (lambda ()
+      (with-directory-excursion directory
+        (mkdir-p "apps/web/node_modules/vite")
+        (mkdir-p "node_modules/.pnpm/vitest/node_modules")
+        (mkdir-p "node_modules/.pnpm/vite/node_modules/vite")
+        (symlink "../../vite/node_modules/vite"
+                 "node_modules/.pnpm/vitest/node_modules/vite")
+        ((assoc-ref (package-phases t3code) 'use-toolchain-vite))
+        (test-equal "test configuration peers use the application's source-built Vite toolchain"
+          (canonicalize-path "apps/web/node_modules/vite")
+          (canonicalize-path "node_modules/.pnpm/vitest/node_modules/vite"))))
     (lambda () (delete-file-recursively directory))))
 
 (let ((runner (test-runner-current)))

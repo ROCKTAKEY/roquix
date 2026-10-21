@@ -45,7 +45,7 @@
   #:use-module (nongnu packages electron))
 
 (define %t3code-version
-  "0.1.0")
+  "0.1.1")
 
 (define %t3code-source
   (origin
@@ -54,7 +54,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0yd8jhissmmivp090b4h7vbflx9zmbw1khlan4zxipjmnvjci7y3"))))
+    (sha256 (base32 "01c9w0i09hhc82cfmym5ki8xva746k7p8lks51bz54vncyxpwrhz"))))
 
 (define* (native-library name
                          version
@@ -275,6 +275,22 @@
                             (list "sqlite" sqlite))
                       (package-inputs library))))))
 
+(define t3code-oxc-transform-react-native
+  (let ((library (native-library "t3code-oxc-transform-react-native"
+                  "0.152.0"
+                  "oxc-project/oxc"
+                  "dfbc0d1ea752f021ba4a68e4703b3a9031082a46"
+                  "0l97v2ssl7pcp0avbyfsk37jiqzfdqf3izma80xc295m5348bi7h"
+                  "."
+                  "oxc_transform_react_napi"
+                  "liboxc_transform_react_napi.so"
+                  "transform-react.linux-x64-gnu.node")))
+    (package
+      (inherit library)
+      (arguments
+       (substitute-keyword-arguments (package-arguments library)
+         ((#:rust _) rust-1.96))))))
+
 (define t3code-tailwind-native
   (native-library "t3code-tailwind-native"
                   "4.3.3"
@@ -477,7 +493,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0a26dx2xbsl33w5fixfz0m162844dmmah3jrrsqbpnq6r7c4c64j"))))
+    (sha256 (base32 "0x74qaq14s75kqly3rrzhgsx0g2bkb0agjv8q7ry0yvim1bsasck"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -742,6 +758,7 @@
                                              ("keyring.linux-x64-gnu.node" . "t3code-keyring-native")
                                              ("xa11y.linux-x64-gnu.node" . "t3code-xa11y-native")
                                              ("vite-plus.linux-x64-gnu.node" . "t3code-vite-plus-native")
+                                             ("transform-react.linux-x64-gnu.node" . "t3code-oxc-transform-react-native")
                                              ("tailwindcss-oxide.linux-x64-gnu.node" . "t3code-tailwind-native")
                                              ("lightningcss.linux-x64-gnu.node" . "t3code-lightningcss-native"))))))
             ;; Drop unused native tools and optional accelerators too: a transitive
@@ -855,10 +872,10 @@
               (invoke "vp" "pack"))
             ;; Reuse upstream's asset selection and Linux icon staging without
             ;; running its AppImage/deb packaging and Electron download steps.
-            ;; https://github.com/pingdotgg/t3code/blob/v0.0.44/scripts/build-desktop-artifact.ts
+            ;; https://github.com/pingdotgg/t3code/blob/v0.1.1/scripts/build-desktop-artifact.ts
             (substitute* "scripts/build-desktop-artifact.ts"
-              (("^function stageLinuxIcons\\(")
-               "export function stageLinuxIcons("))
+              (("^const stageLinuxIcons =")
+               "export const stageLinuxIcons ="))
             (copy-file #$%t3code-stage-linux-icons-script
                        "scripts/guix-stage-linux-icons.mjs")
             (invoke "node" "scripts/guix-stage-linux-icons.mjs" version)))
@@ -1115,6 +1132,21 @@
           (delete 'bootstrap)
           (replace 'configure
             configure-application)
+          (add-after 'configure 'use-toolchain-vite
+            (lambda _
+              ;; Vitest's auto-installed peer bypasses the workspace's Vite alias.
+              ;; Loading its config must use the same source-built toolchain as
+              ;; the application, including Vite Plus's embedded Rolldown.
+              (let ((vite (canonicalize-path "apps/web/node_modules/vite")))
+                (for-each
+                 (lambda (entry)
+                   (let ((peer (string-append "node_modules/.pnpm/" entry
+                                              "/node_modules/vite")))
+                     (when (and (file-exists? peer)
+                                (eq? 'symlink (stat:type (lstat peer))))
+                       (delete-file peer)
+                       (symlink vite peer))))
+                 (scandir "node_modules/.pnpm")))))
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
               (build-application inputs
@@ -1164,6 +1196,7 @@
                      ("xvfb-run" ,xvfb-run)
                      ("hicolor-icon-theme" ,hicolor-icon-theme)
                      ("imagemagick" ,imagemagick)
+                     ("t3code-oxc-transform-react-native" ,t3code-oxc-transform-react-native)
                      ("t3code-tailwind-native" ,t3code-tailwind-native)
                      ("t3code-lightningcss-native" ,t3code-lightningcss-native)
                      ("pkg-config" ,pkg-config)
@@ -1264,10 +1297,10 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "65394d4d9dd0009e5d2fb28878af059a26278bed")
+  "161cfef694df9c4a80de9e73529b56ac1ed6986e")
 
 (define %t3code-rocktakey-version
-  (git-version "0.1.0" "0" %t3code-rocktakey-commit))
+  (git-version "0.1.1" "0" %t3code-rocktakey-commit))
 
 (define %t3code-rocktakey-source
   (origin
@@ -1276,7 +1309,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "09d20yx0759sbrbq2spzrjqn52px0hzccpmaxhsqcwib76f0n63i"))))
+    (sha256 (base32 "1af9aq1vfzrv2yzhiw3frg9bdfjiwc791g7mdj82n3gvpa8x2fgl"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
@@ -1292,7 +1325,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
         (t3code-build-phases version %ghostty-revision
                              %t3code-runtime-dependencies-script
                              #:desktop? desktop?))))
-    ;; The lockfile, workspace dependencies, and native sources match 0.1.0.
+    ;; The lockfile, workspace dependencies, and native sources match 0.1.1.
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
                "Desktop coding agents with Codex and OpenCode session sharing"
