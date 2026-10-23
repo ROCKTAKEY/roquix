@@ -28,6 +28,10 @@ in `channel/roquix/packages/codex.scm`.
 3. Review the diff.
    - Expected package files: `channel/roquix/packages/codex.scm` and
      `channel/roquix/packages/rust-crates.scm`.
+   - For pinned Git workspaces such as the MCP SDK, also update the hidden
+     package in `rust-sources.scm` and its member aliases in `rust-crates.scm`.
+     Follow `package-rust-for-guix`: raw workspace origins from the importer
+     do not expose member crates to Cargo's offline registry directory.
    - After every import, run Guix's `etc/teams/rust/cleanup-crates.scm` across
      the entire `rust-crates.scm`, changing its `file` binding to this channel's
      absolute path. Run it from `channel/` with that directory on Guix's load
@@ -38,9 +42,14 @@ in `channel/roquix/packages/codex.scm`.
      the generated result and repeat the import before building.
    - Confirm that the release version, source tag, source hash, and generated
      crate inputs all refer to the same upstream release.
-   - Match `#:rust` to the release's `codex-rs/rust-toolchain.toml`. Check each
-     source substitution against the new tree, and update package comments
-     and upstream source links when its reason changes.
+   - Check `codex-rs/rust-toolchain.toml` and dependency `rust-version`
+     requirements against the available Guix compilers. Prefer the pinned
+     compiler when available; a toolchain pin alone does not establish the
+     minimum supported Rust version. Before adding another toolchain or
+     channel dependency, try the packaged compiler and require the full build
+     and runtime checks below. Report the compiler version used.
+   - Check each source substitution against the new tree, and update package
+     comments and upstream source links when its reason changes.
    - When changing the updater, make it update `%codex-release-version` rather
      than replacing the exported package version expression. Accept Scheme
      formatting with the value on a separate line.

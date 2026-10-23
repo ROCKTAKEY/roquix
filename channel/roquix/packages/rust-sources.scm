@@ -149,21 +149,21 @@ versioned Cargo crates from its pinned upstream Git revision.")
 versioned Cargo crates for other Guix Rust packages.")
        (license license:asl2.0)))))
 
-(define-public rust-rmcp-workspace-3.5.1.4048ac4
+(define-public rust-rmcp-workspace-3.5.1.98a5478
   (hidden-package
    (package
      (name "rust-rmcp-workspace")
      (version (git-version "3.5.1" "0"
-                           "4048ac40e958fb1a7d614617a2ae8d26666ee2fa"))
+                           "98a54789b80110ad210495c4ad845c89e1980471"))
      (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://github.com/modelcontextprotocol/rust-sdk")
-              (commit "4048ac40e958fb1a7d614617a2ae8d26666ee2fa")))
+              (commit "98a54789b80110ad210495c4ad845c89e1980471")))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1kqgg3j24b4gcky96r63ps6jf9n0810c52pab5v421bjwc9axca5"))))
+         (base32 "0bnfib38adayn11iyshiz7pdq83gkx7a2fcbjrdpi7cj7snfpk69"))))
      (build-system cargo-build-system)
      (arguments
       (list #:skip-build? #t

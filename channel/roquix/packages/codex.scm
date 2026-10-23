@@ -26,7 +26,7 @@
   #:use-module (gnu packages regex))
 
 (define %codex-rusty-v8-version
-  "150.4.0")
+  "152.2.0")
 
 ;; Keep these two packages in sync.  The archive and bindings must come from
 ;; the same OpenAI rusty_v8 release and match the target, pointer-compression,
@@ -41,9 +41,9 @@
      (let* ((archive (cond
                        ((string=? (%current-system) "aarch64-linux")
                         '("librusty_v8_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.a.gz"
-                          "1fhi51yhpwkd79mr27rmimf4vivyk7zda1dh55q56s2l83npwlfi"))
+                          "11syn514fwd88i7ydwy2lawyvwrb01vhiqjswbsws1ihc954cm0h"))
                        (else '("librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
-                               "10xm60dl5ywwp0r8nmjha3q59gjf194k6nx4hlw9hskfyb8pap53"))))
+                               "1kfv6xqqrhmarxvpb0kjpraq7kh0zd8zh9y7d9zxm7l0mbr91d5k"))))
             (archive-name (car archive))
             (archive-sha256 (cadr archive)))
        (origin
@@ -82,9 +82,9 @@ build phase.")
      (let* ((binding (cond
                        ((string=? (%current-system) "aarch64-linux")
                         '("src_binding_ptrcomp_sandbox_release_aarch64-unknown-linux-gnu.rs"
-                          "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))
+                          "1m8rqlp3xpgcvd65xsy56aq7z9qr4nl7r7g62xh8myg0vgn5yk9y"))
                        (else '("src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
-                               "01l53l6nk4p5brpz2v3svqijx3hz5nqry8q7x12vdgbrwim849vp"))))
+                               "1m8rqlp3xpgcvd65xsy56aq7z9qr4nl7r7g62xh8myg0vgn5yk9y"))))
             (binding-name (car binding))
             (binding-sha256 (cadr binding)))
        (origin
@@ -115,7 +115,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version
-  "0.163.0")
+  "0.164.0")
 
 (define-public codex
   (package
@@ -131,7 +131,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l1wglkmxsmchkgyifqx6j322101791x002y92mfpjw945z5vbqm"))))
+        (base32 "13mqm0rhrdac7z4i0jyxkhkc72dh6h7p1g36w01fq68wlkxgc9la"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;clang-toolchain
@@ -147,7 +147,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                    (cargo-inputs 'codex
                                  #:module '(roquix packages rust-crates))))
     ;; PID-managed app-server daemons call ps to identify their processes.
-    ;; https://github.com/openai/codex/blob/rust-v0.163.0/codex-rs/app-server-daemon/src/backend/pid.rs
+    ;; https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/app-server-daemon/src/backend/pid.rs
     (propagated-inputs (list procps))
     (native-inputs (list rusty-v8-prebuilt-archive
                          rusty-v8-prebuilt-binding
@@ -159,7 +159,6 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          perl))
     (arguments
      `(#:install-source? #f
-       ;; Match codex-rs/rust-toolchain.toml for this release.
        #:rust ,rust-1.95
        ;; A successful Guix build establishes compilation and installation,
        ;; but not test coverage: Cargo tests are disabled here.
@@ -201,13 +200,11 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          "h3-quinn = \"0.0.10\""))))
                   (add-after 'use-guix-vendored-dependencies 'remove-windows-git-dependency
                     (lambda _
-                      ;; Codex is packaged only for Linux.  These Windows-only
-                      ;; workspace git dependencies cannot be provided by Cargo's
+                      ;; Codex is packaged only for Linux.  The Windows-only
+                      ;; MXC workspace dependency cannot be provided by Cargo's
                       ;; offline vendor directory.
                       (substitute* "mxc-sandbox/Cargo.toml"
-                        (((string-append
-                           "(appcontainer_common|learning_mode_windows|"
-                           "wxc_common) = \\{ workspace = true \\}"))
+                        (("mxc-sdk = \\{ workspace = true \\}")
                          ""))))
                   (add-after 'change-directory-to-rust-source 'fix-test
                     (lambda _
@@ -277,10 +274,10 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; and also installs the CLI's auxiliary `logs_client`.
                       ;; The daemon copies a complete package, so install the
                       ;; layout required by Codex's package validator.
-                      ;; https://github.com/openai/codex/blob/rust-v0.163.0/scripts/codex_package/README.md
+                      ;; https://github.com/openai/codex/blob/rust-v0.164.0/scripts/codex_package/README.md
                       ;; Keep bin/codex as the executable: daemon installation
                       ;; compares its bytes with the running CLI before copying.
-                      ;; https://github.com/openai/codex/blob/rust-v0.163.0/codex-rs/app-server-daemon/src/prepare_install.rs
+                      ;; https://github.com/openai/codex/blob/rust-v0.164.0/codex-rs/app-server-daemon/src/prepare_install.rs
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin"))
                              (resources (string-append out "/codex-resources"))
