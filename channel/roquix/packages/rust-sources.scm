@@ -150,35 +150,35 @@ versioned Cargo crates for other Guix Rust packages.")
        (license license:asl2.0)))))
 
 (define-public rust-rmcp-workspace-3.5.1.98a5478
-  (hidden-package
-   (package
-     (name "rust-rmcp-workspace")
-     (version (git-version "3.5.1" "0"
-                           "98a54789b80110ad210495c4ad845c89e1980471"))
-     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-              (url "https://github.com/modelcontextprotocol/rust-sdk")
-              (commit "98a54789b80110ad210495c4ad845c89e1980471")))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32 "0bnfib38adayn11iyshiz7pdq83gkx7a2fcbjrdpi7cj7snfpk69"))))
-     (build-system cargo-build-system)
-     (arguments
-      (list #:skip-build? #t
-            #:install-source? #t
-            ;; Package the macro crate first so rmcp's workspace dependency
-            ;; resolves to the same pinned SDK revision in the vendor directory.
-            #:cargo-package-crates ''("rmcp-macros" "rmcp")
-            #:cargo-package-flags
-            ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
-     (home-page "https://github.com/modelcontextprotocol/rust-sdk")
-     (synopsis "Pinned Rust Model Context Protocol SDK crates")
-     (description
-      "This package provides the MCP SDK workspace members used by Codex as
+  (let ((commit "98a54789b80110ad210495c4ad845c89e1980471"))
+    (hidden-package
+     (package
+       (name "rust-rmcp-workspace")
+       (version (git-version "3.5.1" "0" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/modelcontextprotocol/rust-sdk")
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0bnfib38adayn11iyshiz7pdq83gkx7a2fcbjrdpi7cj7snfpk69"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list #:skip-build? #t
+              #:install-source? #t
+              ;; Package the macro crate first so rmcp's workspace dependency
+              ;; resolves to the same pinned SDK revision in the vendor directory.
+              #:cargo-package-crates ''("rmcp-macros" "rmcp")
+              #:cargo-package-flags
+              ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
+       (home-page "https://github.com/modelcontextprotocol/rust-sdk")
+       (synopsis "Pinned Rust Model Context Protocol SDK crates")
+       (description
+        "This package provides the MCP SDK workspace members used by Codex as
 versioned Cargo crates from its pinned upstream Git revision.")
-     (license license:asl2.0))))
+       (license license:asl2.0)))))
 
 (define-public rust-runfiles-0.1.0.b56cbaa
   (let ((commit "b56cbaa8465e74127f1ea216f813cd377295ad81")
