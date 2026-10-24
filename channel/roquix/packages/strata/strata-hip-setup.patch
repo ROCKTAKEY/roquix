@@ -6,7 +6,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 
 --- a/setup.py
 +++ b/setup.py
-@@ -60,13 +60,16 @@
+@@ -60,6 +60,8 @@
  import urllib.parse
  import urllib.request
  import zipfile
@@ -15,7 +15,8 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  from pathlib import Path
  
  from strata_control import acquisition
- from strata_control import draft_layer
+@@ -71,7 +73,8 @@
+ from strata_control.discovery import in_trash
  from strata_control import user_args
  
 -ROOT = Path(__file__).resolve().parent
@@ -24,7 +25,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  # The desktop app runs this installer under Strata Control (its bundled Python, STRATA_CONTROL_INSTALL=1). The source
  # (tools/, data/, serve/) stays in ROOT, inside the app; everything the install writes (run configs, logs, third_party,
  # the data folder beside it) goes to home(), a per-user folder (STRATA_INSTALL_DIR). In that mode it installs no Python
-@@ -2749,44 +2752,7 @@
+@@ -3209,44 +3212,7 @@
  
  
  def get_llama_cpp():
@@ -70,7 +71,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def req_name(line: str) -> str:
-@@ -2821,28 +2787,7 @@
+@@ -3293,28 +3259,7 @@
  
  
  def pip_install(packages, what, extra=()):
@@ -100,7 +101,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
-@@ -3920,61 +3865,8 @@
+@@ -4508,61 +4453,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
@@ -114,12 +115,12 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    meta = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else {}
 -    src, vsrc = source_hash(ENGINE_SOURCES), source_hash(VISION_SOURCES)
 -    archs = sorted(set(gpu.get("archs") or [gpu["arch"]]))
--    has_archs = set(archs) <= set(meta.get("archs", []))
+-    has_archs = set(archs) <= set(arch_names(meta.get("archs")))
 -    floor = cpu_floor(cpu_info()[1])                     # "" on an AVX2 CPU: the normal engine
 -    engine_ok = meta.get("backend") == "hip" and (eng / EXE).exists() and meta.get("src") == src and has_archs and \
 -        (meta.get("isa_floor") or "") == floor and not stale_binary(eng / EXE)
 -    vision_ok = vision == "none" or ((eng / VEXE).exists() and meta.get("vision_src") == vsrc and
--                                     (vision != "gpu" or ((eng / HVEXE).exists() and set(archs) <= set(meta.get("vision_archs", [])))))
+-                                     (vision != "gpu" or ((eng / HVEXE).exists() and set(archs) <= set(arch_names(meta.get("vision_archs"))))))
 -    if engine_ok and vision_ok:
 -        ok("engine already built for this PC")
 -        return eng
@@ -164,7 +165,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def hip_vision(asked, vram_gb: float = 0.0) -> str:
-@@ -4641,94 +4533,8 @@
+@@ -5233,94 +5125,8 @@
  
  
  def update_installed_engine(url_base, toolkit=None) -> None:
@@ -202,11 +203,11 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -        if meta.get("src") != source_hash(ENGINE_SOURCES) or stale_binary(eng / EXE):
 -            try:
 -                usable = [x for x in amd_gpus() if amd_problem(x) is None]
--                g = next((x for x in usable if x["arch"] in meta.get("archs", [])), usable[0] if usable else None)
+-                g = next((x for x in usable if x["arch"] in arch_names(meta.get("archs"))), usable[0] if usable else None)
 -                if g is None:
 -                    raise RuntimeError("no supported AMD GPU found")
 -                # every architecture it was built for (a layer split across two families keeps both)
--                build_engine_hip({**g, "archs": [x for x in meta.get("archs", []) if x in AMD_ARCHS] or [g["arch"]]},
+-                build_engine_hip({**g, "archs": [x for x in arch_names(meta.get("archs")) if x in AMD_ARCHS] or [g["arch"]]},
 -                                 get_llama_cpp(), meta.get("vision") or "none")
 -            except (Exception, SystemExit) as e:
 -                warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: "
@@ -234,9 +235,9 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -        try:                                           # a failed compile must not stop the model from starting
 -            if gpu is None:
 -                raise RuntimeError("no NVIDIA GPU found")
--            gpu = {**gpu, "archs": sorted({int(gpu["arch"]), *(int(x) for x in meta.get("archs", []))})}
+-            gpu = {**gpu, "archs": sorted({int(gpu["arch"]), *arch_numbers(meta.get("archs"))})}
 -            if int(toolkit) == 12:                     # the cards it was compiled for (the main GPU may be newer)
--                gpu["archs"] = sorted({int(x) for x in meta.get("archs", [])}) or gpu["archs"]
+-                gpu["archs"] = sorted(arch_numbers(meta.get("archs"))) or gpu["archs"]
 -            build_engine(gpu, vision, False, get_llama_cpp(), toolkit=toolkit)
 -        except (Exception, SystemExit) as e:
 -            warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: starting the installed one")
@@ -245,7 +246,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    if gpu is not None:
 -        try:
 -            if int(toolkit) == 12:                     # the cards the CUDA 12 engine serves, not the newest one
--                gpu = {**gpu, "archs": [x for x in (int(a) for a in meta.get("archs", [])) if x < CUDA13_MIN_ARCH]
+-                gpu = {**gpu, "archs": [x for x in arch_numbers(meta.get("archs")) if x < CUDA13_MIN_ARCH]
 -                       or [int(gpu["arch"])]}
 -            new = get_prebuilt(url_base, gpu, "gpu", updating=True, toolkit=toolkit)
 -        except Exception as e:                         # a failed download must not stop the model from starting
@@ -261,7 +262,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -7133,6 +6939,119 @@
+@@ -8160,6 +7966,119 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -381,7 +382,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def mac_vision(asked, model: str, ram: float) -> str:
-@@ -8611,7 +8530,11 @@
+@@ -9726,7 +9645,11 @@
  
  if __name__ == "__main__":
      try:
@@ -395,7 +396,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
          sys.exit(e.exit_code)
 --- a/tools/test_setup_amd.py
 +++ b/tools/test_setup_amd.py
-@@ -153,40 +153,24 @@
+@@ -208,40 +208,24 @@
                          cfg.unlink()
                          (sysroot / "include/hip/hip_runtime.h").unlink()
  
@@ -452,7 +453,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  class WindowsDetection(unittest.TestCase):
 --- a/tools/test_setup_choices.py
 +++ b/tools/test_setup_choices.py
-@@ -336,7 +336,7 @@
+@@ -377,7 +377,7 @@
              if vexe:
                  (eng / setup.VEXE).write_bytes(b"vision")
              src, vsrc = "S", "V"
@@ -461,7 +462,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
              built = []
  
              def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
-@@ -344,21 +344,15 @@
+@@ -385,21 +385,15 @@
                  (bdir / "bin").mkdir(parents=True)
                  (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  
@@ -488,7 +489,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
      def test_without_images_nothing_changes(self):
          built, meta, have = self.build({}, "none")
-@@ -565,7 +559,8 @@
+@@ -606,7 +600,8 @@
                      (bdir / "bin").mkdir(parents=True)
                      (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  

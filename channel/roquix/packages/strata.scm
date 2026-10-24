@@ -19,7 +19,7 @@
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.1/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.4.1/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -36,19 +36,33 @@
 (define %strata-hip-architectures
   '("gfx1030" "gfx1100" "gfx1101" "gfx1200" "gfx1201"))
 
+(define %strata-ca-bundle
+  (computed-file "strata-ca-certificates.crt"
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils) (rnrs io ports))
+          (call-with-output-file #$output
+            (lambda (port)
+              (for-each
+               (lambda (certificate)
+                 (display (call-with-input-file certificate get-string-all)
+                          port))
+               (find-files #$(file-append nss-certs "/etc/ssl/certs")
+                           "\\.pem$"))))))))
+
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.1")
+    (version "0.2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://codeload.github.com/Niko1221/Strata/tar.gz/"
-             "90767252f420e25223c739d604145ad15911d48b"))
+             "c33fa7ba6d0d5b104983736b50c4e1d61f207b1b"))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "0qcaw01mmkqfp67gp8s6fcxs8my20jp6vwj232av8ha8advabwlb"))
+        (base32 "0vsyvybfsix5s18bp8r7i7m4a8y6979bjc4b00pxacdlzj6xi2bw"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-align.patch")
                       (strata-resource-path "strata-hip-sampler.patch")
@@ -119,6 +133,8 @@
           (replace 'check
             (lambda* (#:key tests? inputs #:allow-other-keys)
               (when tests?
+                (setenv "SSL_CERT_FILE"
+                        #$%strata-ca-bundle)
                 ;; Build workers have no GPU; run device tests on the installed
                 ;; package, while keeping CPU and server tests in the build.
                 (invoke "ctest" "--output-on-failure" "-R"
@@ -199,8 +215,7 @@
                                 `("GUIX_PYTHONPATH" ":" prefix
                                   (,(getenv "GUIX_PYTHONPATH")))
                                 `("SSL_CERT_FILE" =
-                                  (,(string-append #$nss-certs
-                                     "/etc/ssl/certs/ca-certificates.crt")))
+                                  (,#$%strata-ca-bundle))
                                 '("PYTHONDONTWRITEBYTECODE" =
                                   ("1")))))
                           '(("strata-setup" "setup.py" "")

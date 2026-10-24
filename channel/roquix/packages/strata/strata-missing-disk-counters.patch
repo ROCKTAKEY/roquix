@@ -1,21 +1,10 @@
-Handle unavailable disk devices in container telemetry and setup tests.
+Check unavailable disk devices in container telemetry and setup tests.
 
-Guix build sandboxes can expose no disk devices.  Preserve the existing
-unknown-measurement representation when psutil returns no counters.
+Guix build sandboxes can expose no disk devices.  The telemetry regression
+checks the unknown-measurement representation when psutil returns no counters.
 The rotational-disk check returns None when sysfs is unavailable; allow
 that result in its integration test without requiring /sys/block.
 
---- a/serve/telemetry.py
-+++ b/serve/telemetry.py
-@@ -301,6 +301,8 @@
-         try:
-             c = self.ps.disk_io_counters()
-         except (OSError, RuntimeError):
-+            return None, None
-+        if c is None:
-             return None, None
-         t = time.time()
-         prev, self._disk_prev = self._disk_prev, (t, c.read_bytes, c.write_bytes)
 --- a/serve/test_server.py
 +++ b/serve/test_server.py
 @@ -1790,6 +1790,16 @@
