@@ -25,7 +25,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  # The desktop app runs this installer under Strata Control (its bundled Python, STRATA_CONTROL_INSTALL=1). The source
  # (tools/, data/, serve/) stays in ROOT, inside the app; everything the install writes (run configs, logs, third_party,
  # the data folder beside it) goes to home(), a per-user folder (STRATA_INSTALL_DIR). In that mode it installs no Python
-@@ -3209,44 +3212,7 @@
+@@ -3278,44 +3281,7 @@
  
  
  def get_llama_cpp():
@@ -71,7 +71,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def req_name(line: str) -> str:
-@@ -3293,28 +3259,7 @@
+@@ -3376,29 +3342,7 @@
  
  
  def pip_install(packages, what, extra=()):
@@ -85,7 +85,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -        ok(f"{what}: bundled with the app")
 -        return
 -    stamp = Path(sys.prefix) / ".strata-pip.json"
--    have = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() else []
+-    have = json.loads(stamp.read_text(encoding="utf-8")) if stamp.exists() and pip_stamp_is_ours(stamp) else []
 -    bare = {p.lower() for p in have if req_name(p) == p.lower()}
 -    need = [p for p in packages if p not in have and req_name(p) not in bare
 -            and not (bare and "==" in p and _installed(req_name(p)))]
@@ -96,12 +96,13 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    say(f"  Installing {what} ...")
 -    run([sys.executable, "-m", "pip", "install", "--quiet", "--disable-pip-version-check", *extra, *need])
 -    stamp.write_text(json.dumps(sorted(set(have) | set(need)), indent=0))
+-    stamp.with_name(stamp.name + ".os").write_text(sys.platform, encoding="utf-8")
 -    ok(f"{what} installed")
 +    ok(f"{what} supplied by Guix")
  
  
  NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
-@@ -4508,61 +4453,8 @@
+@@ -4592,61 +4536,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
@@ -165,7 +166,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def hip_vision(asked, vram_gb: float = 0.0) -> str:
-@@ -5233,94 +5125,8 @@
+@@ -5317,94 +5208,8 @@
  
  
  def update_installed_engine(url_base, toolkit=None) -> None:
@@ -262,7 +263,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -8160,6 +7966,119 @@
+@@ -8306,6 +8111,119 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -382,7 +383,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def mac_vision(asked, model: str, ram: float) -> str:
-@@ -9726,7 +9645,11 @@
+@@ -9873,7 +9791,11 @@
  
  if __name__ == "__main__":
      try:
