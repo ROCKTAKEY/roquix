@@ -17,6 +17,9 @@
   #:use-module (gnu packages serialization)
   #:use-module (srfi srfi-13))
 
+(define %strata-commit
+  "fa663fabc5c2c568d6035b3ae853b38e1762865a")
+
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
   ;; https://github.com/Niko1221/Strata/blob/v0.2.5/third_party/ggml/VERSION.txt
@@ -59,7 +62,7 @@
        (method url-fetch)
        (uri (string-append
              "https://codeload.github.com/Niko1221/Strata/tar.gz/"
-             "fa663fabc5c2c568d6035b3ae853b38e1762865a"))
+             %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
         (base32 "17vwgkqk342xb7k9b3krjcs4x8gx3cawnlgrsm5vfcqpi1qs1lj7"))
@@ -86,7 +89,8 @@
          "-DSTRATA_BUILD_TESTS=OFF"
          "-DSTRATA_BUILD_CONVERSATION_TESTS=ON"
          "-DSTRATA_BUILD_DSV41=ON"
-         "-DSTRATA_BUILD_ID=fa663fabc"
+         #$(string-append "-DSTRATA_BUILD_ID="
+                          (string-take %strata-commit 9))
          "-DSTRATA_PREFILL_MMQ=ON"
          "-DSTRATA_GGML_DIR=../strata-llama-source"
          #$(string-append "-DCMAKE_HIP_ARCHITECTURES="
