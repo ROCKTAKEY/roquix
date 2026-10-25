@@ -1,7 +1,8 @@
 #+title: Strata with AMD HIP
 
 =strata-hip= packages Strata 0.2.5 (engine 0.1.50), its pinned llama.cpp
-sources, model preparation tools, and the local server.  It supports x86_64
+sources, the =strata-dsv41= DeepSeek engine, model preparation tools, and the
+local server.  It supports x86_64
 Linux with AVX2 and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
 =gfx1201=.  This includes the RX 7800 XT (=gfx1101=).  Upstream considers
 =gfx1030= support experimental.
@@ -92,9 +93,53 @@ context limit to match its server.
 
 The package includes text inference.  The optional image encoder is not
 included.  Strata supports Qwen3.8-Flash-Next, Qwen3.6-35B-A3B, and the
-variants listed by =strata-setup --help=; it does not load arbitrary GGUF
-models.  Supported Unsloth quantizations are described in the upstream
+DeepSeek-V4.1-Flash, and the variants listed by =strata-setup --help=; it does
+not load arbitrary GGUF models.  Supported Unsloth quantizations are described in the upstream
 model recommendations linked above.
+
+DeepSeek-V4.1-Flash uses =strata-dsv41=, built for the same HIP architectures
+as =strata=.  Setup selects the packaged executable and ROCm libraries and
+preserves that choice when refreshing existing model configurations.  Engine
+updates come from Guix.
+
+For the official 2.00 bpw set, use an NVMe model directory with at least
+257 GB available for the model, shared Engram table, and DSpark drafter:
+
+#+begin_src sh
+guix shell -L channel strata-hip -- env \
+  STRATA_STATE_DIR="$HOME/.local/share/strata" \
+  strata-setup \
+  --family deepseek41 --model IST-DAS-2.00bpw --context 8192 --port 18098 \
+  --data-dir "$HOME/models/strata" --no-start --yes
+guix shell -L channel strata-hip -- strata-server \
+  --config "$HOME/.local/share/strata/strata-deepseek-v4.1-flash-ist-das-2.00bpw.json" \
+  --host 127.0.0.1 --port 18098 --idle-unload 900
+#+end_src
+
+The =IST-DAS-1.75bpw= and =IST-DAS-2.25bpw= sets need approximately 239 GB
+and 274 GB respectively.  They share the Engram table and drafter.  Setup
+checks the pinned model hashes, prepares the pack, and checks its files and
+a short generated answer before writing the configuration.  RAM, CPU speed,
+and SSD bandwidth affect inference when experts do not fit in VRAM; a
+successful GPU kernel test alone does not establish full-model speed or
+quality.  See the [[https://github.com/Niko1221/Strata/blob/fa663fabc5c2c568d6035b3ae853b38e1762865a/docs/DEEPSEEK41.md][upstream DeepSeek guide]] for model and hardware details.
+
+The installed =libexec/strata/ds4_iq_test= checks DeepSeek's quantized expert
+kernels against CPU reference results using synthetic tensors.  It requires
+a GPU but no model weights:
+
+#+begin_src sh
+strata_package=$(guix build -L channel strata-hip)
+"$strata_package/libexec/strata/ds4_iq_test"
+#+end_src
+
+On the RX 7800 XT (=gfx1101=), the engine uses scalar prompt kernels by
+default.  Keep =STRATA_DS4_HIPK= unset for this path.  The upstream numerical
+test also forces the optional WMMA path: with this release and ROCm 7.1.1,
+its IQ4_XS cross-path output comparison exceeds the test threshold
+(6.72e-3 versus 3e-3), although the individual CPU-reference checks pass.
+The full test therefore exits nonzero on this device; it is not a claim that
+the optional path is validated.
 
 The commands above store model configurations, logs, and run scripts in
 =~/.local/share/strata=.  =STRATA_STATE_DIR= selects this directory;

@@ -64,6 +64,7 @@
        (sha256
         (base32 "17vwgkqk342xb7k9b3krjcs4x8gx3cawnlgrsm5vfcqpi1qs1lj7"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
+                      (strata-resource-path "strata-hip-deepseek.patch")
                       (strata-resource-path "strata-hip-align.patch")
                       (strata-resource-path "strata-hip-sampler.patch")
                       (strata-resource-path "strata-hip-lifeline.patch")
@@ -84,6 +85,8 @@
          "-DSTRATA_PORTABLE=ON"
          "-DSTRATA_BUILD_TESTS=OFF"
          "-DSTRATA_BUILD_CONVERSATION_TESTS=ON"
+         "-DSTRATA_BUILD_DSV41=ON"
+         "-DSTRATA_BUILD_ID=fa663fabc"
          "-DSTRATA_PREFILL_MMQ=ON"
          "-DSTRATA_GGML_DIR=../strata-llama-source"
          #$(string-append "-DCMAKE_HIP_ARCHITECTURES="
@@ -120,6 +123,11 @@
                       "."
                       "--target"
                       "strata"
+                      "strata-dsv41"
+                      "ds4_iq_test"
+                      "ds4_slot_test"
+                      "ds4_experts_rule_test"
+                      "ds4_pick_rule_test"
                       "strata-device"
                       "strata-gguf"
                       "strata-plan"
@@ -139,6 +147,8 @@
                 ;; package, while keeping CPU and server tests in the build.
                 (invoke "ctest" "--output-on-failure" "-R"
                         "^(conversation_(cache|memory)|cgroup_path|file_expert_source)_test$")
+                (for-each (lambda (test) (invoke (string-append "./" test)))
+                          '("ds4_slot_test" "ds4_experts_rule_test" "ds4_pick_rule_test"))
                 (with-directory-excursion (getenv "STRATA_SOURCE_DIR")
                   ;; The Windows ZIP fixture uses strata.exe even on Linux.
                   (invoke "python3" "-c"
@@ -170,7 +180,8 @@
                             (symlink (string-append engine "/" name)
                                      (string-append bin "/" name)))
                           '("strata" "strata-device" "strata-gguf"
-                            "strata-plan"))
+                            "strata-plan" "strata-dsv41"))
+                (install-file "ds4_iq_test" (string-append out "/libexec/strata"))
                 (for-each (lambda (name)
                             (copy-recursively (string-append source "/" name)
                                               (string-append share "/" name)))
@@ -180,6 +191,8 @@
                                           share))
                           '("setup.py" "CMakeLists.txt" "requirements.txt"
                             "LICENSE"))
+                (copy-recursively (string-append source "/third_party/project-maya")
+                                  (string-append share "/third_party/project-maya"))
                 (copy-recursively "../strata-llama-source/gguf-py"
                                   (string-append share
                                    "/third_party/llama.cpp/gguf-py"))
@@ -245,10 +258,11 @@
                   python-psutil))
     (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/Niko1221/Strata")
-    (synopsis "Local Qwen3.8-Flash-Next inference with AMD HIP")
+    (synopsis "Local Qwen and DeepSeek inference with AMD HIP")
     (description
-     "Strata runs Qwen3.8-Flash-Next and supported derivatives using GPU memory,
-system RAM, and SSD storage.  This package provides the AMD HIP engine, model
+     "Strata runs Qwen3.8-Flash-Next, DeepSeek-V4.1-Flash, and supported derivatives
+using GPU memory,
+system RAM, and SSD storage.  This package provides the AMD HIP engines, model
 preparation tools, and a local web server with OpenAI- and Anthropic-compatible
 APIs.  Model weights are downloaded separately into user-selected storage.")
     (license (list license:expat license:silofl1.1))))
