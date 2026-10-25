@@ -16,6 +16,27 @@ Run =guix pull= and use the resulting =guix=.  Roquix's channel metadata makes
 the extension discoverable as =guix extra-profile=; a channel installation
 does not require =GUIX_EXTENSIONS_PATH= or =GUILE_LOAD_PATH=.
 
+* Sway with the JSON-C release fix
+The Sway package in =(roquix packages sway)= uses JSON-C 0.19 with
+[[https://github.com/json-c/json-c/commit/f291fa81c6f21d925ea771a8cca597f5886309cc][the upstream memory leak fix]].  This ensures that nested JSON containers
+are freed in builds with =NDEBUG=, as required for repeated Sway IPC replies.
+
+Select this package explicitly in system or Home configurations:
+
+#+BEGIN_SRC scheme
+(@ (roquix packages sway) sway)
+#+END_SRC
+
+To build it from this checkout:
+
+#+BEGIN_SRC sh
+guix build -L channel -e '(@ (roquix packages sway) sway)'
+#+END_SRC
+
+The patched library is also available as =(@ (roquix packages json-c) json-c)=.
+After installing the Sway package, restart the Sway session to load the
+patched library.
+
 * Bun and OpenCode
 After adding this channel and running =guix pull=, install Bun or OpenCode with:
 
