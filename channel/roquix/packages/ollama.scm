@@ -187,7 +187,18 @@ management of.")
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/zeebo/errs"))
+      #:import-path "github.com/zeebo/errs"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-test-diagnostics
+            (lambda* (#:key import-path #:allow-other-keys)
+              ;; Literal format verbs in t.Fatal messages trigger go vet.
+              ;; https://github.com/zeebo/errs/blob/v1.4.0/errs_test.go#L107-L118
+              (substitute* (string-append "src/" import-path "/errs_test.go")
+                (("%v format contains newline")
+                 "default format contains newline")
+                (("%\\+v format does not contain newline")
+                 "verbose format does not contain newline")))))))
     (home-page "https://github.com/zeebo/errs")
     (synopsis "errs")
     (description
