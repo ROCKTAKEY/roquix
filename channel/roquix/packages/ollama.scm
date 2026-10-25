@@ -1066,7 +1066,6 @@ commonly in arithmetic, comparison and linear algebra operations.")
     (native-inputs %ollama-native-inputs)
     (arguments
      (list
-      #:go go-1.24
       ;; Upstream's selected package tests still include one failing package in
       ;; Guix's GOPATH-style environment after the v0.18 bump.
       #:tests? #f
