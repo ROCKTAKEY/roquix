@@ -1,0 +1,36 @@
+Match WcWidth test expectations to go-runewidth 0.0.30.
+
+Guix provides go-runewidth 0.0.30, whose StringWidth sums rune widths within
+each grapheme cluster, capped at two cells.  The WcWidth expectations for
+flags and an ASCII character followed by a halfwidth voiced sound mark
+must reflect those two-cell widths.  The separate GraphemeWidth tests
+exercise clipperhouse/displaywidth's results.
+
+Source: https://github.com/mattn/go-runewidth/blob/v0.0.30/runewidth.go#L517-L529
+
+diff --git a/ansi/method_test.go b/ansi/method_test.go
+--- a/ansi/method_test.go
++++ b/ansi/method_test.go
+@@ -19,7 +19,7 @@ func TestMethod_StringWidth(t *testing.T) {
+ 		{"wide chars grapheme width", GraphemeWidth, "コンニチハ", 10},
+ 		{"emoji wcwidth", WcWidth, "😀", 2},
+ 		{"emoji grapheme width", GraphemeWidth, "😀", 2},
+-		{"flag emoji wcwidth", WcWidth, "🏳️‍🌈", 1},
++		{"flag emoji wcwidth", WcWidth, "🏳️‍🌈", 2},
+ 		{"flag emoji grapheme width", GraphemeWidth, "🏳️‍🌈", 2},
+ 	}
+ 	for _, tt := range tests {
+diff --git a/ansi/width_test.go b/ansi/width_test.go
+--- a/ansi/width_test.go
++++ b/ansi/width_test.go
+@@ -33,8 +33,8 @@ var cases = []struct {
+ 	{"just_unicode", "Claire’s Boutique", "Claire’s Boutique", 17, 17},
+ 	{"unclosed_ansi", "Hey, \x1b[7m\n猴", "Hey, \n猴", 7, 7},
+ 	{"double_asian_runes", " 你\x1b[8m好.", " 你好.", 6, 6},
+-	{"flag", "🇸🇦", "🇸🇦", 2, 1},
+-	{"half width and ascii", "(ﾟ", "(ﾟ", 1, 1},
++	{"flag", "🇸🇦", "🇸🇦", 2, 2},
++	{"half width and ascii", "(ﾟ", "(ﾟ", 1, 2},
+ }
+ 
+ func TestStrip(t *testing.T) {

@@ -88,20 +88,12 @@ including files, environment variables, flags, and remote configuration.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "01s80fib0cjgbxardgkhpy40xn05wjqyz5ddp856gmsi35qac379"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Guix's go-runewidth sums rune widths within each grapheme, capped
-        ;; at two cells.  These cases encode 0.0.23's first-rune behavior.
-        ;; https://github.com/mattn/go-runewidth/blob/v0.0.30/runewidth.go#L517-L529
-        #~(begin
-            (substitute* "ansi/method_test.go"
-              (("\"flag emoji wcwidth\", WcWidth, \"🏳️\u200d🌈\", 1")
-               "\"flag emoji wcwidth\", WcWidth, \"🏳️\u200d🌈\", 2"))
-            (substitute* "ansi/width_test.go"
-              (("\"flag\",.*2, 1")
-               "\"flag\", \"🇸🇦\", \"🇸🇦\", 2, 2")
-              (("\"half width and ascii\",.*1, 1")
-               "\"half width and ascii\", \"(ﾟ\", \"(ﾟ\", 1, 2"))))))
+       (patches
+        (list (canonicalize-path
+               (search-path
+                %load-path
+                (string-append "roquix/packages/patches/"
+                               "go-github-com-charmbracelet-x-ansi-wc.patch")))))))
     (build-system go-build-system)
     (arguments
      (list
