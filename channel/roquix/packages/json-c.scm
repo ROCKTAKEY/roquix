@@ -4,6 +4,10 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
+(define (json-c-resource path)
+  (canonicalize-path
+   (search-path %load-path (string-append "roquix/packages/" path))))
+
 (define-public json-c
   (package
     (inherit guix:json-c)
@@ -12,9 +16,8 @@
        (inherit (package-source guix:json-c))
        (patches
         (append (origin-patches (package-source guix:json-c))
-                (list (canonicalize-path
-                       (search-path %load-path
-                                    "roquix/packages/patches/json-c-free-outside-assert.patch")))))))
+                (list (json-c-resource
+                       "patches/json-c-free-outside-assert.patch"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments guix:json-c)
        ((#:phases phases #~%standard-phases)
@@ -25,9 +28,8 @@
                   (let ((out (assoc-ref outputs "out")))
                     (invoke "gcc"
                             #$(local-file
-                               (canonicalize-path
-                                (search-path %load-path
-                                             "roquix/packages/aux-files/json-c/check-release.c")))
+                               (json-c-resource
+                                "aux-files/json-c/check-release.c"))
                             (string-append "-I" out "/include")
                             (string-append "-L" out "/lib")
                             (string-append "-Wl,-rpath," out "/lib")
