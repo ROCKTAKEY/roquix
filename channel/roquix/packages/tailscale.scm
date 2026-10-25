@@ -411,7 +411,21 @@ interface that is loosly modeled on the iproute2 cli.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name "go-gvisor-dev-gvisor" version))
        (sha256
-        (base32 "1by1fblmbbg7kbqh4hciysg2jqj87plmfpyyn92ba6aivb1szbyr"))))))
+        (base32 "1by1fblmbbg7kbqh4hciysg2jqj87plmfpyyn92ba6aivb1szbyr"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-gvisor-dev-gvisor)
+       ;; The generated Go module omits examples and some directories present
+       ;; in Guix's release source.  Keep checks scoped to this pinned tree.
+       ((#:test-subdirs _)
+        #~(list "pkg/bits" "pkg/secio" "pkg/binary" "pkg/bitmap"
+                "pkg/fspath" "pkg/hostos" "pkg/cleanup" "pkg/gohacks"
+                "pkg/ringdeque" "pkg/state/wire" "runsc/mitigate"
+                "pkg/sentry/hostcpu" "pkg/tcpip/checksum"
+                "pkg/errors/linuxerr" "pkg/tcpip/hash/jenkins"
+                "pkg/sentry/kernel/sched" "pkg/shim/v1/runtimeoptions"))
+       ((#:phases phases)
+        #~(modify-phases #$phases
+            (delete 'remove-examples)))))))
 
 (define-public go-github-com-tailscale-wireguard-go
   (package
