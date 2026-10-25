@@ -79,7 +79,7 @@ notification area.")
 (define-public go-github-com-go-json-experiment-json
   (package
     (name "go-github-com-go-json-experiment-json")
-    (version "0.0.0-20250813024750-ebf49471dced")
+    (version "0.0.0-20260820222146-c27c302e5fc3")
     (source
      (origin
        (method git-fetch)
@@ -88,7 +88,7 @@ notification area.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13iapgkvclmlxxq5zc8q7c22kmvcdwd7h2jx080p062ffrzmqdi1"))))
+        (base32 "03mg934r3hh94mskcm898pbdrjfjfllhcy2bxx5nzbcpw13s0w9p"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -402,7 +402,7 @@ interface that is loosly modeled on the iproute2 cli.")
 (define-public go-gvisor-dev-gvisor-for-tailscale
   (package
     (inherit go-gvisor-dev-gvisor)
-    (version "0.0.0-20260224225140-573d5e7127a8")
+    (version "0.0.0-20260915211658-a6f909f08a72")
     (source
      (origin
        (method git-fetch)
@@ -411,7 +411,7 @@ interface that is loosly modeled on the iproute2 cli.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name "go-gvisor-dev-gvisor" version))
        (sha256
-        (base32 "1by1fblmbbg7kbqh4hciysg2jqj87plmfpyyn92ba6aivb1szbyr"))))
+        (base32 "0yj7c3jk8infwy730lyxd7c0370zl6fdcp3fjj868aww69mgx3g7"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-gvisor-dev-gvisor)
        ;; The generated Go module omits examples and some directories present
@@ -430,7 +430,7 @@ interface that is loosly modeled on the iproute2 cli.")
 (define-public go-github-com-tailscale-wireguard-go
   (package
     (name "go-github-com-tailscale-wireguard-go")
-    (version "0.0.0-20260715223240-2e01ba5b00f0")
+    (version "0.0.0-20260928213032-417aef361226")
     (source
      (origin
        (method git-fetch)
@@ -439,11 +439,11 @@ interface that is loosly modeled on the iproute2 cli.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hnbszjhsw5bw6l6w01qfmwks93s484i8j9ifjdqwxf9z9z5q910"))))
+        (base32 "1727x4ccvxm1052va5j67pbjg50phcm1q1rnkbjag7cjv363mr80"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:go go-1.25
+      #:go go-1.27
       #:tests? #f
       #:import-path "github.com/tailscale/wireguard-go"))
     (propagated-inputs (list go-golang-org-x-crypto go-golang-org-x-net
@@ -743,7 +743,7 @@ Instance Metadata Service.")
 (define-public go-tailscale-com
   (package
     (name "go-tailscale-com")
-    (version "1.102.4")
+    (version "1.104.2")
     (source
      (origin
        (method git-fetch)
@@ -752,7 +752,7 @@ Instance Metadata Service.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kczp0g2h8clqcagq5bgrfsrr15fgg7q8m6f02sh5x6mvg6a881w"))))
+        (base32 "1gc9n452qgzv30wca73gjyrcxizrblhndk29147zazxhjha0vjdw"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -855,7 +855,7 @@ Instance Metadata Service.")
     (propagated-inputs '())
     (inputs '())
     (arguments (list
-                #:go go-1.26
+                #:go go-1.27
                 #:tests? #f
                 #:install-source? #f
                 #:build-flags
@@ -880,7 +880,7 @@ Instance Metadata Service.")
     (propagated-inputs '())
     (inputs '())
     (arguments (list
-                #:go go-1.26
+                #:go go-1.27
                 #:tests? #f
                 #:install-source? #f
                 #:build-flags
