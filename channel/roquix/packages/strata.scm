@@ -19,7 +19,7 @@
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.4.1/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.5/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -53,16 +53,16 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.4.1")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://codeload.github.com/Niko1221/Strata/tar.gz/"
-             "c33fa7ba6d0d5b104983736b50c4e1d61f207b1b"))
+             "fa663fabc5c2c568d6035b3ae853b38e1762865a"))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "0vsyvybfsix5s18bp8r7i7m4a8y6979bjc4b00pxacdlzj6xi2bw"))
+        (base32 "17vwgkqk342xb7k9b3krjcs4x8gx3cawnlgrsm5vfcqpi1qs1lj7"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-align.patch")
                       (strata-resource-path "strata-hip-sampler.patch")
