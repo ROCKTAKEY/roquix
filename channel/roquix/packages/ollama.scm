@@ -330,80 +330,6 @@ On the server-side, users need to use the GRPCServer type exported by this packa
 of the regular grpc.Server. ")
     (license license:asl2.0)))
 
-;; Needed by go-go-opentelemetry-io-otel-exporters-prometheus for prometheus.NewConstNativeHistogram
-(define-public go-github-com-prometheus-client-golang-1.22.0
-  (package
-    (inherit go-github-com-prometheus-client-golang)
-    (name "go-github-com-prometheus-client-golang")
-    (version "1.22.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/prometheus/client_golang")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "08japwfsl7wlw6z8dkfdrhpgxr2w6frbinn96ksn0izab2h9s5gd"))
-       (modules '((guix build utils)))
-       (snippet #~(begin
-                    ;; Submodules with their own go.mod files and packaged separately:
-                    ;;
-                    ;; - .bingo - fake module
-                    (delete-file-recursively ".bingo")))))
-    ;; Keep the 1.22.0 test configuration instead of inheriting the newer 1.23.x
-    ;; skip list, which causes spurious failures with this older source tree.
-    (arguments
-     (list
-      ;; client_golang 1.22.0 has collector test fixtures only through Go 1.24
-      ;; (tagged "go1.24 && !go1.25"); newer Go versions compile the shared
-      ;; tests without their fixture definitions, causing undefined symbols.
-      #:go go-1.24
-      #:skip-build? #t
-      #:tests? (target-64bit?)
-      #:import-path "github.com/prometheus/client_golang"
-      #:test-flags
-      #~(list "-skip"
-              (string-append
-               "TestHandler"
-               ;; Guix's Go build tree links sources from the store, but this
-               ;; test tries to create a pid file under the source directory.
-               "|TestNewPidFileFn"
-               ;; Go 1.24 exposes additional runtime/metrics and breaks these
-               ;; expectations in the older 1.22.0 release.
-               "|TestGoCollector_ExposedMetrics"
-               "|TestExpectedRuntimeMetrics"
-               "|TestGoCollectorAllowList/allow_all"
-               "|TestGoCollectorAllowList/allow_debug"
-               ;; Newer prometheus/common defaults trigger validation panics in
-               ;; a few older integration/example tests.
-               "|ExampleGatherers"
-               "|TestClientMiddlewareAPI_WithRequestContext"
-               "|TestCollectAndCompare"
-               "|TestCollectAndCompareNoLabel"
-               "|TestCollectAndCompareNoHelp"
-               "|TestCollectAndCompareHistogram"
-               "|TestNoMetricFilter"
-               "|TestMetricNotFound"
-               "|TestScrapeAndCompare"
-               "|TestScrapeAndCompareWithMultipleExpected"
-               "|TestScrapeAndCompareFetchingFail"
-               "|TestScrapeAndCompareBadStatusCode"
-               "|TestCollectAndCount"
-               "|TestCollectAndFormat"
-               #$@(if (not (target-x86-64?))
-                      '("|TestProcessCollector")
-                      '())))
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'remove-examples-and-tutorials
-            (lambda* (#:key import-path #:allow-other-keys)
-              (with-directory-excursion (string-append "src/" import-path)
-                (for-each delete-file-recursively
-                          (list "api/prometheus/v1/example_test.go"
-                                "examples"
-                                "tutorials"))))))))))
-
 (define-public go-go-opentelemetry-io-otel-exporters-prometheus
   (package
     (name "go-go-opentelemetry-io-otel-exporters-prometheus")
@@ -464,7 +390,7 @@ of the regular grpc.Server. ")
                              go-github-com-stretchr-testify
                              go-github-com-prometheus-common
                              go-github-com-prometheus-client-model
-                             go-github-com-prometheus-client-golang-1.22.0
+                             go-github-com-prometheus-client-golang
                              go-github-com-go-logr-logr
                              go-github-com-go-logr-stdr
                              go-github-com-google-uuid
