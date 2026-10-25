@@ -1,3 +1,4 @@
+import argparse
 import importlib.util
 import io
 import json
@@ -7,7 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from contextlib import redirect_stderr
+from contextlib import ExitStack, redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -23,6 +24,7 @@ class SetupTests(unittest.TestCase):
         for name in ("engine", "serve", "tools", "data", "third_party/llama.cpp"):
             (self.package / name).mkdir(parents=True)
         (self.package / "engine/strata").touch()
+        (self.package / "engine/strata-dsv41").touch()
         (self.package / "engine/BUILD.json").write_text(
             json.dumps({"backend": "hip", "archs": ["gfx1101"],
                         "lib_dirs": ["/store/rocm/lib"]})
@@ -156,9 +158,61 @@ class SetupTests(unittest.TestCase):
         self.assertEqual("/user/models/tokenizer", updated["tokenizer"])
 
     def test_setup_rejects_unmanaged_engine_installation_options(self):
-        for arguments in (["--build"], ["--backend", "cuda"], ["--prebuilt", "url"]):
+        for arguments in (["--build"], ["--backend", "cuda"], ["--prebuilt", "url"],
+                          ["--dsv41-package", "engine.tar.gz"]):
             with self.subTest(arguments=arguments):
                 self._assert_request_rejected(arguments)
+
+    def test_package_requires_the_deepseek_engine_before_preparing_state(self):
+        (self.package / "engine/strata-dsv41").unlink()
+        with self.assertRaisesRegex(ValueError, "strata-dsv41"):
+            self.adapter.PackagedStrata.load(self.package)
+
+    def test_refresh_keeps_deepseek_on_its_own_engine(self):
+        prepared = self.adapter.PackagedStrata.load(self.package).prepare(self.root / "state")
+        self.adapter.ROOT = prepared.state
+        path = prepared.state / "strata-deepseek-v4.1-flash-ist-das-2.00bpw.json"
+        config = {"exe": "/old/strata-dsv41", "arch": "deepseek41",
+                  "args": ["--pack", "/models/deepseek"], "tokenizer": "/models/tokenizer"}
+        path.write_text(json.dumps(config))
+        self.adapter.update_installed_engine("https://example.invalid/engine")
+        self.assertEqual({**config, "exe": str(prepared.state / "engine/strata-dsv41"),
+                          "lib_dirs": ["/store/rocm/lib"]}, json.loads(path.read_text()))
+
+    def test_deepseek_setup_uses_packaged_engine_and_libraries(self):
+        prepared = self.adapter.PackagedStrata.load(self.package).prepare(self.root / "state")
+        upstream = self.adapter
+        upstream.ROOT = prepared.state
+        arguments = argparse.Namespace(
+            model="IST-DAS-2.00bpw", models_dir=str(self.root / "models"),
+            gguf_dir=None, context=8192, gpu=None, gpus=None, yes=True,
+            vision="none", rope_scaling=None, rope_scale=None, kv=None,
+            resident_budget_gib=None, low_ram="auto", data_dir=str(self.root / "models"),
+            host=None, api_key=None, browser=None, no_start=True,
+        )
+        gpu = {"index": 0, "name": "RX 7800 XT", "arch": "gfx1101",
+               "vram_gb": 16.0, "vendor": "amd"}
+        with ExitStack() as stack:
+            stack.enter_context(redirect_stdout(io.StringIO()))
+            stack.enter_context(patch.dict(os.environ, {"STRATA_DSV41_EXE": "/unmanaged/engine"}))
+            mocks = {}
+            for name, result in {
+                "free_gb": 900.0, "download": None, "verify_sha256": None,
+                "run": None, "dsv41_pack_info": (True, "all present"),
+                "dsv41_smoke": (True, "Paris"), "write_setup_config": None,
+                "write_run_script": prepared.state / "run.sh",
+            }.items():
+                mocks[name] = stack.enter_context(patch.object(upstream, name, return_value=result))
+            for name in ("get_dsv41_engine", "upgrade_dsv41_engine", "github_reachable"):
+                stack.enter_context(patch.object(upstream, name, side_effect=AssertionError(name)))
+            result = upstream.install_dsv41(arguments, "deepseek41", gpu, True, [], 13,
+                                            [], 18098, 64.0, None, [gpu])
+        self.assertEqual(0, result)
+        config = mocks["write_setup_config"].call_args.args[1]
+        self.assertEqual(str(prepared.state / "engine/strata-dsv41"), config["exe"])
+        self.assertEqual(["/store/rocm/lib"], config["lib_dirs"])
+        self.assertEqual("deepseek41", config["arch"])
+        self.assertEqual(["/store/rocm/lib"], mocks["dsv41_smoke"].call_args.args[2])
 
     def test_setup_defaults_to_the_packaged_text_support(self):
         request = self.adapter.SetupRequest.parse(["--model", "IQ2_XS"])
