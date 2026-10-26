@@ -1,0 +1,37 @@
+Backport the pop() panic-safety fix to the lru 0.16 API used by cryoglyph.
+
+Unlinking before the key destructor prevents dangling list pointers when it
+panics. Keep the existing dependency API rather than changing cryoglyph's
+pre-1.0 dependency constraint.
+
+Upstream: https://github.com/jeromefroe/lru-rs/pull/238
+Commit: 2776ded569ee89a99c515bca8194f65639182c96
+Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0253.html
+
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1283,14 +1283,17 @@
+         match self.map.remove(KeyWrapper::from_ref(k)) {
+             None => None,
+             Some(old_node) => {
+-                let mut old_node = unsafe {
+-                    let mut old_node = *Box::from_raw(old_node.as_ptr());
++                let node_ptr: *mut LruEntry<K, V> = old_node.as_ptr();
++
++                // A key destructor can panic. Unlink the node before freeing it
++                // so unwinding leaves no dangling pointers in the cache list.
++                // https://rustsec.org/advisories/RUSTSEC-2026-0253.html
++                self.detach(node_ptr);
++
++                let mut old_node = unsafe { *Box::from_raw(node_ptr) };
++                unsafe {
+                     ptr::drop_in_place(old_node.key.as_mut_ptr());
+-
+-                    old_node
+-                };
+-
+-                self.detach(&mut old_node);
++                }
+ 
+                 let LruEntry { key: _, val, .. } = old_node;
+                 unsafe { Some(val.assume_init()) }

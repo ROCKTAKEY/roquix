@@ -3066,6 +3066,10 @@
   (crate-source "ctutils" "0.4.3"
                 "0x25mzy56kl9lx2ddcvhfjh6k6qnk54p98fr478q5m3hr4f0xfq3"))
 
+(define rust-ctutils-0.4.4
+  (crate-source "ctutils" "0.4.4"
+                "0rf8ilkxw2wywk5kkj7qgnwqaxfnacjjb4919xqxjdxcrii8c88j"))
+
 (define rust-cty-0.2.2
   (crate-source "cty" "0.2.2"
                 "0d8z0pbr87wgzqqb2jk5pvj0afzc6d3rb772ach6fijhg6yglrdk"))
@@ -17624,7 +17628,7 @@
                              rust-crypto-common-0.2.2
                              rust-csscolorparser-0.6.2
                              rust-ctor-0.10.1
-                             rust-ctutils-0.4.3
+                             rust-ctutils-0.4.4
                              rust-cursor-icon-1.2.0
                              rust-darling-0.24.1
                              rust-darling-core-0.24.1
@@ -18054,7 +18058,7 @@
                              rust-rustls-0.23.46
                              rust-rustls-native-certs-0.8.5
                              rust-rustls-pki-types-1.15.1
-                             rust-rustls-webpki-0.103.15
+                             rust-rustls-webpki-0.103.16
                              rust-rustversion-1.0.23
                              rust-rustybuzz-0.20.1
                              rust-ryu-1.0.23
@@ -18226,7 +18230,7 @@
                              rust-wayland-sys-0.31.11
                              rust-web-sys-0.3.106
                              rust-web-time-1.1.0
-                             rust-webpki-roots-1.0.9
+                             rust-webpki-roots-1.0.10
                              rust-weedle2-5.0.0
                              rust-weezl-0.1.12
                              rust-wezterm-bidi-0.2.3

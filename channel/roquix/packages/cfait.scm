@@ -19,6 +19,10 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
+(define (cfait-resource-path name)
+  (canonicalize-path
+   (search-path %load-path (string-append "roquix/packages/cfait/" name))))
+
 (define-public cfait
   (package
     (name "cfait")
@@ -31,7 +35,13 @@
              "refs/tags/v" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1xvvhz059zlrz5dbc3xb9gwd3qvl0j82rmq4sbbpjl2br49kcjdl"))))
+        (base32 "1xvvhz059zlrz5dbc3xb9gwd3qvl0j82rmq4sbbpjl2br49kcjdl"))
+       ;; Filename expansion permits command injection through TMPDIR/profile
+       ;; paths.  Keep filenames separate from the configured editor command.
+       ;; The lockfile patch pins fixes for RUSTSEC-2026-0381/0382/0385;
+       ;; advisory links and rationale are included in the patches.
+       (patches (list (cfait-resource-path "cfait-editor-arguments.patch")
+                      (cfait-resource-path "cfait-security-dependencies.patch")))))
     (build-system cargo-build-system)
     (arguments
      (list
@@ -41,6 +51,37 @@
       #:features ''("gui")
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'configure 'patch-lru-panic-safety
+            (lambda* (#:key vendor-dir #:allow-other-keys)
+              ;; cryoglyph requires lru 0.16.  Backport the upstream fix without
+              ;; changing its dependency API.  Apply only to Cfait's vendor tree.
+              ;; https://rustsec.org/advisories/RUSTSEC-2026-0253.html
+              (let ((files (find-files vendor-dir
+                                      (lambda (file stat)
+                                        (and (string-contains file
+                                              "/rust-lru-0.16.4.tar.gz/")
+                                             (string-suffix? "/src/lib.rs"
+                                                             file))))))
+                (unless (= (length files) 1)
+                  (error "Expected exactly one lru 0.16.4 source" files))
+                (invoke "patch" "-p1" "--batch" "--forward"
+                        "-d" (dirname (dirname (car files)))
+                        "-i" #$(local-file
+                                (cfait-resource-path
+                                 "lru-pop-panic-safety.patch")))
+                ;; Dependency unit tests are not run by cargo test for Cfait.
+                ;; This standalone test exercises the patched cache invariant
+                ;; using std's HashMap, without adding test-only crate inputs.
+                (mkdir-p "target/guix-security-tests")
+                (invoke "rustc" "--edition=2021" "--crate-name" "lru"
+                        "--crate-type" "rlib" (car files)
+                        "-o" "target/guix-security-tests/liblru.rlib")
+                (invoke "rustc" "--edition=2021" "--test"
+                        #$(local-file
+                           (cfait-resource-path "package-tests/lru-pop.rs"))
+                        "--extern"
+                        "lru=target/guix-security-tests/liblru.rlib"
+                        "-o" "target/guix-security-tests/lru-pop"))))
           (add-after 'configure 'provide-fontconfig-fallback
             (lambda* (#:key vendor-dir #:allow-other-keys)
               ;; fontdb parses XML itself and cannot discover Fontconfig's
@@ -68,6 +109,7 @@
             (lambda* (#:key tests? parallel-build? parallel-tests?
                       #:allow-other-keys)
               (when tests?
+                (invoke "target/guix-security-tests/lru-pop")
                 ;; Upstream omits debug info for its many integration binaries.
                 (setenv "CARGO_PROFILE_TEST_DEBUG" "0")
                 ;; Criterion's harness rejects Guix's --test-threads argument.

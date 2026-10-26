@@ -1,0 +1,49 @@
+Pin compatible security releases for certificate validation and constant-time
+arithmetic. These exact sources must also be present in the cfait cargo-inputs.
+
+https://rustsec.org/advisories/RUSTSEC-2026-0382.html (rustls-webpki)
+https://rustsec.org/advisories/RUSTSEC-2026-0381.html (webpki-roots)
+https://rustsec.org/advisories/RUSTSEC-2026-0385.html (ctutils)
+Upstream status: local lockfile update.
+
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1672,9 +1672,9 @@
+ 
+ [[package]]
+ name = "ctutils"
+-version = "0.4.3"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "03bb0e1cc970d482d121d9a1744999169b69a07470b3d644a7894e53fcaf4574"
++version = "0.4.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "12218662ccac37d9714f2191252553d67585b97df8c839cbe49e0bde278dc865"
+ dependencies = [
+  "cmov",
+ ]
+@@ -6131,9 +6131,9 @@
+ 
+ [[package]]
+ name = "rustls-webpki"
+-version = "0.103.15"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f3c3cf1d8b1e7d4927e2d154c3fcb02979afb9939629c62cd9048d4f07b60ac2"
++version = "0.103.16"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
+ dependencies = [
+  "aws-lc-rs",
+  "ring",
+@@ -7980,9 +7980,9 @@
+ 
+ [[package]]
+ name = "webpki-roots"
+-version = "1.0.9"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7dcd9d09a39985f5344844e66b0c530a33843579125f23e21e9f0f220850f22a"
++version = "1.0.10"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9"
+ dependencies = [
+  "rustls-pki-types",
+ ]

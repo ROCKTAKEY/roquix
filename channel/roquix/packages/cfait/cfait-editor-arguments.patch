@@ -1,0 +1,113 @@
+Keep filenames out of shell source when opening external editors.
+
+TMPDIR and profile paths may contain shell metacharacters or non-UTF-8 bytes.
+The user's editor setting remains a shell command; the filename is a separate
+positional argument shared by CLI, TUI descriptions and configuration editing.
+Includes regression tests for literal paths and editor options.
+Upstream status: local patch.
+Reference: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/sh.html
+
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -15,6 +15,8 @@
+ pub mod config;
+ pub mod context;
+ pub mod controller;
++#[cfg(not(target_os = "windows"))]
++pub mod editor;
+ pub mod help;
+ pub mod i18n;
+ pub mod journal;
+--- /dev/null
++++ b/src/editor.rs
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-3.0-or-later
++use std::path::Path;
++use std::process::Command;
++
++pub fn command(editor: &str, path: &Path) -> Command {
++    let mut command = Command::new("sh");
++    // Editor settings are user-supplied shell commands, but filenames can come
++    // from TMPDIR or the profile root. Passing the path as a positional argument
++    // preserves its bytes and prevents shell expansion of filename contents.
++    // https://pubs.opengroup.org/onlinepubs/9799919799/utilities/sh.html
++    command
++        .arg("-c")
++        .arg(format!("{} \"$1\"", editor))
++        .arg("cfait-editor")
++        .arg(path);
++    command
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn filename_is_literal_with_shell_metacharacters() {
++        let path = Path::new("/tmp/$(printf injected)`printf injected`/\"quoted\" '$HOME'\n文.md");
++        let output = command("printf '%s'", path).output().unwrap();
++        assert!(output.status.success());
++        assert_eq!(output.stdout, path.as_os_str().as_encoded_bytes());
++    }
++
++    #[test]
++    fn editor_options_are_preserved() {
++        let output = command("printf 'editor option: %s'", Path::new("file name.md"))
++            .output()
++            .unwrap();
++        assert!(output.status.success());
++        assert_eq!(output.stdout, b"editor option: file name.md");
++    }
++
++    #[cfg(unix)]
++    #[test]
++    fn non_utf8_filename_is_preserved() {
++        use std::ffi::OsStr;
++        use std::os::unix::ffi::OsStrExt;
++        let path = Path::new(OsStr::from_bytes(b"/tmp/\xff.md"));
++        let output = command("printf '%s'", path).output().unwrap();
++        assert!(output.status.success());
++        assert_eq!(output.stdout, path.as_os_str().as_encoded_bytes());
++    }
++}
+--- a/src/bin/tui.rs
++++ b/src/bin/tui.rs
+@@ -240,10 +240,7 @@
+         .status();
+ 
+     #[cfg(not(target_os = "windows"))]
+-    let status = std::process::Command::new("sh")
+-        .arg("-c")
+-        .arg(format!("{} \"{}\"", cmd, path.display()))
+-        .status();
++    let status = cfait::editor::command(&cmd, &path).status();
+ 
+     let success = status.map(|s| s.success()).unwrap_or(false);
+ 
+--- a/src/tui/handlers.rs
++++ b/src/tui/handlers.rs
+@@ -716,10 +716,7 @@
+         .status();
+ 
+     #[cfg(not(target_os = "windows"))]
+-    let status = std::process::Command::new("sh")
+-        .arg("-c")
+-        .arg(format!("{} \"{}\"", cmd, config_path))
+-        .status();
++    let status = crate::editor::command(&cmd, std::path::Path::new(&config_path)).status();
+ 
+     let _ = crossterm::terminal::enable_raw_mode();
+     let _ = crossterm::execute!(
+@@ -776,10 +773,7 @@
+                 .status();
+ 
+             #[cfg(not(target_os = "windows"))]
+-            let status = std::process::Command::new("sh")
+-                .arg("-c")
+-                .arg(format!("{} \"{}\"", cmd, path.display()))
+-                .status();
++            let status = crate::editor::command(&cmd, &path).status();
+ 
+             let _ = crossterm::terminal::enable_raw_mode();
+             let _ = crossterm::execute!(
