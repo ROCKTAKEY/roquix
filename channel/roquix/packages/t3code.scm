@@ -36,16 +36,16 @@
   #:use-module (srfi srfi-9)
   #:use-module (guix utils)
   #:use-module (guix build-system cargo)
-  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages node)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages zig)
-  #:use-module (nongnu packages electron))
+  #:use-module (nongnu packages electron)
+  #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.1")
+  "0.1.2")
 
 (define %t3code-source
   (origin
@@ -54,7 +54,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "01c9w0i09hhc82cfmym5ki8xva746k7p8lks51bz54vncyxpwrhz"))))
+    (sha256 (base32 "0q8y2qih3d0y7p3sl3xpgalbxvfqn74xsgw2q0w0i4ncs6is1zpj"))))
 
 (define* (native-library name
                          version
@@ -175,35 +175,36 @@
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/rolldown/rolldown/tar.gz/8df421985114ecfaf52cce038d4a5a6ea8c05408")
+     "https://codeload.github.com/rolldown/rolldown/tar.gz/c9a8cda42bc0fdd84c7b4b4e6d7f95ae83e8b5f7")
     (file-name "t3code-vite-plus-rolldown.tar.gz")
-    (sha256 (base32 "1116pwfy847h69ixmzzwsh173bk0x5cnb1q35xk5qhxwcmg6rnlr"))))
+    (sha256 (base32 "04pr1q91jzn493w2si7aqrij6vr4i8yqpgligvwgc2h378flh840"))))
 
 (define %vite-task-source
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/7d69d6577ecf6bd83deee32186de59918a712873")
+     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/9ba4cc93379cf2d7a6c7e657285bb8a00e8339dc")
     (file-name "t3code-vite-task.tar.gz")
-    (sha256 (base32 "0lr4dm73vhd07ns9qyc3g1g8hnbgx7aannbpdhqvyf089gcy8jvn"))))
+    (sha256 (base32 "1244f0crhh4vgaj5acnhjv43iyz55sv7pqp6cy1yh61fbwhgiw9x"))))
 
 (define t3code-vite-plus-native
   (let ((library (native-library "t3code-vite-plus-native"
-                  "1.0.0"
+                  "1.3.0"
                   "voidzero-dev/vite-plus"
-                  "v1.0.0"
-                  "14ji1q21mdv05hawwzfsj5ygdbrgmp72ah3glxdya565l0czzs9a"
+                  "v1.3.0"
+                  "1jljjl01nm1r2gv451hrlzigin8441v7pai06b3d04l06kiyppnb"
                   "."
                   "vite-plus-cli"
                   "libvite_plus_cli.so"
                   "vite-plus.linux-x64-gnu.node"
+                  #:rust rust-1.96
                   #:features '("rolldown"))))
     (package
       (inherit library)
       (arguments
        (substitute-keyword-arguments (package-arguments library)
-         ;; Oxc's declared MSRV is 1.96, but its consumed code builds with
-         ;; Guix's 1.95 compiler after the C-variadic adaptation below.
+         ;; Oxc's consumed code builds with Guix's compiler using the API
+         ;; feature gates and C-variadic adaptation below.
          ((#:cargo-build-flags flags)
           `(append ,flags
                    '("--ignore-rust-version")))
@@ -214,7 +215,7 @@
                   ;; Vite Task's unpublished members omit version requirements,
                   ;; so cargo package cannot normalize them into registry crates.
                   ;; Keep its workspace separate to preserve inherited manifests.
-                  ;; https://github.com/voidzero-dev/vite-task/blob/7d69d6577ecf6bd83deee32186de59918a712873/crates/fspy/Cargo.toml
+                  ;; https://github.com/voidzero-dev/vite-task/blob/9ba4cc93379cf2d7a6c7e657285bb8a00e8339dc/crates/fspy/Cargo.toml
                   (mkdir "rolldown")
                   (invoke "tar"
                           "xf"
@@ -239,9 +240,9 @@
                      "version = \"0.2.0\"")
                     (("git = \"https://github.com/rust-vmm/seccompiler\", rev = \"[^\"]+\"")
                      "version = \"0.5.0\""))
-                  ;; Rust 1.95 exposes C variadics behind a feature gate and
+                  ;; Rust 1.96 exposes C variadics behind a feature gate and
                   ;; names VaList's extraction method arg instead of next_arg.
-                  ;; https://github.com/rust-lang/rust/blob/1.95.0/library/core/src/ffi/va_list.rs
+                  ;; https://github.com/rust-lang/rust/blob/1.96.0/library/core/src/ffi/va_list.rs
                   (let ((preload "../vite-task/crates/fspy_preload_unix/src"))
                     (substitute* (string-append preload "/lib.rs")
                       (("^// Compile")
@@ -263,6 +264,13 @@
                    "guix-vendor/t3code-vite-task.tar.gz")
                   (delete-file-recursively
                    "guix-vendor/t3code-vite-plus-rolldown.tar.gz")))
+              (add-after 'unpack-rust-crates 'enable-integer-bit-width
+                (lambda _
+                  ;; Oxc uses an API still gated in Guix's Rust 1.96.
+                  ;; https://github.com/rust-lang/rust/issues/142326
+                  (substitute* "guix-vendor/rust-oxc-ecmascript-0.154.0.tar.gz/src/lib.rs"
+                    (("^//! Methods defined")
+                     "#![feature(uint_bit_width)]\n//! Methods defined"))))
               (add-after 'configure 'enable-artifact-dependencies
                 (lambda _
                   (let ((port (open-file ".cargo/config" "a")))
@@ -311,30 +319,10 @@
                   "lightningcss.linux-x64-gnu.node"
                   #:license-value license:mpl2.0))
 
-(define pnpm-for-t3code
-  (package
-    (name "pnpm-for-t3code")
-    (version "11.10.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://registry.npmjs.org/pnpm/-/pnpm-" version
-                           ".tgz"))
-       (sha256
-        (base32 "0cblc5s9lzica9mlhgp0441is1vryhrqgafhlrbgqqjgx82nc2v2"))))
-    (build-system copy-build-system)
-    (arguments
-     '(#:install-plan '(("." "lib/pnpm/"))))
-    (home-page "https://pnpm.io")
-    (synopsis "Package manager for T3 Code's locked workspace")
-    (description
-     "This build tool installs the pnpm version selected by T3 Code.")
-    (license license:expat)))
-
 (define electron-for-t3code
   (package
     (inherit electron-41)
-    (version "44.4.5")
+    (version "44.9.3")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -342,7 +330,7 @@
              "https://github.com/electron/electron/releases/download/v"
              version "/electron-v" version "-linux-x64.zip"))
        (sha256
-        (base32 "104pc0akcs33xywhrb9nw6sz0w8zaq7m71ggvbxq6ckcqh76ln04"))))))
+        (base32 "1x3d7v1by6i3nlrs11iycnqy25xxwbk4mkkahixm0hnla3ad4zvf"))))))
 
 (define %ghostty-revision
   "9f62873bf195e4d8a762d768a1405a5f2f7b1697")
@@ -398,27 +386,19 @@
                      (srfi srfi-13))
         #$%t3code-cache-helpers
 
-        (define (fetch-node-modules source output node pnpm)
+        (define (fetch-node-modules source output pnpm-command)
           (setenv "HOME"
                   (string-append (getcwd) "/home"))
           (mkdir-p (getenv "HOME"))
           (unpack-source source)
           (with-directory-excursion "source"
-            (invoke node
-                    pnpm
-                    "--filter"
-                    "@t3tools/desktop..."
-                    "--filter"
-                    "t3..."
-                    "--filter"
-                    "@t3tools/scripts..."
-                    "--filter"
-                    "@t3tools/monorepo"
-                    "install"
-                    "--frozen-lockfile"
-                    "--ignore-scripts"
-                    "--store-dir"
-                    "../store")
+            (invoke pnpm-command
+                    "--filter" "@t3tools/desktop..."
+                    "--filter" "t3..."
+                    "--filter" "@t3tools/scripts..."
+                    "--filter" "@t3tools/monorepo"
+                    "install" "--frozen-lockfile" "--ignore-scripts"
+                    "--store-dir" "../store")
             (mkdir-p output)
             (copy-cache "node_modules"
                         (string-append output "/node_modules"))
@@ -437,11 +417,12 @@
                                              (not (member file
                                                           '("." "..")))))))
                       '("apps" "packages" "infra"))
-            ;; pnpm's shims contain the temporary installation directory.  Normalize
-            ;; it before hashing, then restore it in the build tree.
+            ;; Keep build paths out of the fixed-output hash.  The application
+            ;; build restores the source root and patches the shell shebangs.
             (for-each (lambda (file)
                         (when (string-contains file "/.bin/")
                           (substitute* file
+                            (("^#!/gnu/store/[^/]+/bin/sh") "#!/bin/sh")
                             (((regexp-quote (getcwd)))
                              "@T3CODE_SOURCE_ROOT@"))))
                       (find-files output ".*"))
@@ -463,13 +444,13 @@
         (setenv "SSL_CERT_FILE"
                 #+(file-append nss-certs-for-test
                                "/etc/ssl/certs/ca-certificates.crt"))
-        (fetch-node-modules #+source
-                            #$output
-                            #+(file-append node "/bin/node")
-                            #+(file-append pnpm-for-t3code
-                                           "/lib/pnpm/bin/pnpm.cjs")))))
+        (fetch-node-modules
+         #+source #$output
+         #+(file-append package:pnpm "/bin/pnpm")))))
 
-(define* (t3code-node-modules-fetch ref hash-algo hash
+(define* (t3code-node-modules-fetch ref
+                                    hash-algo
+                                    hash
                                     #:optional name
                                     #:key (system (%current-system))
                                     #:allow-other-keys)
@@ -490,7 +471,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0x74qaq14s75kqly3rrzhgsx0g2bkb0agjv8q7ry0yvim1bsasck"))))
+    (sha256 (base32 "1ssbglv78zi97dmp6q192br9szj5sr4dya507bnldcxb25gn3799"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -869,7 +850,7 @@
               (invoke "vp" "pack"))
             ;; Reuse upstream's asset selection and Linux icon staging without
             ;; running its AppImage/deb packaging and Electron download steps.
-            ;; https://github.com/pingdotgg/t3code/blob/v0.1.1/scripts/build-desktop-artifact.ts
+            ;; https://github.com/pingdotgg/t3code/blob/v0.1.2/scripts/build-desktop-artifact.ts
             (substitute* "scripts/build-desktop-artifact.ts"
               (("^const stageLinuxIcons =")
                "export const stageLinuxIcons ="))
@@ -883,12 +864,11 @@
             ;; GUI/provider suites require a running session or credentials.
             (invoke "vp" "test" "scripts/lib/cli-external-packages.test.ts")
             (with-directory-excursion "apps/web"
-              (invoke "vp" "test" "src/appearanceFonts.test.ts"))
+              (invoke "vp" "test" "src/terminal/ghostty/runtimeAbi.test.ts"))
             (when #$desktop?
               (with-directory-excursion "apps/desktop"
                 (invoke "vp" "test" "scripts/browser-secret-native.test.mjs"
-                        "src/app/DesktopEnvironment.test.ts"
-                        "src/app/DesktopAssets.test.ts")))))
+                        "src/app/DesktopEnvironment.test.ts")))))
 
         (define (install-application inputs output version
                                      dependencies-script)
@@ -1271,8 +1251,8 @@ Electron runtime.")
      (substitute-keyword-arguments (package-arguments t3code)
        ((#:phases phases)
         (t3code-build-phases %t3code-version %ghostty-revision
-                            %t3code-runtime-dependencies-script
-                            #:desktop? #f))))
+                             %t3code-runtime-dependencies-script
+                             #:desktop? #f))))
     (inputs (list (list "node" node)
                   (list "ungoogled-chromium" ungoogled-chromium)
                   (list "t3code-fff-native" t3code-fff-native)
@@ -1294,10 +1274,10 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "161cfef694df9c4a80de9e73529b56ac1ed6986e")
+  "b9c2f962f36d9392936f19791332b156e6b53da3")
 
 (define %t3code-rocktakey-version
-  (git-version "0.1.1" "0" %t3code-rocktakey-commit))
+  (git-version %t3code-version "0" %t3code-rocktakey-commit))
 
 (define %t3code-rocktakey-source
   (origin
@@ -1306,7 +1286,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "1af9aq1vfzrv2yzhiw3frg9bdfjiwc791g7mdj82n3gvpa8x2fgl"))))
+    (sha256 (base32 "1k1fvjyb08zlrn458qmpw9h6jklgy8rwf36pp2b67mlja0f1l799"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
@@ -1322,7 +1302,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
         (t3code-build-phases version %ghostty-revision
                              %t3code-runtime-dependencies-script
                              #:desktop? desktop?))))
-    ;; The lockfile, workspace dependencies, and native sources match 0.1.1.
+    ;; The fork shares the release's lockfile and native dependency sources.
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
                "Desktop coding agents with Codex and OpenCode session sharing"
