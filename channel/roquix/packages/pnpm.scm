@@ -42,39 +42,29 @@
       #:cargo-build-flags ''("--release" "--package" "pnpm-cli")
       #:phases
       #~(modify-phases %standard-phases
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              ;; Handshake caches are process-global; upstream uses nextest to
-              ;; isolate each test from servers reused by other tests.
-              ;; https://github.com/pnpm/pnpm/blob/v12.14.0/.github/workflows/pacquet-ci.yml
-              (when tests?
-                (invoke "cargo" "nextest" "run" "--offline" "--release"
-                        "--package" "pnpm-cli" "--lib" "--no-fail-fast"
-                        "--build-jobs" (number->string (parallel-job-count))
-                        "--test-threads" (number->string (parallel-job-count))))))
-          (add-after 'unpack 'use-guix-shell
-            (lambda _
-              ;; Generated scripts and test fixtures must run in a non-FHS store.
-              (substitute* (find-files "pnpm/crates" "\\.rs$")
-                (("/bin/sh") (which "sh")))))
-          (add-before 'check 'configure-test-certificates
-            (lambda _
-              ;; Reqwest initializes TLS even for the local HTTP mock servers.
-              (setenv "SSL_CERT_DIR" #$(file-append nss-certs "/etc/ssl/certs"))
-              ;; The fallback-readlink test needs helpers from Guix's PATH.
-              (substitute* "pnpm/crates/cli/src/cli_args/setup/tests.rs"
-                (("\"/usr/bin:/bin\"")
-                 "std::env::var_os(\"PATH\").unwrap()"))))
-          (add-after 'unpack 'configure-optimization
-            (lambda _
-              ;; Parallelize optimization across this large CLI workspace.
-              (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")
-              (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")))
           (add-after 'unpack 'use-vendored-semver
             (lambda _
               ;; Keep the fork pinned by Cargo.lock in Guix's offline vendor set.
               (substitute* "Cargo.toml"
                 (("node-semver = \\{ git = [^\n]+\n") ""))))
+          (add-after 'use-vendored-semver 'configure-optimization
+            (lambda _
+              ;; Parallelize optimization across this large CLI workspace.
+              (setenv "CARGO_PROFILE_RELEASE_LTO" "thin")
+              (setenv "CARGO_PROFILE_RELEASE_CODEGEN_UNITS" "16")))
+          (add-after 'configure-optimization 'use-guix-shell
+            (lambda _
+              ;; Generated scripts and test fixtures must run in a non-FHS store.
+              (substitute* (find-files "pnpm/crates" "\\.rs$")
+                (("/bin/sh") (which "sh")))))
+          (add-after 'unpack-rust-crates 'adjust-iterator-msrv
+            (lambda _
+              ;; This iterator inherits its upstream workspace MSRV but uses
+              ;; APIs available in Guix's Rust 1.96.
+              ;; https://docs.rs/crate/tree-sitter-iter/1.29.0/source/src/lib.rs
+              (substitute* "guix-vendor/rust-tree-sitter-iter-1.29.0.tar.gz/Cargo.toml"
+                (("rust-version = \"1.97.0\"")
+                 "rust-version = \"1.96.0\""))))
           (add-before 'build 'bundle-store-loader
             (lambda _
               ;; Rust embeds this loader; generate it with the options from
@@ -102,14 +92,24 @@
                       "--bundle" "--minify" "--platform=node" "--format=esm"
                       "--outfile=pnpm/crates/deps-restorer/src/cas-loader.mjs.inc"
                       "--banner:js=import { createRequire as bootstrapRequire } from 'node:module'; const require = bootstrapRequire(import.meta.url);")))
-          (add-after 'unpack-rust-crates 'adjust-iterator-msrv
+          (add-before 'check 'configure-test-certificates
             (lambda _
-              ;; This iterator inherits its upstream workspace MSRV but uses
-              ;; APIs available in Guix's Rust 1.96.
-              ;; https://docs.rs/crate/tree-sitter-iter/1.29.0/source/src/lib.rs
-              (substitute* "guix-vendor/rust-tree-sitter-iter-1.29.0.tar.gz/Cargo.toml"
-                (("rust-version = \"1.97.0\"")
-                 "rust-version = \"1.96.0\"")))))))
+              ;; Reqwest initializes TLS even for the local HTTP mock servers.
+              (setenv "SSL_CERT_DIR" #$(file-append nss-certs "/etc/ssl/certs"))
+              ;; The fallback-readlink test needs helpers from Guix's PATH.
+              (substitute* "pnpm/crates/cli/src/cli_args/setup/tests.rs"
+                (("\"/usr/bin:/bin\"")
+                 "std::env::var_os(\"PATH\").unwrap()"))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              ;; Handshake caches are process-global; upstream uses nextest to
+              ;; isolate each test from servers reused by other tests.
+              ;; https://github.com/pnpm/pnpm/blob/v12.14.0/.github/workflows/pacquet-ci.yml
+              (when tests?
+                (invoke "cargo" "nextest" "run" "--offline" "--release"
+                        "--package" "pnpm-cli" "--lib" "--no-fail-fast"
+                        "--build-jobs" (number->string (parallel-job-count))
+                        "--test-threads" (number->string (parallel-job-count)))))))))
     (native-inputs (list cargo-nextest pkg-config node esbuild git-minimal))
     (inputs (append (list openssl sqlite-next)
                     (cargo-inputs 'pnpm #:module '(roquix packages rust-crates))))
