@@ -500,3 +500,12 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
                          mock.patch.object(setup, "source_hash", lambda p: "V" if p == setup.VISION_SOURCES else "S"), \
                          mock.patch.object(setup, "install_build_tools", lambda gpu, yes: (str(root / "nvcc"), None)), \
                          mock.patch.object(setup, "source_version", lambda: "test"):
+
+--- a/tools/test_setup_amd.py
++++ b/tools/test_setup_amd.py
+@@ -706,4 +706,5 @@
+ class TdrPointer(unittest.TestCase):
++    @unittest.skipUnless(setup.WIN, "Windows driver documentation does not apply to the Linux HIP package")
+     def test_setup_points_windows_gfx12_to_the_entry(self):
+         src = Path(setup.__file__).read_text(encoding="utf-8")
+         self.assertIn('WIN and str(gpu.get("arch") or "").startswith("gfx12")', src)

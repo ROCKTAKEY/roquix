@@ -1,6 +1,6 @@
 #+title: Strata with AMD HIP
 
-=strata-hip= packages Strata 0.2.5 (engine 0.1.50), its pinned llama.cpp
+=strata-hip= packages Strata 0.2.6 (engine 0.1.51), its pinned llama.cpp
 sources, the =strata-dsv41= DeepSeek engine, model preparation tools, and the
 local server.  It supports x86_64
 Linux with AVX2 and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
@@ -41,7 +41,7 @@ guix shell -L channel strata-hip -- env \
   --data-dir "$HOME/models/strata" --no-start --yes
 #+end_src
 
-The model sources follow [[https://github.com/Niko1221/Strata/blob/fa663fabc5c2c568d6035b3ae853b38e1762865a/docs/MODELS.md][Strata's model recommendations]].  For 64 GB RAM,
+The model sources follow [[https://github.com/Niko1221/Strata/blob/4b9e05a2a806a3fe24f7b2560d98626c37dade35/docs/MODELS.md][Strata's model recommendations]].  For 64 GB RAM,
 upstream recommends =IQ2_XS=.  =IQ3_S= needs more free RAM; =Coder= is the
 coding-oriented variant and setup calls its single available size =IQ1_M=.
 The GGUF files come from the ISTA-DASLab repositories selected by Strata.
@@ -122,7 +122,7 @@ checks the pinned model hashes, prepares the pack, and checks its files and
 a short generated answer before writing the configuration.  RAM, CPU speed,
 and SSD bandwidth affect inference when experts do not fit in VRAM; a
 successful GPU kernel test alone does not establish full-model speed or
-quality.  See the [[https://github.com/Niko1221/Strata/blob/fa663fabc5c2c568d6035b3ae853b38e1762865a/docs/DEEPSEEK41.md][upstream DeepSeek guide]] for model and hardware details.
+quality.  See the [[https://github.com/Niko1221/Strata/blob/4b9e05a2a806a3fe24f7b2560d98626c37dade35/docs/DEEPSEEK41.md][upstream DeepSeek guide]] for model and hardware details.
 
 The installed =libexec/strata/ds4_iq_test= checks DeepSeek's quantized expert
 kernels against CPU reference results using synthetic tensors.  It requires
@@ -176,7 +176,7 @@ OpenAI clients can use =/v1/chat/completions= and =/v1/responses=.
 Responses supports streaming and function tools; clients send the full
 conversation in each request.  The package includes =jsonschema= to validate
 structured answers.  The upstream
-[[https://github.com/Niko1221/Strata/blob/fa663fabc5c2c568d6035b3ae853b38e1762865a/docs/DETAILS.md#the-responses-api-and-codex-cli][Responses and Codex instructions]] describe the provider configuration.
+[[https://github.com/Niko1221/Strata/blob/4b9e05a2a806a3fe24f7b2560d98626c37dade35/docs/DETAILS.md#the-responses-api-and-codex-cli][Responses and Codex instructions]] describe the provider configuration.
 
 In a Guix container, share =/dev/kfd= and =/dev/dri=, expose =/sys=, and share
 the writable state and model directories.  Enable networking for the initial

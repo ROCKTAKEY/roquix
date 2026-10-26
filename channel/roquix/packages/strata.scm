@@ -18,11 +18,11 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "fa663fabc5c2c568d6035b3ae853b38e1762865a")
+  "4b9e05a2a806a3fe24f7b2560d98626c37dade35")
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.5/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.6/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -56,7 +56,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.5")
+    (version "0.2.6")
     (source
      (origin
        (method url-fetch)
@@ -65,7 +65,7 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "17vwgkqk342xb7k9b3krjcs4x8gx3cawnlgrsm5vfcqpi1qs1lj7"))
+        (base32 "1f5ial20gjb1yqch1zbgccb368rhcw5fx9h56hpl2ch0xs7cba9s"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-deepseek.patch")
                       (strata-resource-path "strata-hip-align.patch")
