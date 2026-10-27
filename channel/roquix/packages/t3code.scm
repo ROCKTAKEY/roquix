@@ -45,7 +45,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.2")
+  "0.1.3")
 
 (define %t3code-source
   (origin
@@ -54,7 +54,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0q8y2qih3d0y7p3sl3xpgalbxvfqn74xsgw2q0w0i4ncs6is1zpj"))))
+    (sha256 (base32 "0m8jgp95mz0xzxqq46jpkczba7lnc0qkphclgfr97ikzhr7d98yh"))))
 
 (define* (native-library name
                          version
@@ -175,30 +175,38 @@
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/rolldown/rolldown/tar.gz/c9a8cda42bc0fdd84c7b4b4e6d7f95ae83e8b5f7")
+     "https://codeload.github.com/rolldown/rolldown/tar.gz/89d821ca07cf9ccd84dd92bd3f48af0f579ab21a")
     (file-name "t3code-vite-plus-rolldown.tar.gz")
-    (sha256 (base32 "04pr1q91jzn493w2si7aqrij6vr4i8yqpgligvwgc2h378flh840"))))
+    (sha256 (base32 "1zzirbm7nb5glv2dd7vk95dlyz0ld4w1s72br85gqc4hvyzpshsl"))))
 
 (define %vite-task-source
   (origin
     (method url-fetch)
     (uri
-     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/9ba4cc93379cf2d7a6c7e657285bb8a00e8339dc")
+     "https://codeload.github.com/voidzero-dev/vite-task/tar.gz/a3c087a771a116f7c60220fc72738703eb45ac2e")
     (file-name "t3code-vite-task.tar.gz")
-    (sha256 (base32 "1244f0crhh4vgaj5acnhjv43iyz55sv7pqp6cy1yh61fbwhgiw9x"))))
+    (sha256 (base32 "1f0riijcfdcp1qarkr8pmicq1sbir6a9bc25xd107r4wchf9j4xz"))))
+
+(define %oxc-node-source
+  (origin
+    (method url-fetch)
+    (uri
+     "https://codeload.github.com/oxc-project/oxc-node/tar.gz/4759cedbda87f67ca646d3277166884cfcd62f81")
+    (file-name "t3code-oxc-node.tar.gz")
+    (sha256 (base32 "0gpzvqv7xf7m7ki1c9xvyl0idipiiqj2hwabxw3r1v0i48z1s91h"))))
 
 (define t3code-vite-plus-native
   (let ((library (native-library "t3code-vite-plus-native"
-                  "1.3.0"
+                  "1.4.0"
                   "voidzero-dev/vite-plus"
-                  "v1.3.0"
-                  "1jljjl01nm1r2gv451hrlzigin8441v7pai06b3d04l06kiyppnb"
+                  "v1.4.0"
+                  "0lj19kss17x7mpj7382qz51byk97fpr2jqw18y5qflwp0l5mrlf1"
                   "."
                   "vite-plus-cli"
                   "libvite_plus_cli.so"
                   "vite-plus.linux-x64-gnu.node"
                   #:rust rust-1.96
-                  #:features '("rolldown"))))
+                  #:features '("rolldown" "oxc-node"))))
     (package
       (inherit library)
       (arguments
@@ -215,7 +223,7 @@
                   ;; Vite Task's unpublished members omit version requirements,
                   ;; so cargo package cannot normalize them into registry crates.
                   ;; Keep its workspace separate to preserve inherited manifests.
-                  ;; https://github.com/voidzero-dev/vite-task/blob/9ba4cc93379cf2d7a6c7e657285bb8a00e8339dc/crates/fspy/Cargo.toml
+                  ;; https://github.com/voidzero-dev/vite-task/blob/a3c087a771a116f7c60220fc72738703eb45ac2e/crates/fspy/Cargo.toml
                   (mkdir "rolldown")
                   (invoke "tar"
                           "xf"
@@ -230,6 +238,13 @@
                           "--strip-components=1"
                           "-C"
                           "../vite-task")
+                  (mkdir "oxc-node")
+                  (invoke "tar"
+                          "xf"
+                          (assoc-ref inputs "oxc-node-source")
+                          "--strip-components=1"
+                          "-C"
+                          "oxc-node")
                   (substitute* "Cargo.toml"
                     (("^([a-z_]+) = \\{ git = \"https://github.com/voidzero-dev/vite-task.git\", rev = \"[^\"]+\" \\}"
                       _ name)
@@ -263,12 +278,14 @@
                   (delete-file-recursively
                    "guix-vendor/t3code-vite-task.tar.gz")
                   (delete-file-recursively
-                   "guix-vendor/t3code-vite-plus-rolldown.tar.gz")))
+                   "guix-vendor/t3code-vite-plus-rolldown.tar.gz")
+                  (delete-file-recursively
+                   "guix-vendor/t3code-oxc-node.tar.gz")))
               (add-after 'unpack-rust-crates 'enable-integer-bit-width
                 (lambda _
                   ;; Oxc uses an API still gated in Guix's Rust 1.96.
                   ;; https://github.com/rust-lang/rust/issues/142326
-                  (substitute* "guix-vendor/rust-oxc-ecmascript-0.154.0.tar.gz/src/lib.rs"
+                  (substitute* "guix-vendor/rust-oxc-ecmascript-0.155.0.tar.gz/src/lib.rs"
                     (("^//! Methods defined")
                      "#![feature(uint_bit_width)]\n//! Methods defined"))))
               (add-after 'configure 'enable-artifact-dependencies
@@ -279,6 +296,7 @@
       (native-inputs (list (list "cmake" cmake-minimal)
                            (list "pkg-config" pkg-config)
                            (list "rolldown-source" %rolldown-source)
+                           (list "oxc-node-source" %oxc-node-source)
                            (list "vite-task-source" %vite-task-source)))
       (inputs (append (list (list "zstd" zstd "lib")
                             (list "sqlite" sqlite))
@@ -471,7 +489,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "1ssbglv78zi97dmp6q192br9szj5sr4dya507bnldcxb25gn3799"))))
+    (sha256 (base32 "1i7f3hkbicmsxvnhkzgb0c6vh980y21ymv6fb96nk802b8hcxqic"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1274,7 +1292,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "b9c2f962f36d9392936f19791332b156e6b53da3")
+  "5adfd25379240ba31f86d44c2c94c65381f1d545")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1286,7 +1304,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "1k1fvjyb08zlrn458qmpw9h6jklgy8rwf36pp2b67mlja0f1l799"))))
+    (sha256 (base32 "1xvcs8mhdihfr3fkqbqmp3j4vzyz5rvbrb88zxvlykwaiqb15m4g"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
