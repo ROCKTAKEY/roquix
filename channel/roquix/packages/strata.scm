@@ -18,11 +18,11 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "4b9e05a2a806a3fe24f7b2560d98626c37dade35")
+  "46c152a1310f77cd2f0ce2c7cd213962df14fe83")
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.6/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.7.1/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -56,7 +56,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.6")
+    (version "0.2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -65,12 +65,10 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "1f5ial20gjb1yqch1zbgccb368rhcw5fx9h56hpl2ch0xs7cba9s"))
+        (base32 "1wq1s7s0v7f9fh47x1aawkvz0gapcfjk8ycywhml5acgd6hqw7vq"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-deepseek.patch")
                       (strata-resource-path "strata-hip-align.patch")
-                      (strata-resource-path "strata-hip-sampler.patch")
-                      (strata-resource-path "strata-hip-lifeline.patch")
                       (strata-resource-path "strata-hip-monitor.patch")
                       (strata-resource-path "strata-missing-disk-counters.patch")
                       (strata-resource-path "strata-cgroup-root.patch")))

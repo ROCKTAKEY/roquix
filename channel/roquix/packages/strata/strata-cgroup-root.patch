@@ -22,9 +22,9 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
  // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
  #include "strata/core/expert_source.hpp"
 +#include "strata/core/cgroup_path.hpp"
+ #include "strata/core/expert_nibble.hpp"
  #include "strata/core/foresight_swap.hpp"
  #include "strata/core/on_device.hpp"
- #include "strata/core/remote_experts.hpp"
 @@ -262,7 +263,7 @@
                  if (c == "memory") v1_path = line.substr(c2 + 1);
              continue;
