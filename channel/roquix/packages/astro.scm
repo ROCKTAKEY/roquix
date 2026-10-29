@@ -955,7 +955,7 @@
           (delete 'build)
           (add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
-              (modify-json (delete-fields '(("scripts" "prepare"))
+              (modify-json (delete-fields '(("workspaces") ("scripts" "prepare"))
                                           #:strict? #f)
                            (delete-dependencies '("@rollup/plugin-node-resolve"
                                                   "@rollup/plugin-typescript"
@@ -1699,25 +1699,15 @@
       #:phases
       #~(modify-phases %standard-phases
           (delete 'build)
-          (add-after 'patch-dependencies 'delete-dev-dependencies
+          ;; npm normally supplies this peer dependency from the parent tree.
+          (add-before 'patch-dependencies 'declare-runtime-dependencies
             (lambda _
-              (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
-                           (delete-dependencies '("@ajv-validator/config"
-                                                  "@types/jest"
-                                                  "@types/node"
-                                                  "@typescript-eslint/eslint-plugin"
-                                                  "@typescript-eslint/parser"
-                                                  "ajv-formats"
-                                                  "eslint"
-                                                  "eslint-config-prettier"
-                                                  "husky"
-                                                  "jest"
-                                                  "json-schema-test"
-                                                  "lint-staged"
-                                                  "prettier"
-                                                  "ts-jest"
-                                                  "typescript"
-                                                  "ajv"))))))))
+              (modify-json "package.json"
+                (add-json-fields '((("dependencies" "ajv") . "^8.5.0")))
+                (delete-json-fields '(("devDependencies")
+                                      ("scripts" "prepare"))
+                                    #:strict? #f)))))))
+    (inputs (list node-ajv-8.20.0))
     (home-page "https://github.com/ajv-validator/ajv-draft-04#readme")
     (synopsis "Ajv class for JSON Schema draft-04")
     (description "Ajv class for JSON Schema draft-04")
@@ -1932,6 +1922,14 @@
       #:phases
       #~(modify-phases %standard-phases
           (delete 'build)
+          ;; These imports rely on npm hoisting in the upstream dependency tree.
+          (add-before 'patch-dependencies 'declare-runtime-dependencies
+            (lambda _
+              (modify-json "package.json"
+                (add-json-fields
+                 '((("dependencies" "jsonc-parser") . "^3.3.1")
+                   (("dependencies" "vscode-languageserver-protocol")
+                    . "3.17.5"))))))
           (add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
               (modify-json (delete-fields '(("scripts" "prepare")) #:strict? #f)
@@ -1958,7 +1956,9 @@
                                                   "@typescript-eslint/parser"
                                                   "@typescript-eslint/eslint-plugin"
                                                   "@microsoft/eslint-formatter-sarif"))))))))
-    (inputs (list node-vscode-languageserver-textdocument-1.0.12
+    (inputs (list node-jsonc-parser
+                  node-vscode-languageserver-protocol-3.17.5
+                  node-vscode-languageserver-textdocument-1.0.12
                   node-vscode-languageserver-types-3.17.5
                   node-vscode-json-languageservice-4.1.8
                   node-vscode-languageserver-9.0.1
@@ -2199,17 +2199,7 @@
                                                   "vscode-languageserver-textdocument"
                                                   "astro-scripts"
                                                   "prettier-plugin-astro"
-                                                  "prettier")))))
-          '(add-after 'install 'link-astro-ls
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (target (string-append
-                              out
-                              "/lib/node_modules/@astrojs/language-server"
-                              "/bin/nodeServer.js")))
-                (mkdir-p bin)
-                (symlink target (string-append bin "/astro-ls"))))))))
+                                                  "prettier"))))))))
     (inputs (list node-vscode-uri-3.1.0
                   node-vscode-html-languageservice-5.6.2
                   node-volar-service-yaml-0.0.70
