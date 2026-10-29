@@ -955,8 +955,11 @@
           (delete 'build)
           (add-after 'patch-dependencies 'delete-dev-dependencies
             (lambda _
-              (modify-json (delete-fields '(("workspaces") ("scripts" "prepare"))
-                                          #:strict? #f)
+              ;; The published tarball does not contain the source workspaces.
+              (modify-json "package.json"
+                           (delete-json-fields '(("workspaces")
+                                                 ("scripts" "prepare"))
+                                               #:strict? #f)
                            (delete-dependencies '("@rollup/plugin-node-resolve"
                                                   "@rollup/plugin-typescript"
                                                   "@types/node"
