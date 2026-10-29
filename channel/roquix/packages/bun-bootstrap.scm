@@ -3113,7 +3113,7 @@ if(NOT DOWNLOAD_URL OR NOT DOWNLOAD_PATH)"))))
 (define %bun-1.3.14-webkit-source
   (git-origin "bun-webkit" "https://github.com/oven-sh/WebKit"
               "5488984d20e0dbfe4be2c3ba8fb18eb81a5e0e8b"
-              "10fls25277bg675996z1g80s467phx8ncln6bacl2dsc70gv6pgz"))
+              "1jiq472d33izspikg67c88lirq67p15c5hwmxgq789h5jdpl4p64"))
 
 (define %bun-1.3.14-zig-source
   (git-origin "zig" "https://github.com/oven-sh/zig"
