@@ -45,7 +45,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.3")
+  "0.1.5")
 
 (define %t3code-source
   (origin
@@ -54,7 +54,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0m8jgp95mz0xzxqq46jpkczba7lnc0qkphclgfr97ikzhr7d98yh"))))
+    (sha256 (base32 "0axni19bjbizp9igrkqslb1k5cm1yrxqbs0dn1z12q4z7nrhplr5"))))
 
 (define* (native-library name
                          version
@@ -340,7 +340,7 @@
 (define electron-for-t3code
   (package
     (inherit electron-41)
-    (version "44.9.3")
+    (version "44.10.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -348,7 +348,7 @@
              "https://github.com/electron/electron/releases/download/v"
              version "/electron-v" version "-linux-x64.zip"))
        (sha256
-        (base32 "1x3d7v1by6i3nlrs11iycnqy25xxwbk4mkkahixm0hnla3ad4zvf"))))))
+        (base32 "1i8xxv5djz53vahwnbigl9fii6lmy6zzkmwcl4sjhpq3xxsr7pv2"))))))
 
 (define %ghostty-revision
   "9f62873bf195e4d8a762d768a1405a5f2f7b1697")
@@ -489,7 +489,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "1i7f3hkbicmsxvnhkzgb0c6vh980y21ymv6fb96nk802b8hcxqic"))))
+    (sha256 (base32 "006h2197045bzy60yws67i7lliv8j4qbz7x6rhq4izr3732y8skn"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1295,7 +1295,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
   "5adfd25379240ba31f86d44c2c94c65381f1d545")
 
 (define %t3code-rocktakey-version
-  (git-version %t3code-version "0" %t3code-rocktakey-commit))
+  (git-version "0.1.3" "0" %t3code-rocktakey-commit))
 
 (define %t3code-rocktakey-source
   (origin
@@ -1320,7 +1320,15 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
         (t3code-build-phases version %ghostty-revision
                              %t3code-runtime-dependencies-script
                              #:desktop? desktop?))))
-    ;; The fork shares the release's lockfile and native dependency sources.
+    (native-inputs
+     (modify-inputs (package-native-inputs base)
+       (replace "node-modules"
+         (origin
+           (method t3code-node-modules-fetch)
+           (uri (make-t3code-dependency-reference %t3code-rocktakey-source))
+           (file-name "t3code-rocktakey-node-modules-0.1.3")
+           (sha256
+            (base32 "1i7f3hkbicmsxvnhkzgb0c6vh980y21ymv6fb96nk802b8hcxqic"))))))
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
                "Desktop coding agents with Codex and OpenCode session sharing"

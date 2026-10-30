@@ -77,7 +77,7 @@ try {
   const page = await fetch(base);
   assert.equal(page.status, 200);
   assert.match(await page.text(), /<html/i);
-  const rejected = await fetch(`${base}/api/auth/clients`);
+  const rejected = await fetch(`${base}/api/auth/websocket-ticket`, { method: "POST" });
   assert.equal(rejected.status, 401, "unauthenticated clients must be rejected");
   const credential = startup.match(/^Token: (.+)$/m)[1].trim();
   const session = await fetch(`${base}/api/auth/browser-session`, {
@@ -87,8 +87,10 @@ try {
   });
   assert.equal(session.status, 200, "the startup credential must authorize a browser");
   const cookie = session.headers.get("set-cookie").split(";")[0];
-  const clients = await fetch(`${base}/api/auth/clients`, { headers: { Cookie: cookie } });
-  assert.equal(clients.status, 200);
+  const ticket = await fetch(`${base}/api/auth/websocket-ticket`, {
+    method: "POST", headers: { Cookie: cookie },
+  });
+  assert.equal(ticket.status, 200, "a paired browser can obtain a WebSocket ticket");
   const replay = await fetch(`${base}/api/auth/browser-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
