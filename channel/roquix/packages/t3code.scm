@@ -1292,10 +1292,10 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "5adfd25379240ba31f86d44c2c94c65381f1d545")
+  "c27fe3959e6aa3fbd8e06a8603ff700e62da8d2c")
 
 (define %t3code-rocktakey-version
-  (git-version "0.1.3" "0" %t3code-rocktakey-commit))
+  (git-version %t3code-version "0" %t3code-rocktakey-commit))
 
 (define %t3code-rocktakey-source
   (origin
@@ -1304,7 +1304,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "1xvcs8mhdihfr3fkqbqmp3j4vzyz5rvbrb88zxvlykwaiqb15m4g"))))
+    (sha256 (base32 "0snsp396kk6w94sj0kn2d0hyk622s0xgh1am0wkg3izkirsdpi3k"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
@@ -1320,15 +1320,6 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
         (t3code-build-phases version %ghostty-revision
                              %t3code-runtime-dependencies-script
                              #:desktop? desktop?))))
-    (native-inputs
-     (modify-inputs (package-native-inputs base)
-       (replace "node-modules"
-         (origin
-           (method t3code-node-modules-fetch)
-           (uri (make-t3code-dependency-reference %t3code-rocktakey-source))
-           (file-name "t3code-rocktakey-node-modules-0.1.3")
-           (sha256
-            (base32 "1i7f3hkbicmsxvnhkzgb0c6vh980y21ymv6fb96nk802b8hcxqic"))))))
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
                "Desktop coding agents with Codex and OpenCode session sharing"

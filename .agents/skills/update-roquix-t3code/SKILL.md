@@ -36,10 +36,12 @@ for channel verification.
 3. Identify the fork's base and rebase its feature commits onto the selected
    release tag. Resolve conflicts by preserving Codex and OpenCode session
    sharing against the release's current interfaces. Inspect the resulting
-   commit range, use `git range-diff` where useful, and run the affected fork
-   tests. Account for functionality already supplied by upstream rather than
-   blindly retaining duplicate patches. Verify that the selected release
-   commit is an ancestor of the rebased tip.
+   commit range and use `git range-diff` where useful. Follow the fork
+   checkout's `AGENTS.md` and run `vp run check:changed <release-tag>`; the
+   explicit base includes the rebased feature changes rather than comparing
+   against an unrelated default branch. Account for functionality already
+   supplied by upstream rather than blindly retaining duplicate patches.
+   Verify that the selected release commit is an ancestor of the rebased tip.
 4. Make the rebased revision available at the repository used by the package's
    source URL, within the session's publication authorization. A local-only SHA
    cannot serve as a reproducible codeload source. When rewriting an authorized

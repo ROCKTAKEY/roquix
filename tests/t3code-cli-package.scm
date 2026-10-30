@@ -1,5 +1,4 @@
 (use-modules (gnu packages chromium)
-             (guix base32)
              (guix packages)
              (guix gexp)
              (guix monads)
@@ -42,16 +41,15 @@
      name (package-name package))
    (test-equal "session sharing uses an immutable commit of the requested fork"
      (string-append "https://codeload.github.com/ROCKTAKEY/t3code/tar.gz/"
-                    "5adfd25379240ba31f86d44c2c94c65381f1d545")
+                    "c27fe3959e6aa3fbd8e06a8603ff700e62da8d2c")
      (origin-uri (package-source package)))
    (test-assert "the fork version identifies its pinned revision"
-     (and (string-prefix? "0.1.3-" (package-version package))
-          (string-contains (package-version package) "5adfd25")))
-   (test-equal "the fork retains its own locked JavaScript dependencies"
-     "1i7f3hkbicmsxvnhkzgb0c6vh980y21ymv6fb96nk802b8hcxqic"
-     (bytevector->nix-base32-string
-      (content-hash-value
-       (origin-hash (car (assoc-ref (package-native-inputs package) "node-modules")))))))
+     (and (string-prefix? (string-append (package-version t3code) "-")
+                          (package-version package))
+          (string-contains (package-version package) "c27fe39")))
+   (test-equal "the rebased fork uses the verified release dependency cache"
+     (assoc-ref (package-native-inputs t3code) "node-modules")
+     (assoc-ref (package-native-inputs package) "node-modules")))
  (list t3code-rocktakey t3code-cli-rocktakey)
  '("t3code-rocktakey" "t3code-cli-rocktakey"))
 
