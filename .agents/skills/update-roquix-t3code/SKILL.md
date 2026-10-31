@@ -76,12 +76,19 @@ for channel verification.
   packaging need changes. Preserve source-built addons and the offline
   application build; npm prebuilt native binaries must not bypass them.
 - Match document dependency versions to the source pins in
-  `channel/roquix/packages/t3code-wasm.scm`. Betteroffice needs its matching
+  `channel/roquix/packages/t3code-wasm.scm` (Office and SQL) and
+  `channel/roquix/packages/pdfjs.scm` (PDF.js and its codecs). Shared Emscripten,
+  wasm-bindgen, and Rust WASM sysroots live in
+  `channel/roquix/packages/wasm.scm`. Betteroffice module settings use the
+  validated `wasm-module` constructor. Betteroffice needs its matching
   TypeScript sources and generated wasm-bindgen JavaScript; replacing only
   the WASM can break the binding ABI. Preserve shared source modules and
   worker entry resolution when staging those sources. PDF.js also needs its
-  worker rebuilt against the generated codec bindings. SQL.js's conditional
-  browser export requires the browser build as well as its default entry.
+  worker rebuilt against the generated codec bindings; the codecs have
+  independent derivations. Keep PDF.js's version and commit authoritative for
+  its source, dependency cache, and generated worker metadata.
+  SQL.js's conditional browser export requires the browser build as well as
+  its default entry.
 - Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
   sysroot is a hidden package binding, so an unsuccessful name search does
   not prove its absence. A separately built sysroot must match the compiler;
@@ -112,6 +119,8 @@ Run the repository checks:
 ```sh
 guix repl -L channel -- tests/t3code-cli-package.scm
 guix repl -L channel -- tests/t3code-home-service.scm
+guix repl -L channel -- tests/t3code-wasm-module.scm
+guix repl -L channel -- tests/pdfjs-package.scm
 node --test tests/t3code-runtime-dependencies.mjs tests/t3code-wasm-dependencies.mjs
 ```
 
