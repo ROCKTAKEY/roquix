@@ -29,7 +29,9 @@ to updating an existing installation.
 The npm acquisition derivation runs with network access and verifies the
 upstream lock.  It removes native binaries and precompiled WASM from the
 acquired tree.  Offline builders supply source-built esbuild, Rolldown,
-Tailwind, and Lightning CSS.  Yoga and es-module-lexer compile their WASM
+Tailwind, and Lightning CSS.  Shared native dependencies and their Cargo
+package constructor live in =(roquix packages native-libraries)= so applications
+can reuse them without importing one another's package definitions.  Yoga and es-module-lexer compile their WASM
 from C/C++ with =emscripten-4= from =(roquix packages wasm)=.
 Yoga uses =emcmake= for configuration and =emmake cmake --build= for
 compilation so both steps inherit the toolchain wrappers' isolated include paths.  Vite hashing uses equivalent
@@ -78,6 +80,6 @@ Preserve unrelated Cargo input groups when regenerating that shared module.
 
 Update the application source and Electron/header pins in =hermes.scm=,
 Python source in =hermes-python.scm=, and native Node tools in
-=hermes-node.scm= and =hermes-wasm.scm= together.  The npm source-cache hash includes binary removal
+=hermes-node.scm=, =native-libraries.scm=, and =hermes-wasm.scm= together.  The npm source-cache hash includes binary removal
 and Shiki configuration.  Verify the installed CLI and both GUI variants,
 and run a temporary =guix pull= to check the channel-owned helper paths.

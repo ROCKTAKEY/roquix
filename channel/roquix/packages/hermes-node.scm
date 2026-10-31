@@ -22,12 +22,6 @@
         (modules '((guix build utils)))
         (snippet '(delete-file-recursively "npm"))))))
 
-(define-public hermes-tailwind-native
-  tailwindcss-oxide)
-
-(define-public hermes-vite-lightningcss-native
-  lightningcss-native)
-
 (define-public hermes-lightningcss-native
   (native-library
     "hermes-lightningcss" "1.32.0" "parcel-bundler/lightningcss"

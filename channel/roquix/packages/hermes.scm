@@ -22,6 +22,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (nongnu packages electron)
   #:use-module (roquix packages hermes-python)
+  #:use-module (roquix packages native-libraries)
   #:use-module (roquix packages hermes-node)
   #:use-module (roquix packages hermes-wasm))
 
@@ -188,11 +189,11 @@
                  "node_modules/@esbuild/linux-x64/bin/esbuild")
       (copy-file #$(file-append hermes-rolldown-native "/lib/rolldown-binding.linux-x64-gnu.node")
                  "node_modules/@rolldown/binding-linux-x64-gnu/rolldown-binding.linux-x64-gnu.node")
-      (copy-file #$(file-append hermes-tailwind-native "/lib/tailwindcss-oxide.linux-x64-gnu.node")
+      (copy-file #$(file-append tailwindcss-oxide "/lib/tailwindcss-oxide.linux-x64-gnu.node")
                  "node_modules/@tailwindcss/oxide-linux-x64-gnu/tailwindcss-oxide.linux-x64-gnu.node")
       (copy-file #$(file-append hermes-lightningcss-native "/lib/lightningcss.linux-x64-gnu.node")
                  "node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node")
-      (copy-file #$(file-append hermes-vite-lightningcss-native "/lib/lightningcss.linux-x64-gnu.node")
+      (copy-file #$(file-append lightningcss-native "/lib/lightningcss.linux-x64-gnu.node")
                  "node_modules/vite/node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node")))
 
 (define-public hermes
