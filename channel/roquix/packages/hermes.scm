@@ -1,6 +1,7 @@
 (define-module (roquix packages hermes)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module ((guix licenses)
@@ -9,11 +10,13 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages node)
@@ -50,9 +53,13 @@
     (sha256 (base32 "1qb4schnlvhwr90qsbdwkv6vsn3avn940wwh5rzrb8873p3qdfsx"))))
 
 (define (hermes-node-modules-builder source)
-  (with-imported-modules '((guix build utils))
+  (with-extensions (list guile-gcrypt)
+    (with-imported-modules
+      (source-module-closure '((roquix packages hermes node-sources))
+        #:select? (lambda (name) (memq (car name) '(guix roquix))))
                          #~(begin
                              (use-modules (guix build utils)
+                                          (roquix packages hermes node-sources)
                                           (ice-9 ftw))
                              (setenv "PATH"
                                      (string-append #+node
@@ -61,9 +68,7 @@
                                                     "/bin:"
                                                     #+gzip
                                                     "/bin:"
-                                                    #+bash-minimal
-                                                    "/bin:"
-                                                    #+python "/bin"))
+                                                    #+bash-minimal "/bin"))
                              (setenv "HOME"
                                      (string-append (getcwd) "/home"))
                              (mkdir-p (getenv "HOME"))
@@ -121,11 +126,9 @@
                                              "ui-tui/node_modules"
                                              "ui-tui/packages/hermes-ink/node_modules"
                                              "web/node_modules"))
-                                 (invoke "python3"
-                                         #+(hermes-file "sanitize-node-sources.py")
-                                         #$output)
+                                 (sanitize-node-sources #$output)
                                  (delete-file (string-append #$output
-                                               "/node_modules/.package-lock.json")))))))
+                                               "/node_modules/.package-lock.json"))))))))
 
 (define* (hermes-node-modules-fetch source
                                     hash-algo
@@ -207,9 +210,11 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix packages hermes staging))
+                  (roquix packages hermes staging)
+                  (roquix packages hermes check))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (guix base64))
+                           (roquix packages hermes staging) (roquix packages hermes check)
+                           (guix base64) (guix build syscalls))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)
@@ -255,10 +260,10 @@
           (add-after 'install 'check-installed
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
-                (invoke "python3"
-                        #$(hermes-file "check-cli.py")
-                        (string-append #$output "/bin/hermes")
-                        #$version))))))))
+                (check-cli (string-append #$output "/bin/hermes")
+                           #$(file-append hermes-python "/bin/python3")
+                           #$(file-append curl "/bin/curl")
+                           #$version))))))))
     (native-inputs (list (list "hermes-python" hermes-python)))
     (inputs (list (list "hermes-python" hermes-python)
                   (list "hermes-frontends" hermes-frontends)

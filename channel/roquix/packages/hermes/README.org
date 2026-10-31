@@ -28,6 +28,11 @@ to updating an existing installation.
 
 Package assembly lives in =(roquix packages hermes staging)=: source placement,
 installation metadata, dependency links, and insertion of source-built WASM.
+=node-sources.scm= removes downloaded native code, =python-build.scm= controls
+Python dependency builds and uses Guix's wheel installer, and =check.scm=
+checks the installed CLI and gateway.  The Python dependency bridge reads
+upstream TOML with Python's parser and calls Python build-backend APIs;
+Maturin invocation and installation are controlled by Scheme.
 The CLI launcher bridge calls Hermes's own Python entry-point generator so its
 launcher contract stays aligned with the upstream application.
 
@@ -55,6 +60,7 @@ connection to the packaged gateway.
 #+begin_src sh
 python3 tests/hermes-source-inputs.py
 guix repl -L channel -- tests/hermes-build.scm
+guix repl -L channel -- tests/hermes-node-sources.scm
 guix repl -L channel -- tests/hermes-package.scm
 guix build -L channel hermes hermes-desktop hermes-desktop-light
 guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \

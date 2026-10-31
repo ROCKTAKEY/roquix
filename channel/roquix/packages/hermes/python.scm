@@ -2,6 +2,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (guix modules)
+  #:use-module (gnu packages guile)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (roquix packages hermes python-inputs)
@@ -80,6 +82,9 @@
      (list ((@@ (gnu packages python) guix-pythonpath-search-path) version)))))
 
 
+(define hermes-python-wrapper
+  ((@@ (gnu packages python) wrap-python3) hermes-python))
+
 (define %dependency-builder
   (local-file (canonicalize-path
     (search-path %load-path "roquix/packages/hermes/build-python-dependency.py"))))
@@ -95,12 +100,17 @@
        (build-system gnu-build-system)
        (arguments
         (list
-         #:imported-modules %cargo-build-system-modules
+         #:imported-modules
+         (append %cargo-build-system-modules
+                 (source-module-closure '((roquix packages hermes python-build))
+                   #:select? (lambda (name) (memq (car name) '(guix roquix)))))
          #:modules '((guix build gnu-build-system)
                      ((guix build cargo-build-system) #:prefix cargo:)
-                     (guix build utils) (ice-9 match) (srfi srfi-1))
+                     (guix build utils) (roquix packages hermes python-build)
+                     (ice-9 match) (srfi srfi-1))
          #:phases
-         #~(modify-phases %standard-phases
+         (with-extensions (list guile-json-4)
+           #~(modify-phases %standard-phases
              (delete 'configure)
              ;; The installed Hermes check exercises the assembled dependency set.
              (delete 'check)
@@ -113,8 +123,10 @@
                      (append-map
                        (match-lambda
                          ((_ . directory)
-                          (find-files (string-append directory "/lib")
-                            "^site-packages$" #:directories? #t)))
+                          (if (false-if-exception (file-is-directory? (string-append directory "/lib")))
+                              (find-files (string-append directory "/lib")
+                                "^site-packages$" #:directories? #t)
+                              '())))
                        inputs) ":"))
                  (setenv "CARGO_BUILD_JOBS" (number->string (parallel-job-count)))
                  (setenv "CARGO_PROFILE_RELEASE_DEBUG" "0")
@@ -133,12 +145,14 @@
                     '())
              (replace 'build
                (lambda _
-                 (invoke #$(file-append hermes-python "/bin/python3")
-                         #$%dependency-builder #$output)))
-             (delete 'install))))
+                 (build-python-dependency
+                  #$(file-append hermes-python "/bin/python3") #$%dependency-builder)))
+             (replace 'install
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (install-python-dependency inputs outputs #$hermes-python-wrapper)))))))
        (native-inputs
         (append
-          (list pkg-config hermes-python python-setuptools python-setuptools-scm
+          (list pkg-config hermes-python hermes-python-wrapper python-setuptools python-setuptools-scm
                 python-wheel python-hatch-fancy-pypi-readme python-hatchling python-hatch-vcs python-flit-core
                 python-pdm-backend python-poetry-core python-packaging python-pycparser
                 python-cython)
