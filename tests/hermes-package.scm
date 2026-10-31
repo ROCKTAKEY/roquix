@@ -1,4 +1,5 @@
 (use-modules (guix packages)
+             (guix build-system pyproject)
              (srfi srfi-1)
              (srfi srfi-64))
 
@@ -44,7 +45,7 @@
   (let* ((runtime (module-ref (resolve-module '(roquix packages hermes)) 'hermes-python))
          (uri (origin-uri (package-source runtime))))
     (and (string? uri) (string-prefix? "https://www.python.org/ftp/python/" uri))))
-(test-assert "Python dependencies use source distributions or existing Guix packages"
+(test-assert "Python dependencies use source archives, Git, or existing Guix packages"
   (every
     (lambda (package)
       (let ((uri (origin-uri (package-source package))))
@@ -52,6 +53,11 @@
             (and (not (string-contains uri ".whl"))
                  (not (string-contains uri "install_only"))))))
     (@ (roquix packages hermes python) hermes-python-dependencies)))
+(test-assert "new Python dependencies use the standard pyproject build system"
+  (every (lambda (package)
+           (or (not (string-prefix? "hermes-python-" (package-name package)))
+               (eq? pyproject-build-system (package-build-system package))))
+         (@ (roquix packages hermes python) hermes-python-dependencies)))
 (test-assert "WASM builders reuse the shared Emscripten package"
   (every (lambda (p)
            (any (lambda (input)

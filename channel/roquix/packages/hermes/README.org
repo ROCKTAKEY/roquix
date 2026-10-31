@@ -28,11 +28,12 @@ to updating an existing installation.
 
 Package assembly lives in =(roquix packages hermes staging)=: source placement,
 installation metadata, dependency links, and insertion of source-built WASM.
-=node-sources.scm= removes downloaded native code, =python-build.scm= controls
-Python dependency builds and uses Guix's wheel installer, and =check.scm=
-checks the installed CLI and gateway.  The Python dependency bridge reads
-upstream TOML with Python's parser and calls Python build-backend APIs;
-Maturin invocation and installation are controlled by Scheme.
+=node-sources.scm= removes downloaded native code, and =check.scm= checks the
+installed CLI and gateway.  Python dependencies in =python.scm= use Guix's
+=pyproject-build-system= and its wheel installer.  =python-build.scm= makes
+Guix's pure Python build backends available to the interpreter defined in
+=interpreter.scm=.  Rust extensions use Maturin with offline Cargo inputs;
+package-specific phases handle source generation and Hermes's dependency overrides.
 The CLI launcher bridge calls Hermes's own Python entry-point generator so its
 launcher contract stays aligned with the upstream application.
 
@@ -58,7 +59,8 @@ The native GUI test checks this contract as well as the regular Desktop's
 connection to the packaged gateway.
 
 #+begin_src sh
-python3 tests/hermes-source-inputs.py
+guix shell python python-packaging -- python3 tests/hermes-source-inputs.py
+guix repl -L channel -- tests/hermes-python-import.scm
 guix repl -L channel -- tests/hermes-build.scm
 guix repl -L channel -- tests/hermes-node-sources.scm
 guix repl -L channel -- tests/hermes-package.scm
@@ -69,29 +71,43 @@ guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \
   /gnu/store/…-hermes-desktop-light/bin/hermes-desktop-light light
 #+end_src
 
-* Updating Python source inputs
+* Updating Python dependencies
 
 Export core requirements from the upstream source with =uv export --frozen
 --no-dev --no-emit-project --format requirements-txt -o requirements.txt=.
-Use an empty source directory to fetch the source distributions selected for
-CPython 3.14 on x86_64 Linux, verify them against =uv.lock=, and regenerate the
-source-input module:
+Generate draft Scheme definitions with Guix's PyPI importer:
 
 #+begin_src sh
-guix shell python python-packaging -- \
-  python3 scripts/update-hermes-python-inputs.py \
-  /path/to/hermes/uv.lock /path/to/empty-source-directory VERSION \
-  channel/roquix/packages/hermes/python-inputs.scm \
-  --requirements /path/to/requirements.txt
+guix shell python python-packaging tar gzip unzip -- \
+  guix repl -L channel -- scripts/update-hermes-python-inputs.scm \
+  /path/to/hermes/uv.lock /path/to/requirements.txt \
+  > /tmp/hermes-python-draft.scm
 #+end_src
 
-The generator rejects source archives whose hashes differ from the lock.
-For each Rust extension, import its =Cargo.lock= into the shared
-=rust-crates.scm= using the group name recorded in =python-inputs.scm=.
-Preserve unrelated Cargo input groups when regenerating that shared module.
+=python-lock.py= reads TOML and evaluates requirement markers for CPython 3.14
+on x86_64 Linux using Python's =tomllib= and =packaging= APIs.
+=python-import.scm= calls the same importer as =guix import pypi NAME@VERSION=.
+It checks imported versions against the lock and compares PyPI source hashes.
+Git origins retain the importer's revision and content hash; a Git snapshot
+has different content from the source distribution recorded in =uv.lock=.
+
+Review the drafts before incorporating definitions into =python.scm=.  Reuse
+existing Guix packages when the locked version and Python compatibility match.
+The importer produces a starting definition: build dependencies, Python markers,
+license metadata, native libraries, and Hermes's =tool.uv.override-dependencies=
+need review.  Keep runtime inputs within the selected lock closure and use
+=python-arguments= for the packaged interpreter.  Build-backend inputs can reuse
+Guix's pure Python packages.  The firecrawl-anydoc 0.2.4 importer encounters a
+Git homepage fragment that Guix cannot use as a store name; its definition uses
+the hash-checked source distribution from the lock.
+
+For each Rust extension, import the release's =Cargo.lock= into
+=../rust-crates.scm=.  Use the release sdist's lock when its Git repository omits
+one; offline Cargo resolution is restricted to those pinned crate sources.
+The =#:cargo-group= argument in the definition names that dependency group.  Preserve unrelated groups when regenerating the shared module.
 
 Update the application source and Electron/header pins in =../hermes.scm=,
-Python source in =python.scm=, and native Node tools in
+Python source in =interpreter.scm=, and native Node tools in
 =node.scm=, =../node-xyz.scm=, and =wasm.scm= together.  The npm source-cache hash includes binary removal
 and Shiki configuration.  Verify the installed CLI and both GUI variants,
 and run a temporary =guix pull= to check the channel-owned helper paths.
