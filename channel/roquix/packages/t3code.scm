@@ -42,6 +42,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages zig)
   #:use-module (nongnu packages electron)
+  #:use-module (roquix packages t3code-wasm)
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
@@ -643,6 +644,11 @@
   (local-file (canonicalize-path (search-path %load-path
                   "roquix/packages/aux-files/t3code-runtime-dependencies.mjs"))))
 
+(define %t3code-wasm-dependencies-script
+  (local-file (canonicalize-path
+               (search-path %load-path
+                            "roquix/packages/aux-files/t3code-wasm-dependencies.mjs"))))
+
 (define %t3code-stage-linux-icons-script
   (local-file (canonicalize-path (search-path %load-path
                   "roquix/packages/aux-files/t3code-stage-linux-icons.mjs"))))
@@ -784,6 +790,11 @@
                   (string-append (getcwd) "/node_modules/.bin:"
                                  (getenv "PATH")))
           (replace-native-dependencies inputs)
+          (invoke "node" #$%t3code-wasm-dependencies-script (getcwd)
+                  #$t3code-betteroffice-docx-wasm
+                  #$t3code-betteroffice-sheets-wasm
+                  #$t3code-sql-wasm
+                  #$t3code-pdfjs-wasm)
           (patch-native-files "node_modules" inputs)
           (mkdir "spdx")
           (invoke "tar"
@@ -1087,6 +1098,17 @@
                 ("true")))))
 
         (modify-phases %standard-phases
+          (add-after 'validate-runpath 'check-source-built-wasm
+            (lambda* (#:key tests? outputs #:allow-other-keys)
+              (when tests?
+                (invoke "node"
+                        #$(file-append %t3code-installed-tests "/check-wasm.mjs")
+                        (assoc-ref outputs "out")
+                        #$t3code-betteroffice-docx-wasm
+                        #$t3code-betteroffice-sheets-wasm
+                        #$t3code-sql-wasm
+                        #$t3code-pdfjs-wasm
+                        "apps/web/src/terminal/ghostty/vendor"))))
           (add-after 'validate-runpath 'check-installed
             (lambda* (#:key tests? inputs outputs #:allow-other-keys)
               (when tests?
