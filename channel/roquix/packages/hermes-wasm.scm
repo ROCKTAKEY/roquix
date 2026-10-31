@@ -1,4 +1,5 @@
 (define-module (roquix packages hermes-wasm)
+  #:use-module (roquix packages wasm)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -13,58 +14,11 @@
   #:use-module (gnu packages web)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define %emscripten-source
-  (origin
-    (method url-fetch)
-    (uri "https://codeload.github.com/emscripten-core/emscripten/tar.gz/3.1.59")
-    (file-name "emscripten-3.1.59.tar.gz")
-    (sha256 (base32 "192jy4cij1q59g611vjc6s0l1idca3ixkk74npi0spphqip6zwjm"))))
-
 (define %prepare-emscripten
   #~(lambda _
-      ;; Cross-compilation must use Emscripten's libc and C++ headers.
-      (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH" "OBJC_INCLUDE_PATH"
-                           "CPATH" "LIBRARY_PATH"))
-      (mkdir "emscripten")
-      (invoke "tar" "xf" #$%emscripten-source "--strip-components=1" "-C" "emscripten")
-      (mkdir-p "llvm/bin")
-      (for-each (lambda (directory)
-                  (for-each (lambda (file)
-                              (let ((target (string-append "llvm/bin/" (basename file))))
-                                (unless (file-exists? target) (symlink file target))))
-                            (find-files directory ".*")))
-                (list #$(file-append llvm-19 "/bin")
-                      #$(file-append clang-19 "/bin")
-                      #$(file-append lld-19 "/bin")))
       (setenv "HOME" (getcwd))
-      (setenv "EM_CONFIG" (string-append (getcwd) "/emscripten.config"))
       (setenv "EM_CACHE" (string-append (getcwd) "/emscripten-cache"))
-      ;; Guix Clang has native libc paths compiled into its defaults. Keep
-      ;; those out of the wasm target, including Emscripten's library builds.
-      (for-each
-        (lambda (compiler)
-          (let ((wrapper (string-append "llvm/bin/" compiler)))
-            (delete-file wrapper)
-            (call-with-output-file wrapper
-              (lambda (port)
-                (format port "#!~a/bin/bash~%exec ~a/bin/~a -Wno-unused-command-line-argument -nostdinc ~a -isystem ~s -isystem ~s -isystem ~s \"$@\"~%"
-                        #$bash-minimal #$clang-19 compiler
-                        (if (string=? compiler "clang++")
-                            (string-append "-isystem " (getenv "EM_CACHE") "/sysroot/include/c++/v1") "")
-                        (string-append (getenv "EM_CACHE") "/sysroot/include/compat")
-                        #$(file-append clang-19 "/lib/clang/19/include")
-                        (string-append (getenv "EM_CACHE") "/sysroot/include"))))
-            (chmod wrapper #o755)))
-        '("clang" "clang++"))
-      (setenv "EMCC_CORES" (number->string (parallel-job-count)))
-      (symlink #$(file-append node-acorn "/lib/node_modules") "emscripten/node_modules")
-      (setenv "NODE_PATH" #$(file-append node-acorn "/lib/node_modules"))
-      (call-with-output-file (getenv "EM_CONFIG")
-        (lambda (port)
-          (format port "LLVM_ROOT = ~s~%BINARYEN_ROOT = ~s~%NODE_JS = [~s]~%"
-                  (string-append (getcwd) "/llvm/bin")
-                  #$binaryen #$(file-append node "/bin/node"))))
-      (setenv "PATH" (string-append (getcwd) "/emscripten:" (getenv "PATH")))))
+      (setenv "EMCC_CORES" (number->string (parallel-job-count)))))
 
 (define-public hermes-yoga-wasm
   (package
@@ -91,7 +45,7 @@
                   ((".*--memory-init-file.*") ""))
                 (invoke "emcmake" "cmake" "-S" "javascript" "-B" "wasm-build")))
             (replace 'build
-              (lambda _ (invoke "cmake" "--build" "wasm-build" "-j"
+              (lambda _ (invoke "emmake" "cmake" "--build" "wasm-build" "-j"
                                 (number->string (parallel-job-count)))))
             (replace 'check
               (lambda* (#:key tests? #:allow-other-keys)
@@ -104,7 +58,7 @@
                 (mkdir-p #$output)
                 (copy-file "javascript/binaries/yoga-wasm-base64-esm.js"
                            (string-append #$output "/yoga-wasm-base64-esm.js")))))))
-    (native-inputs (list python cmake-minimal node))
+    (native-inputs (list emscripten-4 python cmake-minimal node))
     (home-page "https://www.yogalayout.dev/")
     (synopsis "Source-built Yoga WebAssembly for Hermes Ink")
     (description "This package builds Yoga's JavaScript binding and embedded WebAssembly from C++ sources with Guix's LLVM and Binaryen tools.")

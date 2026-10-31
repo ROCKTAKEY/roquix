@@ -52,6 +52,13 @@
             (and (not (string-contains uri ".whl"))
                  (not (string-contains uri "install_only"))))))
     (@ (roquix packages hermes-python) hermes-python-dependencies)))
+(test-assert "WASM builders reuse the shared Emscripten package"
+  (every (lambda (p)
+           (any (lambda (input)
+                  (eq? (cadr input) (@ (roquix packages wasm) emscripten-4)))
+                (package-native-inputs p)))
+         (list (@ (roquix packages hermes-wasm) hermes-yoga-wasm)
+               (@ (roquix packages hermes-wasm) hermes-es-module-lexer-wasm))))
 (define failures
   (test-runner-fail-count (test-runner-current)))
 (test-end "hermes-package")
