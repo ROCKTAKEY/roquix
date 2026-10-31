@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 const root = mkdtempSync(tmpdir() + "/hermes-gui-");
 const log = [];
@@ -85,48 +85,36 @@ try {
     targetId: target.targetId,
     flatten: true,
   });
-  let state;
-  for (let i = 0; i < 150; i++) {
-    state = (
-      await call(
-        "Runtime.evaluate",
-        {
-          expression:
-            "JSON.stringify({title:document.title,text:document.body.innerText,url:location.href})",
-          returnByValue: true,
-        },
-        sessionId,
-      )
-    ).result;
-    if (state.value) {
-      const d = JSON.parse(state.value);
-      if (d.text.length > 150) {
-        console.log(JSON.stringify(d));
-        break;
-      }
-    }
-    await pause(200);
-  }
-  if (!state.value || JSON.parse(state.value).text.length < 150)
-    throw Error("renderer has no interface");
-  await pause(3000);
-  state = (
-    await call(
+  const readPage = async () => {
+    const { result } = await call(
       "Runtime.evaluate",
       {
         expression:
-          "JSON.stringify({title:document.title,text:document.body.innerText,url:location.href})",
+          "({title:document.title,text:document.body.innerText,url:location.href})",
         returnByValue: true,
       },
       sessionId,
-    )
-  ).result;
+    );
+    return result.value;
+  };
+  let state;
+  for (let i = 0; i < 150; i++) {
+    state = await readPage();
+    if (state?.text.length > 150) {
+      console.log(JSON.stringify(state));
+      break;
+    }
+    await pause(200);
+  }
+  assert(state?.text.length > 150, "renderer has no interface");
+  await pause(3000);
+  state = await readPage();
   if (process.argv[3] === "light") {
     assert(
-      !JSON.parse(state.value).text.includes("Install Hermes locally"),
+      !state.text.includes("Install Hermes locally"),
       "Light must not offer a local install",
     );
-    assert(JSON.parse(state.value).text.includes("Gateway URL"));
+    assert(state.text.includes("Gateway URL"));
     const refusal = await call(
       "Runtime.evaluate",
       {
@@ -160,15 +148,8 @@ try {
     console.log("Backend connection:", connection.result.value);
     let ready = false;
     for (let attempt = 0; attempt < 450; attempt++) {
-      const page = await call(
-        "Runtime.evaluate",
-        {
-          expression: "document.body.innerText",
-          returnByValue: true,
-        },
-        sessionId,
-      );
-      if (page.result.value?.includes("What should I call you?")) {
+      const page = await readPage();
+      if (page?.text.includes("What should I call you?")) {
         ready = true;
         break;
       }
@@ -187,6 +168,20 @@ try {
 } finally {
   writeFileSync(root + "/launch.log", log.join(""));
   console.log("LOG=" + root + "/launch.log");
+  // The gateway detaches from Electron; only terminate the disposable home's PID.
+  try {
+    const { pid } = JSON.parse(readFileSync(root + "/hermes/gateway.pid", "utf8"));
+    const environment = readFileSync(`/proc/${pid}/environ`, "utf8").split("\0");
+    if (
+      Number.isSafeInteger(pid) &&
+      pid > 1 &&
+      environment.includes("HERMES_HOME=" + root + "/hermes")
+    ) {
+      process.kill(pid, "SIGTERM");
+    }
+  } catch (error) {
+    if (!["ENOENT", "ESRCH"].includes(error.code)) throw error;
+  }
   for (const child of children.reverse()) {
     try {
       if (child.spawnargs[0] === "dbus-run-session")
