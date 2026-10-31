@@ -30,7 +30,9 @@ The npm acquisition derivation runs with network access and verifies the
 upstream lock.  It removes native binaries and precompiled WASM from the
 acquired tree.  Offline builders supply source-built esbuild, Rolldown,
 Tailwind, and Lightning CSS.  Yoga and es-module-lexer compile their WASM
-from C/C++ with Guix LLVM and source Emscripten.  Vite hashing uses equivalent
+from C/C++ with =emscripten-4= from =(roquix packages wasm)=.
+Yoga uses =emcmake= for configuration and =emmake cmake --build= for
+compilation so both steps inherit the toolchain wrappers' isolated include paths.  Vite hashing uses equivalent
 JavaScript implementations.  Shiki uses its JavaScript regex engine throughout
 the desktop and web UI.  Application compilation runs in ordinary
 offline Guix builders.  Node PTY bindings use the headers of the packaged Electron

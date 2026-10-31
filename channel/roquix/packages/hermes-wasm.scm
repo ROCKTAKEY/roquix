@@ -4,17 +4,12 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages cmake)
-  #:use-module (gnu packages llvm)
   #:use-module (gnu packages node)
-  #:use-module (gnu packages node-xyz)
-  #:use-module (gnu packages web)
   #:use-module ((guix licenses) #:prefix license:))
 
-(define %prepare-emscripten
+(define %prepare-wasm-cache
   #~(lambda _
       (setenv "HOME" (getcwd))
       (setenv "EM_CACHE" (string-append (getcwd) "/emscripten-cache"))
@@ -35,7 +30,7 @@
       (list
         #:phases
         #~(modify-phases %standard-phases
-            (add-after 'unpack 'prepare-emscripten #$%prepare-emscripten)
+            (add-after 'unpack 'prepare-emscripten #$%prepare-wasm-cache)
             (replace 'configure
               (lambda _
                 ;; Closure only minifies the JS loader; esbuild handles that
@@ -44,6 +39,8 @@
                   (("--closure 1") "--closure 0")
                   ((".*--memory-init-file.*") ""))
                 (invoke "emcmake" "cmake" "-S" "javascript" "-B" "wasm-build")))
+            ;; CMake calls Emscripten's internal compiler path directly.
+            ;; emmake keeps host include paths out of those child processes.
             (replace 'build
               (lambda _ (invoke "emmake" "cmake" "--build" "wasm-build" "-j"
                                 (number->string (parallel-job-count)))))
@@ -61,7 +58,7 @@
     (native-inputs (list emscripten-4 python cmake-minimal node))
     (home-page "https://www.yogalayout.dev/")
     (synopsis "Source-built Yoga WebAssembly for Hermes Ink")
-    (description "This package builds Yoga's JavaScript binding and embedded WebAssembly from C++ sources with Guix's LLVM and Binaryen tools.")
+    (description "This package builds Yoga's JavaScript binding and embedded WebAssembly from C++ sources using the shared Guix Emscripten toolchain.")
     (license license:expat)))
 
 (define-public hermes-es-module-lexer-wasm
@@ -80,7 +77,7 @@
         #:phases
         #~(modify-phases %standard-phases
             (delete 'configure)
-            (add-after 'unpack 'prepare-emscripten #$%prepare-emscripten)
+            (add-after 'unpack 'prepare-emscripten #$%prepare-wasm-cache)
             (replace 'build
               (lambda _
                 (mkdir-p "lib")
@@ -109,4 +106,5 @@
                 (copy-file "lib/lexer.wasm" (string-append #$output "/lexer.wasm"))
                 (copy-file "lib/lexer.min.wasm" (string-append #$output "/lexer.min.wasm")))))))
     (home-page "https://github.com/guybedford/es-module-lexer")
-    (synopsis "Source-built ECMAScript module lexer WebAssembly")))
+    (synopsis "Source-built ECMAScript module lexer WebAssembly")
+    (description "This package compiles the full and minimal ECMAScript module lexers from C source for use by their JavaScript loaders.")))
