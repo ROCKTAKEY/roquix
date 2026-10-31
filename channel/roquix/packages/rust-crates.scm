@@ -26877,7 +26877,7 @@
                                              rust-zvariant-5.15.0
                                              rust-zvariant-derive-5.15.0
                                              rust-zvariant-utils-4.2.0))
-                     (t3code-lightningcss-native =>
+                     (lightningcss-native =>
                                                  (list rust-ahash-0.7.8
                                                   rust-ahash-0.8.12
                                                   rust-aho-corasick-1.1.3
@@ -27500,7 +27500,7 @@
                                         rust-wasm-bindgen-macro-0.2.100
                                         rust-wasm-bindgen-macro-support-0.2.100
                                         rust-wasm-bindgen-shared-0.2.100))
-                     (t3code-tailwind-native =>
+                     (tailwindcss-oxide =>
                                              (list rust-aho-corasick-1.1.3
                                               rust-arrayvec-0.7.6
                                               rust-bexpand-1.2.0

@@ -42,6 +42,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages zig)
   #:use-module (nongnu packages electron)
+  #:use-module (roquix packages native-libraries)
   #:use-module (roquix packages t3code-wasm)
   #:use-module (roquix packages pdfjs)
   #:use-module ((roquix packages pnpm) #:prefix package:))
@@ -57,63 +58,6 @@
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
     (sha256 (base32 "0axni19bjbizp9igrkqslb1k5cm1yrxqbs0dn1z12q4z7nrhplr5"))))
-
-(define* (native-library name
-                         version
-                         repository
-                         commit
-                         hash
-                         directory
-                         member
-                         library
-                         filename
-                         #:key (tests? #f)
-                         (rust rust-1.95)
-                         (features '())
-                         (license-value license:expat))
-  (package
-    (name name)
-    (version version)
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://codeload.github.com/" repository
-                           "/tar.gz/" commit))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 hash))))
-    (build-system cargo-build-system)
-    (arguments
-     (list
-      #:rust rust
-      #:install-source? #f
-      #:features `',features
-      ;; Node-API addons need a Node host. Runtime APIs are exercised by
-      ;; the application's check-installed phase; build tools run during its build.
-      #:tests? tests?
-      #:cargo-build-flags `'("--release" "--package"
-                             ,member)
-      #:cargo-test-flags `'("--package" ,member "--lib")
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'enter-library
-            (lambda _
-              (chdir #$directory)))
-          (replace 'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((destination (string-append (assoc-ref outputs "out")
-                                                "/lib")))
-                (mkdir-p destination)
-                (copy-file #$(string-append "target/release/" library)
-                           (string-append destination "/"
-                                          #$filename))))))))
-    (inputs (cargo-inputs (string->symbol name)
-                          #:module '(roquix packages rust-crates)))
-    (home-page (string-append "https://github.com/" repository))
-    (synopsis "Native library for T3 Code")
-    (description
-     "This package builds a native T3 Code dependency from source.")
-    (license license-value)))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -315,29 +259,6 @@
                   "liboxc_transform_react_napi.so"
                   "transform-react.linux-x64-gnu.node"
                   #:rust rust-1.96))
-
-(define t3code-tailwind-native
-  (native-library "t3code-tailwind-native"
-                  "4.3.3"
-                  "tailwindlabs/tailwindcss"
-                  "v4.3.3"
-                  "0vmyl9fxx2ykvva58s19gkjm9w8l1hgdvcnayvl8fljhjcjcw0p7"
-                  "."
-                  "tailwind-oxide"
-                  "libtailwind_oxide.so"
-                  "tailwindcss-oxide.linux-x64-gnu.node"))
-
-(define t3code-lightningcss-native
-  (native-library "t3code-lightningcss-native"
-                  "1.33.0"
-                  "parcel-bundler/lightningcss"
-                  "1d680fa14e9a089c92dc0929f869d6757ae91c30"
-                  "1d0vwp2135ibqgyz803czrjslg6hvd2sn2440n2pybxaym17ydxb"
-                  "."
-                  "lightningcss_node"
-                  "liblightningcss_node.so"
-                  "lightningcss.linux-x64-gnu.node"
-                  #:license-value license:mpl2.0))
 
 (define electron-for-t3code
   (package
@@ -753,8 +674,8 @@
                                              ("xa11y.linux-x64-gnu.node" . "t3code-xa11y-native")
                                              ("vite-plus.linux-x64-gnu.node" . "t3code-vite-plus-native")
                                              ("transform-react.linux-x64-gnu.node" . "t3code-oxc-transform-react-native")
-                                             ("tailwindcss-oxide.linux-x64-gnu.node" . "t3code-tailwind-native")
-                                             ("lightningcss.linux-x64-gnu.node" . "t3code-lightningcss-native"))))))
+                                             ("tailwindcss-oxide.linux-x64-gnu.node" . "tailwindcss-oxide")
+                                             ("lightningcss.linux-x64-gnu.node" . "lightningcss-native"))))))
             ;; Drop unused native tools and optional accelerators too: a transitive
             ;; loader must never silently select an npm prebuild as a fallback.
             (for-each delete-file
@@ -1249,8 +1170,8 @@
                      ("hicolor-icon-theme" ,hicolor-icon-theme)
                      ("imagemagick" ,imagemagick)
                      ("t3code-oxc-transform-react-native" ,t3code-oxc-transform-react-native)
-                     ("t3code-tailwind-native" ,t3code-tailwind-native)
-                     ("t3code-lightningcss-native" ,t3code-lightningcss-native)
+                     ("tailwindcss-oxide" ,tailwindcss-oxide)
+                     ("lightningcss-native" ,lightningcss-native)
                      ("pkg-config" ,pkg-config)
                      ("patchelf" ,patchelf)
                      ("zig" ,zig-0.15)

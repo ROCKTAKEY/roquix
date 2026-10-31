@@ -7,7 +7,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages cmake)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (roquix packages t3code))
+  #:use-module (roquix packages native-libraries))
 
 (define-public hermes-esbuild
   (package
@@ -23,13 +23,13 @@
         (snippet '(delete-file-recursively "npm"))))))
 
 (define-public hermes-tailwind-native
-  (@@ (roquix packages t3code) t3code-tailwind-native))
+  tailwindcss-oxide)
 
 (define-public hermes-vite-lightningcss-native
-  (@@ (roquix packages t3code) t3code-lightningcss-native))
+  lightningcss-native)
 
 (define-public hermes-lightningcss-native
-  ((@@ (roquix packages t3code) native-library)
+  (native-library
     "hermes-lightningcss" "1.32.0" "parcel-bundler/lightningcss"
     "7f8a861bdee476fe90c89a8badeb3fd33a99c51a"
     "1611hkr07zg56ck2gabi65n3m5ifvcikmbq5v46czadigf51yidr"
@@ -38,7 +38,7 @@
 
 (define-public hermes-rolldown-native
   (let ((base
-         ((@@ (roquix packages t3code) native-library)
+         (native-library
            "hermes-rolldown" "1.2.13" "rolldown/rolldown" "v1.2.13"
            "016g64x7yrky5vjaw0hqvbvs6mw60ncydda984knih1zvk8kcbgj"
            "." "rolldown_binding" "librolldown_binding.so"
