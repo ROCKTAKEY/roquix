@@ -641,21 +641,16 @@
       (inherit helper)
       (native-inputs (list dbus)))))
 
-(define %t3code-runtime-dependencies-script
+(define %t3code-dependency-selector
   (local-file (canonicalize-path (search-path %load-path
-                  "roquix/packages/aux-files/t3code-runtime-dependencies.mjs"))))
-
-(define %t3code-office-sources-script
-  (local-file (canonicalize-path
-               (search-path %load-path
-                            "roquix/packages/aux-files/t3code-office-sources.mjs"))))
+                  "roquix/packages/aux-files/t3code-select-runtime-dependencies.mjs"))))
 
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
                   "roquix/packages/aux-files/t3code/package-tests/check-installed")))
               #:recursive? #t))
 
-(define* (t3code-build-phases version ghostty-revision dependencies-script
+(define* (t3code-build-phases version ghostty-revision dependency-selector
                               #:key (desktop? #t))
   (with-extensions (list guile-json-4)
     #~(let ()
@@ -791,8 +786,7 @@
              (lambda (entry)
                (for-package (string-append "@betteroffice/" (car entry))
                  (lambda (target)
-                   (invoke "node" #$%t3code-office-sources-script
-                           target (cdr entry)))))
+                   (install-office-sources target (cdr entry)))))
              (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
                    (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
                    (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
@@ -939,7 +933,7 @@
                         "src/app/DesktopEnvironment.test.ts")))))
 
         (define (install-application inputs output version
-                                     dependencies-script)
+                                     dependency-selector)
           (let* ((appdir (string-append output "/lib/t3code"))
                  (resources (string-append appdir "/resources"))
                  (application (string-append resources "/app"))
@@ -961,8 +955,7 @@
                          (string-append appdir "/t3code"))
             (chmod (string-append appdir "/t3code") #o755)
             (mkdir-p resources)
-            (invoke "node" dependencies-script
-                    (getcwd) application)
+            (stage-runtime-dependencies (getcwd) application dependency-selector)
             (for-each (lambda (directory)
                         (copy-recursively directory
                                           (string-append
@@ -1073,10 +1066,11 @@
              '(("t3code.desktop" . "Categories=Development;\nStartupWMClass=t3code\n")
                ("com.t3tools.T3Code.desktop" . "NoDisplay=true\n")))))
 
-        (define (install-cli inputs output dependencies-script)
+        (define (install-cli inputs output dependency-selector)
           (let* ((application (string-append output "/lib/t3code-cli"))
                  (bin (string-append output "/bin")))
-            (invoke "node" dependencies-script (getcwd) application "cli")
+            (stage-runtime-dependencies (getcwd) application dependency-selector
+                                        #:variant "cli")
             (copy-recursively "apps/server/dist"
                               (string-append application "/apps/server/dist"))
             (copy-file "apps/server/package.json"
@@ -1216,9 +1210,9 @@
                   (install-application inputs
                                        (assoc-ref outputs "out")
                                        #$version
-                                       #$dependencies-script)
+                                       #$dependency-selector)
                   (install-cli inputs (assoc-ref outputs "out")
-                               #$dependencies-script))))
+                               #$dependency-selector))))
           (add-after 'install 'wrap-desktop
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (when #$desktop?
@@ -1235,6 +1229,7 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
+                  (roquix build t3code-dependencies)
                   (guix elf)
                   (json)
                   (ice-9 ftw)
@@ -1245,9 +1240,10 @@
                   (srfi srfi-13))
       #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build syscalls)
+                           (roquix build t3code-dependencies)
                            (guix elf))
       #:phases (t3code-build-phases version %ghostty-revision
-                                    %t3code-runtime-dependencies-script)))
+                                    %t3code-dependency-selector)))
     (native-inputs `(("t3code-vite-plus-native" ,t3code-vite-plus-native)
                      ("xvfb-run" ,xvfb-run)
                      ("hicolor-icon-theme" ,hicolor-icon-theme)
@@ -1330,7 +1326,7 @@ Electron runtime.")
      (substitute-keyword-arguments (package-arguments t3code)
        ((#:phases phases)
         (t3code-build-phases %t3code-version %ghostty-revision
-                             %t3code-runtime-dependencies-script
+                             %t3code-dependency-selector
                              #:desktop? #f))))
     (inputs (list (list "node" node)
                   (list "ungoogled-chromium" ungoogled-chromium)
@@ -1379,7 +1375,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
      (substitute-keyword-arguments (package-arguments base)
        ((#:phases phases)
         (t3code-build-phases version %ghostty-revision
-                             %t3code-runtime-dependencies-script
+                             %t3code-dependency-selector
                              #:desktop? desktop?))))
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?

@@ -90,8 +90,11 @@ for channel verification.
   SQL.js's conditional browser export requires the browser build as well as
   its default entry.
   Keep ordinary dependency staging and Linux icon generation in Scheme phases.
-  JavaScript helpers handle Office source transformations and npm dependency
-  resolution, where package metadata and upstream JavaScript APIs are needed.
+  `(roquix build t3code-dependencies)` handles Office source conversion and
+  runtime dependency copying and linking. The small JavaScript selector calls
+  upstream dependency-selection APIs and returns JSON; keep those policies
+  authoritative in upstream rather than duplicating them in Scheme. Preserve
+  JSON object order when rewriting conditional exports (`#:ordered #t`).
 - Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
   sysroot is a hidden package binding, so an unsuccessful name search does
   not prove its absence. A separately built sysroot must match the compiler;
@@ -149,8 +152,9 @@ single-use pairing credentials as well, and keep credentials out of logs.
 The installed WASM check compares module hashes with declared source-build
 outputs and rejects Windows or macOS executables. Its expected count must
 follow the selected release's actual assets. Run staging regressions with the
-package's Node version too: directory permissions preserved by `cpSync` can
-differ from the Node version in the working shell.
+package's Node version too: these tests exercise upstream selection and Node
+resolution through the Scheme staging implementation, including distinct peer
+closures, cycles, and read-only Office sources.
 
 Verify both variant-specific functionality and shared runtime contracts.
 Run relevant lint and `git diff --check`. Use a temporary-profile `guix pull`
