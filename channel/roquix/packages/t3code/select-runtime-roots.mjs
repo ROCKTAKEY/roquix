@@ -1,3 +1,9 @@
+// Bridge from staging.scm to the pinned T3 Code source's dependency selectors.
+// The upstream selectors determine which packages remain external to the bundles;
+// calling them keeps packaging aligned with that release's bundling policy.
+// Arguments are the source root and cli/desktop variant. Stdout is the JSON list
+// of workspace names and dependency roots used by Scheme to stage their closures.
+
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";

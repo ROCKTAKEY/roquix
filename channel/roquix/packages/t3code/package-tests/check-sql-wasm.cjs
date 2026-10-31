@@ -1,3 +1,8 @@
+// SQL.js build check run by t3code-wasm.scm from the SQL.js source directory.
+// T3 Code uses both the default and browser entry points with an explicit WASM
+// binary. A database round trip through each entry verifies that both generated
+// JavaScript loaders work with the source-built module in dist/.
+
 const assert = require("node:assert/strict");
 const { readFileSync } = require("node:fs");
 const path = require("node:path");

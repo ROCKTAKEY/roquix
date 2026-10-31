@@ -1,3 +1,8 @@
+;;; Betteroffice WASM build configuration consumed by t3code-wasm.scm.
+;;; Each record ties a Cargo crate and its features to the binding filename and
+;;; location expected by the TypeScript sources. The constructor checks identifiers
+;;; and relative destination components before they enter build commands and paths.
+
 (define-module (roquix packages t3code wasm-module)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)

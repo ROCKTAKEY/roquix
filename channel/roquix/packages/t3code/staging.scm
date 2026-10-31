@@ -1,3 +1,10 @@
+;;; T3 Code build-phase helpers used by t3code.scm.
+;;; Betteroffice consumers need TypeScript sources paired with the generated WASM
+;;; bindings. Installed Node consumers need their own resolved dependency closures,
+;;; since pnpm can assign different peer versions to different consumers. These
+;;; helpers prepare both trees; select-runtime-roots.mjs supplies the upstream
+;;; policy for choosing the runtime dependency roots.
+
 (define-module (roquix packages t3code staging)
   #:use-module (guix build utils)
   #:use-module (ice-9 popen)

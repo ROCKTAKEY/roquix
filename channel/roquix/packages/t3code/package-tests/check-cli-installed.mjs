@@ -1,3 +1,9 @@
+// CLI installation contract checks run by t3code.scm with the output path,
+// native-modules.mjs path, and expected version. A temporary home and restricted
+// PATH expose dependencies on the build environment. The local server and browser
+// pairing checks verify that the installed Web UI and authentication flow work
+// together, including rejection of reused startup credentials.
+
 import assert from "node:assert/strict";
 import { execFileSync, spawn } from "node:child_process";
 import { once } from "node:events";

@@ -1,3 +1,8 @@
+;;; GIO menu probe launched by check-installed with a GIO library and the expected
+;;; launcher executable. The caller supplies an isolated XDG data environment.
+;;; Enumerating visible applications through GIO checks that desktop-entry aliases
+;;; and user overrides still expose exactly one menu item for this executable.
+
 (use-modules (system foreign))
 
 (define gio (dynamic-link (cadr (command-line))))

@@ -1,3 +1,9 @@
+// Electron renderer probe launched by check-installed with the package output
+// as its final argument. It loads the installed CSS and measures code glyphs in
+// a hidden window: Fontconfig matching alone cannot establish that Chromium
+// renders the packaged code style with equal-width glyphs. The caller supplies
+// a writable temporary application directory for the generated HTML fixture.
+
 const assert = require("node:assert/strict");
 const { readdirSync, writeFileSync } = require("node:fs");
 const path = require("node:path");

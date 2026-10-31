@@ -1,3 +1,8 @@
+;;; GTK/GIO icon probe launched by check-installed. Arguments provide the GIO
+;;; library, GTK library, desktop entry, and icon search directories. Loading the
+;;; entry's icon through the hicolor theme exercises the desktop menu's lookup and
+;;; decoding path; the presence of PNG files alone does not establish that contract.
+
 (use-modules (system foreign))
 
 (define gio (dynamic-link (cadr (command-line))))

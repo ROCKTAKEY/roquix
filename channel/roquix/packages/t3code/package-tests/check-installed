@@ -1,3 +1,9 @@
+;;; Desktop installation contract checks run by t3code.scm with the output path.
+;;; Building the application does not prove that its packaged launchers, resources,
+;;; and native dependencies work outside the source tree. These checks exercise the
+;;; installed layout with temporary homes and isolated environments, using sibling
+;;; probes for Electron rendering, native calls, and desktop integration.
+
 (use-modules ((guix build syscalls) #:select (mkdtemp!))
              (guix build utils)
              (ice-9 ftw)

@@ -1,3 +1,9 @@
+// Native dependency probe shared by the Desktop and CLI installed checks.
+// Arguments select the application tree, native contract, and optional workspace.
+// Resolving from that workspace and making native calls exercises the installed
+// JavaScript/native boundary, including peer dependencies and runtime linking,
+// which successful bundling alone cannot verify. Callers supply a temporary HOME.
+
 import assert from "node:assert/strict";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";

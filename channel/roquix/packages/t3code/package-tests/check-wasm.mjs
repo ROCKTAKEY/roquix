@@ -1,3 +1,8 @@
+// Installed-output audit run by t3code.scm with the output path followed by the
+// declared WASM build outputs. Hash matching detects bundled upstream WASM that
+// escaped source replacement, even when bundling changes its filename. The Linux
+// output is also checked for Windows and macOS executables.
+
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
