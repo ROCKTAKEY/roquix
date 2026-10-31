@@ -645,14 +645,10 @@
   (local-file (canonicalize-path (search-path %load-path
                   "roquix/packages/aux-files/t3code-runtime-dependencies.mjs"))))
 
-(define %t3code-wasm-dependencies-script
+(define %t3code-office-sources-script
   (local-file (canonicalize-path
                (search-path %load-path
-                            "roquix/packages/aux-files/t3code-wasm-dependencies.mjs"))))
-
-(define %t3code-stage-linux-icons-script
-  (local-file (canonicalize-path (search-path %load-path
-                  "roquix/packages/aux-files/t3code-stage-linux-icons.mjs"))))
+                            "roquix/packages/aux-files/t3code-office-sources.mjs"))))
 
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
@@ -775,6 +771,45 @@
                                     (chmod target #o755))
                                   (cdr replacement))) replacements)))
 
+        (define (stage-document-dependencies)
+          (let ((packages
+                 (map (lambda (file)
+                        (cons (assoc-ref (call-with-input-file file json->scm) "name")
+                              (dirname file)))
+                      (find-files "node_modules"
+                                  (lambda (file stat)
+                                    (and (eq? (stat:type stat) 'regular)
+                                         (string=? (basename file) "package.json")))
+                                  #:fail-on-error? #t))))
+            (define (for-package name install)
+              (let ((targets (filter (lambda (entry) (equal? (car entry) name))
+                                     packages)))
+                (when (null? targets)
+                  (error "Missing locked document dependency" name))
+                (for-each (lambda (entry) (install (cdr entry))) targets)))
+            (for-each
+             (lambda (entry)
+               (for-package (string-append "@betteroffice/" (car entry))
+                 (lambda (target)
+                   (invoke "node" #$%t3code-office-sources-script
+                           target (cdr entry)))))
+             (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
+                   (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
+                   (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
+            (for-package "sql.js"
+              (lambda (target)
+                (let ((dist (string-append target "/dist")))
+                  (delete-file-recursively dist)
+                  (copy-recursively #$t3code-sql-wasm dist))))
+            (for-package "pdfjs-dist"
+              (lambda (target)
+                (for-each (lambda (name)
+                            (let ((directory (string-append target "/" name)))
+                              (when (file-exists? directory)
+                                (delete-file-recursively directory))))
+                          '("build" "legacy" "wasm"))
+                (copy-recursively #$t3code-pdfjs-wasm target)))))
+
         (define* (configure-application #:key inputs #:allow-other-keys)
           (copy-recursively (assoc-ref inputs "node-modules") ".")
           (invoke "chmod" "-R" "u+w" ".")
@@ -791,11 +826,7 @@
                   (string-append (getcwd) "/node_modules/.bin:"
                                  (getenv "PATH")))
           (replace-native-dependencies inputs)
-          (invoke "node" #$%t3code-wasm-dependencies-script (getcwd)
-                  #$t3code-betteroffice-docx-wasm
-                  #$t3code-betteroffice-sheets-wasm
-                  #$t3code-sql-wasm
-                  #$t3code-pdfjs-wasm)
+          (stage-document-dependencies)
           (patch-native-files "node_modules" inputs)
           (mkdir "spdx")
           (invoke "tar"
@@ -878,15 +909,22 @@
               (invoke "node" "scripts/build-browser-secret.mjs")
               (invoke "node" "scripts/build-preview-annotation-css.mjs")
               (invoke "vp" "pack"))
-            ;; Reuse upstream's asset selection and Linux icon staging without
-            ;; running its AppImage/deb packaging and Electron download steps.
-            ;; https://github.com/pingdotgg/t3code/blob/v0.1.2/scripts/build-desktop-artifact.ts
-            (substitute* "scripts/build-desktop-artifact.ts"
-              (("^const stageLinuxIcons =")
-               "export const stageLinuxIcons ="))
-            (copy-file #$%t3code-stage-linux-icons-script
-                       "scripts/guix-stage-linux-icons.mjs")
-            (invoke "node" "scripts/guix-stage-linux-icons.mjs" version)))
+            ;; Electron uses the full-size PNG; hicolor needs nominal sizes.
+            ;; https://specifications.freedesktop.org/icon-theme/0.12/
+            (let* ((source (if (string-match "-nightly\\.[0-9]{8}\\.[0-9]+$" version)
+                               "assets/nightly/nightly-universal-1024.png"
+                               "assets/prod/black-universal-1024.png"))
+                   (resources "apps/desktop/resources")
+                   (icons (string-append resources "/icons")))
+              (mkdir-p icons)
+              (copy-file source (string-append resources "/icon.png"))
+              (for-each
+               (lambda (size)
+                 (let ((dimensions (format #f "~ax~a" size size)))
+                   (invoke (search-input-file inputs "/bin/convert")
+                           source "-resize" dimensions
+                           (string-append icons "/" dimensions ".png"))))
+               '(16 22 24 32 48 64 128 256 512)))))
 
         (define* (check-application #:key tests? #:allow-other-keys)
           (when tests?

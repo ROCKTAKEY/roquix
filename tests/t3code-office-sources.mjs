@@ -11,7 +11,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { installOfficeSources } from "../channel/roquix/packages/aux-files/t3code-wasm-dependencies.mjs";
+import { installOfficeSources } from "../channel/roquix/packages/aux-files/t3code-office-sources.mjs";
 
 test("Office consumers resolve source code with its newly generated WASM bindings", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-wasm-"));
