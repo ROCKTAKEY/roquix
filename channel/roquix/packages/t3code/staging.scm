@@ -1,4 +1,4 @@
-(define-module (roquix build t3code-dependencies)
+(define-module (roquix packages t3code staging)
   #:use-module (guix build utils)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 regex)
@@ -7,7 +7,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-13)
-  #:export (install-office-sources stage-runtime-dependencies))
+  #:export (stage-office-sources stage-runtime-dependencies))
 
 (define (manifest directory)
   (call-with-input-file (string-append directory "/package.json")
@@ -38,7 +38,7 @@
         (lambda (port)
           (display updated port))))))
 
-(define (install-office-sources target source)
+(define (stage-office-sources target source)
   (let ((metadata (manifest target))
         (rebuilt (manifest source)))
     (define (source-entry value)

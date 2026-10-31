@@ -643,11 +643,11 @@
 
 (define %t3code-dependency-selector
   (local-file (canonicalize-path (search-path %load-path
-                  "roquix/packages/aux-files/t3code-select-runtime-dependencies.mjs"))))
+                  "roquix/packages/t3code/select-runtime-roots.mjs"))))
 
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
-                  "roquix/packages/aux-files/t3code/package-tests/check-installed")))
+                  "roquix/packages/t3code/package-tests/check-installed")))
               #:recursive? #t))
 
 (define* (t3code-build-phases version ghostty-revision dependency-selector
@@ -786,7 +786,7 @@
              (lambda (entry)
                (for-package (string-append "@betteroffice/" (car entry))
                  (lambda (target)
-                   (install-office-sources target (cdr entry)))))
+                   (stage-office-sources target (cdr entry)))))
              (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
                    (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
                    (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
@@ -1229,7 +1229,7 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix build t3code-dependencies)
+                  (roquix packages t3code staging)
                   (guix elf)
                   (json)
                   (ice-9 ftw)
@@ -1240,7 +1240,7 @@
                   (srfi srfi-13))
       #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build syscalls)
-                           (roquix build t3code-dependencies)
+                           (roquix packages t3code staging)
                            (guix elf))
       #:phases (t3code-build-phases version %ghostty-revision
                                     %t3code-dependency-selector)))

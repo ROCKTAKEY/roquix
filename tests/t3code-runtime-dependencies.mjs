@@ -19,7 +19,7 @@ const driver = fileURLToPath(
 );
 const selector = fileURLToPath(
   new URL(
-    "../channel/roquix/packages/aux-files/t3code-select-runtime-dependencies.mjs",
+    "../channel/roquix/packages/t3code/select-runtime-roots.mjs",
     import.meta.url,
   ),
 );

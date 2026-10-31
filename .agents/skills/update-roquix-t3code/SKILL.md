@@ -90,8 +90,10 @@ for channel verification.
   SQL.js's conditional browser export requires the browser build as well as
   its default entry.
   Keep ordinary dependency staging and Linux icon generation in Scheme phases.
-  `(roquix build t3code-dependencies)` handles Office source conversion and
-  runtime dependency copying and linking. The small JavaScript selector calls
+  `(roquix packages t3code staging)` handles Office source conversion and
+  runtime dependency copying and linking. Keep T3 Code-specific Scheme modules,
+  helper scripts, and installed checks together under `packages/t3code/`.
+  The small `select-runtime-roots.mjs` script calls
   upstream dependency-selection APIs and returns JSON; keep those policies
   authoritative in upstream rather than duplicating them in Scheme. Preserve
   JSON object order when rewriting conditional exports (`#:ordered #t`).
@@ -139,7 +141,7 @@ guix build -L channel --max-jobs=1 --cores=4 \
 ```
 
 The installed checks in
-`channel/roquix/packages/aux-files/t3code/package-tests/` exercise native
+`channel/roquix/packages/t3code/package-tests/` exercise native
 modules, terminal execution, desktop resources, the Web UI, and CLI pairing.
 Keep these checks enabled. If an HTTP assertion fails, inspect the selected
 source's route definitions and authentication middleware before changing the

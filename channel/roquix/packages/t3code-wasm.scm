@@ -159,7 +159,7 @@ by T3 Code's web build.")
 
 (define %sql-wasm-tests
   (local-file (canonicalize-path (search-path %load-path
-                                  "roquix/packages/aux-files/t3code/package-tests/check-sql-wasm.cjs"))))
+                                  "roquix/packages/t3code/package-tests/check-sql-wasm.cjs"))))
 
 (define-public t3code-sql-wasm
   (package
