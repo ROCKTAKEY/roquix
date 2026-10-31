@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -10,6 +10,35 @@ import { fileURLToPath } from "node:url";
 const script = fileURLToPath(new URL(
   "../channel/roquix/packages/aux-files/t3code-runtime-dependencies.mjs", import.meta.url,
 ));
+
+test("Linux runtime retains node-pty's Unix addon without its Windows console binaries", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "t3code-platform-"));
+  const write = (name, contents) => {
+    const file = path.join(root, name);
+    mkdirSync(path.dirname(file), { recursive: true });
+    writeFileSync(file, contents);
+  };
+  try {
+    write("scripts/lib/cli-external-packages.ts",
+      "export const selectCliRuntimeExternalDependencies = (dependencies) => dependencies;");
+    write("apps/server/package.json", JSON.stringify({ dependencies: { "node-pty": "1" } }));
+    const dependency = "apps/server/node_modules/node-pty";
+    write(`${dependency}/package.json`, JSON.stringify({ name: "node-pty" }));
+    write(`${dependency}/build/Release/pty.node`, "Unix addon");
+    for (const arch of ["win10-x64", "win10-arm64"]) {
+      for (const file of ["OpenConsole.exe", "conpty.dll"]) {
+        write(`${dependency}/third_party/conpty/1.25.260303002/${arch}/${file}`, "MZ");
+      }
+    }
+    const output = path.join(root, "output");
+    execFileSync(process.execPath, [script, root, output, "cli"]);
+    const installed = path.join(output, "apps/server/node_modules/node-pty");
+    assert.ok(existsSync(path.join(installed, "build/Release/pty.node")));
+    assert.ok(!existsSync(path.join(installed, "third_party/conpty")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 test("staged consumers resolve their own peers and tolerate absent optional peers", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-peers-"));
