@@ -214,7 +214,7 @@
                   (roquix packages hermes check))
       #:imported-modules `(,@%default-gnu-imported-modules
                            (roquix packages hermes staging) (roquix packages hermes check)
-                           (guix base64) (guix build syscalls))
+                           (guix base64) (guix build union) (guix build syscalls))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)
@@ -290,7 +290,7 @@ and a gateway for desktop and remote clients.")
                   (guix build utils)
                   (roquix packages hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (guix base64))
+                           (roquix packages hermes staging) (guix base64) (guix build union))
       #:phases
       (with-extensions (list guile-json-4)
         #~(modify-phases %standard-phases
@@ -367,7 +367,7 @@ and a gateway for desktop and remote clients.")
                   (guix build utils)
                   (roquix packages hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (guix base64))
+                           (roquix packages hermes staging) (guix base64) (guix build union))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)

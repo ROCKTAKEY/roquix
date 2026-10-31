@@ -1,7 +1,8 @@
 (define-module (roquix packages hermes staging)
   #:use-module (guix build utils)
   #:use-module (guix base64)
-  #:use-module (ice-9 ftw)
+  #:use-module (guix build union)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 textual-ports)
   #:use-module ((rnrs io ports) #:select (get-bytevector-all))
@@ -35,29 +36,25 @@
     (write-json file package)))
 
 (define (install-python-dependencies site packages)
-  (mkdir-p site)
-  (for-each
-   (lambda (package)
-     (let ((roots (find-files (string-append package "/lib") "^site-packages$"
-                              #:directories? #t)))
-       (when (null? roots)
-         (error "no installed Python modules" package))
-       (for-each
-        (lambda (root)
-          (for-each
-           (lambda (source)
-             (let* ((relative (substring source (+ 1 (string-length root))))
-                    (target (string-append site "/" relative)))
-               (unless (member "__pycache__" (string-split relative #\/))
-                 (mkdir-p (dirname target))
-                 (if (file-exists? target)
-                     (unless (equal? (call-with-input-file target get-bytevector-all)
-                                     (call-with-input-file source get-bytevector-all))
-                       (error "conflicting Python dependency" relative))
-                     (symlink source target)))))
-           (find-files root)))
-        roots)))
-   packages))
+  (define (cache? file)
+    (member "__pycache__" (string-split file #\/)))
+  (union-build
+   site
+   (append-map
+    (lambda (package)
+      (let ((roots (find-files (string-append package "/lib") "^site-packages$"
+                               #:directories? #t)))
+        (when (null? roots)
+          (error "no installed Python modules" package))
+        roots))
+    packages)
+   ;; The assembler writes into this tree; cache removal must not touch inputs.
+   #:create-all-directories? #t
+   #:resolve-collision (lambda (files)
+                         (and (not (cache? (car files)))
+                              (error "conflicting Python dependency" files))))
+  (for-each delete-file-recursively
+            (find-files site "^__pycache__$" #:directories? #t)))
 
 (define (install-source-wasm root wasm)
   (let ((full (base64-encode
@@ -86,23 +83,16 @@
 
 (define (install-cli-layout out python version)
   (let ((repo (string-append out "/lib/hermes/source"))
-        (site (string-append out "/lib/hermes/site-packages"))
+        (source (getcwd))
         (excluded '("apps" "web" "ui-tui" "website" "docs" "tests"
                     "tests-js" "node_modules")))
-    (mkdir-p repo)
-    (mkdir-p site)
-    (for-each
-     (lambda (entry)
-       (unless (or (string-prefix? "." entry) (member entry excluded))
-         (let ((target (string-append repo "/" entry)))
-           (if (file-is-directory? entry)
-               (copy-recursively entry target
-                                 #:keep-mtime? #t
-                                 #:follow-symlinks? #t
-                                 #:select? (lambda (file stat)
-                                             (not (string=? (basename file) "__pycache__"))))
-               (copy-file entry target)))))
-     (scandir "."))
+    (copy-recursively
+     source repo #:keep-mtime? #t #:follow-symlinks? #t
+     #:select? (lambda (file stat)
+                 (and (not (string=? (basename file) "__pycache__"))
+                      (or (not (string=? (dirname file) source))
+                          (and (not (string-prefix? "." (basename file)))
+                               (not (member (basename file) excluded)))))))
     (write-json (string-append repo "/install-stamp.json")
                 (acons "pmRuntime" (string-append out "/lib/hermes")
                        (install-stamp version "bootstrap")))

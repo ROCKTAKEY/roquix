@@ -25,23 +25,42 @@
               (assoc-ref (assoc-ref package "dependencies") "x")))
           (write-text "a/lib/python3.14/site-packages/ns/a.py" "a")
           (write-text "b/lib/python3.14/site-packages/ns/b.py" "b")
+          (write-text "b/lib/python3.14/site-packages/ns/a.py" "a")
+          (write-text "a/lib/python3.14/site-packages/ns/__pycache__/a.pyc" "old")
+          (write-text "b/lib/python3.14/site-packages/ns/__pycache__/a.pyc" "new")
+          (write-text "a/lib/python3.14/site-packages/solo/__pycache__/x.pyc" "cache")
           (let ((packages (map (lambda (p) (string-append directory "/" p)) '("a" "b"))))
             (install-python-dependencies "site" packages)
             (test-equal "namespace packages combine source-built modules" "b"
               (call-with-input-file "site/ns/b.py" get-string-all))
             (test-equal "dependency files stay linked to their Guix inputs" 'symlink
               (stat:type (lstat "site/ns/a.py")))
+            (test-assert "dependency caches are excluded, including conflicting caches"
+              (null? (find-files "site" "^__pycache__$" #:directories? #t)))
+            (test-assert "cache exclusion leaves Guix inputs intact"
+              (file-exists? "a/lib/python3.14/site-packages/solo/__pycache__/x.pyc"))
+            (test-equal "identical dependency files are accepted" "a"
+              (call-with-input-file "site/ns/a.py" get-string-all))
             (write-text "b/lib/python3.14/site-packages/ns/a.py" "different")
             (test-error "conflicting dependency files are rejected" #t
-              (install-python-dependencies "site" packages)))
+              (install-python-dependencies "conflict-site" packages)))
           (write-text "pm/runtime.py" "if stamp.get(\"distribution\") not in (\"nix\", \"docker\"):\n    pass\n")
           (write-text "docs/unused" "documentation")
+          (write-text ".hidden" "omit")
+          (write-text "pm/__pycache__/runtime.pyc" "omit")
+          (write-text "pm/.resource" "keep")
           (install-cli-layout (string-append directory "-out") "/python/bin/python3" "0.22.5")
           (test-assert "CLI sources recognize Guix-managed PM dependencies"
             (string-contains (call-with-input-file (string-append directory "-out/lib/hermes/source/pm/runtime.py") get-string-all)
                              "(\"nix\", \"docker\", \"guix\")"))
           (test-assert "CLI omits frontend and documentation sources"
             (not (file-exists? (string-append directory "-out/lib/hermes/source/docs"))))
+          (let ((repo (string-append directory "-out/lib/hermes/source")))
+            (test-assert "CLI omits root hidden files and nested Python caches"
+              (and (not (file-exists? (string-append repo "/.hidden")))
+                   (not (file-exists? (string-append repo "/pm/__pycache__")))))
+            (test-equal "CLI preserves package-local hidden resources" "keep"
+              (call-with-input-file (string-append repo "/pm/.resource") get-string-all)))
           (write-text "wasm/lexer.wasm" "full")
           (write-text "wasm/lexer.min.wasm" "min")
           (for-each (lambda (n)
