@@ -7,7 +7,7 @@ user installation.  Configuration refresh preserves each model's engine.
 
 --- a/setup.py
 +++ b/setup.py
-@@ -8139,36 +8139,11 @@
+@@ -8612,43 +8612,11 @@
      pip_install(runtime_packages(),
                  "numpy, jinja2, regex, pyyaml, tqdm, requests, cmake, ninja, pillow, psutil, textual (the screens)")
  
@@ -21,7 +21,8 @@ user installation.  Configuration refresh preserves each model's engine.
 -        fail("Strata can't reach GitHub to download the DeepSeek engine.",
 -             "Check the internet connection and run the same command again. " + dsv41_manual_steps(eng))
 -    if exe is None and not getattr(a, "build", False):
--        get_dsv41_engine(eng, hip, getattr(a, "dsv41_package", None), getattr(a, "feed", None))
+-        get_dsv41_engine(eng, hip, getattr(a, "dsv41_package", None), getattr(a, "feed", None),
+-                         archs=[c.get("arch") for c in cards if c.get("arch")] if hip else None)
 -        exe = dsv41_exe(eng)
 -    if (exe is not None and not getattr(a, "dsv41_package", None) and not getattr(a, "build", False)
 -            and not (os.environ.get("STRATA_DSV41_EXE") or "").strip() and exe.parent.parent == dsv41_engine_dir(eng)):
@@ -29,6 +30,12 @@ user installation.  Configuration refresh preserves each model's engine.
 -    if exe is not None and exe.parent != Path(eng):
 -        from strata_control import dsv41_engine
 -        lib_dirs = [*lib_dirs, *dsv41_engine.lib_dirs(exe)]   # its own package, and the rocm/bin an AMD package keeps the ROCm DLLs in
+-    if hip and exe is not None and named:                  # cards the person named that this package holds no code for: said, never refused
+-        covered = dsv41_covered_archs(eng)
+-        for c in cards if covered else []:
+-            if c.get("arch") and c["arch"] not in covered:
+-                warn(f"GPU {c['index']} ({c['name']}, {c['arch']}): this DeepSeek engine package holds code for {', '.join(covered)} only, so it may "
+-                     "not start on that card. Leave it out (--gpus ...) to be sure.")
 -    if exe is None:
 -        if os.environ.get("STRATA_VERBOSE") == "1" or "--verbose" in sys.argv:
 -            say("  Details for developers: build it with cmake -DSTRATA_BUILD_DSV41=ON -DCMAKE_CUDA_ARCHITECTURES=<your card: 86 RTX 30, 89 RTX 40, 120 RTX 50> "
