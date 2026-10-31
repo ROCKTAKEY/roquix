@@ -34,8 +34,11 @@ installed CLI and gateway.  Python dependencies in =python.scm= use Guix's
 Guix's pure Python build backends available to the interpreter defined in
 =interpreter.scm=.  Rust extensions use Maturin with offline Cargo inputs;
 package-specific phases handle source generation and Hermes's dependency overrides.
-The CLI launcher bridge calls Hermes's own Python entry-point generator so its
-launcher contract stays aligned with the upstream application.
+Scheme prepares the source tree, dependency links, and an =AgentInputs= JSON
+file.  The upstream =python -m scripts.build.agent= command consumes those
+inputs with =placement=fixed= to generate launchers, distribution metadata,
+the source-binding =.pth= file, and the runtime manifest.  Guix wraps the
+commands listed in that manifest with its runtime environment.
 
 The npm acquisition derivation runs with network access and verifies the
 upstream lock.  It removes native binaries and precompiled WASM from the
@@ -62,6 +65,7 @@ connection to the packaged gateway.
 guix shell python python-packaging -- python3 tests/hermes-source-inputs.py
 guix repl -L channel -- tests/hermes-python-import.scm
 guix repl -L channel -- tests/hermes-build.scm
+guix repl -L channel -- tests/hermes-cli-assembly.scm /path/to/hermes-source
 guix repl -L channel -- tests/hermes-node-sources.scm
 guix repl -L channel -- tests/hermes-package.scm
 guix build -L channel hermes hermes-desktop hermes-desktop-light

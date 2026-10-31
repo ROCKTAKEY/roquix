@@ -227,10 +227,6 @@
               (install-cli-layout #$output
                                   #$(file-append hermes-python "/bin/python3")
                                   #$version)
-              (invoke "python3"
-                      #$(hermes-file "generate-cli-launchers.py")
-                      #$output
-                      #$(file-append hermes-python "/bin/python3"))
               (install-python-dependencies
                (string-append #$output "/lib/hermes/site-packages")
                (list #$@hermes-python-dependencies))
@@ -256,7 +252,8 @@
                             `("SSL_CERT_FILE" =
                               (#$(file-append nss-certs-for-test
                                   "/etc/ssl/certs/ca-certificates.crt")))))
-                        '("hermes" "hermes-agent" "hermes-acp"))))
+                        (assemble-cli #$output
+                          #$(file-append hermes-python "/bin/python3")))))
           (add-after 'install 'check-installed
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
