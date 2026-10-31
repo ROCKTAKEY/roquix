@@ -7,7 +7,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages cmake)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (roquix packages native-libraries))
+  #:use-module (roquix packages node-xyz))
 
 (define-public hermes-esbuild
   (package

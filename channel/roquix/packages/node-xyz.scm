@@ -1,4 +1,4 @@
-(define-module (roquix packages native-libraries)
+(define-module (roquix packages node-xyz)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)

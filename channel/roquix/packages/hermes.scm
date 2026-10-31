@@ -22,7 +22,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (nongnu packages electron)
   #:use-module (roquix packages hermes-python)
-  #:use-module (roquix packages native-libraries)
+  #:use-module (roquix packages node-xyz)
   #:use-module (roquix packages hermes-node)
   #:use-module (roquix packages hermes-wasm))
 

@@ -42,7 +42,7 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages zig)
   #:use-module (nongnu packages electron)
-  #:use-module (roquix packages native-libraries)
+  #:use-module (roquix packages node-xyz)
   #:use-module (roquix packages t3code-wasm)
   #:use-module (roquix packages pdfjs)
   #:use-module ((roquix packages pnpm) #:prefix package:))
