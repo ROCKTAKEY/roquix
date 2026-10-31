@@ -1,4 +1,4 @@
-(define-module (roquix build bun cargo)
+(define-module (roquix build bun-bootstrap)
   #:use-module ((guix build cargo-build-system)
                 #:prefix cargo:)
   #:use-module (guix build utils)

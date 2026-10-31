@@ -449,7 +449,7 @@
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:imported-modules (cons* '(roquix build bun cargo)
+      #:imported-modules (cons* '(roquix build bun-bootstrap)
                                 '(guix build cargo-build-system)
                                 %default-gnu-imported-modules)
       #:phases
@@ -588,7 +588,7 @@
           ;; crates, so install this source-only tree after that phase.
           (add-after 'patch-generated-file-shebangs 'install-cargo-vendor
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun cargo))
+              (use-modules (roquix build bun-bootstrap))
               (install-bun-cargo-vendor #:source (assoc-ref inputs "source")
                                         #:inputs inputs
                                         #:checksums (assoc-ref inputs
@@ -670,8 +670,8 @@
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:imported-modules (cons* '(roquix build bun affinity)
-                                '(roquix build bun esbuild)
+      #:imported-modules (cons* '(roquix build bun-bootstrap affinity)
+                                '(roquix build bun-bootstrap esbuild)
                                 %default-gnu-imported-modules)
       #:phases
       #~(modify-phases %standard-phases
@@ -682,8 +682,8 @@
           (delete 'patch-generated-file-shebangs)
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun affinity)
-                           (roquix build bun esbuild)
+              (use-modules (roquix build bun-bootstrap affinity)
+                           (roquix build bun-bootstrap esbuild)
                            (srfi srfi-1)
                            (srfi srfi-13))
               ;; The inherited source origins are copy-only inputs.  Exclude
@@ -929,8 +929,8 @@ and package manager.")
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:imported-modules (cons* '(roquix build bun affinity)
-                                '(roquix build bun esbuild)
+      #:imported-modules (cons* '(roquix build bun-bootstrap affinity)
+                                '(roquix build bun-bootstrap esbuild)
                                 %default-gnu-imported-modules)
       #:phases
       #~(modify-phases %standard-phases
@@ -941,8 +941,8 @@ and package manager.")
           (delete 'patch-generated-file-shebangs)
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun affinity)
-                           (roquix build bun esbuild)
+              (use-modules (roquix build bun-bootstrap affinity)
+                           (roquix build bun-bootstrap esbuild)
                            (srfi srfi-1)
                            (srfi srfi-13))
               (let ((source-roots (filter-map (lambda (name)
@@ -1622,16 +1622,16 @@ and package manager.")
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:imported-modules (cons* '(roquix build bun affinity)
-                                '(roquix build bun cargo)
-                                '(roquix build bun esbuild)
+      #:imported-modules (cons* '(roquix build bun-bootstrap affinity)
+                                '(roquix build bun-bootstrap)
+                                '(roquix build bun-bootstrap esbuild)
                                 '(guix build cargo-build-system)
                                 %default-gnu-imported-modules)
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'install-node-modules
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun esbuild))
+              (use-modules (roquix build bun-bootstrap esbuild))
               ;; The lock-derived npm tree is generated from this same source
               ;; revision and includes every workspace node_modules tree.
               (let ((null (open-output-file "/dev/null"))
@@ -1803,7 +1803,7 @@ and package manager.")
                       (string-append (getcwd) "/.cargo"))
               (mkdir-p (getenv "HOME"))
               (mkdir-p (getenv "CARGO_HOME"))
-              (use-modules (roquix build bun cargo))
+              (use-modules (roquix build bun-bootstrap))
               (install-bun-cargo-vendor #:source (assoc-ref inputs "source")
                                         #:inputs inputs
                                         #:checksums (assoc-ref inputs
@@ -1862,7 +1862,7 @@ if(NOT DOWNLOAD_URL OR NOT DOWNLOAD_PATH)"))))
           (delete 'configure)
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun affinity))
+              (use-modules (roquix build bun-bootstrap affinity))
               (let ((seed (search-input-file inputs "/bin/bun"))
                     (icu (assoc-ref inputs "icu4c"))
                     (libc (assoc-ref inputs "glibc"))
@@ -2721,12 +2721,12 @@ if(NOT DOWNLOAD_URL OR NOT DOWNLOAD_PATH)"))))
      (list
       #:tests? #f
       #:strip-binaries? #f
-      #:imported-modules (cons* '(roquix build bun affinity)
-                                '(roquix build bun cargo)
-                                '(roquix build bun esbuild)
+      #:imported-modules (cons* '(roquix build bun-bootstrap affinity)
+                                '(roquix build bun-bootstrap)
+                                '(roquix build bun-bootstrap esbuild)
                                 '(guix build cargo-build-system)
                                 %default-gnu-imported-modules)
-      #:modules (cons '(roquix build bun esbuild)
+      #:modules (cons '(roquix build bun-bootstrap esbuild)
                       %default-gnu-modules)
       #:phases
       #~(modify-phases %standard-phases
@@ -2912,7 +2912,7 @@ if(NOT DOWNLOAD_URL OR NOT DOWNLOAD_PATH)"))))
                       (string-append (getcwd) "/.cargo"))
               (mkdir-p (getenv "HOME"))
               (mkdir-p (getenv "CARGO_HOME"))
-              (use-modules (roquix build bun cargo))
+              (use-modules (roquix build bun-bootstrap))
               (install-bun-cargo-vendor #:source (assoc-ref inputs "source")
                                         #:inputs inputs
                                         #:checksums (assoc-ref inputs
@@ -2926,7 +2926,7 @@ if(NOT DOWNLOAD_URL OR NOT DOWNLOAD_PATH)"))))
           (delete 'configure)
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
-              (use-modules (roquix build bun affinity))
+              (use-modules (roquix build bun-bootstrap affinity))
               (let* ((seed (search-input-file inputs "/bin/bun"))
                     ;; bun-zig.o alone reaches roughly 8 GiB RSS.  Four C++
                     ;; jobs leave enough headroom for Clang and nested builds

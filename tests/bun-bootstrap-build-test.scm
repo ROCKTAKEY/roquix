@@ -1,5 +1,5 @@
-(use-modules (roquix build bun cargo)
-             (roquix build bun esbuild)
+(use-modules (roquix build bun-bootstrap)
+             (roquix build bun-bootstrap esbuild)
              (guix build utils)
              (srfi srfi-64))
 
