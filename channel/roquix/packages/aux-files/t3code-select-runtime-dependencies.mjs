@@ -7,7 +7,11 @@ if (!["cli", "desktop"].includes(variant))
   throw new Error(`Unknown variant: ${variant}`);
 const workspaces = [["server", "cli", "selectCliRuntimeExternalDependencies"]];
 if (variant === "desktop")
-  workspaces.push(["desktop", "desktop", "selectDesktopRuntimeExternalDependencies"]);
+  workspaces.push([
+    "desktop",
+    "desktop",
+    "selectDesktopRuntimeExternalDependencies",
+  ]);
 const selected = [];
 for (const [workspace, module, name] of workspaces) {
   const { [name]: select } = await import(

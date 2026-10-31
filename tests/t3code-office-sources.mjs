@@ -14,10 +14,20 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 const channel = fileURLToPath(new URL("../channel", import.meta.url));
-const driver = fileURLToPath(new URL("./t3code-dependencies-driver.scm", import.meta.url));
-const installOfficeSources = (target, source) => execFileSync("guix", [
-  "repl", "-L", channel, "--", driver, "office", target, source,
-]);
+const driver = fileURLToPath(
+  new URL("./t3code-dependencies-driver.scm", import.meta.url),
+);
+const installOfficeSources = (target, source) =>
+  execFileSync("guix", [
+    "repl",
+    "-L",
+    channel,
+    "--",
+    driver,
+    "office",
+    target,
+    source,
+  ]);
 
 test("Office consumers resolve source code with its newly generated WASM bindings", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-wasm-"));
@@ -30,7 +40,11 @@ test("Office consumers resolve source code with its newly generated WASM binding
       name: "@betteroffice/docx",
       version: "0.4.3",
       exports: {
-        ".": { import: "./dist/core.mjs", types: "./dist/core.d.mts" },
+        ".": {
+          types: "./dist/core.d.mts",
+          import: "./dist/core.mjs",
+          default: "./dist/core.mjs",
+        },
       },
       main: "./dist/core.mjs",
       dependencies: { peer: "1" },
@@ -59,9 +73,28 @@ test("Office consumers resolve source code with its newly generated WASM binding
       Buffer.from([0, 97, 115, 109, 1, 0, 0, 0]),
     );
     chmodSync(path.join(root, "source/src/yrs"), 0o555);
+    write(
+      "source/package.json",
+      JSON.stringify({ ...manifest, version: "0.0.0" }),
+    );
+    assert.throws(
+      () =>
+        installOfficeSources(
+          path.join(root, "target"),
+          path.join(root, "source"),
+        ),
+      (error) =>
+        error.stderr.toString().includes("Office source identity mismatch"),
+    );
+    assert.ok(!existsSync(path.join(root, "target/src")));
+    write("source/package.json", JSON.stringify(manifest));
     installOfficeSources(path.join(root, "target"), path.join(root, "source"));
     const installed = JSON.parse(
       readFileSync(path.join(root, "target/package.json")),
+    );
+    assert.deepEqual(
+      Object.keys(installed.exports["."]),
+      Object.keys(manifest.exports["."]),
     );
     assert.equal(installed.exports["."].import, "./src/core.ts");
     assert.equal(installed.exports["."].types, "./src/core.ts");
