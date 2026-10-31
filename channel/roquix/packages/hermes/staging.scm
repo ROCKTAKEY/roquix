@@ -7,7 +7,7 @@
   #:use-module ((rnrs io ports) #:select (get-bytevector-all))
   #:use-module (json)
   #:export (prepare-desktop install-python-dependencies
-            install-source-wasm install-cli-layout))
+            install-source-wasm install-cli-layout assemble-cli))
 
 (define (write-json file value)
   (call-with-output-file file (lambda (port) (scm->json value port))))
@@ -117,3 +117,25 @@
       (substitute* file
         (("not in \\(\"nix\", \"docker\"\\)")
          "not in (\"nix\", \"docker\", \"guix\")")))))
+
+(define (assemble-cli out python)
+  (let* ((runtime (string-append out "/lib/hermes"))
+         (repo (string-append runtime "/source"))
+         (inputs (string-append (getcwd) "/agent-inputs.json")))
+    ;; Fixed placement permits external Guix store paths while letting the
+    ;; upstream assembler publish metadata and bind the output-owned site.
+    ;; https://github.com/NousResearch/hermes-agent/blob/v0.22.5/scripts/build/README.md
+    (write-json inputs
+      `(("project" . ,(string-append repo "/pyproject.toml"))
+        ("code" . ,repo) ("repo" . "lib/hermes/source")
+        ("placement" . "fixed") ("target" . "linux-x64")
+        ("python" . ,python)
+        ("site_packages" . ,(string-append runtime "/site-packages"))
+        ("environment" . ,runtime) ("pm_runtime" . ,runtime)))
+    (with-directory-excursion repo
+      (invoke python "-B" "-m" "scripts.build.agent"
+              "--inputs" inputs "--out" out))
+    (map car (assoc-ref
+               (assoc-ref (call-with-input-file (string-append out "/manifest.json") json->scm)
+                          "runtime")
+               "commands"))))
