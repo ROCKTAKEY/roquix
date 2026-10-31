@@ -1,4 +1,4 @@
-(define-module (roquix build hermes)
+(define-module (roquix packages hermes staging)
   #:use-module (guix build utils)
   #:use-module (guix base64)
   #:use-module (ice-9 ftw)

@@ -22,10 +22,10 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages version-control)
   #:use-module (nongnu packages electron)
-  #:use-module (roquix packages hermes-python)
+  #:use-module (roquix packages hermes python)
   #:use-module (roquix packages node-xyz)
-  #:use-module (roquix packages hermes-node)
-  #:use-module (roquix packages hermes-wasm))
+  #:use-module (roquix packages hermes node)
+  #:use-module (roquix packages hermes wasm))
 
 (define %hermes-version
   "0.22.5")
@@ -207,9 +207,9 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix build hermes))
+                  (roquix packages hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix build hermes) (guix base64))
+                           (roquix packages hermes staging) (guix base64))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)
@@ -286,9 +286,9 @@ and a gateway for desktop and remote clients.")
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix build hermes))
+                  (roquix packages hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix build hermes) (guix base64))
+                           (roquix packages hermes staging) (guix base64))
       #:phases
       (with-extensions (list guile-json-4)
         #~(modify-phases %standard-phases
@@ -363,9 +363,9 @@ and a gateway for desktop and remote clients.")
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix build hermes))
+                  (roquix packages hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix build hermes) (guix base64))
+                           (roquix packages hermes staging) (guix base64))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)

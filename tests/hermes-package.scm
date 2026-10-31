@@ -51,14 +51,14 @@
         (or (not (string? uri))
             (and (not (string-contains uri ".whl"))
                  (not (string-contains uri "install_only"))))))
-    (@ (roquix packages hermes-python) hermes-python-dependencies)))
+    (@ (roquix packages hermes python) hermes-python-dependencies)))
 (test-assert "WASM builders reuse the shared Emscripten package"
   (every (lambda (p)
            (any (lambda (input)
                   (eq? (cadr input) (@ (roquix packages wasm) emscripten-4)))
                 (package-native-inputs p)))
-         (list (@ (roquix packages hermes-wasm) hermes-yoga-wasm)
-               (@ (roquix packages hermes-wasm) hermes-es-module-lexer-wasm))))
+         (list (@ (roquix packages hermes wasm) hermes-yoga-wasm)
+               (@ (roquix packages hermes wasm) hermes-es-module-lexer-wasm))))
 (test-assert "Hermes modules do not import T3 Code modules"
   (let visit ((module (resolve-module '(roquix packages hermes)))
               (seen '()))

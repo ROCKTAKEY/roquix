@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes-wasm)
+(define-module (roquix packages hermes wasm)
   #:use-module (roquix packages wasm)
   #:use-module (guix packages)
   #:use-module (guix download)

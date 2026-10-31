@@ -73,7 +73,7 @@ def generate(lock_path, sources, version):
     if not rows:
         raise ValueError('source directory is empty')
     return f''';; Generated from Hermes v{version} uv.lock; source distributions only.
-(define-module (roquix packages hermes-python-inputs)
+(define-module (roquix packages hermes python-inputs)
   #:export (hermes-python-sources))
 
 (define hermes-python-sources

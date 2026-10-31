@@ -1,5 +1,5 @@
 ;; Generated from Hermes v0.22.5 uv.lock; source distributions only.
-(define-module (roquix packages hermes-python-inputs)
+(define-module (roquix packages hermes python-inputs)
   #:export (hermes-python-sources))
 
 (define hermes-python-sources

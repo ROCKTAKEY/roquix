@@ -26,7 +26,7 @@ to updating an existing installation.
 
 * Build contracts
 
-Package assembly lives in =(roquix build hermes)=: source placement,
+Package assembly lives in =(roquix packages hermes staging)=: source placement,
 installation metadata, dependency links, and insertion of source-built WASM.
 The CLI launcher bridge calls Hermes's own Python entry-point generator so its
 launcher contract stays aligned with the upstream application.
@@ -75,17 +75,17 @@ source-input module:
 guix shell python python-packaging -- \
   python3 scripts/update-hermes-python-inputs.py \
   /path/to/hermes/uv.lock /path/to/empty-source-directory VERSION \
-  channel/roquix/packages/hermes-python-inputs.scm \
+  channel/roquix/packages/hermes/python-inputs.scm \
   --requirements /path/to/requirements.txt
 #+end_src
 
 The generator rejects source archives whose hashes differ from the lock.
 For each Rust extension, import its =Cargo.lock= into the shared
-=rust-crates.scm= using the group name recorded in =hermes-python-inputs.scm=.
+=rust-crates.scm= using the group name recorded in =python-inputs.scm=.
 Preserve unrelated Cargo input groups when regenerating that shared module.
 
-Update the application source and Electron/header pins in =hermes.scm=,
-Python source in =hermes-python.scm=, and native Node tools in
-=hermes-node.scm=, =node-xyz.scm=, and =hermes-wasm.scm= together.  The npm source-cache hash includes binary removal
+Update the application source and Electron/header pins in =../hermes.scm=,
+Python source in =python.scm=, and native Node tools in
+=node.scm=, =../node-xyz.scm=, and =wasm.scm= together.  The npm source-cache hash includes binary removal
 and Shiki configuration.  Verify the installed CLI and both GUI variants,
 and run a temporary =guix pull= to check the channel-owned helper paths.

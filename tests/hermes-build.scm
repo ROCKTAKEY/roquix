@@ -1,4 +1,4 @@
-(use-modules (roquix build hermes)
+(use-modules (roquix packages hermes staging)
              (guix build utils)
              ((guix build syscalls) #:select (mkdtemp!))
              (ice-9 textual-ports)

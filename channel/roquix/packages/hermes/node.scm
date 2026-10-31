@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes-node)
+(define-module (roquix packages hermes node)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
