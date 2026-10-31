@@ -56,7 +56,7 @@
                     (string-contains script "c-api/Cargo.lock")
                     (string-contains script "cargo metadata")
                     (not (string-contains script
-                                          "packages/aux-files/bun")))))
+                                          "packages/bun")))))
 
 (for-each
  (lambda (name)
@@ -64,7 +64,7 @@
                 (not (file-exists?
                       (repository-file
                        (string-append
-                        "channel/roquix/packages/aux-files/bun/" name))))))
+                        "channel/roquix/packages/bun/" name))))))
  '("lol-html-1.0.lock"
    "lol-html-1.2.0.lock"
    "lol-html-1.2.17.lock"

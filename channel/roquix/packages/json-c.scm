@@ -29,7 +29,7 @@
                     (invoke "gcc"
                             #$(local-file
                                (json-c-resource
-                                "aux-files/json-c/check-release.c"))
+                                "json-c/package-tests/check-release.c"))
                             (string-append "-I" out "/include")
                             (string-append "-L" out "/lib")
                             (string-append "-Wl,-rpath," out "/lib")

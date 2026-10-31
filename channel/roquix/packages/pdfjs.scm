@@ -153,7 +153,7 @@ and their WebAssembly module from source.")
 
 (define %pdfjs-wasm-tests
   (local-file (canonicalize-path (search-path %load-path
-                                  "roquix/packages/aux-files/pdfjs/package-tests/check-pdfjs-wasm.mjs"))))
+                                  "roquix/packages/pdfjs/package-tests/check-pdfjs-wasm.mjs"))))
 
 ;; PDF.js consumes generated JS and WASM as a pair.  Keeping each codec in
 ;; its own derivation lets a codec update reuse the other compiled codecs.
