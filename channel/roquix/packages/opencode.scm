@@ -46,7 +46,6 @@
     (supported-systems '("x86_64-linux"))
     (arguments
      (list
-      #:tests? #t
       #:strip-binaries? #f
       #:node-modules %opencode-node-modules
       #:phases
@@ -86,12 +85,6 @@
                      (string-append "const system = \"" rg "\""))))))
             (add-after 'link-bun-workspaces 'apply-upstream-patches
               (lambda* (#:key inputs #:allow-other-keys)
-                ;; The last photon hunk has an extra leading space in three
-                ;; context lines; match the published 0.3.4 source exactly.
-                (substitute* "patches/@silvia-odwyer%2Fphoton-node@0.3.4.patch"
-                  (("^      ;\n") "     ;\n")
-                  (("^  };\n") " };\n")
-                  (("^  \n") " \n"))
                 (invoke (search-input-file inputs "/bin/bun")
                         #$%opencode-apply-patches)))
             (add-after 'apply-upstream-patches 'patch-native-dependencies
