@@ -1,4 +1,4 @@
-(define-module (roquix build bun-bootstrap esbuild)
+(define-module (roquix packages bun-bootstrap esbuild)
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)

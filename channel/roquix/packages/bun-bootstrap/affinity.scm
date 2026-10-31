@@ -8,7 +8,7 @@
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 
-(define-module (roquix build bun-bootstrap affinity)
+(define-module (roquix packages bun-bootstrap affinity)
   #:export (call-with-limited-cpu-affinity))
 
 (define (call-with-limited-cpu-affinity jobs thunk)
