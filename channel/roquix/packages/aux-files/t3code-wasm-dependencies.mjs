@@ -4,6 +4,14 @@ import { pathToFileURL } from 'node:url';
 
 const manifest = (directory) => JSON.parse(readFileSync(path.join(directory, 'package.json')));
 
+function* files(directory) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const file = path.join(directory, entry.name);
+    if (entry.isDirectory()) yield* files(file);
+    else if (entry.isFile()) yield file;
+  }
+}
+
 export function installOfficeSources(target, source) {
   const metadata = manifest(target);
   const rebuilt = manifest(source);
@@ -25,6 +33,17 @@ export function installOfficeSources(target, source) {
   }
   rmSync(path.join(target, 'dist'), { recursive: true, force: true });
   cpSync(path.join(source, 'src'), path.join(target, 'src'), { recursive: true });
+  cpSync(path.join(source, 'shared'), path.join(target, 'shared'), { recursive: true });
+  for (const file of files(path.join(target, 'src'))) {
+    if (!/\.tsx?$/.test(file)) continue;
+    const contents = readFileSync(file, 'utf8');
+    const updated = contents.replace(/(['"])(?:\.\.\/)+shared\//g,
+      (_, quote) => quote + path.relative(path.dirname(file), path.join(target, 'shared')) + '/');
+    if (contents !== updated) {
+      rmSync(file);
+      writeFileSync(file, updated);
+    }
+  }
   if (metadata.name === '@betteroffice/docx') {
     const client = path.join(target, 'src/yrs/residentEngineWorkerClient.ts');
     const contents = readFileSync(client, 'utf8');
