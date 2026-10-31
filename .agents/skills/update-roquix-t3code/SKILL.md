@@ -75,6 +75,19 @@ for channel verification.
   `rust-crates.scm`. Use `package-rust-for-guix` when native Rust inputs or
   packaging need changes. Preserve source-built addons and the offline
   application build; npm prebuilt native binaries must not bypass them.
+- Match document dependency versions to the source pins in
+  `channel/roquix/packages/t3code-wasm.scm`. Betteroffice needs its matching
+  TypeScript sources and generated wasm-bindgen JavaScript; replacing only
+  the WASM can break the binding ABI. Preserve shared source modules and
+  worker entry resolution when staging those sources. PDF.js also needs its
+  worker rebuilt against the generated codec bindings. SQL.js's conditional
+  browser export requires the browser build as well as its default entry.
+- Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
+  sysroot is a hidden package binding, so an unsuccessful name search does
+  not prove its absence. A separately built sysroot must match the compiler;
+  verify it by linking a WASM program, including the paired `.rlib` and
+  `.rmeta` files used by recent Rust releases. Regenerate changed WASM Cargo
+  input groups from the corresponding upstream locks.
 - Check source substitutions against the new source, including the packaged
   Chromium preview service and test-toolchain Vite resolution. Keep the Guix
   package version authoritative for application version output because the
@@ -99,7 +112,7 @@ Run the repository checks:
 ```sh
 guix repl -L channel -- tests/t3code-cli-package.scm
 guix repl -L channel -- tests/t3code-home-service.scm
-node --test tests/t3code-runtime-dependencies.mjs
+node --test tests/t3code-runtime-dependencies.mjs tests/t3code-wasm-dependencies.mjs
 ```
 
 Build all four exact package definitions, retaining build logs:
@@ -120,6 +133,12 @@ expected status. An unknown GET route can return the SPA HTML with status
 POST `/api/auth/websocket-ticket` is suitable for checking unauthenticated
 rejection and paired access when present in the selected release. Verify
 single-use pairing credentials as well, and keep credentials out of logs.
+
+The installed WASM check compares module hashes with declared source-build
+outputs and rejects Windows or macOS executables. Its expected count must
+follow the selected release's actual assets. Run staging regressions with the
+package's Node version too: directory permissions preserved by `cpSync` can
+differ from the Node version in the working shell.
 
 Verify both variant-specific functionality and shared runtime contracts.
 Run relevant lint and `git diff --check`. Use a temporary-profile `guix pull`
