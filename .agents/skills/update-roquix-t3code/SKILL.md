@@ -89,6 +89,9 @@ for channel verification.
   its source, dependency cache, and generated worker metadata.
   SQL.js's conditional browser export requires the browser build as well as
   its default entry.
+  Keep ordinary dependency staging and Linux icon generation in Scheme phases.
+  JavaScript helpers handle Office source transformations and npm dependency
+  resolution, where package metadata and upstream JavaScript APIs are needed.
 - Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
   sysroot is a hidden package binding, so an unsuccessful name search does
   not prove its absence. A separately built sysroot must match the compiler;
@@ -121,7 +124,7 @@ guix repl -L channel -- tests/t3code-cli-package.scm
 guix repl -L channel -- tests/t3code-home-service.scm
 guix repl -L channel -- tests/t3code-wasm-module.scm
 guix repl -L channel -- tests/pdfjs-package.scm
-node --test tests/t3code-runtime-dependencies.mjs tests/t3code-wasm-dependencies.mjs
+node --test tests/t3code-runtime-dependencies.mjs tests/t3code-office-sources.mjs
 ```
 
 Build all four exact package definitions, retaining build logs:

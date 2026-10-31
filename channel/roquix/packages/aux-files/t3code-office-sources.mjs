@@ -91,53 +91,5 @@ export function installOfficeSources(target, source) {
   );
 }
 
-function findPackages(directory) {
-  const packages = new Map();
-  function visit(directory) {
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-      const file = path.join(directory, entry.name);
-      if (entry.isDirectory()) visit(file);
-      else if (entry.isFile() && entry.name === "package.json") {
-        const metadata = JSON.parse(readFileSync(file));
-        if (metadata.name) {
-          const targets = packages.get(metadata.name) ?? [];
-          targets.push(directory);
-          packages.set(metadata.name, targets);
-        }
-      }
-    }
-  }
-  visit(directory);
-  return packages;
-}
-
-export function installWasmDependencies(root, docx, sheets, sql, pdf) {
-  const packages = findPackages(path.join(root, "node_modules"));
-  function replace(name, install) {
-    const targets = packages.get(name);
-    if (!targets?.length)
-      throw new Error(`Missing locked WASM dependency: ${name}`);
-    for (const target of targets) install(target);
-  }
-  for (const [name, source] of [
-    ["docx", docx],
-    ["pptx", sheets],
-    ["xlsx", sheets],
-  ]) {
-    replace(`@betteroffice/${name}`, (target) =>
-      installOfficeSources(target, path.join(source, name)),
-    );
-  }
-  replace("sql.js", (target) => {
-    rmSync(path.join(target, "dist"), { recursive: true });
-    cpSync(sql, path.join(target, "dist"), { recursive: true });
-  });
-  replace("pdfjs-dist", (target) => {
-    for (const name of ["build", "legacy", "wasm"])
-      rmSync(path.join(target, name), { recursive: true, force: true });
-    cpSync(pdf, target, { recursive: true });
-  });
-}
-
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)
-  installWasmDependencies(...process.argv.slice(2));
+  installOfficeSources(...process.argv.slice(2));
