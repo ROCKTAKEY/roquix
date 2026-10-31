@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import {
   mkdtempSync,
@@ -11,7 +13,11 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { installOfficeSources } from "../channel/roquix/packages/aux-files/t3code-office-sources.mjs";
+const channel = fileURLToPath(new URL("../channel", import.meta.url));
+const driver = fileURLToPath(new URL("./t3code-dependencies-driver.scm", import.meta.url));
+const installOfficeSources = (target, source) => execFileSync("guix", [
+  "repl", "-L", channel, "--", driver, "office", target, source,
+]);
 
 test("Office consumers resolve source code with its newly generated WASM bindings", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-wasm-"));
