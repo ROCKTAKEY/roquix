@@ -29,7 +29,7 @@
   "t3code-cli" (package-name t3code-cli))
 
 (test-equal "the desktop packages the stable release"
-  "0.1.5" (package-version t3code))
+  "0.1.6" (package-version t3code))
 
 (test-assert "CLI and desktop use the same pinned source release"
   (and (equal? (package-version t3code) (package-version t3code-cli))
@@ -41,12 +41,12 @@
      name (package-name package))
    (test-equal "session sharing uses an immutable commit of the requested fork"
      (string-append "https://codeload.github.com/ROCKTAKEY/t3code/tar.gz/"
-                    "c27fe3959e6aa3fbd8e06a8603ff700e62da8d2c")
+                    "1586060d6d725abe73a48f3a5e0f190c56d335dc")
      (origin-uri (package-source package)))
    (test-assert "the fork version identifies its pinned revision"
      (and (string-prefix? (string-append (package-version t3code) "-")
                           (package-version package))
-          (string-contains (package-version package) "c27fe39")))
+          (string-contains (package-version package) "1586060")))
    (test-equal "the rebased fork uses the verified release dependency cache"
      (assoc-ref (package-native-inputs t3code) "node-modules")
      (assoc-ref (package-native-inputs package) "node-modules")))

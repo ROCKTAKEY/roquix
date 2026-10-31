@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.5")
+  "0.1.6")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0axni19bjbizp9igrkqslb1k5cm1yrxqbs0dn1z12q4z7nrhplr5"))))
+    (sha256 (base32 "0jqjwvs5knlibd4rr7w2x4rfns06y71rj73k67bp5cyscr0yzsrw"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "006h2197045bzy60yws67i7lliv8j4qbz7x6rhq4izr3732y8skn"))))
+    (sha256 (base32 "19sky83rg5140xy0bkccm8mk81001yqwmhh11zrrzdw4had5gsll"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1270,7 +1270,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "c27fe3959e6aa3fbd8e06a8603ff700e62da8d2c")
+  "1586060d6d725abe73a48f3a5e0f190c56d335dc")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1282,7 +1282,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "0snsp396kk6w94sj0kn2d0hyk622s0xgh1am0wkg3izkirsdpi3k"))))
+    (sha256 (base32 "0f3gscwxr223y3c6q1b8n15xzb4gzi0ray35j0w8q0g1nklsplv3"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
