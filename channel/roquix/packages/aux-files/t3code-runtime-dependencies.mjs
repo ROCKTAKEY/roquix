@@ -36,7 +36,8 @@ function stagePackage(source) {
   cpSync(source, target, {
     recursive: true,
     dereference: false,
-    filter: (file) => path.basename(file) !== "node_modules",
+    filter: (file) => path.basename(file) !== "node_modules" &&
+      !(metadata.name === "node-pty" && path.relative(source, file) === "third_party/conpty"),
   });
   // External consumers resolve peers from disk, using their own pnpm resolution.
   const dependencies = {
