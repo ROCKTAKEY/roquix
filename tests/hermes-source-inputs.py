@@ -1,31 +1,26 @@
-"""Downloaded native code must be removed before the offline compilation."""
-import importlib.util
+"""The lock bridge selects the exact Linux/CPython requirements for the importer."""
 from pathlib import Path
+import json
+import subprocess
+import sys
 import tempfile
-import tarfile
-import io
 import unittest
 
+BRIDGE = Path(__file__).resolve().parents[1] / 'channel/roquix/packages/hermes/python-lock.py'
+
 class SourceLock(unittest.TestCase):
-    def test_rejects_source_not_matching_lock(self):
-        location = Path(__file__).resolve().parents[1] / 'scripts/update-hermes-python-inputs.py'
-        spec = importlib.util.spec_from_file_location('source_inputs', location)
-        generator = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(generator)
+    def test_selects_locked_target_versions_and_source_hashes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            archive = root / 'example-1.0.tar.gz'
-            metadata = b'Name: example\nVersion: 1.0\nLicense-Expression: MIT\n'
-            with tarfile.open(archive, 'w:gz') as tar:
-                entry = tarfile.TarInfo('example-1.0/PKG-INFO')
-                entry.size = len(metadata)
-                tar.addfile(entry, io.BytesIO(metadata))
             lock = root / 'uv.lock'
             lock.write_text('[[package]]\nname = "example"\nversion = "1.0"\n'
-                            'sdist = {url = "https://example.invalid/example-1.0.tar.gz", '
-                            'hash = "sha256:' + '0' * 64 + '"}\n')
-            with self.assertRaisesRegex(ValueError, 'source differs from upstream lock'):
-                generator.generate(lock, root, '1.0')
+                            'sdist = {hash = "sha256:' + '0' * 64 + '"}\n')
+            requirements = root / 'requirements.txt'
+            requirements.write_text('example==1.0; python_version >= "3.14" \\\n'
+                                    '    --hash=sha256:ignored-wheel-hash\n'
+                                    'windows-only==2.0; sys_platform == "win32"\n')
+            result = subprocess.check_output([sys.executable, str(BRIDGE), str(lock), str(requirements)], text=True)
+            self.assertEqual(json.loads(result), [dict(name='example', version='1.0', sha256='0' * 64)])
 
 if __name__ == '__main__':
     unittest.main()
