@@ -7,9 +7,14 @@ import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-const script = fileURLToPath(new URL(
-  "../channel/roquix/packages/aux-files/t3code-runtime-dependencies.mjs", import.meta.url,
+const channel = fileURLToPath(new URL("../channel", import.meta.url));
+const driver = fileURLToPath(new URL("./t3code-dependencies-driver.scm", import.meta.url));
+const selector = fileURLToPath(new URL(
+  "../channel/roquix/packages/aux-files/t3code-select-runtime-dependencies.mjs", import.meta.url,
 ));
+const stage = (root, output) => execFileSync("guix", [
+  "repl", "-L", channel, "--", driver, "runtime", root, output, selector, "cli",
+], { timeout: 30000 });
 
 test("Linux runtime retains node-pty's Unix addon without its Windows console binaries", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-platform-"));
@@ -31,7 +36,7 @@ test("Linux runtime retains node-pty's Unix addon without its Windows console bi
       }
     }
     const output = path.join(root, "output");
-    execFileSync(process.execPath, [script, root, output, "cli"]);
+    stage(root, output);
     const installed = path.join(output, "apps/server/node_modules/node-pty");
     assert.ok(existsSync(path.join(installed, "build/Release/pty.node")));
     assert.ok(!existsSync(path.join(installed, "third_party/conpty")));
@@ -40,7 +45,7 @@ test("Linux runtime retains node-pty's Unix addon without its Windows console bi
   }
 });
 
-test("staged consumers resolve their own peers and tolerate absent optional peers", () => {
+test("cyclic consumers resolve their own peers and tolerate absent optional peers", () => {
   const root = mkdtempSync(path.join(tmpdir(), "t3code-peers-"));
   const write = (name, contents) => {
     const file = path.join(root, name);
@@ -55,7 +60,9 @@ test("staged consumers resolve their own peers and tolerate absent optional peer
     for (const [name, version] of [["first", "1"], ["second", "2"]]) {
       const consumer = `apps/server/node_modules/${name}`;
       manifest(consumer, {
-        name, main: "index.cjs", peerDependencies: { peer: version, optional: "1" },
+        name, main: "index.cjs",
+        dependencies: { [name === "first" ? "second" : "first"]: "1" },
+        peerDependencies: { peer: version, optional: "1" },
         peerDependenciesMeta: { optional: { optional: true } },
       });
       write(`${consumer}/index.cjs`, 'module.exports = require("peer");');
@@ -63,7 +70,7 @@ test("staged consumers resolve their own peers and tolerate absent optional peer
       write(`${consumer}/node_modules/peer/index.cjs`, `module.exports = ${JSON.stringify(version)};`);
     }
     const output = path.join(root, "output");
-    execFileSync(process.execPath, [script, root, output, "cli"]);
+    stage(root, output);
     const load = createRequire(path.join(output, "apps/server/package.json"));
     assert.equal(load("first"), "1");
     assert.equal(load("second"), "2");
