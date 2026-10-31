@@ -40,6 +40,18 @@
                            (string=? "electron"
                                      (package-name (cadr input))))
                          (package-inputs cli)))))
+(test-assert "Python is built from CPython source"
+  (let* ((runtime (module-ref (resolve-module '(roquix packages hermes)) 'hermes-python))
+         (uri (origin-uri (package-source runtime))))
+    (and (string? uri) (string-prefix? "https://www.python.org/ftp/python/" uri))))
+(test-assert "Python dependencies use source distributions or existing Guix packages"
+  (every
+    (lambda (package)
+      (let ((uri (origin-uri (package-source package))))
+        (or (not (string? uri))
+            (and (not (string-contains uri ".whl"))
+                 (not (string-contains uri "install_only"))))))
+    (@ (roquix packages hermes-python) hermes-python-dependencies)))
 (define failures
   (test-runner-fail-count (test-runner-current)))
 (test-end "hermes-package")

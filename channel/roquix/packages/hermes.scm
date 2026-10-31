@@ -9,7 +9,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -22,7 +21,9 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages version-control)
   #:use-module (nongnu packages electron)
-  #:use-module (roquix packages hermes-wheel-inputs))
+  #:use-module (roquix packages hermes-python)
+  #:use-module (roquix packages hermes-node)
+  #:use-module (roquix packages hermes-wasm))
 
 (define %hermes-version
   "0.22.5")
@@ -39,57 +40,6 @@
   (local-file (canonicalize-path (search-path %load-path
                                               (string-append
                                                "roquix/packages/hermes/" name)))))
-
-(define %patch-elf
-  (hermes-file "patch-elf.py"))
-
-;; Match pm/lock.json's interpreter family and artifact.  The application lock
-;; has Python >= 3.14 markers, so an older interpreter silently omits dependencies.
-;; https://github.com/NousResearch/hermes-agent/blob/v0.22.5/nix/pythonLock.nix
-(define hermes-python
-  (package
-    (name "hermes-python")
-    (version "3.14.9")
-    (source
-     (origin
-       (method url-fetch)
-       (uri
-        "https://github.com/astral-sh/python-build-standalone/releases/download/20261021/cpython-3.14.9+20261021-x86_64-unknown-linux-gnu-install_only.tar.gz")
-       (sha256
-        (base32 "1pxba62bqgm09pxb3gz6j71lf8n7a3jpn0aq2vs3iws71jjcb96z"))))
-    (build-system gnu-build-system)
-    (arguments
-     (list
-      #:strip-binaries? #f
-      #:phases
-      #~(modify-phases %standard-phases
-          (delete 'configure)
-          (delete 'build)
-          (delete 'check)
-          (replace 'install
-            (lambda _
-              (copy-recursively "."
-                                #$output)
-              (invoke "python3"
-                      #$%patch-elf
-                      #$output
-                      #$(file-append glibc "/lib/ld-linux-x86-64.so.2")
-                      #$(file-append glibc "/lib")
-                      (string-append #$gcc:lib "/lib"))))
-          (add-after 'install 'check-installed
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (invoke (string-append #$output "/bin/python3") "-c"
-                 "import ssl, sqlite3, ctypes, bz2, lzma; assert __import__('sys').version_info[:2] == (3, 14)")))))))
-    (native-inputs (list python patchelf))
-    (inputs (list (list "glibc" glibc)
-                  (list "gcc:lib" gcc "lib")))
-    (supported-systems '("x86_64-linux"))
-    (home-page "https://github.com/astral-sh/python-build-standalone")
-    (synopsis "Pinned Python runtime for Hermes")
-    (description
-     "This package supplies the CPython runtime selected by Hermes's package lock.")
-    (license license:psfl)))
 
 (define %hermes-npm
   (origin
@@ -110,7 +60,8 @@
                                                     #+gzip
                                                     "/bin:"
                                                     #+bash-minimal
-                                                    "/bin"))
+                                                    "/bin:"
+                                                    #+python "/bin"))
                              (setenv "HOME"
                                      (string-append (getcwd) "/home"))
                              (mkdir-p (getenv "HOME"))
@@ -168,6 +119,9 @@
                                              "ui-tui/node_modules"
                                              "ui-tui/packages/hermes-ink/node_modules"
                                              "web/node_modules"))
+                                 (invoke "python3"
+                                         #+(hermes-file "sanitize-node-sources.py")
+                                         #$output)
                                  (delete-file (string-append #$output
                                                "/node_modules/.package-lock.json")))))))
 
@@ -192,7 +146,54 @@
   (origin
     (method hermes-node-modules-fetch)
     (uri %hermes-source)
-    (sha256 (base32 "030cp1vvpa73fjw30bm2bm1djgcqsv9mfsv19pd04rj45plrzyvi"))))
+    (sha256 (base32 "1lxapjfjk7ch609zhcl618wcgkcrwc4zymq0012bav5w0s6kyaf0"))))
+
+(define %prepare-node-tools
+  #~(begin
+      ;; Shiki's core exports are used with the JavaScript regex engine.
+      (for-each
+        (lambda (file)
+          (call-with-output-file file
+            (lambda (port) (display "export * from '@shikijs/core';\n" port))))
+        (find-files "node_modules" "^core-unwasm\\.mjs$"))
+      (substitute* (append
+                     (find-files "node_modules/react-shiki/dist" "\\.js$")
+                     '("apps/desktop/src/components/chat/shiki-block.tsx"))
+        (("createOnigurumaEngine") "createHermesRegexEngine")
+        (("import [{] createHermesRegexEngine [}]")
+         "import { createJavaScriptRegexEngine as createHermesRegexEngine }")
+        (("shiki/engine/oniguruma") "shiki/engine/javascript")
+        (("import\\(['\"]shiki/wasm['\"]\\)") "{ forgiving: true }"))
+      (for-each
+        (lambda (name source)
+          (let ((directory (string-append "node_modules/" name)))
+            (mkdir-p directory)
+            (invoke "tar" "xf" source "--strip-components=1" "-C" directory)))
+        '#$(map car hermes-hash-sources)
+        (list #$@(map cadr hermes-hash-sources)))
+      (mkdir-p "node_modules/hermes-source-hashes")
+      (copy-file #$(hermes-file "js-hashes.cjs") "node_modules/hermes-source-hashes/index.cjs")
+      (call-with-output-file "node_modules/hermes-source-hashes/package.json"
+        (lambda (port) (display "{\"main\":\"index.cjs\"}" port)))
+      (invoke "node" "node_modules/hermes-source-hashes/index.cjs")
+      (copy-file #$(file-append hermes-yoga-wasm "/yoga-wasm-base64-esm.js")
+                 "node_modules/yoga-layout/dist/binaries/yoga-wasm-base64-esm.js")
+      (invoke "python3" #$(hermes-file "install-source-wasm.py") "."
+              #$hermes-es-module-lexer-wasm)
+      ;; The selected Node supplies WebSocket; no older-runtime fallback is needed.
+      (substitute* "ui-tui/src/gatewayClient.ts"
+        (("import [{] WebSocket as UndiciWebSocket [}] from 'undici'")
+         "const UndiciWebSocket = globalThis.WebSocket"))
+      (copy-file #$(file-append hermes-esbuild "/bin/esbuild")
+                 "node_modules/@esbuild/linux-x64/bin/esbuild")
+      (copy-file #$(file-append hermes-rolldown-native "/lib/rolldown-binding.linux-x64-gnu.node")
+                 "node_modules/@rolldown/binding-linux-x64-gnu/rolldown-binding.linux-x64-gnu.node")
+      (copy-file #$(file-append hermes-tailwind-native "/lib/tailwindcss-oxide.linux-x64-gnu.node")
+                 "node_modules/@tailwindcss/oxide-linux-x64-gnu/tailwindcss-oxide.linux-x64-gnu.node")
+      (copy-file #$(file-append hermes-lightningcss-native "/lib/lightningcss.linux-x64-gnu.node")
+                 "node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node")
+      (copy-file #$(file-append hermes-vite-lightningcss-native "/lib/lightningcss.linux-x64-gnu.node")
+                 "node_modules/vite/node_modules/lightningcss-linux-x64-gnu/lightningcss.linux-x64-gnu.node")))
 
 (define-public hermes
   (package
@@ -216,31 +217,10 @@
                       #$output
                       #$(file-append hermes-python "/bin/python3")
                       #$version)
-              (mkdir "wheels")
-              (for-each (lambda (name)
-                          (symlink (assoc-ref inputs name)
-                                   (string-append "wheels/" name)))
-                        '#$(map car hermes-wheel-inputs))
-              (apply invoke
-                     #$(file-append hermes-python "/bin/python3")
-                     "-m"
-                     "pip"
-                     "install"
-                     "--no-index"
-                     "--no-deps"
-                     "--no-compile"
-                     "--target"
-                     (string-append #$output "/lib/hermes/site-packages")
-                     (map (lambda (name)
-                            (string-append "wheels/" name))
-                          '#$(map car hermes-wheel-inputs)))
               (invoke "python3"
-                      #$%patch-elf
-                      #$output
-                      #$(file-append glibc "/lib/ld-linux-x86-64.so.2")
-                      #$(file-append glibc "/lib")
-                      #$(file-append zlib "/lib")
-                      (string-append #$gcc:lib "/lib"))
+                      #$(hermes-file "install-python-dependencies.py")
+                      (string-append #$output "/lib/hermes/site-packages")
+                      #$@hermes-python-dependencies)
               (for-each (lambda (command)
                           (substitute* (string-append #$output "/bin/" command)
                             (("#!/usr/bin/env bash")
@@ -271,9 +251,7 @@
                         #$(hermes-file "check-cli.py")
                         (string-append #$output "/bin/hermes")
                         #$version)))))))
-    (native-inputs (append (list (list "hermes-python" hermes-python)
-                                 (list "patchelf" patchelf))
-                           hermes-wheel-inputs))
+    (native-inputs (list (list "hermes-python" hermes-python)))
     (inputs (list (list "hermes-python" hermes-python)
                   (list "hermes-frontends" hermes-frontends)
                   (list "bash-minimal" bash-minimal)
@@ -308,12 +286,8 @@ and a gateway for desktop and remote clients.")
                   (copy-recursively (assoc-ref inputs "node-modules") "."
                                     #:log port)))
               (invoke "chmod" "-R" "u+w" "node_modules")
-              (invoke "python3"
-                      #$%patch-elf
-                      "node_modules"
-                      #$(file-append glibc "/lib/ld-linux-x86-64.so.2")
-                      #$(file-append glibc "/lib")
-                      (string-append #$gcc:lib "/lib"))))
+              #$%prepare-node-tools
+))
           (replace 'build
             (lambda _
               (invoke "node"
@@ -344,7 +318,6 @@ and a gateway for desktop and remote clients.")
                                 (string-append #$output "/web")))))))
     (native-inputs (list (list "node" node)
                          (list "python" python)
-                         (list "patchelf" patchelf)
                          (list "node-modules" %hermes-node-modules)))
     (inputs '())
     (synopsis "Prebuilt terminal and web interfaces for Hermes")))
@@ -396,6 +369,7 @@ and a gateway for desktop and remote clients.")
                         #$(hermes-file "light-remote-only.patch")))
               (copy-recursively (assoc-ref inputs "node-modules") ".")
               (invoke "chmod" "-R" "u+w" "node_modules")
+              #$%prepare-node-tools
               (mkdir "npm")
               (invoke "tar"
                       "xf"
@@ -410,12 +384,7 @@ and a gateway for desktop and remote clients.")
                       "--strip-components=1"
                       "-C"
                       "electron-headers")
-              (invoke "python3"
-                      #$%patch-elf
-                      "node_modules"
-                      #$(file-append glibc "/lib/ld-linux-x86-64.so.2")
-                      #$(file-append glibc "/lib")
-                      (string-append #$gcc:lib "/lib"))
+
               (invoke "node"
                       "npm/node_modules/node-gyp/bin/node-gyp.js"
                       "rebuild"
@@ -533,7 +502,6 @@ and a gateway for desktop and remote clients.")
                             #$(if light? "hermes-light" "hermes"))))))))))
     (native-inputs (list (list "node" node)
                          (list "python" python)
-                         (list "patchelf" patchelf)
                          (list "pkg-config" pkg-config)
                          (list "node-modules" %hermes-node-modules)))
     (inputs (list (list "bash-minimal" bash-minimal)

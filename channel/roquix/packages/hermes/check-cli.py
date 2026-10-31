@@ -19,6 +19,12 @@ with tempfile.TemporaryDirectory(prefix="hermes-check-") as home:
                             capture_output=True, text=True, timeout=20)
     assert f"v{version}" in result.stdout, result.stdout
     assert "Install directory: /gnu/store/" in result.stdout, result.stdout
+    # Source-built extensions must load together under the packaged interpreter.
+    extension_env = dict(env, PYTHONPATH=str(Path(command).parent.parent / "lib/hermes/site-packages"))
+    subprocess.run([sys.executable, "-c", "import _cffi_backend, PIL.Image, pillow_heif, "
+                    "cryptography.hazmat.bindings._rust, pydantic_core, jiter, "
+                    "watchfiles, psutil, resvg_py, nemo_relay, anydoc._anydoc"],
+                   env=extension_env, check=True, timeout=30)
     log_path = Path(home) / "gateway.log"
     with log_path.open("w") as log:
         process = subprocess.Popen([command, "serve", "--port", "0"], env=env,

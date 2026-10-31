@@ -16,18 +16,24 @@ Launch the graphical variants with =hermes-desktop= or
 setting (normally =~/.hermes=) for user data.  Package updates belong to
 Guix; the installed source and runtime live in the immutable store.
 
-The supported target is =x86_64-linux=.  The application and frontends are
-built from source.  CPython, Electron, Python wheels and npm dependencies
-come from pinned, hashed upstream artifacts.  This is not a fully
-source-bootstrapped dependency closure.  Core Python requirements are
-included; optional provider/tool integrations retain upstream's optional
-dependency setup behavior.
+The supported target is =x86_64-linux=.  Electron is the only dependency
+repackaged from a native binary release.  Python, the Python extensions, native
+JavaScript build tools, and Node PTY bindings are built from source.  Existing
+Guix packages are reused when their versions match the application lock.
+Python 3.14 inherits Guix's CPython build definition because this Hermes release
+supports 3.14 for normal execution; its older Python compatibility is limited
+to updating an existing installation.
 
 * Build contracts
 
 The npm acquisition derivation runs with network access and verifies the
-upstream lock.  Application compilation runs in ordinary offline Guix
-builders.  Node PTY bindings use the headers of the packaged Electron
+upstream lock.  It removes native binaries and precompiled WASM from the
+acquired tree.  Offline builders supply source-built esbuild, Rolldown,
+Tailwind, and Lightning CSS.  Yoga and es-module-lexer compile their WASM
+from C/C++ with Guix LLVM and source Emscripten.  Vite hashing uses equivalent
+JavaScript implementations.  Shiki uses its JavaScript regex engine throughout
+the desktop and web UI.  Application compilation runs in ordinary
+offline Guix builders.  Node PTY bindings use the headers of the packaged Electron
 version.  CLI checks start the installed gateway in a disposable home and
 verify its health endpoint without contacting a model provider.
 
@@ -38,6 +44,7 @@ The native GUI test checks this contract as well as the regular Desktop's
 connection to the packaged gateway.
 
 #+begin_src sh
+python3 tests/hermes-source-inputs.py
 guix repl -L channel -- tests/hermes-package.scm
 guix build -L channel hermes hermes-desktop hermes-desktop-light
 guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \
@@ -46,25 +53,29 @@ guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \
   /gnu/store/…-hermes-desktop-light/bin/hermes-desktop-light light
 #+end_src
 
-* Updating Python wheel inputs
+* Updating Python source inputs
 
-Use the interpreter selected by the release's =pm/lock.json=.  Export core
-requirements from =uv.lock= with =uv export --frozen --no-dev
---no-emit-project --format requirements-txt=.  Download those requirements
-with that interpreter's =pip download --no-deps --only-binary=:all:
---require-hashes -r requirements.txt -d wheels=.  =--no-deps= preserves the
-upstream lock's explicit dependency overrides instead of resolving them
-again through pip.
-
-From the channel checkout, regenerate origins with:
+Export core requirements from the upstream source with =uv export --frozen
+--no-dev --no-emit-project --format requirements-txt -o requirements.txt=.
+Use an empty source directory to fetch the source distributions selected for
+CPython 3.14 on x86_64 Linux, verify them against =uv.lock=, and regenerate the
+source-input module:
 
 #+begin_src sh
-python3 scripts/update-hermes-wheel-inputs.py \
-  /path/to/hermes/uv.lock /path/to/wheels VERSION \
-  channel/roquix/packages/hermes-wheel-inputs.scm
+guix shell python python-packaging -- \
+  python3 scripts/update-hermes-python-inputs.py \
+  /path/to/hermes/uv.lock /path/to/empty-source-directory VERSION \
+  channel/roquix/packages/hermes-python-inputs.scm \
+  --requirements /path/to/requirements.txt
 #+end_src
 
-The generator checks every downloaded wheel against its upstream lock
-hash.  Update the source, runtime, Electron headers, npm, and npm snapshot
-pins in =hermes.scm= together, and verify the new source revision embedded
-in the CLI and Desktop install stamps.
+The generator rejects source archives whose hashes differ from the lock.
+For each Rust extension, import its =Cargo.lock= into the shared
+=rust-crates.scm= using the group name recorded in =hermes-python-inputs.scm=.
+Preserve unrelated Cargo input groups when regenerating that shared module.
+
+Update the application source and Electron/header pins in =hermes.scm=,
+Python source in =hermes-python.scm=, and native Node tools in
+=hermes-node.scm= and =hermes-wasm.scm= together.  The npm source-cache hash includes binary removal
+and Shiki configuration.  Verify the installed CLI and both GUI variants,
+and run a temporary =guix pull= to check the channel-owned helper paths.
