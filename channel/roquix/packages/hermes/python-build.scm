@@ -8,7 +8,6 @@
   ;; Guix's pure Python build backends can run under Hermes's newer interpreter;
   ;; their installed directory still carries the Guix interpreter's version.
   (setenv "HOME" (getcwd))
-  (setenv "SOURCE_DATE_EPOCH" "315532800")
   (setenv "PYTHONPATH"
     (string-join
       (append-map

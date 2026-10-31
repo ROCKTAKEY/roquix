@@ -31,6 +31,10 @@
   (list #:python hermes-python-wrapper
         ;; The installed Hermes check exercises this locked dependency set together.
         #:tests? #f
+        #:configure-flags
+        (if cargo-group
+            #~'(("maturin.build-args" . "--offline --compatibility linux"))
+            #~'())
         #:imported-modules (append %pyproject-build-system-modules
                                    %cargo-build-system-modules
                                    (source-module-closure '((roquix packages
@@ -72,22 +76,7 @@
                                                             '(unpack-rust-crates
                                                               configure
                                                               check-for-pregenerated-files
-                                                              patch-cargo-checksums))))
-                                  #~(replace 'build
-                                             (lambda* (#:key outputs
-                                                       #:allow-other-keys)
-                                               (invoke "maturin"
-                                                       "build"
-                                                       "--offline"
-                                                       "--release"
-                                                       "--compatibility"
-                                                       "linux"
-                                                       "--interpreter"
-                                                       (which "python")
-                                                       "--out"
-                                                       (or (assoc-ref outputs
-                                                                      "wheel")
-                                                           "dist")))))
+                                                              patch-cargo-checksums)))))
                             '())
                      #$@(if restore-cargo-lock?
                             (list #~(add-before 'build
@@ -606,25 +595,10 @@ use-system-http-parser = 1
 
 (define-public hermes-python-markupsafe
   (package
+    (inherit (specification->package "python-markupsafe@3.0.3"))
     (name "hermes-python-markupsafe")
-    (version "3.0.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pallets/markupsafe/")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1hfnc1yq9affqhanqnqlzvmb64hkwfm212cmvd6ab6jyidqbipnr"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (python-arguments))
-    (native-inputs (list python-setuptools python-wheel))
-    (home-page "https://github.com/pallets/markupsafe/")
-    (synopsis "Safely add untrusted strings to HTML/XML markup")
-    (description "Safely add untrusted strings to HTML/XML markup.")
-    (license license:bsd-3)))
+    (arguments (python-arguments))
+    (native-inputs (list python-setuptools python-wheel))))
 
 (define hermes-python-mdurl
   (specification->package "python-mdurl@0.1.2"))
@@ -781,25 +755,10 @@ use-system-http-parser = 1
 
 (define-public hermes-python-psutil
   (package
+    (inherit (specification->package "python-psutil@7.2.2"))
     (name "hermes-python-psutil")
-    (version "7.2.2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/giampaolo/psutil")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1p5j3v78x795dd4xilmnvsswl09pkc81g9ax66akjdr0hkdnyl56"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (python-arguments))
-    (native-inputs (list python-setuptools python-wheel))
-    (home-page "https://github.com/giampaolo/psutil")
-    (synopsis "Cross-platform lib for process and system monitoring")
-    (description "Cross-platform lib for process and system monitoring.")
-    (license license:bsd-3)))
+    (arguments (python-arguments))
+    (native-inputs (list python-setuptools python-wheel))))
 
 (define hermes-python-ptyprocess
   (specification->package "python-ptyprocess@0.7.0"))

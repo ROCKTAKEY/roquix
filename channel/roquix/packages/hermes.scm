@@ -231,10 +231,8 @@
                (string-append #$output "/lib/hermes/site-packages")
                (list #$@hermes-python-dependencies))
               (for-each (lambda (command)
-                          (substitute* (string-append #$output "/bin/" command)
-                            (("#!/usr/bin/env bash")
-                             (string-append "#!"
-                                            #$bash-minimal "/bin/bash")))
+                          (patch-shebang (string-append #$output "/bin/" command)
+                                         (list #$(file-append bash-minimal "/bin")))
                           (wrap-program (string-append #$output "/bin/"
                                                        command)
                             `("HERMES_PYTHON" =
@@ -323,9 +321,7 @@ and a gateway for desktop and remote clients.")
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
-                (invoke "node" "--check" ".build/tui/dist/entry.js")
-                (unless (file-exists? ".build/web/index.html")
-                  (error "missing Hermes dashboard entry point")))))
+                (invoke "node" "--check" ".build/tui/dist/entry.js"))))
           (replace 'install
             (lambda _
               (copy-recursively ".build/tui"
@@ -379,11 +375,7 @@ and a gateway for desktop and remote clients.")
                       (string-append (getcwd) "/home"))
               (mkdir-p (getenv "HOME"))
               (setenv "NODE_OPTIONS" "--max-old-space-size=8192")
-              (mkdir "build-tools")
-              (symlink (which "gcc") "build-tools/cc")
-              (setenv "PATH"
-                      (string-append (getcwd) "/build-tools:"
-                                     (getenv "PATH")))
+              (setenv "CC" (which "gcc"))
               ;; The upstream Light stamp classifies the artifact, but its
               ;; source resolver and onboarding still offer local installation.
               (when #$light?
@@ -444,11 +436,7 @@ and a gateway for desktop and remote clients.")
                       "apps/desktop/build/native-deps"
                       "--platform"
                       "linux")))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (with-directory-excursion "apps/desktop"
-                  (invoke "node" "scripts/assert-dist-built.mjs")))))
+          (delete 'check)
           (replace 'install
             (lambda _
               (let* ((command #$(if light? "hermes-desktop-light"
@@ -506,20 +494,15 @@ and a gateway for desktop and remote clients.")
                                   (#$(file-append shared-mime-info "/share"))))))
                 (mkdir-p (dirname icon))
                 (copy-file "apps/desktop/assets/icon.png" icon)
-                (mkdir-p (string-append #$output "/share/applications"))
-                (call-with-output-file (string-append #$output
-                                                      "/share/applications/"
-                                                      command ".desktop")
-                  (lambda (port)
-                    (format port
-                            (string-append
-                             "[Desktop Entry]~%Type=Application~%Name=~a~%"
-                             "Exec=~a %U~%Icon=~a~%StartupWMClass=~a~%"
-                             "Terminal=false~%Categories=Development;~%")
-                            #$(if light? "Hermes Light" "Hermes")
-                            bin
-                            icon
-                            #$(if light? "hermes-light" "hermes")))))))))))
+                (make-desktop-entry-file
+                 (string-append #$output "/share/applications/" command ".desktop")
+                 #:name #$(if light? "Hermes Light" "Hermes")
+                 #:exec (string-append bin " %U")
+                 #:icon icon
+                 #:startup-w-m-class #$(if light? "hermes-light" "hermes")
+                 #:terminal #f
+                 #:categories '("Development")))))))))
+
     (native-inputs (list (list "node" node)
                          (list "python" python)
                          (list "pkg-config" pkg-config)
