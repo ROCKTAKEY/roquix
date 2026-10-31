@@ -25196,7 +25196,7 @@
                                                          rust-zerovec-derive-0.11.3
                                                          rust-zlib-rs-0.6.7
                                                          rust-zmij-1.0.21))
-                     (t3code-qcms-bindgen =>
+                     (wasm-bindgen-cli-0.2.100 =>
                                           (list rust-adler2-2.0.0
                                            rust-ahash-0.8.11
                                            rust-aho-corasick-1.1.3
@@ -26321,7 +26321,7 @@
                                                rust-zstd-0.13.3
                                                rust-zstd-safe-7.3.0
                                                rust-zstd-sys-2.1.2+zstd.1.5.7))
-                     (t3code-wasm-bindgen =>
+                     (wasm-bindgen-cli-0.2.126 =>
                                           (list rust-adler2-2.0.1
                                            rust-aho-corasick-1.1.4
                                            rust-alloc-no-stdlib-2.0.4
