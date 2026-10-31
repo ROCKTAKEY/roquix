@@ -1,0 +1,70 @@
+* Hermes packages
+
+=hermes= provides the CLI, local gateway, terminal UI, and web dashboard.
+=hermes-desktop= launches that CLI as its local backend and propagates it
+into the user's profile.  =hermes-desktop-light= connects to remote gateways
+and has no local agent dependency.  All three use the same upstream release.
+
+#+begin_src sh
+guix install hermes
+guix install hermes-desktop
+guix install hermes-desktop-light
+#+end_src
+
+Launch the graphical variants with =hermes-desktop= or
+=hermes-desktop-light=.  CLI and Desktop use the upstream =HERMES_HOME=
+setting (normally =~/.hermes=) for user data.  Package updates belong to
+Guix; the installed source and runtime live in the immutable store.
+
+The supported target is =x86_64-linux=.  The application and frontends are
+built from source.  CPython, Electron, Python wheels and npm dependencies
+come from pinned, hashed upstream artifacts.  This is not a fully
+source-bootstrapped dependency closure.  Core Python requirements are
+included; optional provider/tool integrations retain upstream's optional
+dependency setup behavior.
+
+* Build contracts
+
+The npm acquisition derivation runs with network access and verifies the
+upstream lock.  Application compilation runs in ordinary offline Guix
+builders.  Node PTY bindings use the headers of the packaged Electron
+version.  CLI checks start the installed gateway in a disposable home and
+verify its health endpoint without contacting a model provider.
+
+Upstream's Light stamp identifies the product but does not itself exclude
+the source-install bootstrap paths.  =light-remote-only.patch= makes its
+resolver, installer IPC, and onboarding enforce the remote-only contract.
+The native GUI test checks this contract as well as the regular Desktop's
+connection to the packaged gateway.
+
+#+begin_src sh
+guix repl -L channel -- tests/hermes-package.scm
+guix build -L channel hermes hermes-desktop hermes-desktop-light
+guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \
+  /gnu/store/…-hermes-desktop/bin/hermes-desktop
+guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \
+  /gnu/store/…-hermes-desktop-light/bin/hermes-desktop-light light
+#+end_src
+
+* Updating Python wheel inputs
+
+Use the interpreter selected by the release's =pm/lock.json=.  Export core
+requirements from =uv.lock= with =uv export --frozen --no-dev
+--no-emit-project --format requirements-txt=.  Download those requirements
+with that interpreter's =pip download --no-deps --only-binary=:all:
+--require-hashes -r requirements.txt -d wheels=.  =--no-deps= preserves the
+upstream lock's explicit dependency overrides instead of resolving them
+again through pip.
+
+From the channel checkout, regenerate origins with:
+
+#+begin_src sh
+python3 scripts/update-hermes-wheel-inputs.py \
+  /path/to/hermes/uv.lock /path/to/wheels VERSION \
+  channel/roquix/packages/hermes-wheel-inputs.scm
+#+end_src
+
+The generator checks every downloaded wheel against its upstream lock
+hash.  Update the source, runtime, Electron headers, npm, and npm snapshot
+pins in =hermes.scm= together, and verify the new source revision embedded
+in the CLI and Desktop install stamps.

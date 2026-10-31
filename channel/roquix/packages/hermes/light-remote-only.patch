@@ -1,0 +1,45 @@
+--- a/apps/desktop/electron/main.ts
++++ b/apps/desktop/electron/main.ts
+@@ -4893,6 +4893,15 @@
+ const installedRuntimeGate = createInstalledRuntimeGate(process.env, rememberLog)
+ 
+ async function resolveHermesBackend(backendArgs: string[]): Promise<ResolvedHermesBackend> {
++  if (isLightVariant()) {
++    return {
++      kind: 'bootstrap-needed', label: 'Connect to a remote Hermes gateway',
++      command: null, args: backendArgs, bootstrap: true, env: {}, shell: false,
++      activeRoot: ACTIVE_HERMES_ROOT, installStamp: INSTALL_STAMP,
++      isPackaged: IS_PACKAGED, platform: process.platform, local: 'none'
++    }
++  }
++
+   const payload = bundledPayload(process.resourcesPath)
+ 
+   if (payload) {
+@@ -5174,6 +5183,7 @@
+     bootstrapRepairRequested = false
+     bootstrapRepairAttempt = 0
+ 
++    if (isLightVariant()) throw new Error('Hermes Light cannot install a local agent')
+     const bootstrapResult = await runBootstrap({
+       installStamp: backend.installStamp,
+       activeRoot: backend.activeRoot,
+@@ -14566,6 +14576,7 @@
+ })
+ 
+ ipcMain.handle('hermes:bootstrap:continue-local', async () => {
++  if (isLightVariant()) throw new Error('Hermes Light only connects to remote gateways')
+   rememberLog('[bootstrap] local install selected by renderer; continuing first-launch bootstrap')
+   continueFirstRunLocalBootstrap()
+ 
+--- a/apps/desktop/src/components/desktop-install-overlay.tsx
++++ b/apps/desktop/src/components/desktop-install-overlay.tsx
+@@ -436,7 +436,7 @@
+     return null
+   }
+ 
+-  if (remoteOpen) {
++  if (remoteOpen || state.setupChoice) {
+     return <FirstRunRemoteSetup onBack={() => setRemoteOpen(false)} />
+   }
+ 
