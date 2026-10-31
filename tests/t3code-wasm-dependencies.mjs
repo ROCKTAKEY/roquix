@@ -24,6 +24,8 @@ test('Office consumers resolve source code with its newly generated WASM binding
     write('source/src/yrs/residentEngineWorker.ts', 'export {};');
     write('source/src/yrs/residentEngineWorkerClient.ts',
       "new Worker(new URL('./residentEngineWorker.mjs', import.meta.url));");
+    write('source/shared/media.ts', 'export const limit = 42;');
+    write('source/src/docx/media.ts', "export { limit } from '../../../../shared/media';");
     write('source/src/wasm/generated/module_bg.wasm', Buffer.from([0,97,115,109,1,0,0,0]));
     installOfficeSources(path.join(root, 'target'), path.join(root, 'source'));
     const installed = JSON.parse(readFileSync(path.join(root, 'target/package.json')));
@@ -34,5 +36,8 @@ test('Office consumers resolve source code with its newly generated WASM binding
     assert.ok(!existsSync(path.join(root, 'target/dist')));
     assert.match(readFileSync(path.join(root, 'target/src/yrs/residentEngineWorkerClient.ts'), 'utf8'),
       /residentEngineWorker\.ts/);
+    assert.equal(readFileSync(path.join(root, 'target/src/docx/media.ts'), 'utf8'),
+      "export { limit } from '../../shared/media';");
+    assert.ok(existsSync(path.join(root, 'target/shared/media.ts')));
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
