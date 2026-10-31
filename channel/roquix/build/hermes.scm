@@ -4,7 +4,7 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 textual-ports)
-  #:use-module (rnrs io ports)
+  #:use-module ((rnrs io ports) #:select (get-bytevector-all))
   #:use-module (json)
   #:export (prepare-desktop install-python-dependencies
             install-source-wasm install-cli-layout))

@@ -26,6 +26,11 @@ to updating an existing installation.
 
 * Build contracts
 
+Package assembly lives in =(roquix build hermes)=: source placement,
+installation metadata, dependency links, and insertion of source-built WASM.
+The CLI launcher bridge calls Hermes's own Python entry-point generator so its
+launcher contract stays aligned with the upstream application.
+
 The npm acquisition derivation runs with network access and verifies the
 upstream lock.  It removes native binaries and precompiled WASM from the
 acquired tree.  Offline builders supply source-built esbuild, Rolldown,
@@ -49,6 +54,7 @@ connection to the packaged gateway.
 
 #+begin_src sh
 python3 tests/hermes-source-inputs.py
+guix repl -L channel -- tests/hermes-build.scm
 guix repl -L channel -- tests/hermes-package.scm
 guix build -L channel hermes hermes-desktop hermes-desktop-light
 guix shell node xorg-server dbus font-dejavu -- node tests/hermes-desktop.mjs \

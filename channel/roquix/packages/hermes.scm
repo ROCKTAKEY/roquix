@@ -13,6 +13,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages node)
@@ -179,8 +180,7 @@
       (invoke "node" "node_modules/hermes-source-hashes/index.cjs")
       (copy-file #$(file-append hermes-yoga-wasm "/yoga-wasm-base64-esm.js")
                  "node_modules/yoga-layout/dist/binaries/yoga-wasm-base64-esm.js")
-      (invoke "python3" #$(hermes-file "install-source-wasm.py") "."
-              #$hermes-es-module-lexer-wasm)
+      (install-source-wasm "." #$hermes-es-module-lexer-wasm)
       ;; The selected Node supplies WebSocket; no older-runtime fallback is needed.
       (substitute* "ui-tui/src/gatewayClient.ts"
         (("import [{] WebSocket as UndiciWebSocket [}] from 'undici'")
@@ -205,23 +205,30 @@
     (build-system gnu-build-system)
     (arguments
      (list
+      #:modules '((guix build gnu-build-system)
+                  (guix build utils)
+                  (roquix build hermes))
+      #:imported-modules `(,@%default-gnu-imported-modules
+                           (roquix build hermes) (guix base64))
       #:strip-binaries? #f
       #:phases
-      #~(modify-phases %standard-phases
+      (with-extensions (list guile-json-4)
+        #~(modify-phases %standard-phases
           (delete 'configure)
           (delete 'build)
           (delete 'check)
           (replace 'install
             (lambda* (#:key inputs #:allow-other-keys)
+              (install-cli-layout #$output
+                                  #$(file-append hermes-python "/bin/python3")
+                                  #$version)
               (invoke "python3"
-                      #$(hermes-file "install-cli.py")
+                      #$(hermes-file "generate-cli-launchers.py")
                       #$output
-                      #$(file-append hermes-python "/bin/python3")
-                      #$version)
-              (invoke "python3"
-                      #$(hermes-file "install-python-dependencies.py")
-                      (string-append #$output "/lib/hermes/site-packages")
-                      #$@hermes-python-dependencies)
+                      #$(file-append hermes-python "/bin/python3"))
+              (install-python-dependencies
+               (string-append #$output "/lib/hermes/site-packages")
+               (list #$@hermes-python-dependencies))
               (for-each (lambda (command)
                           (substitute* (string-append #$output "/bin/" command)
                             (("#!/usr/bin/env bash")
@@ -251,7 +258,7 @@
                 (invoke "python3"
                         #$(hermes-file "check-cli.py")
                         (string-append #$output "/bin/hermes")
-                        #$version)))))))
+                        #$version))))))))
     (native-inputs (list (list "hermes-python" hermes-python)))
     (inputs (list (list "hermes-python" hermes-python)
                   (list "hermes-frontends" hermes-frontends)
@@ -277,8 +284,14 @@ and a gateway for desktop and remote clients.")
     (name "hermes-frontends")
     (arguments
      (list
+      #:modules '((guix build gnu-build-system)
+                  (guix build utils)
+                  (roquix build hermes))
+      #:imported-modules `(,@%default-gnu-imported-modules
+                           (roquix build hermes) (guix base64))
       #:phases
-      #~(modify-phases %standard-phases
+      (with-extensions (list guile-json-4)
+        #~(modify-phases %standard-phases
           (delete 'configure)
           (add-after 'unpack 'prepare-dependencies
             (lambda* (#:key inputs #:allow-other-keys)
@@ -316,7 +329,7 @@ and a gateway for desktop and remote clients.")
               (copy-recursively ".build/tui"
                                 (string-append #$output "/tui"))
               (copy-recursively ".build/web"
-                                (string-append #$output "/web")))))))
+                                (string-append #$output "/web"))))))))
     (native-inputs (list (list "node" node)
                          (list "python" python)
                          (list "node-modules" %hermes-node-modules)))
@@ -348,9 +361,15 @@ and a gateway for desktop and remote clients.")
     (name (if light? "hermes-desktop-light" "hermes-desktop"))
     (arguments
      (list
+      #:modules '((guix build gnu-build-system)
+                  (guix build utils)
+                  (roquix build hermes))
+      #:imported-modules `(,@%default-gnu-imported-modules
+                           (roquix build hermes) (guix base64))
       #:strip-binaries? #f
       #:phases
-      #~(modify-phases %standard-phases
+      (with-extensions (list guile-json-4)
+        #~(modify-phases %standard-phases
           (delete 'configure)
           (add-after 'unpack 'prepare-dependencies
             (lambda* (#:key inputs #:allow-other-keys)
@@ -395,10 +414,8 @@ and a gateway for desktop and remote clients.")
                       "--build-from-source"
                       "--runtime=electron"
                       "--target=44.9.3")
-              (invoke "python3"
-                      #$(hermes-file "prepare-desktop.py")
-                      #$%hermes-version
-                      #$(if light? "light" "bootstrap"))))
+              (prepare-desktop #$%hermes-version
+                               #$(if light? "light" "bootstrap"))))
           (replace 'build
             (lambda _
               (invoke "node"
@@ -500,7 +517,7 @@ and a gateway for desktop and remote clients.")
                             #$(if light? "Hermes Light" "Hermes")
                             bin
                             icon
-                            #$(if light? "hermes-light" "hermes"))))))))))
+                            #$(if light? "hermes-light" "hermes")))))))))))
     (native-inputs (list (list "node" node)
                          (list "python" python)
                          (list "pkg-config" pkg-config)
