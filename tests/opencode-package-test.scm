@@ -5,7 +5,7 @@
 
 (test-begin "opencode-package")
 
-(test-equal "OpenCode tracks the V2 release" "2.0.32"
+(test-equal "OpenCode tracks the V2 release" "2.2.5"
             (package-version opencode))
 
 (test-equal "source tag matches the packaged release"

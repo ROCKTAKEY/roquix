@@ -15,7 +15,7 @@
   #:use-module (gnu packages rust-apps))
 
 (define %opencode-version
-  "2.0.32")
+  "2.2.5")
 
 (define %opencode-source
   (origin
@@ -24,10 +24,10 @@
           (url "https://github.com/anomalyco/opencode")
           (commit (string-append "v" %opencode-version))))
     (file-name (git-file-name "opencode" %opencode-version))
-    (sha256 (base32 "13hg76k7wl964kkdcsrnf3l85jwvqrfhn2kxlcagmp7kbv6cs118"))))
+    (sha256 (base32 "0k1f31sf5w7f6210bwic65r9klrmcnm4l13p7nb65mz2qp6mrbgx"))))
 
 (define %opencode-node-modules
-  (bun-node-modules-from-layout %opencode-2.0.32-npm-inputs
+  (bun-node-modules-from-layout %opencode-2.2.5-npm-inputs
                                 #:name (string-append "opencode-node-modules-"
                                         %opencode-version)))
 
@@ -59,7 +59,7 @@
                 ;; packageManager pins upstream's development toolchain.
                 ;; Guix uses its source-bootstrapped runtime and checks its
                 ;; compatibility with the compiled service smoke test below.
-                ;; https://github.com/anomalyco/opencode/blob/v2.0.32/package.json
+                ;; https://github.com/anomalyco/opencode/blob/v2.2.5/package.json
                 (substitute* "packages/script/src/index.ts"
                   (("const expectedBunVersionRange = .*")
                    "const expectedBunVersionRange = \"^1.3.14\"
