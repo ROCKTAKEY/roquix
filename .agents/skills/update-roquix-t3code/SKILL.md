@@ -75,6 +75,32 @@ for channel verification.
   `rust-crates.scm`. Use `package-rust-for-guix` when native Rust inputs or
   packaging need changes. Preserve source-built addons and the offline
   application build; npm prebuilt native binaries must not bypass them.
+- Match document dependency versions to the source pins in
+  `channel/roquix/packages/t3code-wasm.scm` (Office and SQL) and
+  `channel/roquix/packages/pdfjs.scm` (PDF.js and its codecs). Shared Emscripten,
+  wasm-bindgen, and Rust WASM sysroots live in
+  `channel/roquix/packages/wasm.scm`. Betteroffice module settings use the
+  validated `wasm-module` constructor. Betteroffice needs its matching
+  TypeScript sources and generated wasm-bindgen JavaScript; replacing only
+  the WASM can break the binding ABI. Preserve shared source modules and
+  worker entry resolution when staging those sources. PDF.js also needs its
+  worker rebuilt against the generated codec bindings; the codecs have
+  independent derivations. Keep PDF.js's version and commit authoritative for
+  its source, dependency cache, and generated worker metadata.
+  SQL.js's conditional browser export requires the browser build as well as
+  its default entry.
+  Keep ordinary dependency staging and Linux icon generation in Scheme phases.
+  `(roquix build t3code-dependencies)` handles Office source conversion and
+  runtime dependency copying and linking. The small JavaScript selector calls
+  upstream dependency-selection APIs and returns JSON; keep those policies
+  authoritative in upstream rather than duplicating them in Scheme. Preserve
+  JSON object order when rewriting conditional exports (`#:ordered #t`).
+- Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
+  sysroot is a hidden package binding, so an unsuccessful name search does
+  not prove its absence. A separately built sysroot must match the compiler;
+  verify it by linking a WASM program, including the paired `.rlib` and
+  `.rmeta` files used by recent Rust releases. Regenerate changed WASM Cargo
+  input groups from the corresponding upstream locks.
 - Check source substitutions against the new source, including the packaged
   Chromium preview service and test-toolchain Vite resolution. Keep the Guix
   package version authoritative for application version output because the
@@ -99,7 +125,9 @@ Run the repository checks:
 ```sh
 guix repl -L channel -- tests/t3code-cli-package.scm
 guix repl -L channel -- tests/t3code-home-service.scm
-node --test tests/t3code-runtime-dependencies.mjs
+guix repl -L channel -- tests/t3code-wasm-module.scm
+guix repl -L channel -- tests/pdfjs-package.scm
+node --test tests/t3code-runtime-dependencies.mjs tests/t3code-office-sources.mjs
 ```
 
 Build all four exact package definitions, retaining build logs:
@@ -120,6 +148,13 @@ expected status. An unknown GET route can return the SPA HTML with status
 POST `/api/auth/websocket-ticket` is suitable for checking unauthenticated
 rejection and paired access when present in the selected release. Verify
 single-use pairing credentials as well, and keep credentials out of logs.
+
+The installed WASM check compares module hashes with declared source-build
+outputs and rejects Windows or macOS executables. Its expected count must
+follow the selected release's actual assets. Run staging regressions with the
+package's Node version too: these tests exercise upstream selection and Node
+resolution through the Scheme staging implementation, including distinct peer
+closures, cycles, and read-only Office sources.
 
 Verify both variant-specific functionality and shared runtime contracts.
 Run relevant lint and `git diff --check`. Use a temporary-profile `guix pull`

@@ -42,6 +42,8 @@
   #:use-module (gnu packages rust)
   #:use-module (gnu packages zig)
   #:use-module (nongnu packages electron)
+  #:use-module (roquix packages t3code-wasm)
+  #:use-module (roquix packages pdfjs)
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
@@ -639,20 +641,16 @@
       (inherit helper)
       (native-inputs (list dbus)))))
 
-(define %t3code-runtime-dependencies-script
+(define %t3code-dependency-selector
   (local-file (canonicalize-path (search-path %load-path
-                  "roquix/packages/aux-files/t3code-runtime-dependencies.mjs"))))
-
-(define %t3code-stage-linux-icons-script
-  (local-file (canonicalize-path (search-path %load-path
-                  "roquix/packages/aux-files/t3code-stage-linux-icons.mjs"))))
+                  "roquix/packages/aux-files/t3code-select-runtime-dependencies.mjs"))))
 
 (define %t3code-installed-tests
   (local-file (canonicalize-path (dirname (search-path %load-path
                   "roquix/packages/aux-files/t3code/package-tests/check-installed")))
               #:recursive? #t))
 
-(define* (t3code-build-phases version ghostty-revision dependencies-script
+(define* (t3code-build-phases version ghostty-revision dependency-selector
                               #:key (desktop? #t))
   (with-extensions (list guile-json-4)
     #~(let ()
@@ -768,6 +766,44 @@
                                     (chmod target #o755))
                                   (cdr replacement))) replacements)))
 
+        (define (stage-document-dependencies)
+          (let ((packages
+                 (map (lambda (file)
+                        (cons (assoc-ref (call-with-input-file file json->scm) "name")
+                              (dirname file)))
+                      (find-files "node_modules"
+                                  (lambda (file stat)
+                                    (and (eq? (stat:type stat) 'regular)
+                                         (string=? (basename file) "package.json")))
+                                  #:fail-on-error? #t))))
+            (define (for-package name install)
+              (let ((targets (filter (lambda (entry) (equal? (car entry) name))
+                                     packages)))
+                (when (null? targets)
+                  (error "Missing locked document dependency" name))
+                (for-each (lambda (entry) (install (cdr entry))) targets)))
+            (for-each
+             (lambda (entry)
+               (for-package (string-append "@betteroffice/" (car entry))
+                 (lambda (target)
+                   (install-office-sources target (cdr entry)))))
+             (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
+                   (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
+                   (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
+            (for-package "sql.js"
+              (lambda (target)
+                (let ((dist (string-append target "/dist")))
+                  (delete-file-recursively dist)
+                  (copy-recursively #$t3code-sql-wasm dist))))
+            (for-package "pdfjs-dist"
+              (lambda (target)
+                (for-each (lambda (name)
+                            (let ((directory (string-append target "/" name)))
+                              (when (file-exists? directory)
+                                (delete-file-recursively directory))))
+                          '("build" "legacy" "wasm"))
+                (copy-recursively #$t3code-pdfjs-wasm target)))))
+
         (define* (configure-application #:key inputs #:allow-other-keys)
           (copy-recursively (assoc-ref inputs "node-modules") ".")
           (invoke "chmod" "-R" "u+w" ".")
@@ -784,6 +820,7 @@
                   (string-append (getcwd) "/node_modules/.bin:"
                                  (getenv "PATH")))
           (replace-native-dependencies inputs)
+          (stage-document-dependencies)
           (patch-native-files "node_modules" inputs)
           (mkdir "spdx")
           (invoke "tar"
@@ -866,15 +903,22 @@
               (invoke "node" "scripts/build-browser-secret.mjs")
               (invoke "node" "scripts/build-preview-annotation-css.mjs")
               (invoke "vp" "pack"))
-            ;; Reuse upstream's asset selection and Linux icon staging without
-            ;; running its AppImage/deb packaging and Electron download steps.
-            ;; https://github.com/pingdotgg/t3code/blob/v0.1.2/scripts/build-desktop-artifact.ts
-            (substitute* "scripts/build-desktop-artifact.ts"
-              (("^const stageLinuxIcons =")
-               "export const stageLinuxIcons ="))
-            (copy-file #$%t3code-stage-linux-icons-script
-                       "scripts/guix-stage-linux-icons.mjs")
-            (invoke "node" "scripts/guix-stage-linux-icons.mjs" version)))
+            ;; Electron uses the full-size PNG; hicolor needs nominal sizes.
+            ;; https://specifications.freedesktop.org/icon-theme/0.12/
+            (let* ((source (if (string-match "-nightly\\.[0-9]{8}\\.[0-9]+$" version)
+                               "assets/nightly/nightly-universal-1024.png"
+                               "assets/prod/black-universal-1024.png"))
+                   (resources "apps/desktop/resources")
+                   (icons (string-append resources "/icons")))
+              (mkdir-p icons)
+              (copy-file source (string-append resources "/icon.png"))
+              (for-each
+               (lambda (size)
+                 (let ((dimensions (format #f "~ax~a" size size)))
+                   (invoke (search-input-file inputs "/bin/convert")
+                           source "-resize" dimensions
+                           (string-append icons "/" dimensions ".png"))))
+               '(16 22 24 32 48 64 128 256 512)))))
 
         (define* (check-application #:key tests? #:allow-other-keys)
           (when tests?
@@ -889,7 +933,7 @@
                         "src/app/DesktopEnvironment.test.ts")))))
 
         (define (install-application inputs output version
-                                     dependencies-script)
+                                     dependency-selector)
           (let* ((appdir (string-append output "/lib/t3code"))
                  (resources (string-append appdir "/resources"))
                  (application (string-append resources "/app"))
@@ -911,8 +955,7 @@
                          (string-append appdir "/t3code"))
             (chmod (string-append appdir "/t3code") #o755)
             (mkdir-p resources)
-            (invoke "node" dependencies-script
-                    (getcwd) application)
+            (stage-runtime-dependencies (getcwd) application dependency-selector)
             (for-each (lambda (directory)
                         (copy-recursively directory
                                           (string-append
@@ -1023,10 +1066,11 @@
              '(("t3code.desktop" . "Categories=Development;\nStartupWMClass=t3code\n")
                ("com.t3tools.T3Code.desktop" . "NoDisplay=true\n")))))
 
-        (define (install-cli inputs output dependencies-script)
+        (define (install-cli inputs output dependency-selector)
           (let* ((application (string-append output "/lib/t3code-cli"))
                  (bin (string-append output "/bin")))
-            (invoke "node" dependencies-script (getcwd) application "cli")
+            (stage-runtime-dependencies (getcwd) application dependency-selector
+                                        #:variant "cli")
             (copy-recursively "apps/server/dist"
                               (string-append application "/apps/server/dist"))
             (copy-file "apps/server/package.json"
@@ -1087,6 +1131,17 @@
                 ("true")))))
 
         (modify-phases %standard-phases
+          (add-after 'validate-runpath 'check-source-built-wasm
+            (lambda* (#:key tests? outputs #:allow-other-keys)
+              (when tests?
+                (invoke "node"
+                        #$(file-append %t3code-installed-tests "/check-wasm.mjs")
+                        (assoc-ref outputs "out")
+                        #$t3code-betteroffice-docx-wasm
+                        #$t3code-betteroffice-sheets-wasm
+                        #$t3code-sql-wasm
+                        #$t3code-pdfjs-wasm
+                        "apps/web/src/terminal/ghostty/vendor"))))
           (add-after 'validate-runpath 'check-installed
             (lambda* (#:key tests? inputs outputs #:allow-other-keys)
               (when tests?
@@ -1155,9 +1210,9 @@
                   (install-application inputs
                                        (assoc-ref outputs "out")
                                        #$version
-                                       #$dependencies-script)
+                                       #$dependency-selector)
                   (install-cli inputs (assoc-ref outputs "out")
-                               #$dependencies-script))))
+                               #$dependency-selector))))
           (add-after 'install 'wrap-desktop
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (when #$desktop?
@@ -1174,6 +1229,7 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
+                  (roquix build t3code-dependencies)
                   (guix elf)
                   (json)
                   (ice-9 ftw)
@@ -1184,9 +1240,10 @@
                   (srfi srfi-13))
       #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build syscalls)
+                           (roquix build t3code-dependencies)
                            (guix elf))
       #:phases (t3code-build-phases version %ghostty-revision
-                                    %t3code-runtime-dependencies-script)))
+                                    %t3code-dependency-selector)))
     (native-inputs `(("t3code-vite-plus-native" ,t3code-vite-plus-native)
                      ("xvfb-run" ,xvfb-run)
                      ("hicolor-icon-theme" ,hicolor-icon-theme)
@@ -1269,7 +1326,7 @@ Electron runtime.")
      (substitute-keyword-arguments (package-arguments t3code)
        ((#:phases phases)
         (t3code-build-phases %t3code-version %ghostty-revision
-                             %t3code-runtime-dependencies-script
+                             %t3code-dependency-selector
                              #:desktop? #f))))
     (inputs (list (list "node" node)
                   (list "ungoogled-chromium" ungoogled-chromium)
@@ -1318,7 +1375,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
      (substitute-keyword-arguments (package-arguments base)
        ((#:phases phases)
         (t3code-build-phases version %ghostty-revision
-                             %t3code-runtime-dependencies-script
+                             %t3code-dependency-selector
                              #:desktop? desktop?))))
     (home-page "https://github.com/ROCKTAKEY/t3code")
     (synopsis (if desktop?
