@@ -264,7 +264,7 @@
                   (list "nss-certs-for-test" nss-certs-for-test)))
     (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/NousResearch/hermes-agent")
-    (synopsis "Hermes AI agent and command-line interface")
+    (synopsis "AI agent with command-line and gateway interfaces")
     (description
      "Hermes is an AI agent with tool use, persistent sessions, skills,
 and a gateway for desktop and remote clients.")
@@ -320,7 +320,7 @@ and a gateway for desktop and remote clients.")
                          (list "python" python)
                          (list "node-modules" %hermes-node-modules)))
     (inputs '())
-    (synopsis "Prebuilt terminal and web interfaces for Hermes")))
+    (synopsis "Terminal and web interfaces for Hermes")))
 
 (define hermes-electron
   (package
