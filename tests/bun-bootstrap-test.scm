@@ -14,7 +14,7 @@
   (@@ (roquix packages bun-bootstrap) replace-bun-cargo-inputs))
 
 (define call-with-limited-cpu-affinity
-  (@ (roquix packages bun-bootstrap affinity)
+  (@ (roquix build bun affinity)
      call-with-limited-cpu-affinity))
 
 (define %bun-1.0.7-webkit-source
@@ -77,13 +77,13 @@
              (let ((arguments (memq #:imported-modules (package-arguments
                                                         bun-bootstrap-1.3.1-base))))
                (and arguments
-                    (member '(roquix packages bun-bootstrap esbuild)
+                    (member '(roquix build bun esbuild)
                             (cadr arguments)))))
 
 (test-assert "TypeScript bootstrap stages load esbuild binding support"
              (package-loads-build-module?
               bun-bootstrap-1.3.14
-              '(roquix packages bun-bootstrap esbuild)))
+              '(roquix build bun esbuild)))
 
 (for-each (lambda (entry)
             (let ((inputs (bun-cargo-inputs (car entry))))
