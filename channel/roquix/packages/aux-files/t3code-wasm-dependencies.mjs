@@ -25,6 +25,13 @@ export function installOfficeSources(target, source) {
   }
   rmSync(path.join(target, 'dist'), { recursive: true, force: true });
   cpSync(path.join(source, 'src'), path.join(target, 'src'), { recursive: true });
+  if (metadata.name === '@betteroffice/docx') {
+    const client = path.join(target, 'src/yrs/residentEngineWorkerClient.ts');
+    const contents = readFileSync(client, 'utf8');
+    if (!contents.includes('./residentEngineWorker.mjs')) throw new Error('Unrecognized DOCX worker entry');
+    rmSync(client);
+    writeFileSync(client, contents.replaceAll('./residentEngineWorker.mjs', './residentEngineWorker.ts'));
+  }
   writeFileSync(path.join(target, 'package.json'), JSON.stringify(updated, null, 2) + '\n');
 }
 
