@@ -10,17 +10,18 @@
   #:use-module (roquix packages node-xyz))
 
 (define-public hermes-esbuild
-  (package
-    (inherit (hidden-package esbuild))
-    (version "0.28.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri "https://codeload.github.com/evanw/esbuild/tar.gz/bb9db84c02433fbe37b3509f53f9f3e3cc48725e")
-        (file-name "esbuild-0.28.1.tar.gz")
-        (sha256 (base32 "08b9phrcx60qqab9yvrw81j4qlsvs1zc15w0a5q724809z9q6gdb"))
-        (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "npm"))))))
+  (hidden-package
+    (package
+      (inherit esbuild)
+      (version "0.28.1")
+      (source
+        (origin
+          (method url-fetch)
+          (uri "https://codeload.github.com/evanw/esbuild/tar.gz/bb9db84c02433fbe37b3509f53f9f3e3cc48725e")
+          (file-name "esbuild-0.28.1.tar.gz")
+          (sha256 (base32 "08b9phrcx60qqab9yvrw81j4qlsvs1zc15w0a5q724809z9q6gdb"))
+          (modules '((guix build utils)))
+          (snippet '(delete-file-recursively "npm")))))))
 
 (define-public hermes-lightningcss-native
   (hidden-package
@@ -32,32 +33,33 @@
     "lightningcss.linux-x64-gnu.node" #:license-value license:mpl2.0)))
 
 (define-public hermes-rolldown-native
-  (let ((base
-         (native-library
-           "hermes-rolldown" "1.2.13" "rolldown/rolldown" "v1.2.13"
-           "016g64x7yrky5vjaw0hqvbvs6mw60ncydda984knih1zvk8kcbgj"
-           "." "rolldown_binding" "librolldown_binding.so"
-           "rolldown-binding.linux-x64-gnu.node" #:rust rust-1.96)))
-    (package
-      (inherit (hidden-package base))
-      (native-inputs (list cmake-minimal))
-      (arguments
-        (substitute-keyword-arguments
-          (package-arguments base)
-          ((#:cargo-build-flags flags) ''("--release" "--package" "rolldown_binding" "--ignore-rust-version"))
-          ((#:phases phases)
-           #~(modify-phases #$phases
-               (add-after 'unpack 'configure-source-build
-                 (lambda _
-                   (setenv "RUSTC_BOOTSTRAP" "1")
-                   (setenv "RUSTFLAGS" "--cfg tokio_unstable")
-                   (setenv "WORKSPACE_DIR" (getcwd))))
-               (add-after 'unpack-rust-crates 'enable-existing-compiler-api
-                 (lambda _
-                   ;; Rust 1.96 provides bit_width behind its feature gate.
-                   (substitute* "guix-vendor/rust-oxc-ecmascript-0.153.0.tar.gz/src/lib.rs"
-                     (("^//! Methods defined")
-                      "#![feature(uint_bit_width)]\n//! Methods defined")))))))))))
+  (hidden-package
+    (let ((base
+           (native-library
+             "hermes-rolldown" "1.2.13" "rolldown/rolldown" "v1.2.13"
+             "016g64x7yrky5vjaw0hqvbvs6mw60ncydda984knih1zvk8kcbgj"
+             "." "rolldown_binding" "librolldown_binding.so"
+             "rolldown-binding.linux-x64-gnu.node" #:rust rust-1.96)))
+      (package
+        (inherit base)
+        (native-inputs (list cmake-minimal))
+        (arguments
+          (substitute-keyword-arguments
+            (package-arguments base)
+            ((#:cargo-build-flags flags) ''("--release" "--package" "rolldown_binding" "--ignore-rust-version"))
+            ((#:phases phases)
+             #~(modify-phases #$phases
+                 (add-after 'unpack 'configure-source-build
+                   (lambda _
+                     (setenv "RUSTC_BOOTSTRAP" "1")
+                     (setenv "RUSTFLAGS" "--cfg tokio_unstable")
+                     (setenv "WORKSPACE_DIR" (getcwd))))
+                 (add-after 'unpack-rust-crates 'enable-existing-compiler-api
+                   (lambda _
+                     ;; Rust 1.96 provides bit_width behind its feature gate.
+                     (substitute* "guix-vendor/rust-oxc-ecmascript-0.153.0.tar.gz/src/lib.rs"
+                       (("^//! Methods defined")
+                        "#![feature(uint_bit_width)]\n//! Methods defined"))))))))))))
 
 (define-public hermes-hash-sources
   (list

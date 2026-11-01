@@ -97,6 +97,9 @@ has different content from the source distribution recorded in =uv.lock=.
 
 Review the drafts before incorporating definitions into =python.scm=.  Reuse
 existing Guix packages when the locked version and Python compatibility match.
+Hermes-specific dependencies are wrapped in =hidden-package=, including the
+generated drafts, so package discovery exposes only the CLI and desktop
+applications.  Preserve this wrapper when adapting imported definitions.
 The importer produces a starting definition: build dependencies, Python markers,
 license metadata, native libraries, and Hermes's =tool.uv.override-dependencies=
 need review.  Keep runtime inputs within the selected lock closure and use
