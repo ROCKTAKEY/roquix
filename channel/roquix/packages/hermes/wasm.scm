@@ -64,7 +64,7 @@
 
 (define-public hermes-es-module-lexer-wasm
   (package
-    (inherit (hidden-package hermes-yoga-wasm))
+    (inherit hermes-yoga-wasm)
     (name "hermes-es-module-lexer-wasm")
     (version "2.3.1")
     (source
