@@ -10,7 +10,7 @@
 ;; Guix's CPython phases and system libraries.
 (define-public hermes-python
   (package
-    (inherit python-3.13)
+    (inherit (hidden-package python-3.13))
     (name "hermes-python")
     (version "3.14.9")
     (source
@@ -73,6 +73,7 @@
             version)))))
 
 (define-public hermes-python-wrapper
-  ((@@ (gnu packages python) wrap-python3)
-   hermes-python))
+  (hidden-package
+   ((@@ (gnu packages python) wrap-python3)
+    hermes-python)))
 

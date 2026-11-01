@@ -11,7 +11,7 @@
 
 (define-public hermes-esbuild
   (package
-    (inherit esbuild)
+    (inherit (hidden-package esbuild))
     (version "0.28.1")
     (source
       (origin
@@ -23,12 +23,13 @@
         (snippet '(delete-file-recursively "npm"))))))
 
 (define-public hermes-lightningcss-native
-  (native-library
+  (hidden-package
+   (native-library
     "hermes-lightningcss" "1.32.0" "parcel-bundler/lightningcss"
     "7f8a861bdee476fe90c89a8badeb3fd33a99c51a"
     "1611hkr07zg56ck2gabi65n3m5ifvcikmbq5v46czadigf51yidr"
     "." "lightningcss_node" "liblightningcss_node.so"
-    "lightningcss.linux-x64-gnu.node" #:license-value license:mpl2.0))
+    "lightningcss.linux-x64-gnu.node" #:license-value license:mpl2.0)))
 
 (define-public hermes-rolldown-native
   (let ((base
@@ -38,7 +39,7 @@
            "." "rolldown_binding" "librolldown_binding.so"
            "rolldown-binding.linux-x64-gnu.node" #:rust rust-1.96)))
     (package
-      (inherit base)
+      (inherit (hidden-package base))
       (native-inputs (list cmake-minimal))
       (arguments
         (substitute-keyword-arguments

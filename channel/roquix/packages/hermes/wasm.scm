@@ -17,6 +17,7 @@
 
 (define-public hermes-yoga-wasm
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-yoga-wasm")
     (version "3.2.1")
     (source
@@ -63,7 +64,7 @@
 
 (define-public hermes-es-module-lexer-wasm
   (package
-    (inherit hermes-yoga-wasm)
+    (inherit (hidden-package hermes-yoga-wasm))
     (name "hermes-es-module-lexer-wasm")
     (version "2.3.1")
     (source

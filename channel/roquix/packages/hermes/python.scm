@@ -89,6 +89,7 @@
 
 (define-public hermes-python-annotated-doc
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-annotated-doc")
     (version "0.0.5")
     (source
@@ -113,6 +114,7 @@ Annotated.")
 
 (define-public hermes-python-annotated-types
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-annotated-types")
     (version "0.8.0")
     (source
@@ -135,6 +137,7 @@ Annotated.")
 
 (define-public hermes-python-anyio
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-anyio")
     (version "4.14.2")
     (source
@@ -157,6 +160,7 @@ Annotated.")
 
 (define-public hermes-python-browser-harness
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-browser-harness")
     (version "0.1.13")
     (source
@@ -197,6 +201,7 @@ Annotated.")
 
 (define-public hermes-python-cdp-use
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-cdp-use")
     (version "1.4.5")
     (source
@@ -219,6 +224,7 @@ Annotated.")
 
 (define-public hermes-python-certifi
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-certifi")
     (version "2026.10.19")
     (source
@@ -241,6 +247,7 @@ Annotated.")
 
 (define-public hermes-python-cffi
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-cffi")
     (version "2.1.1")
     (source
@@ -263,6 +270,7 @@ Annotated.")
 
 (define-public hermes-python-charset-normalizer
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-charset-normalizer")
     (version "3.5.1")
     (source
@@ -284,6 +292,7 @@ alternative to Chardet.")
 
 (define-public hermes-python-click
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-click")
     (version "8.4.2")
     (source
@@ -306,6 +315,7 @@ alternative to Chardet.")
 
 (define-public hermes-python-croniter
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-croniter")
     (version "6.0.0")
     (source
@@ -330,6 +340,7 @@ alternative to Chardet.")
 
 (define-public hermes-python-cryptography
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-cryptography")
     (version "50.0.1")
     (source
@@ -366,6 +377,7 @@ Python developers.")
 
 (define-public hermes-python-fastapi
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-fastapi")
     (version "0.133.1")
     (source
@@ -399,6 +411,7 @@ for production.")
 
 (define-public hermes-python-fetch-use
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-fetch-use")
     (version "0.4.0")
     (source
@@ -418,6 +431,7 @@ for production.")
 
 (define-public hermes-python-fire
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-fire")
     (version "0.7.1")
     (source
@@ -443,6 +457,7 @@ interfaces.")
 
 (define-public hermes-python-firecrawl-anydoc
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-firecrawl-anydoc")
     (version "0.2.4")
     (source
@@ -474,6 +489,7 @@ interfaces.")
 
 (define-public hermes-python-httptools
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-httptools")
     (version "0.8.0")
     (source
@@ -512,6 +528,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-idna
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-idna")
     (version "3.19")
     (source
@@ -537,6 +554,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-jiter
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-jiter")
     (version "0.16.0")
     (source
@@ -571,6 +589,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-markdown-it-py
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-markdown-it-py")
     (version "4.2.0")
     (source
@@ -595,7 +614,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-markupsafe
   (package
-    (inherit (specification->package "python-markupsafe@3.0.3"))
+    (inherit (hidden-package (specification->package "python-markupsafe@3.0.3")))
     (name "hermes-python-markupsafe")
     (arguments (python-arguments))
     (native-inputs (list python-setuptools python-wheel))))
@@ -605,6 +624,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-nemo-relay
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-nemo-relay")
     (version "0.10.0")
     (source
@@ -632,6 +652,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-openai
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-openai")
     (version "2.24.0")
     (source
@@ -662,6 +683,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-packaging
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-packaging")
     (version "26.0")
     (source
@@ -687,6 +709,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pillow
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pillow")
     (version "13.0.0")
     (source
@@ -707,6 +730,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pillow-heif
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pillow-heif")
     (version "1.6.0")
     (source
@@ -731,6 +755,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-prompt-toolkit
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-prompt-toolkit")
     (version "3.0.52")
     (source
@@ -755,7 +780,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-psutil
   (package
-    (inherit (specification->package "python-psutil@7.2.2"))
+    (inherit (hidden-package (specification->package "python-psutil@7.2.2")))
     (name "hermes-python-psutil")
     (arguments (python-arguments))
     (native-inputs (list python-setuptools python-wheel))))
@@ -765,6 +790,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pycparser
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pycparser")
     (version "3.0")
     (source
@@ -784,6 +810,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pydantic
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pydantic")
     (version "2.13.4")
     (source
@@ -810,6 +837,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pydantic-core
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pydantic-core")
     (version "2.46.4")
     (source
@@ -835,6 +863,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pygments
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pygments")
     (version "2.21.0")
     (source
@@ -855,6 +884,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pyjwt
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pyjwt")
     (version "2.15.1")
     (source
@@ -878,6 +908,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-python-dateutil
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-python-dateutil")
     (version "2.9.0.post0")
     (source
@@ -907,6 +938,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-pytz
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-pytz")
     (version "2026.3.post1")
     (source
@@ -926,6 +958,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-requests
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-requests")
     (version "2.33.0")
     (source
@@ -951,6 +984,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-resvg-py
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-resvg-py")
     (version "0.4.0")
     (source
@@ -975,6 +1009,7 @@ use-system-http-parser = 1
 
 (define-public hermes-python-rich
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-rich")
     (version "14.3.3")
     (source
@@ -1001,6 +1036,7 @@ to the terminal.")
 
 (define-public hermes-python-ruamel-yaml
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-ruamel-yaml")
     (version "0.18.16")
     (source
@@ -1022,6 +1058,7 @@ comments, seq/map flow style, and map key order.")
 
 (define-public hermes-python-ruamel-yaml-clib
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-ruamel-yaml-clib")
     (version "0.2.15")
     (source
@@ -1050,6 +1087,7 @@ comments, seq/map flow style, and map key order.")
 
 (define-public hermes-python-snowballstemmer
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-snowballstemmer")
     (version "3.1.1")
     (source
@@ -1086,6 +1124,7 @@ algorithms.")
 
 (define-public hermes-python-starlette
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-starlette")
     (version "1.3.1")
     (source
@@ -1113,6 +1152,7 @@ algorithms.")
 
 (define-public hermes-python-termcolor
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-termcolor")
     (version "3.3.0")
     (source
@@ -1138,6 +1178,7 @@ algorithms.")
 
 (define-public hermes-python-tqdm
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-tqdm")
     (version "4.70.0")
     (source
@@ -1160,6 +1201,7 @@ algorithms.")
 
 (define-public hermes-python-typing-extensions
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-typing-extensions")
     (version "4.16.0")
     (source
@@ -1179,6 +1221,7 @@ algorithms.")
 
 (define-public hermes-python-typing-inspection
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-typing-inspection")
     (version "0.4.4")
     (source
@@ -1202,6 +1245,7 @@ algorithms.")
 
 (define-public hermes-python-urllib3
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-urllib3")
     (version "2.8.0")
     (source
@@ -1223,6 +1267,7 @@ algorithms.")
 
 (define-public hermes-python-uvicorn
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-uvicorn")
     (version "0.41.0")
     (source
@@ -1245,6 +1290,7 @@ algorithms.")
 
 (define-public hermes-python-watchfiles
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-watchfiles")
     (version "1.2.0")
     (source
@@ -1273,6 +1319,7 @@ algorithms.")
 
 (define-public hermes-python-wcwidth
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-wcwidth")
     (version "0.8.2")
     (source
@@ -1296,6 +1343,7 @@ algorithms.")
 
 (define-public hermes-python-websockets
   (package
+    (properties '((hidden? . #t)))
     (name "hermes-python-websockets")
     (version "15.0.1")
     (source

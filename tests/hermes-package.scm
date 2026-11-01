@@ -1,4 +1,5 @@
 (use-modules (guix packages)
+             (gnu packages)
              (guix build-system pyproject)
              (srfi srfi-1)
              (srfi srfi-64))
@@ -15,6 +16,18 @@
   (lookup 'hermes-desktop))
 (define light
   (lookup 'hermes-desktop-light))
+(test-equal "package discovery exposes only the three Hermes applications"
+  '("hermes" "hermes-desktop" "hermes-desktop-light")
+  (sort (fold-packages
+         (lambda (package names) (cons (package-name package) names))
+         '()
+         (map resolve-interface
+              '((roquix packages hermes)
+                (roquix packages hermes interpreter)
+                (roquix packages hermes python)
+                (roquix packages hermes node)
+                (roquix packages hermes wasm))))
+        string<?))
 (test-assert "CLI and both desktop variants are independently installable"
              (every package?
                     (list cli desktop light)))
