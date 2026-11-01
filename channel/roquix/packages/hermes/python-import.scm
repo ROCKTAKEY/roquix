@@ -66,6 +66,8 @@
               (python-pin-name pin)))))
 
 (define (import-python-pin pin)
-  (reconcile-python-pin pin
-                        (pypi->guix-package (python-pin-name pin)
-                                            #:version (python-pin-version pin))))
+  `(hidden-package
+    ,(reconcile-python-pin
+      pin
+      (pypi->guix-package (python-pin-name pin)
+                         #:version (python-pin-version pin)))))

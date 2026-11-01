@@ -1,4 +1,5 @@
 (use-modules (roquix packages hermes python-import)
+             (guix tests)
              (srfi srfi-64))
 
 (test-begin "hermes-python-import")
@@ -21,6 +22,12 @@
             (definition "1.0" source)
             (reconcile-python-pin pin
                                   (definition "1.0" source)))
+(test-equal "imported drafts hide Hermes dependencies"
+  `(hidden-package ,(definition "1.0" source))
+  (mock ((guix import pypi) pypi->guix-package
+         (lambda* (name #:key version)
+           (definition version source)))
+    (import-python-pin pin)))
 (test-error "a changed sdist hash is rejected" #t
             (reconcile-python-pin pin
                                   (definition "1.0"
