@@ -90,7 +90,7 @@ for channel verification.
   SQL.js's conditional browser export requires the browser build as well as
   its default entry.
   Keep ordinary dependency staging and Linux icon generation in Scheme phases.
-  `(roquix packages t3code staging)` handles Office source conversion and
+  `(roquix build t3code staging)` handles Office source conversion and
   runtime dependency copying and linking. Keep T3 Code-specific Scheme modules,
   helper scripts, and installed checks together under `packages/t3code/`.
   The small `select-runtime-roots.mjs` script calls

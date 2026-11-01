@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes python-build)
+(define-module (roquix build hermes python-build)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)

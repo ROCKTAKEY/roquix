@@ -1,6 +1,6 @@
 ;; Exercise the real upstream assembler with a small prepared package.
 ;; Usage: guix repl -L channel -- tests/hermes-cli-assembly.scm UPSTREAM-SOURCE
-(use-modules (roquix packages hermes staging)
+(use-modules (roquix build hermes staging)
              (guix build utils)
              ((guix build syscalls) #:select (mkdtemp!))
              (ice-9 popen) (ice-9 textual-ports) (json) (srfi srfi-64))

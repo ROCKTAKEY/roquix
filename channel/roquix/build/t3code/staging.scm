@@ -5,7 +5,7 @@
 ;;; helpers prepare both trees; select-runtime-roots.mjs supplies the upstream
 ;;; policy for choosing the runtime dependency roots.
 
-(define-module (roquix packages t3code staging)
+(define-module (roquix build t3code staging)
   #:use-module (guix build utils)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 regex)

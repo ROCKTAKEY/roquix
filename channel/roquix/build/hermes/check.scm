@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes check)
+(define-module (roquix build hermes check)
   #:use-module (guix build utils)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (ice-9 regex)

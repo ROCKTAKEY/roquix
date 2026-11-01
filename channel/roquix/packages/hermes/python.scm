@@ -37,7 +37,7 @@
             #~'())
         #:imported-modules (append %pyproject-build-system-modules
                                    %cargo-build-system-modules
-                                   (source-module-closure '((roquix packages
+                                   (source-module-closure '((roquix build
                                                              hermes
                                                              python-build))
                                                           #:select? (lambda (name)
@@ -49,7 +49,7 @@
                     ((guix build cargo-build-system)
                      #:prefix cargo:)
                     (guix build utils)
-                    (roquix packages hermes python-build))
+                    (roquix build hermes python-build))
         #:phases #~(modify-phases %standard-phases
                      (add-after 'unpack 'prepare-build-environment
                        prepare-python-build-environment)

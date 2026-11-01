@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes staging)
+(define-module (roquix build hermes staging)
   #:use-module (guix build utils)
   #:use-module (guix base64)
   #:use-module (guix build union)

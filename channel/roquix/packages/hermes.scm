@@ -55,11 +55,11 @@
 (define (hermes-node-modules-builder source)
   (with-extensions (list guile-gcrypt)
     (with-imported-modules
-      (source-module-closure '((roquix packages hermes node-sources))
+      (source-module-closure '((roquix build hermes node-sources))
         #:select? (lambda (name) (memq (car name) '(guix roquix))))
                          #~(begin
                              (use-modules (guix build utils)
-                                          (roquix packages hermes node-sources)
+                                          (roquix build hermes node-sources)
                                           (ice-9 ftw))
                              (setenv "PATH"
                                      (string-append #+node
@@ -210,10 +210,10 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix packages hermes staging)
-                  (roquix packages hermes check))
+                  (roquix build hermes staging)
+                  (roquix build hermes check))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (roquix packages hermes check)
+                           (roquix build hermes staging) (roquix build hermes check)
                            (guix base64) (guix build union) (guix build syscalls))
       #:strip-binaries? #f
       #:phases
@@ -286,9 +286,9 @@ and a gateway for desktop and remote clients.")
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix packages hermes staging))
+                  (roquix build hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (guix base64) (guix build union))
+                           (roquix build hermes staging) (guix base64) (guix build union))
       #:phases
       (with-extensions (list guile-json-4)
         #~(modify-phases %standard-phases
@@ -361,9 +361,9 @@ and a gateway for desktop and remote clients.")
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix packages hermes staging))
+                  (roquix build hermes staging))
       #:imported-modules `(,@%default-gnu-imported-modules
-                           (roquix packages hermes staging) (guix base64) (guix build union))
+                           (roquix build hermes staging) (guix base64) (guix build union))
       #:strip-binaries? #f
       #:phases
       (with-extensions (list guile-json-4)

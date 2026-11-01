@@ -1,4 +1,4 @@
-(use-modules (roquix packages t3code staging)
+(use-modules (roquix build t3code staging)
              (ice-9 match))
 
 (match (cdr (command-line))

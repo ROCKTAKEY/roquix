@@ -1,4 +1,4 @@
-(define-module (roquix packages hermes node-sources)
+(define-module (roquix build hermes node-sources)
   #:use-module (guix build utils)
   #:use-module (guix base64)
   #:use-module (guix base16)

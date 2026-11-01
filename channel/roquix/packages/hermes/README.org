@@ -26,7 +26,7 @@ to updating an existing installation.
 
 * Build contracts
 
-Package assembly lives in =(roquix packages hermes staging)=: source placement,
+Package assembly lives in =(roquix build hermes staging)=: source placement,
 installation metadata, dependency links, and insertion of source-built WASM.
 =node-sources.scm= removes downloaded native code, and =check.scm= checks the
 installed CLI and gateway.  Python dependencies in =python.scm= use Guix's

@@ -1150,7 +1150,7 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (roquix packages t3code staging)
+                  (roquix build t3code staging)
                   (guix elf)
                   (json)
                   (ice-9 ftw)
@@ -1161,7 +1161,7 @@
                   (srfi srfi-13))
       #:imported-modules `(,@%default-gnu-imported-modules
                            (guix build syscalls)
-                           (roquix packages t3code staging)
+                           (roquix build t3code staging)
                            (guix elf))
       #:phases (t3code-build-phases version %ghostty-revision
                                     %t3code-dependency-selector)))

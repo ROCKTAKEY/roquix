@@ -1,4 +1,4 @@
-(use-modules (roquix packages hermes node-sources)
+(use-modules (roquix build hermes node-sources)
              (guix build utils) (guix base64)
              ((guix build syscalls) #:select (mkdtemp!))
              (rnrs bytevectors) (rnrs io ports)
