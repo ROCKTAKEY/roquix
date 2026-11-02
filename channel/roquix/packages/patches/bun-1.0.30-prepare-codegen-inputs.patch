@@ -1,0 +1,140 @@
+Bun 1.0.7 advances its filesystem cache generation after draining the build
+queue, so a subsequent build can miss an entry point created in between.
+Prepare all entry points before starting the bundler.  A sleep does not
+synchronize the two threads.
+
+Seed cache generation:
+https://github.com/oven-sh/bun/blob/bun-v1.0.7/src/bundler/bundle_v2.zig
+
+--- a/src/codegen/bundle-functions.ts
++++ b/src/codegen/bundle-functions.ts
+@@ -22,6 +22,7 @@
+ const SRC_DIR = path.join(import.meta.dir, "../js/builtins");
+ const CODEGEN_DIR = path.join(CMAKE_BUILD_ROOT, "./codegen");
+ const TMP_DIR = path.join(CMAKE_BUILD_ROOT, "./tmp_functions");
++const bundleFunctions: Array<() => Promise<void>> = [];
+ 
+ const {
+   //
+@@ -179,57 +180,58 @@
+       } {${fn.source}}).$$capture_end$$;
+ `,
+     );
+-    await Bun.sleep(1);
+-    const build = await Bun.build({
+-      entrypoints: [tmpFile],
+-      define,
+-      minify: { syntax: true, whitespace: false },
++    bundleFunctions.push(async () => {
++      const build = await Bun.build({
++        entrypoints: [tmpFile],
++        define,
++        minify: { syntax: true, whitespace: false },
++      });
++      if (!build.success) {
++        throw new AggregateError(build.logs, "Failed bundling builtin function " + fn.name + " from " + basename + ".ts");
++      }
++      if (build.outputs.length !== 1) {
++        throw new Error("expected one output");
++      }
++      const output = await build.outputs[0].text();
++      let usesDebug = output.includes("$debug_log");
++      let usesAssert = output.includes("$assert");
++      const captured = output.match(/\$\$capture_start\$\$([\s\S]+)\.\$\$capture_end\$\$/)![1];
++      const finalReplacement =
++        (fn.directives.sloppy
++          ? captured
++          : captured.replace(
++              /function\s*\(.*?\)\s*{/,
++              '$&"use strict";' +
++                (usesDebug ? createLogClientJS("BUILTINS", fn.name) : "") +
++                (usesAssert ? createAssertClientJS(fn.name) : ""),
++            )
++        )
++          .replace(/^\((async )?function\(/, "($1function (")
++          .replace(/__intrinsic__/g, "@")
++          .replace(/__no_intrinsic__/g, "") + "\n";
++  
++      bundledFunctions.push({
++        name: fn.name,
++        directives: fn.directives,
++        source: finalReplacement,
++        params: fn.params,
++        visibility: fn.directives.visibility ?? (fn.directives.linkTimeConstant ? "Private" : "Public"),
++        isGetter: !!fn.directives.getter,
++        constructAbility: fn.directives.ConstructAbility ?? "CannotConstruct",
++        constructKind: fn.directives.ConstructKind ?? "None",
++        isLinkTimeConstant: !!fn.directives.linkTimeConstant,
++        intrinsic: fn.directives.intrinsic ?? "NoIntrinsic",
++        overriddenName: fn.directives.getter
++          ? `"get ${fn.name}"_s`
++          : fn.directives.overriddenName
++            ? `"${fn.directives.overriddenName}"_s`
++            : "ASCIILiteral()",
++      });
+     });
+-    if (!build.success) {
+-      throw new AggregateError(build.logs, "Failed bundling builtin function " + fn.name + " from " + basename + ".ts");
+-    }
+-    if (build.outputs.length !== 1) {
+-      throw new Error("expected one output");
+-    }
+-    const output = await build.outputs[0].text();
+-    let usesDebug = output.includes("$debug_log");
+-    let usesAssert = output.includes("$assert");
+-    const captured = output.match(/\$\$capture_start\$\$([\s\S]+)\.\$\$capture_end\$\$/)![1];
+-    const finalReplacement =
+-      (fn.directives.sloppy
+-        ? captured
+-        : captured.replace(
+-            /function\s*\(.*?\)\s*{/,
+-            '$&"use strict";' +
+-              (usesDebug ? createLogClientJS("BUILTINS", fn.name) : "") +
+-              (usesAssert ? createAssertClientJS(fn.name) : ""),
+-          )
+-      )
+-        .replace(/^\((async )?function\(/, "($1function (")
+-        .replace(/__intrinsic__/g, "@")
+-        .replace(/__no_intrinsic__/g, "") + "\n";
+-
+-    bundledFunctions.push({
+-      name: fn.name,
+-      directives: fn.directives,
+-      source: finalReplacement,
+-      params: fn.params,
+-      visibility: fn.directives.visibility ?? (fn.directives.linkTimeConstant ? "Private" : "Public"),
+-      isGetter: !!fn.directives.getter,
+-      constructAbility: fn.directives.ConstructAbility ?? "CannotConstruct",
+-      constructKind: fn.directives.ConstructKind ?? "None",
+-      isLinkTimeConstant: !!fn.directives.linkTimeConstant,
+-      intrinsic: fn.directives.intrinsic ?? "NoIntrinsic",
+-      overriddenName: fn.directives.getter
+-        ? `"get ${fn.name}"_s`
+-        : fn.directives.overriddenName
+-          ? `"${fn.directives.overriddenName}"_s`
+-          : "ASCIILiteral()",
+-    });
+   }
+ 
+   return {
+-    functions: bundledFunctions.sort((a, b) => a.name.localeCompare(b.name)),
++    functions: bundledFunctions,
+     internal,
+   };
+ }
+@@ -260,6 +262,15 @@
+   for (const x of filesToProcess) {
+     await processFile(x);
+   }
++}
++
++// The seed bundler can retain a directory listing across queued builds.
++// Finish creating entry points before any build can cache that listing.
++for (const bundle of bundleFunctions) {
++  await bundle();
++}
++for (const file of files) {
++  file.functions.sort((a, b) => a.name.localeCompare(b.name));
+ }
+ 
+ // C++ codegen

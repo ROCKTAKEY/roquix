@@ -939,6 +939,15 @@ and package manager.")
           (delete 'patch-usr-bin-file)
           (delete 'patch-source-shebangs)
           (delete 'patch-generated-file-shebangs)
+          (add-before 'build 'prepare-codegen-inputs
+            (lambda _
+              ;; The 1.0.7 seed can reuse a directory listing between builds.
+              ;; All generated entry points must exist before bundling starts.
+              (invoke "patch" "-p1" "--input"
+                      #$(local-file
+                         (canonicalize-path
+                          (search-path %load-path
+                                       "roquix/packages/patches/bun-1.0.30-prepare-codegen-inputs.patch"))))))
           (replace 'build
             (lambda* (#:key inputs #:allow-other-keys)
               (use-modules (roquix build bun-bootstrap affinity)
@@ -1147,6 +1156,7 @@ and package manager.")
      (substitute-keyword-arguments (package-arguments bun-bootstrap-1.0.30)
        ((#:phases phases)
         #~(modify-phases #$phases
+            (delete 'prepare-codegen-inputs)
             (add-before 'build 'provide-zig-library
               (lambda* (#:key inputs #:allow-other-keys)
                 ;; 1.1.4 adds --zig-lib-dir=src/deps/zig/lib.  Its official
