@@ -1,5 +1,7 @@
 (use-modules (roquix home services t3code)
              (roquix packages t3code)
+             (gnu home)
+             (gnu home services shepherd)
              (gnu home services)
              (gnu services)
              (gnu services shepherd)
@@ -123,6 +125,52 @@
   (test-equal "the selected T3 Code package is installed in the Home profile"
     (list t3code-cli)
     ((service-extension-compute extension) (home-t3code-configuration))))
+
+(test-equal "named instances have independent Shepherd identities and default logs"
+  '((t3code-work) "/tmp/t3code-home-test/log/t3code-work.log")
+  (let* ((config (home-t3code-configuration (service-name 't3code-work)))
+         (service (car (home-t3code-shepherd-service config))))
+    (list (shepherd-service-provision service)
+          (assoc-ref (start-spec config) 'log-file))))
+
+(for-each
+ (lambda (name)
+   (test-error "service names are nonempty path-safe symbols" #t
+     (home-t3code-configuration (service-name name))))
+ (list "t3code" (string->symbol "") 'bad/name))
+
+(define example-home
+  (primitive-load
+   (string-append (dirname (current-filename))
+                  "/../examples/t3code-home.scm")))
+
+(test-equal "the example separates both listeners, state directories and logs"
+  (list (list "3773" (string-append (getenv "HOME") "/.t3-personal")
+              (string-append %user-log-dir "/t3code-personal.log"))
+        (list "4773" (string-append (getenv "HOME") "/.t3-work")
+              (string-append %user-log-dir "/t3code-work.log")))
+  (map (lambda (service)
+         (let* ((spec (start-spec (service-value service)))
+                (command (assoc-ref spec 'command)))
+           (list (cadr (member "--port" command))
+                 (cadr (member "--base-dir" command))
+                 (assoc-ref spec 'log-file))))
+       (home-environment-user-services example-home)))
+
+(test-equal "two declarations of the same type fold into one Home Shepherd"
+  '((t3code-personal) (t3code-work))
+  (let ((shepherd (fold-services (home-environment-services example-home)
+                                 #:target-type home-shepherd-service-type)))
+    (sort (filter (lambda (names)
+                    (any (lambda (name)
+                           (memq name '(t3code-personal t3code-work)))
+                         names))
+                  (map shepherd-service-provision
+                       (home-shepherd-configuration-services
+                        (service-value shepherd))))
+          (lambda (a b)
+            (string<? (symbol->string (car a))
+                      (symbol->string (car b)))))))
 
 (let ((runner (test-runner-current)))
   (test-end "t3code-home-service")

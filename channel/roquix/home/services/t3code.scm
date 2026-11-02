@@ -11,6 +11,7 @@
   #:use-module (srfi srfi-13)
   #:export (home-t3code-configuration
             home-t3code-configuration?
+            home-t3code-configuration-service-name
             home-t3code-configuration-t3code
             home-t3code-configuration-host
             home-t3code-configuration-port
@@ -20,6 +21,11 @@
             home-t3code-configuration-environment-variables
             home-t3code-shepherd-service
             home-t3code-service-type))
+
+(define (service-name? value)
+  (and (symbol? value)
+       (string-match "^[A-Za-z0-9][A-Za-z0-9._+-]*$"
+                     (symbol->string value))))
 
 (define (listen-port? value)
   (and (exact-integer? value) (<= 1 value 65535)))
@@ -41,6 +47,9 @@
               value)))
 
 (define-configuration/no-serialization home-t3code-configuration
+  (service-name
+   (service-name 't3code)
+   "A unique Shepherd service name, also used for the default log filename.")
   (t3code
    (package t3code-cli)
    "The T3 Code CLI package providing the t3 command.")
@@ -58,7 +67,7 @@
    "An existing absolute working directory, or #f for the user's home directory.")
   (log-file
    (optional-absolute-path #f)
-   "An absolute log filename whose parent exists, or #f for t3code.log in
+   "An absolute log filename whose parent exists, or #f for SERVICE-NAME.log in
 the Shepherd log directory.")
   (environment-variables
    (environment-variable-list '())
@@ -79,7 +88,7 @@ the Shepherd log directory.")
   (list
    (shepherd-service
     (documentation "Run the T3 Code web server.")
-    (provision '(t3code))
+    (provision (list (home-t3code-configuration-service-name config)))
     (modules '((shepherd support) (srfi srfi-1) (srfi srfi-13)))
     (start
      #~(make-forkexec-constructor
@@ -95,7 +104,11 @@ the Shepherd log directory.")
         #:environment-variables
         #$(home-t3code-environment config)
         #:log-file #$(or (home-t3code-configuration-log-file config)
-                         #~(string-append %user-log-dir "/t3code.log"))))
+                         #~(string-append
+                            %user-log-dir "/"
+                            #$(symbol->string
+                               (home-t3code-configuration-service-name config))
+                            ".log"))))
     (stop #~(make-kill-destructor)))))
 
 (define home-t3code-service-type
