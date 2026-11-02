@@ -2,6 +2,7 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages bash)
@@ -14,10 +15,10 @@
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/ROCKTAKEY/procshelf")
-          (commit "v0.1.0")))
-    (file-name (git-file-name "procshelf" "0.1.0"))
+          (commit "v0.1.1")))
+    (file-name (git-file-name "procshelf" "0.1.1"))
     (sha256
-     (base32 "0qq3mxzkh4dbpxgbk9hjaqgsnah0n161lw5ag3kfwfgb32hhialw"))))
+     (base32 "1j46a638zp6yzvn214xzws7k9pb0zkw9c8vpv4bsajc66mp9s7pr"))))
 
 (define* (procshelf-node-modules-fetch source hash-algo hash
                                       #:optional name
@@ -51,14 +52,14 @@
   (origin
     (method procshelf-node-modules-fetch)
     (uri %procshelf-source)
-    (file-name "procshelf-node-modules-0.1.0")
+    (file-name "procshelf-node-modules-0.1.1")
     (sha256
      (base32 "1b5byzmmdd5y7584py02lzcf9aa2z16162i2xk9qrfh8wlc2ypzl"))))
 
 (define-public procshelf
   (package
     (name "procshelf")
-    (version "0.1.0")
+    (version "0.1.1")
     (source %procshelf-source)
     (build-system cargo-build-system)
     (arguments
@@ -108,5 +109,4 @@
 interface.  It provides process startup and shutdown, bounded log viewing,
 access-key authentication, and automatic reloading of TOML configuration.")
     (supported-systems '("x86_64-linux"))
-    ;; The v0.1.0 source contains no license declaration.
-    (license #f)))
+    (license license:agpl3)))
