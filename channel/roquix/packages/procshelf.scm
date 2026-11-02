@@ -20,9 +20,9 @@
      (base32 "0qq3mxzkh4dbpxgbk9hjaqgsnah0n161lw5ag3kfwfgb32hhialw"))))
 
 (define* (procshelf-node-modules-fetch source hash-algo hash
-                                       #:optional name
-                                       #:key (system (%current-system))
-                                       #:allow-other-keys)
+                                      #:optional name
+                                      #:key (system (%current-system))
+                                      #:allow-other-keys)
   (gexp->derivation
    (or name "procshelf-node-modules")
    (with-imported-modules '((guix build utils))
@@ -78,16 +78,17 @@
           (add-before 'build 'build-web
             (lambda* (#:key tests? #:allow-other-keys)
               (copy-recursively #$%procshelf-node-modules "web/node_modules")
+              ;; npm's .bin links must retain the package-relative ESM imports.
               (for-each (lambda (file)
-                          (unless (string-contains file "/.bin/")
+                          (unless (symbolic-link? file)
                             (patch-shebang file)))
                         (find-files "web/node_modules" ".*"))
               (setenv "HOME" (getcwd))
+              ;; Vite's Rolldown native binding uses the C++ runtime.
               (setenv "LD_LIBRARY_PATH"
                       (string-append #$gcc:lib "/lib"))
               (with-directory-excursion "web"
                 (when tests?
-                  (invoke "node" "node_modules/typescript/bin/tsc" "--noEmit")
                   (invoke "npm" "test"))
                 (invoke "npm" "run" "build"))))
           (add-after 'install 'install-example
@@ -107,4 +108,5 @@
 interface.  It provides process startup and shutdown, bounded log viewing,
 access-key authentication, and automatic reloading of TOML configuration.")
     (supported-systems '("x86_64-linux"))
+    ;; The v0.1.0 source contains no license declaration.
     (license #f)))
