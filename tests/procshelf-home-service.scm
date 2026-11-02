@@ -30,6 +30,13 @@
    (shepherd-service-start
     (car (home-procshelf-shepherd-service configuration)))))
 
+(define (extension-value target configuration)
+  (let ((extension
+         (find (lambda (extension)
+                 (eq? target (service-extension-target extension)))
+               (service-type-extensions home-procshelf-service-type))))
+    ((service-extension-compute extension) configuration)))
+
 (test-begin "procshelf-home-service")
 
 (let ((saved (getenv "XDG_CONFIG_HOME")))
@@ -95,22 +102,14 @@
 (test-error "shutdown grace periods must be positive" #t
   (home-procshelf-configuration (stop-timeout 0)))
 
-(let ((extension
-       (find (lambda (extension)
-               (eq? home-profile-service-type (service-extension-target extension)))
-             (service-type-extensions home-procshelf-service-type))))
-  (test-equal "Home installs the selected procshelf package"
-    (list procshelf)
-    ((service-extension-compute extension) (home-procshelf-configuration))))
+(test-equal "Home installs the selected procshelf package"
+  (list procshelf)
+  (extension-value home-profile-service-type (home-procshelf-configuration)))
 
 (let* ((directory (mkdtemp "/tmp/procshelf-home-XXXXXX"))
        (saved (getenv "XDG_CONFIG_HOME"))
-       (extension (find (lambda (extension)
-                          (eq? home-activation-service-type
-                               (service-extension-target extension)))
-                        (service-type-extensions home-procshelf-service-type)))
-       (activation ((service-extension-compute extension)
-                    (home-procshelf-configuration)))
+       (activation (extension-value home-activation-service-type
+                                    (home-procshelf-configuration)))
        (file (string-append directory "/procshelf/config.toml")))
   (dynamic-wind
     (lambda () (setenv "XDG_CONFIG_HOME" directory))
