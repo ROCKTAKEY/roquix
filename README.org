@@ -198,6 +198,44 @@ lllmmm can reap its backend processes before Shepherd sends =SIGKILL=.
 The service starts automatically.  Use =herd status lllmmm=,
 =herd stop lllmmm=, and =herd start lllmmm= to manage it.
 
+* procshelf Home service
+The =(roquix home services procshelf)= module runs procshelf as a user
+Shepherd service and installs its command in the Home profile:
+
+#+BEGIN_SRC scheme
+(use-modules (gnu home)
+             (gnu services)
+             (roquix home services procshelf))
+
+(home-environment
+ (services (list (service home-procshelf-service-type))))
+#+END_SRC
+
+Home activation initializes =$XDG_CONFIG_HOME/procshelf/config.toml=, using
+=~/.config= when =XDG_CONFIG_HOME= is unset, empty, or relative.  Existing
+configuration is preserved.  The initial configuration listens on
+=127.0.0.1:8787= and has no registered commands.  Add =[processes.NAME]=
+entries to this writable TOML file; procshelf reloads changes automatically.
+A configuration example is installed under =share/doc/procshelf=.
+
+Open =http://127.0.0.1:8787= and log in with the access key from
+=config.procshelf.key= beside the configuration file.  Procshelf generates
+this private file at first startup.  Configuration must resolve to a file
+in a writable directory: procshelf places its key and lock beside the
+canonical path, so a symlink to a Guix store file is unsuitable.
+
+Use =home-procshelf-configuration= to select the =procshelf= package, an
+existing absolute =config-file= path, or an absolute =log-file= path.
+A custom configuration is managed by the user; activation does not create
+or overwrite it.  Logs default to =procshelf.log= in Shepherd's user log
+directory.  =stop-timeout= defaults to 30 seconds; set it above the largest
+=stop_timeout_seconds= in the TOML file with a margin for child-process
+reaping.  Commands run with the service user's permissions and environment.
+
+The service starts automatically.  Use =herd status procshelf=,
+=herd stop procshelf=, and =herd start procshelf= to manage it.  Stopping the
+service also stops its managed processes.
+
 * Named extra profiles
 =guix extra-profile= manages named profiles from declarative manifests and
 combines already-built profile generations with =guix shell=.  It deliberately
