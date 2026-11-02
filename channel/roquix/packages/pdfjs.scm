@@ -101,7 +101,7 @@
     (build-system cargo-build-system)
     (arguments
      (list
-      #:rust rust-1.93
+      #:rust rust-1.95
       #:install-source? #f
       #:cargo-build-flags ''("--release" "--target" "wasm32-unknown-unknown")
       #:phases
@@ -110,7 +110,7 @@
             (lambda _
               (setenv "RUSTFLAGS"
                       (string-append "--sysroot="
-                                     #$rust-sysroot-for-wasm32-unknown-unknown
+                                     #$rust-wasm-sysroot-1.95
                                      " -C linker="
                                      #$(file-append lld-22 "/bin/wasm-ld")))))
           (replace 'install
@@ -134,7 +134,7 @@
                 (unsetenv "RUSTFLAGS")
                 (invoke "cargo" "test" "--offline" "--lib")))))))
     (native-inputs (list wasm-bindgen-cli-0.2.100
-                         rust-sysroot-for-wasm32-unknown-unknown lld-22))
+                         rust-wasm-sysroot-1.95 lld-22))
     (inputs (cargo-inputs 't3code-qcms-wasm
                           #:module '(roquix packages rust-crates)))
     (home-page "https://github.com/mozilla/pdf.js.qcms")

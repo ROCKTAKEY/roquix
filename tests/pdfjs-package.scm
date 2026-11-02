@@ -6,6 +6,14 @@
 
 (test-begin "pdfjs-package")
 
+(test-equal "qcms uses a WASM sysroot matching its Rust compiler"
+  (package-version
+   (cadr (memq #:rust (package-arguments t3code-qcms-wasm))))
+  (package-version
+   (car (filter (lambda (package)
+                  (string-prefix? "rust" (package-name package)))
+                (map cadr (package-native-inputs t3code-qcms-wasm))))))
+
 (define changed-quickjs
   (package (inherit pdfjs-quickjs-wasm) (version "test-update")))
 (define rewrite
