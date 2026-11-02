@@ -3,6 +3,10 @@ queue, so a subsequent build can miss an entry point created in between.
 Prepare all entry points before starting the bundler.  A sleep does not
 synchronize the two threads.
 
+Related report: oven-sh/bun#7373 describes Bun.build failing to resolve a
+file immediately after Bun.write, even though the file can be read back:
+https://github.com/oven-sh/bun/issues/7373
+
 Seed cache generation:
 https://github.com/oven-sh/bun/blob/bun-v1.0.7/src/bundler/bundle_v2.zig
 
