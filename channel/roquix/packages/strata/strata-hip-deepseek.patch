@@ -7,9 +7,7 @@ user installation.  Configuration refresh preserves each model's engine.
 
 --- a/setup.py
 +++ b/setup.py
-@@ -8612,43 +8612,11 @@
-     pip_install(runtime_packages(),
-                 "numpy, jinja2, regex, pyyaml, tqdm, requests, cmake, ninja, pillow, psutil, textual (the screens)")
+@@ -8852,45 +8852,7 @@
  
 -    # DeepSeek runs on its own engine package: the Strata (Qwen) engine, its llama.cpp source and its CUDA libraries are not needed for it, so none of
 -    # them is downloaded or test-started here (they were ~700 MB, and a stop on every one of them when GitHub could not be reached).
@@ -19,23 +17,29 @@ user installation.  Configuration refresh preserves each model's engine.
 -    if (exe is None and not getattr(a, "dsv41_package", None) and not dsv41_engine_pending(eng) and not local_feed(getattr(a, "feed", None))
 -        and not github_reachable()):
 -        fail("Strata can't reach GitHub to download the DeepSeek engine.",
--             "Check the internet connection and run the same command again. " + dsv41_manual_steps(eng))
+-             "Check the internet connection and run the same command again. " + proxy_hint()[2:3].upper() + proxy_hint()[3:] + ". " + dsv41_manual_steps(eng))
 -    if exe is None and not getattr(a, "build", False):
 -        get_dsv41_engine(eng, hip, getattr(a, "dsv41_package", None), getattr(a, "feed", None),
 -                         archs=[c.get("arch") for c in cards if c.get("arch")] if hip else None)
 -        exe = dsv41_exe(eng)
--    if (exe is not None and not getattr(a, "dsv41_package", None) and not getattr(a, "build", False)
--            and not (os.environ.get("STRATA_DSV41_EXE") or "").strip() and exe.parent.parent == dsv41_engine_dir(eng)):
--        exe = upgrade_dsv41_engine(eng, exe, getattr(a, "feed", None))   # an installed package older than the signed feed's: updated next to it, switched after it starts
+-    # (An installed DeepSeek package older than the feed's is NOT updated here any more: setup runs from a model download in the app and from
+-    # `strata launch`, often with a model loaded. The update is `strata update` / the app's Update engine, the person's choice.)
 -    if exe is not None and exe.parent != Path(eng):
 -        from strata_control import dsv41_engine
 -        lib_dirs = [*lib_dirs, *dsv41_engine.lib_dirs(exe)]   # its own package, and the rocm/bin an AMD package keeps the ROCm DLLs in
--    if hip and exe is not None and named:                  # cards the person named that this package holds no code for: said, never refused
+-    if hip and exe is not None:                            # cards (named or setup's own pick) that this package holds no code for: said, never refused
 -        covered = dsv41_covered_archs(eng)
 -        for c in cards if covered else []:
 -            if c.get("arch") and c["arch"] not in covered:
 -                warn(f"GPU {c['index']} ({c['name']}, {c['arch']}): this DeepSeek engine package holds code for {', '.join(covered)} only, so it may "
--                     "not start on that card. Leave it out (--gpus ...) to be sure.")
+-                     "not start on that card. Leave it out (--gpus ...) to be sure." if named else
+-                     f"GPU {c['index']} ({c['name']}, {c['arch']}): this DeepSeek engine holds code for {', '.join(covered)} only, so DeepSeek "
+-                     "will not start on this card.")
+-        if covered and any(not c.get("arch") for c in cards):
+-            from strata_control import dsv41_engine
+-            warn(dsv41_engine.card_unknown_line(covered))
+-        if any(str(c.get("arch") or "") in ("gfx1100", "gfx1101", "gfx1102") for c in cards):
+-            warn("DeepSeek has not been tested on RX 7000 cards yet; please report how it runs.")      # (strata_cli/launch/cmd.py DEEPSEEK_RX7000_NOTE)
 -    if exe is None:
 -        if os.environ.get("STRATA_VERBOSE") == "1" or "--verbose" in sys.argv:
 -            say("  Details for developers: build it with cmake -DSTRATA_BUILD_DSV41=ON -DCMAKE_CUDA_ARCHITECTURES=<your card: 86 RTX 30, 89 RTX 40, 120 RTX 50> "
@@ -53,8 +57,6 @@ user installation.  Configuration refresh preserves each model's engine.
 +    exe = eng / "strata-dsv41"
 +    lib_dirs = list(prepared.package.library_directories)
      ok(f"engine: {exe}")
- 
-     step(5, f"downloading {fam['title']} {model}")
 @@ -8124,8 +8107,9 @@
          parser.add_argument("--vision", choices=["none", "no"])
          parser.add_argument("--build", action="store_true")
