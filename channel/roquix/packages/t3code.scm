@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.6")
+  "0.1.7")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0jqjwvs5knlibd4rr7w2x4rfns06y71rj73k67bp5cyscr0yzsrw"))))
+    (sha256 (base32 "0zlci692hzvwlr022x4vx56y0c0kwn9mim1y6azfnfjvqqk1z1nf"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -263,7 +263,7 @@
 (define electron-for-t3code
   (package
     (inherit electron-41)
-    (version "44.10.0")
+    (version "44.10.1")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -271,7 +271,7 @@
              "https://github.com/electron/electron/releases/download/v"
              version "/electron-v" version "-linux-x64.zip"))
        (sha256
-        (base32 "1i8xxv5djz53vahwnbigl9fii6lmy6zzkmwcl4sjhpq3xxsr7pv2"))))))
+        (base32 "0rsimmg9gldafk086ccnbqw4k81md887lmmmwqq1z9qa3fvnis1b"))))))
 
 (define %ghostty-revision
   "9f62873bf195e4d8a762d768a1405a5f2f7b1697")
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "19sky83rg5140xy0bkccm8mk81001yqwmhh11zrrzdw4had5gsll"))))
+    (sha256 (base32 "1czfaysjpbhg6gabd2cfjdl67yhkg6dircxzhajjsaj20bzs58g7"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1270,7 +1270,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "1586060d6d725abe73a48f3a5e0f190c56d335dc")
+  "3334c78503545c34d05f79ef563a7d58931dfcf2")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1282,7 +1282,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "0f3gscwxr223y3c6q1b8n15xzb4gzi0ray35j0w8q0g1nklsplv3"))))
+    (sha256 (base32 "166cwi60zm9m9hp8yzgf4llylk9kxm0vvxfbg0jx66zqnpw3ixva"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
