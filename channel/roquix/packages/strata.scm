@@ -18,11 +18,11 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "ffa80d73133ea5c548aefe57889a16e8085a938f")
+  "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d")
 
 (define %strata-llama-source
   ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.10/third_party/ggml/VERSION.txt
+  ;; https://github.com/Niko1221/Strata/blob/v0.2.11/third_party/ggml/VERSION.txt
   (origin
     (method url-fetch)
     (uri (string-append
@@ -56,7 +56,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.10")
+    (version "0.2.11")
     (source
      (origin
        (method url-fetch)
@@ -65,7 +65,7 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "1165xskh5a8wm31f8dgm4yppbp2bs3n48l4nfisssihnjv8nk8hf"))
+        (base32 "1bjqb2yi2ww4d2wvrjqladdrd8fz0isklyd8lg02baw80hdf1kp0"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-hip-deepseek.patch")
                       (strata-resource-path "strata-hip-align.patch")
@@ -148,7 +148,9 @@
                 ;; Build workers have no GPU; run device tests on the installed
                 ;; package, while keeping CPU and server tests in the build.
                 (invoke "ctest" "--output-on-failure" "-R"
-                        "^(conversation_(cache|memory)|cgroup_path|file_expert_source)_test$")
+                        (string-append
+                         "^(conversation_(cache|memory)|cgroup_path|"
+                         "file_expert_source)_test$"))
                 (for-each (lambda (test) (invoke (string-append "./" test)))
                           '("ds4_slot_test" "ds4_experts_rule_test" "ds4_pick_rule_test"))
                 (with-directory-excursion (getenv "STRATA_SOURCE_DIR")

@@ -7,7 +7,9 @@ user installation.  Configuration refresh preserves each model's engine.
 
 --- a/setup.py
 +++ b/setup.py
-@@ -8852,45 +8852,7 @@
+@@ -9092,49 +9092,11 @@
+     pip_install(runtime_packages(),
+                 "numpy, jinja2, regex, pyyaml, tqdm, requests, cmake, ninja, pillow, psutil, textual (the screens)")
  
 -    # DeepSeek runs on its own engine package: the Strata (Qwen) engine, its llama.cpp source and its CUDA libraries are not needed for it, so none of
 -    # them is downloaded or test-started here (they were ~700 MB, and a stop on every one of them when GitHub could not be reached).
@@ -57,7 +59,9 @@ user installation.  Configuration refresh preserves each model's engine.
 +    exe = eng / "strata-dsv41"
 +    lib_dirs = list(prepared.package.library_directories)
      ok(f"engine: {exe}")
-@@ -8124,8 +8107,9 @@
+     if mac and ds_vision == "on":                    # the Mac's pictures need an engine with the Metal picture tower: its program says so (dsv41_engine.MARK_MAC_VISION)
+         from strata_control import dsv41_engine as _dsv41_engine
+@@ -9347,8 +9309,9 @@
          parser.add_argument("--vision", choices=["none", "no"])
          parser.add_argument("--build", action="store_true")
          parser.add_argument("--prebuilt")
@@ -68,7 +72,7 @@ user installation.  Configuration refresh preserves each model's engine.
              parser.error("Guix manages the engine; use guix upgrade strata-hip")
          return cls(("--vision", "none", *arguments))
  
-@@ -8142,8 +8126,9 @@
+@@ -9365,8 +9328,9 @@
          metadata = json.loads((root / "engine/BUILD.json").read_text())
          if not isinstance(metadata, dict) or metadata.get("backend") != "hip":
              raise ValueError("the Guix package must provide a HIP engine")
@@ -80,7 +84,7 @@ user installation.  Configuration refresh preserves each model's engine.
          return cls(
              root,
              cls._metadata_strings(metadata, "archs"),
-@@ -8210,7 +8195,8 @@
+@@ -9433,7 +9397,8 @@
      def refresh_engine_configurations(self) -> None:
          for path in installed_configs():
              config = json.loads(path.read_text(encoding="utf-8-sig"))
@@ -102,7 +106,7 @@ user installation.  Configuration refresh preserves each model's engine.
                  "lib_dirs": ["/store/rocm/lib"]}))
 --- a/tools/test_setup_choices.py
 +++ b/tools/test_setup_choices.py
-@@ -374,6 +374,7 @@
+@@ -441,6 +441,7 @@
              eng = root / "engine"
              eng.mkdir()
              (eng / setup.EXE).write_bytes(b"engine")

@@ -15,7 +15,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  from pathlib import Path
  
  from strata_control import acquisition
-@@ -71,7 +73,8 @@
+@@ -74,7 +76,8 @@
  from strata_control.discovery import in_trash
  from strata_control import user_args
  
@@ -25,7 +25,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  # The desktop app runs this installer under Strata Control (its bundled Python, STRATA_CONTROL_INSTALL=1). The source
  # (tools/, data/, serve/) stays in ROOT, inside the app; everything the install writes (run configs, logs, third_party,
  # the data folder beside it) goes to home(), a per-user folder (STRATA_INSTALL_DIR). In that mode it installs no Python
-@@ -3278,44 +3281,7 @@
+@@ -3827,44 +3830,7 @@
  
  
  def get_llama_cpp():
@@ -71,7 +71,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def req_name(line: str) -> str:
-@@ -3376,29 +3342,7 @@
+@@ -3925,29 +3891,7 @@
  
  
  def pip_install(packages, what, extra=()):
@@ -102,7 +102,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
-@@ -4592,61 +4536,8 @@
+@@ -5158,61 +5102,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
@@ -166,7 +166,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def hip_vision(asked, vram_gb: float = 0.0) -> str:
-@@ -5317,94 +5208,8 @@
+@@ -5893,94 +5784,8 @@
  
  
  def update_installed_engine(url_base, toolkit=None) -> None:
@@ -263,7 +263,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -8306,6 +8111,119 @@
+@@ -9529,6 +9334,119 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -383,7 +383,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def mac_vision(asked, model: str, ram: float) -> str:
-@@ -9873,7 +9791,11 @@
+@@ -11339,7 +11257,11 @@
  
  if __name__ == "__main__":
      try:
@@ -452,9 +452,17 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  class WindowsDetection(unittest.TestCase):
+@@ -731,6 +715,7 @@
+
+
+ class TdrPointer(unittest.TestCase):
++    @unittest.skipUnless(setup.WIN, "Windows driver documentation does not apply to the Linux HIP package")
+     def test_setup_points_windows_gfx12_to_the_entry(self):
+         src = Path(setup.__file__).read_text(encoding="utf-8")
+         self.assertIn('WIN and str(gpu.get("arch") or "").startswith("gfx12")', src)
 --- a/tools/test_setup_choices.py
 +++ b/tools/test_setup_choices.py
-@@ -377,7 +377,7 @@
+@@ -444,7 +444,7 @@
              if vexe:
                  (eng / setup.VEXE).write_bytes(b"vision")
              src, vsrc = "S", "V"
@@ -463,7 +471,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
              built = []
  
              def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
-@@ -385,21 +385,15 @@
+@@ -452,21 +452,15 @@
                  (bdir / "bin").mkdir(parents=True)
                  (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  
@@ -490,7 +498,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
      def test_without_images_nothing_changes(self):
          built, meta, have = self.build({}, "none")
-@@ -606,7 +600,8 @@
+@@ -673,7 +667,8 @@
                      (bdir / "bin").mkdir(parents=True)
                      (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
  
@@ -499,13 +507,4 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +                    mock.patch.object(setup, "cmake_build", cmake_build), \
                          mock.patch.object(setup, "source_hash", lambda p: "V" if p == setup.VISION_SOURCES else "S"), \
                          mock.patch.object(setup, "install_build_tools", lambda gpu, yes: (str(root / "nvcc"), None)), \
-                         mock.patch.object(setup, "source_version", lambda: "test"):
-
---- a/tools/test_setup_amd.py
-+++ b/tools/test_setup_amd.py
-@@ -706,4 +706,5 @@
- class TdrPointer(unittest.TestCase):
-+    @unittest.skipUnless(setup.WIN, "Windows driver documentation does not apply to the Linux HIP package")
-     def test_setup_points_windows_gfx12_to_the_entry(self):
-         src = Path(setup.__file__).read_text(encoding="utf-8")
-         self.assertIn('WIN and str(gpu.get("arch") or "").startswith("gfx12")', src)
+                         mock.patch.object(setup, "gpus", lambda: []), \

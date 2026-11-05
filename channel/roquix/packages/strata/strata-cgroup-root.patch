@@ -6,7 +6,7 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -95,6 +95,9 @@
+@@ -177,6 +177,9 @@
  
  if(STRATA_BUILD_CONVERSATION_TESTS)
    enable_testing()
@@ -25,7 +25,7 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
  #include "strata/core/expert_nibble.hpp"
  #include "strata/core/foresight_swap.hpp"
  #include "strata/core/on_device.hpp"
-@@ -262,7 +263,7 @@
+@@ -440,7 +441,7 @@
                  if (c == "memory") v1_path = line.substr(c2 + 1);
              continue;
          }

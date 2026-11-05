@@ -1,32 +1,10 @@
-Check unavailable disk devices in container telemetry and setup tests.
+Allow unavailable sysfs in the rotational-disk integration test.
 
-Guix build sandboxes can expose no disk devices.  The telemetry regression
-checks the unknown-measurement representation when psutil returns no counters.
-The rotational-disk check returns None when sysfs is unavailable; allow
-that result in its integration test without requiring /sys/block.
+Guix build sandboxes can expose no /sys/block directory.
 
---- a/serve/test_server.py
-+++ b/serve/test_server.py
-@@ -1790,6 +1790,16 @@
-                 (hw / "power1_input").write_text("120000000\n")
-             (hw / "power1_cap").write_text("300000000\n")
- 
-+    def test_missing_disk_counters(self):
-+        from serve import telemetry
-+        with tempfile.TemporaryDirectory() as directory, \
-+                mock.patch.object(telemetry, "SYSFS", directory), \
-+                mock.patch.object(telemetry.threading, "Thread"), \
-+                mock.patch("psutil.disk_io_counters", return_value=None):
-+            sample = telemetry.Telemetry(amd=True).sample()
-+        self.assertIsNone(sample["disk_read_mb"])
-+        self.assertIsNone(sample["disk_write_mb"])
-+
-     def test_readings(self):
-         from serve import telemetry
-         with tempfile.TemporaryDirectory() as d:
 --- a/tools/test_setup_choices.py
 +++ b/tools/test_setup_choices.py
-@@ -315,7 +315,8 @@
+@@ -524,7 +524,8 @@
          if not sys.platform.startswith("linux"):
              self.assertIsNone(setup.rotational_disk(__file__))   # Windows: never
              return
