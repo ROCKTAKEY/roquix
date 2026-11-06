@@ -15,7 +15,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages xorg))
 
 (define rusty-v8-goose-archive
