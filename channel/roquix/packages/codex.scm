@@ -115,7 +115,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version
-  "0.164.0")
+  "0.167.0")
 
 (define-public codex
   (package
@@ -131,7 +131,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13mqm0rhrdac7z4i0jyxkhkc72dh6h7p1g36w01fq68wlkxgc9la"))))
+        (base32 "0f37752wqhsynj5w35fwsildi5g1y7p1prxblr85zy0hcp94q5gl"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;clang-toolchain
@@ -186,6 +186,8 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (("crossterm = \\{ git = \"https://github.com/openai-oss-forks/crossterm\", rev = \"[0-9a-f]+\" \\}")
                          "")
                         (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"[0-9a-f]+\" \\}")
+                         "")
+                        (("v8 = \\{ git = \"https://github.com/seanh-oai/rusty_v8.git\", rev = \"[0-9a-f]+\" \\}")
                          "")
                         (("\\[patch\\.crates-io\\]")
                          "")
