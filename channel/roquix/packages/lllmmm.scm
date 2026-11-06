@@ -9,7 +9,7 @@
 (define-public lllmmm
   (package
     (name "lllmmm")
-    (version "0.3.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -18,7 +18,7 @@
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fz66jkrx5falnnkydnbrmwrfv5g2vdy4pkv24anf7ws2nidnpsj"))))
+        (base32 "0vhr2yzismizxl3qh3iiapam5bb72f4yw2vzc44bvvyv2ninzxw1"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
