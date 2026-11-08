@@ -4,6 +4,8 @@
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages window-management))
@@ -53,6 +55,19 @@
                  (string-append "\""
                                 (search-input-file inputs "/bin/xdg-open")
                                 "\"")))
+              ;; The embedded UI probes the IPC socket and writes logs through
+              ;; external commands, including when launched by XDG autostart.
+              (substitute* (find-files "quickshell" "\\.qml$")
+                (("\"test\"")
+                 (string-append "\"" (search-input-file inputs "/bin/test") "\""))
+                (("\"mkdir\"")
+                 (string-append "\"" (search-input-file inputs "/bin/mkdir") "\""))
+                (("\"sh\"")
+                 (string-append "\"" (search-input-file inputs "/bin/sh") "\""))
+                (("exec tee ")
+                 (string-append "exec " (search-input-file inputs "/bin/tee") " "))
+                (("\"dcal\"")
+                 (string-append "\"" #$output "/bin/dcal\"")))
               ;; Calendar time zones must also work on hosts without /usr/share/zoneinfo.
               (substitute* "core/Makefile"
                 (("-tags withshell")
@@ -82,7 +97,7 @@
                         (string-append #$output
                          "/share/applications/dev.duxlabs.calendar.desktop"))))))))
     (native-inputs (list go-1.27 desktop-file-utils))
-    (inputs (list quickshell xdg-utils))
+    (inputs (list bash-minimal coreutils quickshell xdg-utils))
     (home-page "https://duxlabs.dev/docs/2.0/dcal/")
     (synopsis "Desktop calendar with local, CalDAV and cloud accounts")
     (description
