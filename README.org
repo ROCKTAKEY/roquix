@@ -16,6 +16,32 @@ Run =guix pull= and use the resulting =guix=.  Roquix's channel metadata makes
 the extension discoverable as =guix extra-profile=; a channel installation
 does not require =GUIX_EXTENSIONS_PATH= or =GUILE_LOAD_PATH=.
 
+* Docker Compose
+The =docker-compose= package builds [[https://github.com/docker/compose][Docker Compose]] from source with pinned Go
+dependencies. After adding this channel and running =guix pull=, install it
+with:
+
+#+BEGIN_SRC sh
+guix install docker-compose
+docker-compose version
+#+END_SRC
+
+To use =docker compose= with an installed Docker CLI, register the plugin in
+Docker's user plugin directory. Docker does not search Guix profiles for
+plugins automatically:
+
+#+BEGIN_SRC sh
+mkdir -p "${DOCKER_CONFIG:-$HOME/.docker}/cli-plugins"
+ln -s "$HOME/.guix-profile/lib/docker/cli-plugins/docker-compose" \
+  "${DOCKER_CONFIG:-$HOME/.docker}/cli-plugins/docker-compose"
+docker compose version
+#+END_SRC
+
+For a custom Guix profile, replace =$HOME/.guix-profile= with that profile's
+path. The link follows package upgrades in the profile. If a Compose plugin
+is already registered at that location, update that registration to point to
+this profile. Running containers requires a reachable Docker daemon.
+
 * Bun and OpenCode
 After adding this channel and running =guix pull=, install Bun or OpenCode with:
 
