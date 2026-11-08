@@ -37,6 +37,9 @@
       #~(modify-phases %standard-phases
           (replace 'configure
             (lambda* (#:key inputs #:allow-other-keys)
+              (define (quoted-command name)
+                (object->string
+                 (search-input-file inputs (string-append "/bin/" name))))
               (setenv "HOME"
                       (getcwd))
               (setenv "GOCACHE"
@@ -46,24 +49,22 @@
               (setenv "GOFLAGS" "-mod=vendor -trimpath")
               ;; Autostart records os.Executable(), so resolve external tools
               ;; in the binary instead of depending on a launcher wrapper.
+              ;; https://github.com/duxlabs-dev/dux-calendar/blob/v2.1.1/core/internal/autostart/autostart.go
               (substitute* "core/vendor/github.com/duxlabs-dev/dux-go/shellapp/env.go"
                 (("\"qs\"")
-                 (string-append "\""
-                                (search-input-file inputs "/bin/qs") "\"")))
+                 (quoted-command "qs")))
               (substitute* "core/cmd/dcal/account_add.go"
                 (("\"xdg-open\"")
-                 (string-append "\""
-                                (search-input-file inputs "/bin/xdg-open")
-                                "\"")))
+                 (quoted-command "xdg-open")))
               ;; The embedded UI probes the IPC socket and writes logs through
               ;; external commands, including when launched by XDG autostart.
               (substitute* (find-files "quickshell" "\\.qml$")
                 (("\"test\"")
-                 (string-append "\"" (search-input-file inputs "/bin/test") "\""))
+                 (quoted-command "test"))
                 (("\"mkdir\"")
-                 (string-append "\"" (search-input-file inputs "/bin/mkdir") "\""))
+                 (quoted-command "mkdir"))
                 (("\"sh\"")
-                 (string-append "\"" (search-input-file inputs "/bin/sh") "\""))
+                 (quoted-command "sh"))
                 (("exec tee ")
                  (string-append "exec " (search-input-file inputs "/bin/tee") " "))
                 (("\"dcal\"")
@@ -97,7 +98,7 @@
                         (string-append #$output
                          "/share/applications/dev.duxlabs.calendar.desktop"))))))))
     (native-inputs (list go-1.27 desktop-file-utils))
-    (inputs (list bash-minimal coreutils quickshell xdg-utils))
+    (inputs (list bash-minimal coreutils-minimal quickshell xdg-utils))
     (home-page "https://duxlabs.dev/docs/2.0/dcal/")
     (synopsis "Desktop calendar with local, CalDAV and cloud accounts")
     (description
