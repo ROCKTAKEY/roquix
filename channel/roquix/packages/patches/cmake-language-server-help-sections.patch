@@ -1,0 +1,36 @@
+CMake help contains empty variable entries and section headings.
+Keep entries separate so the following variable or module remains visible.
+
+--- a/cmake_language_server/api.py
++++ b/cmake_language_server/api.py
+@@ -264,9 +264,9 @@
+ 
+         matches = re.finditer(
+             r"""
+-(?P<variable>.+)\n
+--+\n\n
+-(?P<doc>[\s\S]+?)(?:\n\n|$)
++(?P<variable>[^\n]+)\n
++-+\n
++(?P<doc>[\s\S]*?)(?=\n[^\n]+\n-+\n|\Z)
+ """,
+             p.stdout,
+             re.VERBOSE,
+@@ -274,7 +274,7 @@
+         self._builtin_variables.clear()
+         for match in matches:
+             variable = match.group("variable")
+-            doc = _tidy_doc(match.group("doc"))
++            doc = _tidy_doc(match.group("doc").strip().split("\n\n")[0])
+             if variable == "CMAKE_MATCH_<n>":
+                 for i in range(10):
+                     self._builtin_variables[f"CMAKE_MATCH_{i}"] = doc
+@@ -303,7 +303,7 @@
+ 
+         matches = re.finditer(
+             r"""
+-(?P<module>.+)\n
++(?m)^(?P<module>\w+)\n
+ -+\n+?
+ (?:(?P<header>\w[\w\s]+)\n\^+\n+?)?
+ (?P<doc>(?:.|\n)*?\n\n)

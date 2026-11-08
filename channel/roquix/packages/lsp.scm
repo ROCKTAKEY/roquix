@@ -1,14 +1,16 @@
 (define-module (roquix packages lsp)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module ((guix licenses)
                 #:prefix license:)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages node-xyz)
   #:use-module (guix download)
   #:use-module (gnu packages gcc)
   #:use-module (guix build-system node)
   #:use-module (guix build-system pyproject)
-  #:use-module (guix build-system python)
   #:use-module (guix git-download)
   #:use-module (guix gexp)
   #:use-module (gnu packages openstack)
@@ -18,58 +20,73 @@
   #:use-module (gnu packages python-build)
   #:use-module (guix utils))
 
-(define-public python-pygls
+(define python-lsprotocol-for-cmake
   (package
-    (name "python-pygls")
-    ;; Use older one for `python-cmake-language-server'
-    (version "0.12.1")
+    (inherit python-lsprotocol)
+    (version "2023.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lsprotocol" version))
+       (sha256
+        (base32 "07c6476y1mla347pskswl0c30b94a6g36123ff5w20r41l9iap6c"))))
+    ;; The release archive contains no tests.
+    (arguments (list #:tests? #f))
+    (native-inputs (list python-flit-core python-setuptools))))
+
+;; CMake Language Server uses the pygls 1.x server API.
+;; https://github.com/regen100/cmake-language-server/blob/v0.1.11/cmake_language_server/server.py
+(define python-pygls-for-cmake
+  (package
+    (inherit python-pygls)
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygls" version))
        (sha256
-        (base32 "040nq6a2a0ddv9lq7d6m84a1qixbnv5w5pj7s2p28xkfzlis579v"))))
-    (build-system python-build-system)
-    (propagated-inputs (list python-pydantic python-typeguard python-wheel))
-    (native-inputs (list python-bandit
-                         python-flake8
-                         python-mock
-                         python-mypy
-                         python-pytest
-                         python-pytest-asyncio
-                         python-setuptools-scm
-                         python-toml))
-    (arguments
-     '(#:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (delete 'sanity-check))))
-    (home-page "https://github.com/openlawlibrary/pygls/tree/master/")
-    (synopsis
-     "Pythonic generic language server (pronounced like \"pie glass\")")
-    (description
-     "Pythonic generic language server (pronounced like \"pie glass\").")
-    (license license:asl2.0)))
+        (base32 "062hlmkd4lqc6f689bhpjbyx59s25a4pqm1kqnryk80dzbpdq3hl"))))
+    ;; The release archive contains no tests; the consumer exercises the API.
+    (arguments (list #:tests? #f))
+    (native-inputs (list python-poetry-core python-setuptools))
+    (propagated-inputs
+     (list python-cattrs python-lsprotocol-for-cmake))))
 
-(define-public python-cmake-language-server
+(define-public cmake-language-server
   (package
-    (name "python-cmake-language-server")
-    (version "0.1.6")
+    (name "cmake-language-server")
+    (version "0.1.11")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "cmake-language-server" version))
+       (uri (pypi-uri "cmake_language_server" version))
+       (patches
+        (list (search-path %load-path
+                           "roquix/packages/patches/cmake-language-server-help-sections.patch")))
        (sha256
-        (base32 "1vgp4cd9dpidib3znjph0j53yinzwqcxq9jm2x1y5lhq2n93ymy1"))))
+        (base32 "0nv9rnry4nkjknrmhy34mjndskq4c9kqz999f9x4asf5gqv4hpq0"))))
     (build-system pyproject-build-system)
-    (propagated-inputs (list python-importlib-metadata python-pygls
-                             python-poetry-core))
     (arguments
-     '(#:tests? #f
-       #:phases (modify-phases %standard-phases
-                  (delete 'sanity-check))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'wrap 'wrap-cmake-tools
+            (lambda _
+              (wrap-program (string-append #$output "/bin/cmake-language-server")
+                `("PATH" prefix
+                  (,(string-append #$cmake "/bin")
+                   ,(string-append #$cmakelang "/bin")))))))))
+    (inputs (list bash-minimal cmake cmakelang))
+    (propagated-inputs (list python-pygls-for-cmake))
+    (native-inputs (list python-pdm-backend python-pytest
+                         python-pytest-datadir python-setuptools))
     (home-page "https://github.com/regen100/cmake-language-server")
-    (synopsis "CMake LSP Implementation")
-    (description "CMake LSP Implementation.")
+    (synopsis "Language server for CMake")
+    (description
+     "This package provides a CMake implementation of the Language Server
+Protocol, with command completion, documentation on hover, and formatting
+through cmake-format.  It uses the CMake file API to inspect build targets
+and cached variables.")
     (license license:expat)))
 
 (define-public typescript-language-server
