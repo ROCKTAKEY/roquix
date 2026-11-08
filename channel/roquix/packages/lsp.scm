@@ -1,24 +1,17 @@
 (define-module (roquix packages lsp)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages node-xyz)
   #:use-module (guix download)
-  #:use-module (gnu packages gcc)
   #:use-module (guix build-system node)
   #:use-module (guix build-system pyproject)
-  #:use-module (guix git-download)
   #:use-module (guix gexp)
-  #:use-module (gnu packages openstack)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages python-check)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages python-build)
-  #:use-module (guix utils))
+  #:use-module (gnu packages python-build))
 
 (define python-lsprotocol-for-cmake
   (package
@@ -61,8 +54,12 @@
        (method url-fetch)
        (uri (pypi-uri "cmake_language_server" version))
        (patches
-        (list (search-path %load-path
-                           "roquix/packages/patches/cmake-language-server-help-sections.patch")))
+        (list
+         (canonicalize-path
+          (search-path
+           %load-path
+           (string-append "roquix/packages/patches/"
+                          "cmake-language-server-help-sections.patch")))))
        (sha256
         (base32 "0nv9rnry4nkjknrmhy34mjndskq4c9kqz999f9x4asf5gqv4hpq0"))))
     (build-system pyproject-build-system)
