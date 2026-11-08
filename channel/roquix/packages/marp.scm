@@ -69,7 +69,7 @@
      (list
       #:modules '((guix build gnu-build-system)
                   (guix build utils)
-                  (ice-9 rdelim))
+                  (ice-9 textual-ports))
       #:phases
       #~(modify-phases %standard-phases
           (replace 'configure
@@ -88,13 +88,19 @@
             (lambda _
               (invoke "node" "node_modules/rollup/dist/bin/rollup" "-c")))
           (delete 'check)
+          (add-after 'build 'prepare-runtime-dependencies
+            (lambda _
+              (invoke "npm" "prune" "--omit=dev" "--omit=optional" "--offline"
+                      "--ignore-scripts" "--no-audit" "--no-fund")
+              ;; tar-stream selects Node's fs; its Bare addons target another
+              ;; runtime, including binaries for unrelated operating systems.
+              ;; https://github.com/mafintosh/tar-stream/blob/v3.2.1/package.json
+              (for-each delete-file (find-files "node_modules" "\\.bare$"))))
           (replace 'install
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (lib (string-append out "/lib/marp-cli"))
                      (bin (string-append out "/bin")))
-                (invoke "npm" "prune" "--omit=dev" "--offline"
-                        "--ignore-scripts" "--no-audit" "--no-fund")
                 (mkdir-p lib)
                 (copy-recursively "lib" (string-append lib "/lib"))
                 (copy-recursively "node_modules" (string-append lib "/node_modules"))
@@ -122,13 +128,9 @@
                                               "---\n\n# Second slide\n")
                                port)))
                   (invoke marp "slides.md" "--output" "slides.html")
-                  (unless (call-with-input-file "slides.html"
-                            (lambda (port)
-                              (let loop ()
-                                (let ((line (read-line port)))
-                                  (and (not (eof-object? line))
-                                       (or (string-contains line "Guix Marp smoke test")
-                                           (loop)))))))
+                  (unless (string-contains
+                           (call-with-input-file "slides.html" get-string-all)
+                           "Guix Marp smoke test")
                     (error "Marp did not render the slide content")))))))))
     (native-inputs (list patchelf))
     (inputs (list node bash-minimal ungoogled-chromium))
