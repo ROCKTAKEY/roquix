@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.7")
+  "0.1.8")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0zlci692hzvwlr022x4vx56y0c0kwn9mim1y6azfnfjvqqk1z1nf"))))
+    (sha256 (base32 "1ks5x8gcsz8ghl77zzxkcja8fgh44ca9xyyykw5999hhfwrjwipx"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -103,10 +103,10 @@
 
 (define t3code-xa11y-native
   (let ((library (native-library "t3code-xa11y-native"
-                  "0.13.0"
+                  "0.15.4"
                   "xa11y/xa11y"
-                  "6c3a5878e5e9a36942144854914985dbc7aaaf88"
-                  "040sc9f0b28jybp2ads18fhjn2gk80w81zhndrh04fd8zd9yaclx"
+                  "16c66b73b1e5dc946ff0f6d05051f7f988872f1a"
+                  "0flwp4as5mf4jnrzxy0hcbl7hg8xv2c7b5hsfbhcdfzm21bhs28y"
                   "xa11y-js"
                   "xa11y-js"
                   "libxa11y_js.so"
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "1czfaysjpbhg6gabd2cfjdl67yhkg6dircxzhajjsaj20bzs58g7"))))
+    (sha256 (base32 "0k4lrz39whp0km5vy9s2ja6hq84c7cgqdppvm1icz1d5dvsgmcjd"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1270,7 +1270,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "3334c78503545c34d05f79ef563a7d58931dfcf2")
+  "16697b1c0213903d2e3b0644ee7ea05df96269d7")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1282,7 +1282,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "166cwi60zm9m9hp8yzgf4llylk9kxm0vvxfbg0jx66zqnpw3ixva"))))
+    (sha256 (base32 "1c0rrflgip2lff2cs02s57clrm0pdjsfr57xxn8fs5ldy10ph98d"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
