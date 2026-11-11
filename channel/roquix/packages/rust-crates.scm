@@ -4095,10 +4095,6 @@
   (crate-source "either" "1.17.0"
                 "07dagpwcfdzpkb1n7fxkx0q3nv80rnf81v7gwlz9ljx22mn8yply"))
 
-(define rust-either-1.18.0
-  (crate-source "either" "1.18.0"
-                "0d7dx31sf8rakcgp63070ngb2vkjynrni866pnx879pawndgnai5"))
-
 (define rust-either-1.19.0
   (crate-source "either" "1.19.0"
                 "1gjq21g0sgk5ylpj85zafcinwhh3jj91i6drhb4278vw2v17370f"))
