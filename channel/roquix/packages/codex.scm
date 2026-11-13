@@ -231,18 +231,6 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (("\"command\": \"perl")
                          (string-append "\"command\": \""
                                         (which "perl"))))))
-                  (add-after 'unpack-rust-crates 'use-vendored-tungstenite
-                    (lambda _
-                      ;; The fork pins tungstenite directly; its matching source
-                      ;; is already supplied by the lockfile-derived inputs.
-                      (for-each
-                       (lambda (manifest)
-                         (substitute* manifest
-                           (("git = .*openai-oss-forks/tungstenite-rs.*")
-                            "version = \"0.27.0\"\n")
-                           (("rev = \"bc589d684755a8c02da0fc7e58d0861cbfc306f1\"")
-                            "")))
-                       (find-files "guix-vendor" "Cargo.toml$"))))
                   (add-before 'build 'use-local-rusty-v8-archive
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; The `v8` crate downloads this archive during build by

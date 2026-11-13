@@ -14644,7 +14644,14 @@
           (url "https://github.com/openai-oss-forks/tokio-tungstenite")
           (commit "7447c427513cfe685f236e1ac0513c4ea3dd9c0b")))
     (file-name (git-file-name "rust-tokio-tungstenite" "0.28.0.7447c42"))
-    (sha256 (base32 "0lp3ch581gc26swxalfwkscwzvyfq78bzrlzcf7ms03vvllsydv3"))))
+    (sha256 (base32 "0lp3ch581gc26swxalfwkscwzvyfq78bzrlzcf7ms03vvllsydv3"))
+    (modules '((guix build utils)))
+    (snippet #~(begin
+                 (substitute* "Cargo.toml"
+                   (("git = \"https://github.com/openai-oss-forks/tungstenite-rs\"")
+                    "version = \"0.27.0\"")
+                   (("rev = \"bc589d684755a8c02da0fc7e58d0861cbfc306f1\"")
+                    ""))))))
 
 (define rust-tokio-tungstenite-0.29.0
   (crate-source "tokio-tungstenite" "0.29.0"
