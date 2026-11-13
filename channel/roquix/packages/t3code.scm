@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.8")
+  "0.1.9")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "1ks5x8gcsz8ghl77zzxkcja8fgh44ca9xyyykw5999hhfwrjwipx"))))
+    (sha256 (base32 "0a3n8br2kh28gl98v0zkvn5dwvd1bia2lq7a6qzp7x8ns22yf205"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0k4lrz39whp0km5vy9s2ja6hq84c7cgqdppvm1icz1d5dvsgmcjd"))))
+    (sha256 (base32 "1ydp66vydvpr5pcxp984q2pdx1fb9fz6lbj28w1zpv8i3rm9pn7m"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -643,7 +643,13 @@
                                                         "patchelf"
                                                         "--print-rpath" file)
                                                        libraries) ":") file))))
-                      (filter elf-file?
+                      ;; Directory symlinks in node_modules also reach this scan.
+                      ;; elf-file? reads their contents and catches EISDIR, leaving
+                      ;; ports for GC; repeated probes can exhaust file descriptors.
+                      ;; Restrict probes to regular files so they close normally.
+                      (filter (lambda (file)
+                                (and (eq? 'regular (stat:type (stat file)))
+                                     (elf-file? file)))
                               (find-files directory ".*")))))
 
         (define (replace-native-dependencies inputs)
@@ -679,7 +685,13 @@
             ;; Drop unused native tools and optional accelerators too: a transitive
             ;; loader must never silently select an npm prebuild as a fallback.
             (for-each delete-file
-                      (filter elf-file?
+                      ;; Directory symlinks in node_modules also reach this scan.
+                      ;; elf-file? reads their contents and catches EISDIR, leaving
+                      ;; ports for GC; repeated probes can exhaust file descriptors.
+                      ;; Restrict probes to regular files so they close normally.
+                      (filter (lambda (file)
+                                (and (eq? 'regular (stat:type (stat file)))
+                                     (elf-file? file)))
                               (find-files "node_modules" ".*")))
             (for-each (lambda (replacement)
                         (for-each (lambda (target)
@@ -687,7 +699,7 @@
                                     (chmod target #o755))
                                   (cdr replacement))) replacements)))
 
-        (define (stage-document-dependencies)
+        (define (stage-wasm-dependencies)
           (let ((packages
                  (map (lambda (file)
                         (cons (assoc-ref (call-with-input-file file json->scm) "name")
@@ -697,26 +709,46 @@
                                     (and (eq? (stat:type stat) 'regular)
                                          (string=? (basename file) "package.json")))
                                   #:fail-on-error? #t))))
-            (define (for-package name install)
+            ;; pnpm can install a package in multiple dependency contexts.
+            ;; Replace every matching directory so no consumer retains bundled WASM.
+            (define (for-each-package-directory name replace-files)
               (let ((targets (filter (lambda (entry) (equal? (car entry) name))
                                      packages)))
                 (when (null? targets)
-                  (error "Missing locked document dependency" name))
-                (for-each (lambda (entry) (install (cdr entry))) targets)))
+                  (error "Missing locked WASM dependency" name))
+                (for-each (lambda (entry) (replace-files (cdr entry))) targets)))
             (for-each
              (lambda (entry)
-               (for-package (string-append "@betteroffice/" (car entry))
+               (for-each-package-directory (string-append "@betteroffice/" (car entry))
                  (lambda (target)
                    (stage-office-sources target (cdr entry)))))
              (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
                    (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
                    (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
-            (for-package "sql.js"
+            ;; Playwright inlines the Emscripten glue into coreBundle.js.
+            ;; It must load the glue generated alongside our WASM: replacing only
+            ;; the WASM can leave incompatible imports or memory accessors.
+            ;; https://github.com/microsoft/playwright/tree/v1.64.1/utils/libwebp-wasm
+            (for-each-package-directory "playwright-core"
+              (lambda (target)
+                (let ((lib (string-append target "/lib")))
+                  (copy-recursively #$t3code-playwright-webp-wasm lib)
+                  (let* ((bundle (string-append lib "/coreBundle.js"))
+                         (text (call-with-input-file bundle get-string-all))
+                         (start (string-contains text "// packages/utils/webp/webp_codec.js"))
+                         (end (string-contains text "// packages/utils/webp/webp.ts")))
+                    (unless (and start end) (error "Missing Playwright WebP binding"))
+                    (call-with-output-file bundle
+                      (lambda (port)
+                        (display (substring text 0 start) port)
+                        (display "var require_webp_codec = () => require('./webp_codec.js');\n" port)
+                        (display (substring text end) port)))))))
+            (for-each-package-directory "sql.js"
               (lambda (target)
                 (let ((dist (string-append target "/dist")))
                   (delete-file-recursively dist)
                   (copy-recursively #$t3code-sql-wasm dist))))
-            (for-package "pdfjs-dist"
+            (for-each-package-directory "pdfjs-dist"
               (lambda (target)
                 (for-each (lambda (name)
                             (let ((directory (string-append target "/" name)))
@@ -741,7 +773,7 @@
                   (string-append (getcwd) "/node_modules/.bin:"
                                  (getenv "PATH")))
           (replace-native-dependencies inputs)
-          (stage-document-dependencies)
+          (stage-wasm-dependencies)
           (patch-native-files "node_modules" inputs)
           (mkdir "spdx")
           (invoke "tar"
@@ -1060,6 +1092,7 @@
                         (assoc-ref outputs "out")
                         #$t3code-betteroffice-docx-wasm
                         #$t3code-betteroffice-sheets-wasm
+                        #$t3code-playwright-webp-wasm
                         #$t3code-sql-wasm
                         #$t3code-pdfjs-wasm
                         "apps/web/src/terminal/ghostty/vendor"))))
@@ -1270,7 +1303,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "16697b1c0213903d2e3b0644ee7ea05df96269d7")
+  "7cf6eda01e1b035b49ea8053c85e5e69e67b8a9c")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1282,7 +1315,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "1c0rrflgip2lff2cs02s57clrm0pdjsfr57xxn8fs5ldy10ph98d"))))
+    (sha256 (base32 "03ln32nnvc9157k2vn6m921gwfyd4qmbraclq9503i5i631gp3jd"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))

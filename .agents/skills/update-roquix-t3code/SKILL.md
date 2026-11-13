@@ -97,6 +97,12 @@ for channel verification.
   upstream dependency-selection APIs and returns JSON; keep those policies
   authoritative in upstream rather than duplicating them in Scheme. Preserve
   JSON object order when rewriting conditional exports (`#:ordered #t`).
+- Match Playwright's WebP codec to its upstream `utils/libwebp-wasm`
+  wrapper and pinned libwebp source. Replace both the WASM and the JavaScript
+  glue inlined into `playwright-core/lib/coreBundle.js`; changing only the
+  WASM risks an Emscripten binding mismatch. Verify a lossless RGBA round-trip
+  through the installed Playwright exports and include the codec in the
+  source-built WASM audit.
 - Reuse Guix WASM toolchain packages where their versions match. Rust's WASM
   sysroot is a hidden package binding, so an unsuccessful name search does
   not prove its absence. A separately built sysroot must match the compiler;

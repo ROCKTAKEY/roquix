@@ -3,6 +3,8 @@
 // escaped source replacement, even when bundling changes its filename. The Linux
 // output is also checked for Windows and macOS executables.
 
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
@@ -50,8 +52,23 @@ for (const file of files(output)) {
     count++;
   }
 }
-if (count !== 13)
-  throw new Error(`Expected 13 runtime WASM modules, found ${count}`);
+if (count !== 14)
+  throw new Error(`Expected 14 runtime WASM modules, found ${count}`);
 console.log(
   `Verified ${count} source-built WASM modules and absence of foreign executables`,
 );
+
+const require = createRequire(import.meta.url);
+const bundles = [...files(output)].filter((file) =>
+  file.endsWith("/playwright-core/lib/coreBundle.js"),
+);
+assert.ok(bundles.length > 0, "Playwright runtime is installed");
+for (const bundle of bundles) {
+  const { encodeWebp, decodeWebp } = require(bundle).utils;
+  const image = { width: 1, height: 1, data: Buffer.from([255, 0, 0, 255]) };
+  const decoded = decodeWebp(encodeWebp(image, { lossless: true }));
+  assert.equal(decoded.width, image.width);
+  assert.equal(decoded.height, image.height);
+  assert.deepEqual(decoded.data, image.data);
+}
+console.log("Installed Playwright WebP round-trip passed");

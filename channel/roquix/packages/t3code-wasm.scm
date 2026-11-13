@@ -6,6 +6,7 @@
   #:use-module (guix gexp)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cargo)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages node)
@@ -237,3 +238,78 @@ by T3 Code's web build.")
     (description "This package compiles SQLite and the sql.js JavaScript API
 for T3 Code's browser database viewer.")
     (license license:expat)))
+
+(define %webp-wasm-tests
+  (local-file (canonicalize-path (search-path %load-path
+                "roquix/packages/t3code/package-tests/check-webp-wasm.cjs"))))
+
+(define-public t3code-playwright-webp-wasm
+  (package
+    (name "t3code-playwright-webp-wasm")
+    (version "1.64.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://codeload.github.com/microsoft/playwright/tar.gz/refs/tags/v"
+             version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12gh8ap142n8kb32hiz1rq0bpcz8f9xphzwyna1mqf80rmbi9wjc"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'bootstrap)
+          (replace 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              (setenv "EM_CACHE"
+                      (string-append (getcwd) "/em-cache"))
+              (mkdir-p
+               "utils/libwebp-wasm/.build/libwebp-3757b8afeb54e305eaef18502812a9a88b7ed662")
+              (invoke "tar"
+               "xf"
+               (assoc-ref inputs "libwebp-source")
+               "--strip-components=1"
+               "-C"
+               "utils/libwebp-wasm/.build/libwebp-3757b8afeb54e305eaef18502812a9a88b7ed662")
+              (substitute* "utils/libwebp-wasm/build.sh"
+                (("\\$\\(nproc\\)")
+                 (number->string (parallel-job-count)))
+                (("cat .*LICENSE.*")
+                 (string-append "cat "
+                                #$(file-append emscripten-4
+                                               "/share/emscripten/LICENSE")
+                                "\n")))))
+          (replace 'build
+            (lambda _
+              (invoke "bash" "utils/libwebp-wasm/build.sh")))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "node"
+                        #$%webp-wasm-tests "packages/utils/webp"))))
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (for-each (lambda (file)
+                          (install-file file
+                                        (assoc-ref outputs "out")))
+                        (find-files "packages/utils/webp"
+                                    "webp_codec\\.(js|wasm|LICENSE)$")))))))
+    (native-inputs (list (list "emscripten" emscripten-4)
+                         (list "cmake" cmake-minimal)
+                         (list "node" node)
+                         (list "libwebp-source"
+                               (origin
+                                 (method url-fetch)
+                                 (uri
+                                  "https://codeload.github.com/webmproject/libwebp/tar.gz/3757b8afeb54e305eaef18502812a9a88b7ed662")
+                                 (sha256 (base32
+                                          "138709iagl32xjcm6vacrhm93cnm44vv77fh397h07b6l7f4yxmd"))))))
+    (home-page
+     "https://github.com/microsoft/playwright/tree/v1.64.1/utils/libwebp-wasm")
+    (synopsis "Source-built WebP codec for Playwright")
+    (description
+     "Builds Playwright's WebP codec with matching Emscripten bindings.")
+    (license (list license:asl2.0 license:bsd-3))))
