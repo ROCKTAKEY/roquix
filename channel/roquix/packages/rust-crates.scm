@@ -3628,10 +3628,6 @@
   (crate-source "deranged" "0.5.3"
                 "1k473y8lzjac956dm3s1cs2rz364py9zd52y9fkbanws8b6vqc6n"))
 
-(define rust-deranged-0.5.5
-  (crate-source "deranged" "0.5.5"
-                "11z5939gv2klp1r1lgrp4w5fnlkj18jqqf0h9zxmia3vkrjwpv7c"))
-
 (define rust-deranged-0.5.8
   (crate-source "deranged" "0.5.8"
                 "0711df3w16vx80k55ivkwzwswziinj4dz05xci3rvmn15g615n3w"))
@@ -5952,6 +5948,10 @@
   (crate-source "hickory-proto" "0.26.1"
                 "0hy6z06q46385y90h8c9ryrd260crn0zx5rf4lm6fi7vgf0k3aqb"))
 
+(define rust-hickory-proto-0.26.3
+  (crate-source "hickory-proto" "0.26.3"
+                "0gc9hajcpby7834a400j75p04hwlz0gmrlfibm8zm9kryq42df8j"))
+
 (define rust-hickory-resolver-0.25.2
   (crate-source "hickory-resolver" "0.25.2"
                 "0ypqxipl0dmggv442qn1xxh11lsjr65219wmmg949yqbkflsjqnw"))
@@ -6559,6 +6559,10 @@
 (define rust-ignore-0.4.25
   (crate-source "ignore" "0.4.25"
                 "0jlv2s4fxqj9fsz6y015j5vbz6i475hj80j9q3sy05d0cniq5myk"))
+
+(define rust-ignore-0.4.30
+  (crate-source "ignore" "0.4.30"
+                "1iswjam3nmb7a2sn0rzvxw968qwqwhjlw224fbymwi618ikrn03v"))
 
 (define rust-ignore-0.4.32
   (crate-source "ignore" "0.4.32"
@@ -7614,6 +7618,11 @@
   ;; TODO REVIEW: Check bundled sources.
   (crate-source "libsqlite3-sys" "0.37.0"
                 "1cdrrwqarq4rq873ni5645r9cqllc73l8knkkjj62z0yqk413wdi"))
+
+(define rust-libsqlite3-sys-0.39.1
+  ;; TODO REVIEW: Check bundled sources.
+  (crate-source "libsqlite3-sys" "0.39.1"
+                "1cx2z7q7rqacffszy2qsv0vlcxmwdkwhcg23gg80a9xrhwdz198l"))
 
 (define rust-libtest-mimic-0.8.2
   (crate-source "libtest-mimic" "0.8.2"
@@ -9233,13 +9242,13 @@
   (crate-source "openssl" "0.10.68"
                 "1xbiz2bmba2fibg70s462yk2fndp3f9vz11c7iw0ilh2y54bqx31"))
 
-(define rust-openssl-0.10.75
-  (crate-source "openssl" "0.10.75"
-                "0a238gvrzjq0r62a7472i685hi5jjzgfj72kp1xd32ir46qqv0q8"))
-
 (define rust-openssl-0.10.81
   (crate-source "openssl" "0.10.81"
                 "0ibsv2ppsjrp62jqyzprhay9vczk1bw9xvdr3h4h7fxsy0kkm0kp"))
+
+(define rust-openssl-0.10.82
+  (crate-source "openssl" "0.10.82"
+                "18is34plw86lmkn6njxpd7mrvya2dmdkcv7yxfkxqsm5jhg13s2d"))
 
 (define rust-openssl-macros-0.1.1
   (crate-source "openssl-macros" "0.1.1"
@@ -9272,15 +9281,15 @@
   (crate-source "openssl-sys" "0.9.104"
                 "0hf712xcxmycnlc09r8d446b3mwqchsbfrjv374fp7grrc3g7as5"))
 
-(define rust-openssl-sys-0.9.111
-  ;; TODO REVIEW: Check bundled sources.
-  (crate-source "openssl-sys" "0.9.111"
-                "08f3mpsabivfi3fd0qv9231qidqy68lr8a4qi32y6xda43av5jl2"))
-
 (define rust-openssl-sys-0.9.117
   ;; TODO REVIEW: Check bundled sources.
   (crate-source "openssl-sys" "0.9.117"
                 "159nf6jsqnmsynkh6gjzx088q1ifll7v88sss8qdk363n9mpwzml"))
+
+(define rust-openssl-sys-0.9.118
+  ;; TODO REVIEW: Check bundled sources.
+  (crate-source "openssl-sys" "0.9.118"
+                "1bk07k72zm9116z3bw80sxw3fy4z7v5mblr9r3hzbflyxkb17i0r"))
 
 (define rust-opentelemetry-0.31.0
   (crate-source "opentelemetry" "0.31.0"
@@ -13190,6 +13199,10 @@
   (crate-source "socket2" "0.6.5"
                 "1m7diygswpvlpvrxd6ap169nxgax014jr8220nqlr3bzyb3y5lf3"))
 
+(define rust-socks5-protocol-0.3.5
+  (crate-source "socks5-protocol" "0.3.5"
+                "05wiv79kfy0564f12ank9h6vpgml6hr6as4nqqd0mgaq71g95d14"))
+
 (define rust-softbuffer-0.4.8
   (crate-source "softbuffer" "0.4.8"
                 "1hznrcdzhhlr2x84926g28ybnlx649y1anr7mc4m3w5v3sl8vhda"))
@@ -13322,6 +13335,9 @@
   (crate-source "sqlx-core" "0.9.0"
                 "1jsw5mfpnlsx807y9ixsx7q2pbrva8x7m9za9kmqx6jppy2lxd05"))
 
+(define rust-sqlx-core-0.9.0.10462fa
+  package:rust-sqlx-workspace-0.9.0.10462fa)
+
 (define rust-sqlx-macros-0.8.6
   (crate-source "sqlx-macros" "0.8.6"
                 "0pbiwsv5ysv3qcx1g4p1pvsqlz0xp67k9g5xw3szpb6aijc55m52"))
@@ -13357,6 +13373,9 @@
 (define rust-sqlx-sqlite-0.9.0
   (crate-source "sqlx-sqlite" "0.9.0"
                 "0b4q5vpdn854dz5209kdzjd365lq2yd6dv4s4bj0f856jz1rk3j8"))
+
+(define rust-sqlx-sqlite-0.9.0.10462fa
+  package:rust-sqlx-workspace-0.9.0.10462fa)
 
 (define rust-sse-stream-0.2.4
   (crate-source "sse-stream" "0.2.4"
@@ -14617,22 +14636,15 @@
   (crate-source "tokio-tungstenite" "0.28.0"
                 "0mzqgc94csy5ai6kx5yxj548shppq2kwdbyrsdsilhycvmn40nnj"))
 
-(define rust-tokio-tungstenite-0.28.0.0e5b2d7
+(define rust-tokio-tungstenite-0.28.0.7447c42
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/openai-oss-forks/tokio-tungstenite")
-          (commit "0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186")))
-    (file-name (git-file-name "rust-tokio-tungstenite" "0.28.0.0e5b2d7"))
-    (sha256 (base32 "00i879a84zqfak3jgh4s7lrg5yz2028ra7l8cqcyfn6inyg6cp2p"))
-    (modules '((guix build utils)))
-    (snippet #~(begin
-                 (substitute* "Cargo.toml"
-                   (("git = \"https://github.com/openai-oss-forks/tungstenite-rs\"")
-                    "version = \"0.27.0\"")
-                   (("rev = \"4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\"")
-                    ""))))))
+          (commit "7447c427513cfe685f236e1ac0513c4ea3dd9c0b")))
+    (file-name (git-file-name "rust-tokio-tungstenite" "0.28.0.7447c42"))
+    (sha256 (base32 "0lp3ch581gc26swxalfwkscwzvyfq78bzrlzcf7ms03vvllsydv3"))))
 
 (define rust-tokio-tungstenite-0.29.0
   (crate-source "tokio-tungstenite" "0.29.0"
@@ -15162,15 +15174,15 @@
   (crate-source "tui-markdown" "0.3.11"
                 "0p648ybai3qhy8rd3vngghrqs0wmb12kw3k3cc3cg2fsb6c4ggbc"))
 
-(define rust-tungstenite-0.27.0.4fffad3
+(define rust-tungstenite-0.27.0.bc589d6
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/openai-oss-forks/tungstenite-rs")
-          (commit "4fffad30fe373adbdcffab9545e9e9bf4f2fc19f")))
-    (file-name (git-file-name "rust-tungstenite" "0.27.0.4fffad3"))
-    (sha256 (base32 "1z1jvg5wp4p9pswnmcn6wxzkgi7yjm5zvskdk02gn9vxp69y2lam"))))
+          (commit "bc589d684755a8c02da0fc7e58d0861cbfc306f1")))
+    (file-name (git-file-name "rust-tungstenite" "0.27.0.bc589d6"))
+    (sha256 (base32 "0phs4vrdjhk3wascspl9y7hh57j6iwlaqvk2l8sm74g1jzxh3d5z"))))
 
 (define rust-tungstenite-0.28.0
   (crate-source "tungstenite" "0.28.0"
@@ -15716,14 +15728,14 @@
   (crate-source "v_htmlescape" "0.17.0"
                 "168dfhjazwdfdb2r1qd2srjd4nycr35rcn382wa69v73r59kvyxy"))
 
-(define rust-v8-152.2.0.350c5a8
+(define rust-v8-152.2.0.90a65f8
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
-          (url "https://github.com/seanh-oai/rusty_v8.git")
-          (commit "350c5a859a9b3c84ab8701b3ad51e3b7699b30c0")))
-    (file-name (git-file-name "rust-v8" "152.2.0.350c5a8"))
+          (url "https://github.com/openai-oss-forks/rusty_v8.git")
+          (commit "90a65f887a0c0f048f3784afbcb320b373c8a2e0")))
+    (file-name (git-file-name "rust-v8" "152.2.0.90a65f8"))
     (sha256 (base32 "0xqvwzhqira17sprhzd9xr7azb9yiv9cvms6drk93f8wwbm1l7h4"))))
 
 (define rust-v8-goose-145.0.2
@@ -19771,7 +19783,7 @@
          rust-der-0.7.10
          rust-der-parser-9.0.0
          rust-der-parser-10.0.0
-         rust-deranged-0.5.5
+         rust-deranged-0.5.9
          rust-derivative-2.2.0
          rust-derive-more-1.0.0
          rust-derive-more-2.1.1
@@ -19974,6 +19986,7 @@
          rust-hermit-abi-0.5.2
          rust-hex-0.4.3
          rust-hickory-proto-0.25.2
+         rust-hickory-proto-0.26.3
          rust-hickory-resolver-0.25.2
          rust-hkdf-0.12.4
          rust-hkdf-0.13.0
@@ -20021,7 +20034,7 @@
          rust-ident-case-1.0.1
          rust-idna-1.1.0
          rust-idna-adapter-1.2.1
-         rust-ignore-0.4.25
+         rust-ignore-0.4.30
          rust-image-0.25.9
          rust-image-webp-0.2.4
          rust-include-dir-0.7.4
@@ -20082,7 +20095,7 @@
          rust-libloading-0.8.9
          rust-libm-0.2.16
          rust-libredox-0.1.12
-         rust-libsqlite3-sys-0.37.0
+         rust-libsqlite3-sys-0.39.1
          rust-libz-sys-1.1.29
          rust-line-clipping-0.3.7
          rust-link-section-0.17.2
@@ -20151,7 +20164,7 @@
          rust-num-0.4.3
          rust-num-bigint-0.4.6
          rust-num-complex-0.4.6
-         rust-num-conv-0.2.0
+         rust-num-conv-0.2.2
          rust-num-derive-0.4.2
          rust-num-integer-0.1.46
          rust-num-iter-0.1.45
@@ -20192,12 +20205,12 @@
          rust-onig-6.5.1
          rust-onig-sys-69.9.1
          rust-opaque-debug-0.3.1
-         rust-openssl-0.10.75
+         rust-openssl-0.10.82
          rust-openssl-macros-0.1.1
          rust-openssl-probe-0.1.6
          rust-openssl-probe-0.2.1
          rust-openssl-src-300.6.1+3.6.3
-         rust-openssl-sys-0.9.111
+         rust-openssl-sys-0.9.118
          rust-opentelemetry-0.31.0
          rust-opentelemetry-appender-tracing-0.31.1
          rust-opentelemetry-http-0.31.0
@@ -20479,6 +20492,7 @@
          rust-smol-str-0.3.5
          rust-socket2-0.5.10
          rust-socket2-0.6.3
+         rust-socks5-protocol-0.3.5
          rust-sonora-0.2.0
          rust-sonora-aec3-0.2.0
          rust-sonora-agc2-0.2.0
@@ -20490,12 +20504,12 @@
          rust-spin-0.9.8
          rust-spki-0.7.3
          rust-sqlx-0.9.0
-         rust-sqlx-core-0.9.0
+         rust-sqlx-core-0.9.0.10462fa
          rust-sqlx-macros-0.9.0
          rust-sqlx-macros-core-0.9.0
          rust-sqlx-mysql-0.9.0
          rust-sqlx-postgres-0.9.0
-         rust-sqlx-sqlite-0.9.0
+         rust-sqlx-sqlite-0.9.0.10462fa
          rust-sse-stream-0.2.5
          rust-stable-deref-trait-1.2.1
          rust-starlark-0.14.2
@@ -20571,9 +20585,9 @@
          rust-tiff-0.10.3
          rust-tikv-jemalloc-sys-0.7.1+5.3.1-0-g81034ce1f1373e37dc865038e1bc8eeecf559ce8
          rust-tikv-jemallocator-0.7.0
-         rust-time-0.3.47
-         rust-time-core-0.1.8
-         rust-time-macros-0.2.27
+         rust-time-0.3.55
+         rust-time-core-0.1.9
+         rust-time-macros-0.2.32
          rust-timezone-provider-0.2.3
          rust-tiny-http-0.12.0
          rust-tinystr-0.8.3
@@ -20586,7 +20600,7 @@
          rust-tokio-rustls-0.26.4
          rust-tokio-stream-0.1.18
          rust-tokio-test-0.4.5
-         rust-tokio-tungstenite-0.28.0.0e5b2d7
+         rust-tokio-tungstenite-0.28.0.7447c42
          rust-tokio-util-0.7.18
          rust-toml-0.5.11
          rust-toml-0.9.11+spec-1.1.0
@@ -20627,7 +20641,7 @@
          rust-try-lock-0.2.5
          rust-ts-rs-11.1.0
          rust-ts-rs-macros-11.1.0
-         rust-tungstenite-0.27.0.4fffad3
+         rust-tungstenite-0.27.0.bc589d6
          rust-two-face-0.5.1
          rust-type-map-0.5.1
          rust-typed-path-0.12.3
@@ -20661,7 +20675,7 @@
          rust-utf8-iter-1.0.4
          rust-utf8parse-0.2.2
          rust-uuid-1.20.0
-         rust-v8-152.2.0.350c5a8
+         rust-v8-152.2.0.90a65f8
          rust-valuable-0.1.1
          rust-vcpkg-0.2.15
          rust-version-compare-0.2.1

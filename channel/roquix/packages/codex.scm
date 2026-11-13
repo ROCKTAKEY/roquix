@@ -115,7 +115,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version
-  "0.167.2")
+  "0.169.0")
 
 (define-public codex
   (package
@@ -131,7 +131,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18w8vqmwz2mm8g4gqrrhwss1zjygf0w77kh0lhbl0zwxv3c3cbxj"))))
+        (base32 "1q4zwbz8ppkxbdyn4svdq96cx88k193lcgwrvzcg7fdwbg8p1id7"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;clang-toolchain
@@ -177,6 +177,8 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                       ;; Cargo's offline vendor directory resolves these
                       ;; dependencies through Guix's versioned crate inputs.
                       (substitute* "Cargo.toml"
+                        (("sqlx-(core|sqlite) = .*git = .*transact-rs/sqlx.*")
+                         "")
                         (("rmcp = \\{ git = \"https://github.com/modelcontextprotocol/rust-sdk\", rev = \"[0-9a-f]+\", ")
                          "rmcp = { ")
                         (("runfiles = \\{ git = \"https://github.com/dzbarsky/rules_rust\", rev = \"b56cbaa8465e74127f1ea216f813cd377295ad81\" \\}")
@@ -187,7 +189,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                          "")
                         (("tokio-tungstenite = \\{ git = \"https://github.com/openai-oss-forks/tokio-tungstenite\", rev = \"[0-9a-f]+\" \\}")
                          "")
-                        (("v8 = \\{ git = \"https://github.com/seanh-oai/rusty_v8.git\", rev = \"[0-9a-f]+\" \\}")
+                        (("v8 = \\{ git = \"https://github.com/openai-oss-forks/rusty_v8.git\", rev = \"[0-9a-f]+\" \\}")
                          "")
                         (("\\[patch\\.crates-io\\]")
                          "")
@@ -229,6 +231,18 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
                         (("\"command\": \"perl")
                          (string-append "\"command\": \""
                                         (which "perl"))))))
+                  (add-after 'unpack-rust-crates 'use-vendored-tungstenite
+                    (lambda _
+                      ;; The fork pins tungstenite directly; its matching source
+                      ;; is already supplied by the lockfile-derived inputs.
+                      (for-each
+                       (lambda (manifest)
+                         (substitute* manifest
+                           (("git = .*openai-oss-forks/tungstenite-rs.*")
+                            "version = \"0.27.0\"\n")
+                           (("rev = \"bc589d684755a8c02da0fc7e58d0861cbfc306f1\"")
+                            "")))
+                       (find-files "guix-vendor" "Cargo.toml$"))))
                   (add-before 'build 'use-local-rusty-v8-archive
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; The `v8` crate downloads this archive during build by

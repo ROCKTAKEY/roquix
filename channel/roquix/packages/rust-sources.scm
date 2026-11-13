@@ -224,3 +224,33 @@ versioned Cargo crates from its pinned upstream Git revision.")
        (synopsis "Runfiles lookup library for Bazel-built Rust binaries and tests.")
        (description "Runfiles lookup library for Bazel-built Rust binaries and tests.")
        (license license:asl2.0)))))
+
+(define-public rust-sqlx-workspace-0.9.0.10462fa
+  (let ((commit "10462fa4414c6c7f1ed1d39bb31678e3b726878c"))
+    (hidden-package
+     (package
+       (name "rust-sqlx-workspace")
+       (version (git-version "0.9.0" "0" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/transact-rs/sqlx")
+                (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32 "0s5daq5fna6ngz1jin36h9q7l87sxwqryfw55pyn5gms9iyx9fwh"))))
+       (build-system cargo-build-system)
+       (arguments
+        (list #:skip-build? #t
+              #:install-source? #t
+              ;; Keep SQLite support and core traits on the same pinned revision.
+              #:cargo-package-crates ''("sqlx-core" "sqlx-sqlite")
+              #:cargo-package-flags
+              ''("--no-metadata" "--no-verify" "--exclude-lockfile")))
+       (home-page "https://github.com/transact-rs/sqlx")
+       (synopsis "Pinned SQLx core and SQLite crates")
+       (description
+        "This package provides the SQLx workspace members used by Codex as
+versioned Cargo crates from its pinned upstream Git revision.")
+       (license (list license:expat license:asl2.0))))))
