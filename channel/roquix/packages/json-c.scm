@@ -11,13 +11,6 @@
 (define-public json-c
   (package
     (inherit guix:json-c)
-    (source
-     (origin
-       (inherit (package-source guix:json-c))
-       (patches
-        (append (origin-patches (package-source guix:json-c))
-                (list (json-c-resource
-                       "patches/json-c-free-outside-assert.patch"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments guix:json-c)
        ((#:phases phases #~%standard-phases)
