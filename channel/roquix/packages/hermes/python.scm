@@ -787,8 +787,26 @@ use-system-http-parser = 1
       (arguments (python-arguments))
       (native-inputs (list python-setuptools python-wheel)))))
 
-(define hermes-python-ptyprocess
-  (specification->package "python-ptyprocess@0.7.0"))
+(define-public hermes-python-ptyprocess
+  (hidden-package
+    (package
+      (name "hermes-python-ptyprocess")
+      (version "0.7.0")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (pypi-uri "ptyprocess" version))
+         (sha256
+          (base32 "081j893x6c9qrfszp8swfqlpvk8agh1jc32y9140pvnf90xhlpaw"))))
+      (build-system pyproject-build-system)
+      (arguments (python-arguments))
+      (native-inputs (list python-flit-core))
+      (home-page "https://github.com/pexpect/ptyprocess")
+      (synopsis "Run a subprocess in a pseudo terminal")
+      (description
+       "This Python library launches subprocesses in a pseudo terminal and
+provides interaction with both the process and its terminal.")
+      (license license:isc))))
 
 (define-public hermes-python-pycparser
   (hidden-package
