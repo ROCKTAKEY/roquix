@@ -115,7 +115,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
     (license (list license:expat license:bsd-3))))
 
 (define %codex-release-version
-  "0.169.0")
+  "0.170.0")
 
 (define-public codex
   (package
@@ -131,7 +131,7 @@ sandbox-enabled rusty_v8 static library used by Codex code mode.")
              (commit (string-append "rust-v" %codex-release-version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1q4zwbz8ppkxbdyn4svdq96cx88k193lcgwrvzcg7fdwbg8p1id7"))))
+        (base32 "07zdvpvkjxdg1n3w838a7nxdzcpnhqw2i5h5dkz4y117v790g6c8"))))
     (build-system cargo-build-system)
     (supported-systems '("x86_64-linux" "aarch64-linux"))
     (inputs (cons* ;clang-toolchain
