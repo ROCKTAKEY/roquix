@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.9")
+  "0.1.10")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "0a3n8br2kh28gl98v0zkvn5dwvd1bia2lq7a6qzp7x8ns22yf205"))))
+    (sha256 (base32 "09r2c6cgr2ns348ilpj9yaxz7kkiglz825xfd3lfckqflxa65jia"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -274,7 +274,7 @@
         (base32 "0rsimmg9gldafk086ccnbqw4k81md887lmmmwqq1z9qa3fvnis1b"))))))
 
 (define %ghostty-revision
-  "9f62873bf195e4d8a762d768a1405a5f2f7b1697")
+  "3ff6d08fad56f2d6b81420a27bdc56ee707b453e")
 (define %ghostty-source
   (origin
     (method url-fetch)
@@ -282,7 +282,7 @@
           "https://codeload.github.com/ghostty-org/ghostty/tar.gz/"
           %ghostty-revision))
     (file-name (string-append "ghostty-" %ghostty-revision ".tar.gz"))
-    (sha256 (base32 "09njhqahvh5qlw22ms07kcr275wbx0n65kbdiv4ggk87df3qriqn"))))
+    (sha256 (base32 "0r6y8kmkca44h7xln9a4a965bjdg5fvsv6n446h3iihwryz56bam"))))
 
 (define %spdx-licenses
   (origin
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "1ydp66vydvpr5pcxp984q2pdx1fb9fz6lbj28w1zpv8i3rm9pn7m"))))
+    (sha256 (base32 "0zq5ly7w8ykx7qw7grq1npjj00y10c5v9imgl2f2892d9sslb3a2"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -527,7 +527,7 @@
     (method ghostty-dependencies-fetch)
     (uri (make-t3code-dependency-reference %ghostty-source))
     (file-name "t3code-ghostty-dependencies")
-    (sha256 (base32 "1bd9x5bfncgqlzs946bgaslm79q3qhpy81wnggq1pz3kgmslpfkh"))))
+    (sha256 (base32 "1dijcqj9cw582pya9lrksaa7afw6q7gq3jfb5cq28br5ja2kwwry"))))
 
 (define (t3code-native-helper name directory)
   (package
@@ -722,9 +722,9 @@
                (for-each-package-directory (string-append "@betteroffice/" (car entry))
                  (lambda (target)
                    (stage-office-sources target (cdr entry)))))
-             (list (cons "docx" #$(file-append t3code-betteroffice-docx-wasm "/docx"))
-                   (cons "pptx" #$(file-append t3code-betteroffice-sheets-wasm "/pptx"))
-                   (cons "xlsx" #$(file-append t3code-betteroffice-sheets-wasm "/xlsx"))))
+             (list (cons "docx" #$(file-append t3code-betteroffice-wasm "/docx"))
+                   (cons "pptx" #$(file-append t3code-betteroffice-wasm "/pptx"))
+                   (cons "xlsx" #$(file-append t3code-betteroffice-wasm "/xlsx"))))
             ;; Playwright inlines the Emscripten glue into coreBundle.js.
             ;; It must load the glue generated alongside our WASM: replacing only
             ;; the WASM can leave incompatible imports or memory accessors.
@@ -873,7 +873,7 @@
                            (string-append icons "/" dimensions ".png"))))
                '(16 22 24 32 48 64 128 256 512)))))
 
-        (define* (check-application #:key tests? #:allow-other-keys)
+        (define* (check-application #:key tests? inputs #:allow-other-keys)
           (when tests?
             ;; These upstream suites cover the bundle boundary and staged resources.
             ;; GUI/provider suites require a running session or credentials.
@@ -882,6 +882,10 @@
               (invoke "vp" "test" "src/terminal/ghostty/runtimeAbi.test.ts"))
             (when #$desktop?
               (with-directory-excursion "apps/desktop"
+                ;; Vitest's global setup checks and chmods the Electron runtime.
+                (copy-recursively (string-append (assoc-ref inputs "electron")
+                                                 "/share/electron")
+                                  "node_modules/electron/dist")
                 (invoke "vp" "test" "scripts/browser-secret-native.test.mjs"
                         "src/app/DesktopEnvironment.test.ts")))))
 
@@ -1090,8 +1094,7 @@
                 (invoke "node"
                         #$(file-append %t3code-installed-tests "/check-wasm.mjs")
                         (assoc-ref outputs "out")
-                        #$t3code-betteroffice-docx-wasm
-                        #$t3code-betteroffice-sheets-wasm
+                        #$t3code-betteroffice-wasm
                         #$t3code-playwright-webp-wasm
                         #$t3code-sql-wasm
                         #$t3code-pdfjs-wasm
@@ -1303,7 +1306,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "7cf6eda01e1b035b49ea8053c85e5e69e67b8a9c")
+  "dad7560fe73fca38e5aa0a07455dc3b59a71bcd5")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1315,7 +1318,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "03ln32nnvc9157k2vn6m921gwfyd4qmbraclq9503i5i631gp3jd"))))
+    (sha256 (base32 "18aji7a7h0imvsf4p00mc7kqlrpwm5avfj40vcn377bvyy3gdj1q"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))

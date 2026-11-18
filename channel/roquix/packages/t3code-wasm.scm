@@ -39,8 +39,18 @@
       #:install-source? #f
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'adapt-to-wasm-sysroot
+            (lambda _
+              ;; Rust 1.95 lacks isolate_lowest_one; x & -x selects the same bit.
+              (substitute* '("crates/docx-edit/src/resident_geometry.rs"
+                             "crates/xlsx-render/src/geometry.rs")
+                (("([a-z]+)\\.isolate_lowest_one\\(\\)" _ value)
+                 (string-append "(" value " & " value ".wrapping_neg())")))))
           (replace 'build
             (lambda _
+              ;; Whole-program LTO exhausts memory when linking the DOCX editor.
+              (setenv "CARGO_PROFILE_RELEASE_LTO" "false")
+              (setenv "CARGO_BUILD_JOBS" (number->string (parallel-job-count)))
               (setenv "RUSTFLAGS"
                       (string-append "--sysroot="
                                      #$rust-wasm-sysroot-1.95 " -C linker="
@@ -104,7 +114,7 @@
                                        prefix
                                        ".js'; initSync({module:readFileSync('"
                                        prefix "_bg.wasm')});")))) modules)))))))
-    (native-inputs (list wasm-bindgen-cli-0.2.126 rust-wasm-sysroot-1.95
+    (native-inputs (list wasm-bindgen-cli-0.2.129 rust-wasm-sysroot-1.95
                          lld-22 node))
     (inputs (cargo-inputs (string->symbol name)
                           #:module '(roquix packages rust-crates)))
@@ -116,11 +126,11 @@ matching JavaScript bindings, together with the TypeScript sources consumed
 by T3 Code's web build.")
     (license license:asl2.0)))
 
-(define-public t3code-betteroffice-docx-wasm
-  (betteroffice-wasm "t3code-betteroffice-docx-wasm"
-                     "0.4.3"
-                     "da04b4356d75ab78379312e7523c5442b1660692"
-                     "1xpfblvp6ngdvsnkkbrnawry4qlrv1q1vrfz3bann1b1mvikxx9m"
+(define-public t3code-betteroffice-wasm
+  (betteroffice-wasm "t3code-betteroffice-wasm"
+                     "0.5.1"
+                     "4e982c3aea0065578604c3fe7727938533888f66"
+                     "0xsxi42fnl25pbrry9klc9wsnq7izprlqf6prci9ac82fcxw8y6v"
                      (list (wasm-module #:crate "betteroffice-opc"
                                         #:stem "ooxml_opc"
                                         #:destination
@@ -140,15 +150,8 @@ by T3 Code's web build.")
                                         #:stem "docx_parse"
                                         #:destination
                                         "docx/src/wasm/generated/parse"
-                                        #:features '("wasm" "tiff" "metafile")))
-                     '("docx")))
-
-(define-public t3code-betteroffice-sheets-wasm
-  (betteroffice-wasm "t3code-betteroffice-sheets-wasm"
-                     "0.3.0"
-                     "34b9e93a657158fcf3d1d1035df3202031625bdd"
-                     "0bwnjsfscx2nkqm3xr8yd3sbv12hfakdn0jg4pxbzljahrp4z1pg"
-                     (list (wasm-module #:crate "pptx-wasm"
+                                        #:features '("wasm" "tiff" "metafile"))
+                           (wasm-module #:crate "pptx-wasm"
                                         #:stem "pptx_wasm"
                                         #:destination
                                         "pptx/src/wasm/generated")
@@ -156,7 +159,7 @@ by T3 Code's web build.")
                                         #:stem "xlsx_wasm"
                                         #:destination
                                         "xlsx/src/wasm/generated"))
-                     '("pptx" "xlsx")))
+                     '("docx" "pptx" "xlsx")))
 
 (define %sql-wasm-tests
   (local-file (canonicalize-path (search-path %load-path

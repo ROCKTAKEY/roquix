@@ -117,10 +117,10 @@
 provides the JavaScript runtime for browser and Node.js applications.")
     (license (list license:expat license:ncsa))))
 
-(define-public wasm-bindgen-cli-0.2.126
+(define-public wasm-bindgen-cli-0.2.129
   (package
     (name "wasm-bindgen-cli")
-    (version "0.2.126")
+    (version "0.2.129")
     (source
      (origin
        (method url-fetch)
@@ -129,14 +129,14 @@ provides the JavaScript runtime for browser and Node.js applications.")
              version ".crate"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0l2vri38gk9a5kni2ir9nx5k0hd5pvgxvwa74dk4xhw7xxpbyblf"))))
+        (base32 "130n0ffdl0fz868h336k5120yyr8hk9z68dgxrvs4n492znl9l2z"))))
     (build-system cargo-build-system)
     (arguments
      (list
       #:rust rust-1.93
       #:install-source? #f
       #:tests? #f))
-    (inputs (cargo-inputs 'wasm-bindgen-cli-0.2.126
+    (inputs (cargo-inputs 'wasm-bindgen-cli-0.2.129
                           #:module '(roquix packages rust-crates)))
     (home-page "https://github.com/wasm-bindgen/wasm-bindgen")
     (synopsis "JavaScript bindings generator for Rust WebAssembly")
@@ -245,7 +245,7 @@ for p in glob.glob('vendor/*/.cargo-checksum.json'):
 
 (define-public wasm-bindgen-cli-0.2.100
   (package
-    (inherit wasm-bindgen-cli-0.2.126)
+    (inherit wasm-bindgen-cli-0.2.129)
     (name "wasm-bindgen-cli")
     (version "0.2.100")
     (source

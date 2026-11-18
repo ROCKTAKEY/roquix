@@ -38,7 +38,7 @@ test("Office consumers resolve source code with its newly generated WASM binding
   try {
     const manifest = {
       name: "@betteroffice/docx",
-      version: "0.4.3",
+      version: "0.5.1",
       exports: {
         ".": {
           types: "./dist/core.d.mts",
@@ -60,8 +60,12 @@ test("Office consumers resolve source code with its newly generated WASM binding
     write("source/src/wasm/generated/module.js", "new bindings");
     write("source/src/yrs/residentEngineWorker.ts", "export {};");
     write(
+      "source/src/yrs/docxWorker.mjs",
+      "import './residentEngineWorker.ts';",
+    );
+    write(
       "source/src/yrs/residentEngineWorkerClient.ts",
-      "new Worker(new URL('./residentEngineWorker.mjs', import.meta.url));",
+      "new Worker(new URL('./docxWorker.mjs', import.meta.url));",
     );
     write("source/shared/media.ts", "export const limit = 42;");
     write(
@@ -107,12 +111,13 @@ test("Office consumers resolve source code with its newly generated WASM binding
       "new bindings",
     );
     assert.ok(!existsSync(path.join(root, "target/dist")));
+    assert.ok(existsSync(path.join(root, "target/src/yrs/docxWorker.mjs")));
     assert.match(
       readFileSync(
         path.join(root, "target/src/yrs/residentEngineWorkerClient.ts"),
         "utf8",
       ),
-      /residentEngineWorker\.ts/,
+      /docxWorker\.mjs/,
     );
     assert.equal(
       readFileSync(path.join(root, "target/src/docx/media.ts"), "utf8"),

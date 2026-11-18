@@ -107,19 +107,6 @@
                                                       "/"))
                                      'post))))
                 (find-files (string-append target "/src") "\\.tsx?$"))
-      (when (string=? (assoc-ref metadata "name") "@betteroffice/docx")
-        (rewrite-source (string-append target
-                         "/src/yrs/residentEngineWorkerClient.ts")
-                        (lambda (text)
-                          (unless (string-contains text
-                                   "./residentEngineWorker.mjs")
-                            (error "Unrecognized DOCX worker entry" target))
-                          (regexp-substitute/global #f
-                           "\\./residentEngineWorker\\.mjs"
-                           text
-                           'pre
-                           "./residentEngineWorker.ts"
-                           'post))))
       (call-with-output-file (string-append target "/package.json")
         (lambda (port)
           (scm->json updated port)
