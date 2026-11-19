@@ -15,10 +15,10 @@
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/ROCKTAKEY/procshelf")
-          (commit "v0.1.1")))
-    (file-name (git-file-name "procshelf" "0.1.1"))
+          (commit "v0.1.2")))
+    (file-name (git-file-name "procshelf" "0.1.2"))
     (sha256
-     (base32 "1j46a638zp6yzvn214xzws7k9pb0zkw9c8vpv4bsajc66mp9s7pr"))))
+     (base32 "057gvjaafv0728wvhq1ms6d9hr9ym5xd713rn1m72jsyrhfjd4pp"))))
 
 (define* (procshelf-node-modules-fetch source hash-algo hash
                                       #:optional name
@@ -52,14 +52,14 @@
   (origin
     (method procshelf-node-modules-fetch)
     (uri %procshelf-source)
-    (file-name "procshelf-node-modules-0.1.1")
+    (file-name "procshelf-node-modules-0.1.2")
     (sha256
      (base32 "1b5byzmmdd5y7584py02lzcf9aa2z16162i2xk9qrfh8wlc2ypzl"))))
 
 (define-public procshelf
   (package
     (name "procshelf")
-    (version "0.1.1")
+    (version "0.1.2")
     (source %procshelf-source)
     (build-system cargo-build-system)
     (arguments
