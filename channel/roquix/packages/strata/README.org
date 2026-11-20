@@ -1,6 +1,6 @@
 #+title: Strata with AMD HIP
 
-=strata-hip= packages Strata 0.2.16 (engine 0.1.62), model preparation tools, and the local server.  It supports x86_64
+=strata-hip= packages Strata 0.2.17 (engine 0.1.63), model preparation tools, and the local server.  It supports x86_64
 Linux with AVX2 and compiles GPU code for =gfx1030=, =gfx1100=, =gfx1101=, =gfx1200=, and
 =gfx1201=.  This includes the RX 7800 XT (=gfx1101=).  Upstream considers
 =gfx1030= support experimental.

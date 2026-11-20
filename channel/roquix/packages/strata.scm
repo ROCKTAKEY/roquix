@@ -18,7 +18,7 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "64524fb9fc82222ddce554c0643b64f056ec8366")
+  "12d491da4a6904eb49aaa6f2f63ec4b1a17582e3")
 
 (define (strata-resource-path name)
   (canonicalize-path
@@ -44,7 +44,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.16")
+    (version "0.2.17")
     (source
      (origin
        (method url-fetch)
@@ -53,9 +53,9 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "1bm35hyvy1v57n0dqv477x8v58s9rr72i77qsb279kwkary3byp9"))
+        (base32 "1ny1xgbdd2ns2h4c6i0l476k9g59687dsnbnmji3hkqybchpzz2j"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
-                      (strata-resource-path "strata-cgroup-root.patch")))
+                      (strata-resource-path "strata-parser-timing.patch")))
        (modules '((guix build utils)))
        (snippet
         ;; The optional control vector carries a separate Qwen model license.
@@ -72,7 +72,6 @@
          "-DSTRATA_BUILD_CONVERSATION_TESTS=ON"
          #$(string-append "-DSTRATA_BUILD_ID="
                           (string-take %strata-commit 9))
-         "-DSTRATA_PREFILL_MMQ=ON"
          #$(string-append "-DCMAKE_HIP_ARCHITECTURES="
                           (string-join %strata-hip-architectures ";"))
          (string-append "-DCMAKE_C_COMPILER="
@@ -105,7 +104,6 @@
                       "strata-plan"
                       "conversation_cache_test"
                       "conversation_memory_test"
-                      "cgroup_path_test"
                       "file_expert_source_test"
                       "--parallel"
                       (number->string (if parallel-build?
@@ -119,7 +117,7 @@
                 ;; package, while keeping CPU and server tests in the build.
                 (invoke "ctest" "--output-on-failure" "-R"
                         (string-append
-                         "^(conversation_(cache|memory)|cgroup_path|"
+                         "^(conversation_(cache|memory)|"
                          "file_expert_source)_test$"))
                 (with-directory-excursion (getenv "STRATA_SOURCE_DIR")
                   ;; The Windows ZIP fixture uses strata.exe even on Linux.
@@ -173,7 +171,7 @@
                          "'vision':'none', 'lib_dirs':sys.argv[4:]},"
                          "open(sys.argv[1], 'w'))")
                         (string-append engine "/BUILD.json")
-                        "0.1.62"
+                        "0.1.63"
                         #$(string-join %strata-hip-architectures ";")
                         #$(file-append rocm-hip-runtime "/lib")
                         #$(file-append hipblas "/lib")

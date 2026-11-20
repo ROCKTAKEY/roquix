@@ -19,7 +19,7 @@
  
  
  def engine_src() -> Path:
-@@ -3993,29 +3996,7 @@
+@@ -4148,29 +4151,7 @@
  
  
  def pip_install(packages, what, extra=()):
@@ -50,7 +50,7 @@
  
  
  NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
-@@ -5241,61 +5222,8 @@
+@@ -5417,63 +5398,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
@@ -90,12 +90,14 @@
 -        if meta.get("backend") == "hip" and (eng / EXE).exists() and has_archs
 -        else f"  Compiling the Strata engine for your AMD GPU{'s' if len(archs) > 1 else ''} ({', '.join(archs)}; "
 -             "10-20 minutes, once) ...")
+-    # Ubuntu's libamdhip64-dev puts other HIP headers in /usr/include, which clang searches before the ones of a
+-    # --rocm-path: name the chosen root's include folder first, so the headers match the compiler that is used.
 -    cmake_build(engine_src(), ROOT / "build-hip", "strata",
 -                ["-DSTRATA_ENABLE_HIP=ON", "-DSTRATA_ENABLE_CUDA=OFF", "-DSTRATA_BUILD_TESTS=OFF",
 -                 "-DSTRATA_Q6K_EXPERTS=ON", "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
 -                 f"-DCMAKE_HIP_COMPILER={rocm_clang(root)}", f"-DCMAKE_HIP_COMPILER_ROCM_ROOT={root}",
 -                 "-DCMAKE_PREFIX_PATH=" + ";".join([str(root), *libs]),
--                 f"-DCMAKE_HIP_FLAGS=--rocm-path={root} --rocm-device-lib-path={bitcode}",
+-                 f"-DCMAKE_HIP_FLAGS=-isystem {root}/include --rocm-path={root} --rocm-device-lib-path={bitcode}",
 -                 *ggml_defs(llama), *isa_floor_defs(floor, ROOT / "build-hip", meta)], None, "")
 -    if stale_binary(ROOT / "build-hip" / EXE):            # #2054: no stamp for a binary of another version
 -        fail(f"the engine build finished without a new engine ({EXE} is version "
@@ -114,27 +116,36 @@
  
  
  def hip_vision(asked, vram_gb: float = 0.0) -> str:
-@@ -6035,94 +5963,8 @@
+@@ -6213,105 +6139,8 @@
  
  
- def update_installed_engine(url_base, toolkit=None) -> None:
+ def update_installed_engine(url_base, toolkit=None, rebuild=False) -> None:
 -    """An installed ready-made engine older than MIN_ENGINE is replaced before the model starts, so a plain
 -    START-HERE.bat on an existing install picks up a new release.  If that cannot happen (no internet, the model
 -    still running, no ready-made engine for this GPU) the installed engine is kept and starts as before.
--    toolkit None: engine/, then the experimental CUDA 12 engine in engine-cuda12/ when one is installed."""
+-    toolkit None: engine/, then the experimental CUDA 12 engine in engine-cuda12/ when one is installed.
+-    rebuild (`--update --build`, #5214): compile the installed engine again from this source, whatever it is now (a ready-made one, or a compiled one
+-    whose source has not changed); without it a ready-made engine is only replaced when it is older than MIN_ENGINE."""
 -    if toolkit is None:
--        update_installed_engine(url_base, 13)
+-        update_installed_engine(url_base, 13, rebuild)
 -        if (engine_dir(12) / "BUILD.json").exists():
--            update_installed_engine(url_base, 12)
+-            update_installed_engine(url_base, 12, rebuild)
 -        return
 -    eng = engine_dir(toolkit)
 -    info = eng / "BUILD.json"
+-    kept = eng / "BUILD.json.prev"
+-    if not info.exists() and kept.exists() and (eng / EXE).exists():
+-        try:
+-            kept.replace(info)
+-            warn("an earlier engine update did not finish: trying it again")
+-        except OSError:
+-            pass
 -    if not info.exists() or not (eng / EXE).exists():
 -        return
 -    meta_text = info.read_text(encoding="utf-8")
 -    meta = json.loads(meta_text)
--    if meta.get("backend") == "hip" and WIN:           # AMD on Windows: the ready-made HIP engine, when older
--        ver = tuple(int(x) for x in str(meta.get("version", "0")).split(".")[:4] if x.isdigit())
+-    if meta.get("backend") == "hip" and WIN and not rebuild:   # AMD on Windows: the ready-made HIP engine, when older
+-        ver =tuple(int(x) for x in str(meta.get("version", "0")).split(".")[:4] if x.isdigit())
 -        if meta.get("source") == "prebuilt" and ver < WIN_HIP_MIN_ENGINE:
 -            try:
 -                g = next((x for x in amd_gpus() if amd_problem(x) is None), None)
@@ -149,9 +160,9 @@
 -                     "starting the installed one")
 -        return
 -    if meta.get("backend") == "hip":                   # AMD: compiled here, again when its source changed
--        if meta.get("src") != source_hash(ENGINE_SOURCES) or stale_binary(eng / EXE):
+-        if rebuild or meta.get("src") != source_hash(ENGINE_SOURCES) or stale_binary(eng / EXE):
 -            try:
--                usable = [x for x in amd_gpus() if amd_problem(x) is None]
+-                usable =[x for x in amd_gpus() if amd_problem(x) is None]
 -                g = next((x for x in usable if x["arch"] in arch_names(meta.get("archs"))), usable[0] if usable else None)
 -                if g is None:
 -                    raise RuntimeError("no supported AMD GPU found")
@@ -163,9 +174,11 @@
 -                     "starting the installed one")
 -        return
 -    ver = tuple(int(x) for x in str(meta.get("version", "0")).split(".")[:4] if x.isdigit())
--    local = meta.get("source") == "local"
+-    local = meta.get("source") == "local" or rebuild
 -    vision = meta.get("vision") or "none"
--    if local:                                          # compiled here: is it older than the source (a git pull)?
+-    if rebuild:
+-        pass                                           # --update --build: compile again, whatever the engine is now
+-    elif local:                                        # compiled here: is it older than the source (a git pull)?
 -        if meta.get("src") == source_hash(ENGINE_SOURCES) and not stale_binary(eng / EXE) and \
 -                (vision == "none" or meta.get("vision_src") == source_hash(VISION_SOURCES)):
 -            return
@@ -211,7 +224,7 @@
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -9425,6 +9267,121 @@
+@@ -9695,6 +9524,121 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -333,7 +346,7 @@
  
  
  def mac_vision(asked, model: str, ram: float) -> str:
-@@ -10907,6 +10864,7 @@
+@@ -11184,6 +11128,7 @@
  
  if __name__ == "__main__":
      try:
@@ -403,7 +416,7 @@
                          mock.patch.object(setup, "gpus", lambda: []), \
 --- a/terminal/tools/test_setup_amd.py
 +++ b/terminal/tools/test_setup_amd.py
-@@ -211,40 +211,24 @@
+@@ -217,40 +217,24 @@
                          cfg.unlink()
                          (sysroot / "include/hip/hip_runtime.h").unlink()
  
@@ -458,7 +471,7 @@
  
  
  class WindowsDetection(unittest.TestCase):
-@@ -734,6 +718,7 @@
+@@ -740,6 +724,7 @@
  
  
  class TdrPointer(unittest.TestCase):

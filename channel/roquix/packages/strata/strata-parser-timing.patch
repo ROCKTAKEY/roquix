@@ -1,0 +1,15 @@
+--- a/terminal/serve/test_parser_long_values.py
++++ b/terminal/serve/test_parser_long_values.py
+@@ -105,9 +105,10 @@
+             text = call("write", path="a.txt", content="z" * n)
+             best = None
+             for _ in range(3):
+-                t0 = time.perf_counter()
++                # Measure the parser itself on shared build workers.
++                t0 = time.thread_time()
+                 run(text, cut(text, 4), True, True)
+-                dt = time.perf_counter() - t0
++                dt = time.thread_time() - t0
+                 best = dt if best is None else min(best, dt)
+             return best
+         small, big = seconds(40000), seconds(160000)
