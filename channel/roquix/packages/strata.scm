@@ -18,19 +18,7 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "d2f096475817d4666c364c820b0ca830f751cfc5")
-
-(define %strata-llama-source
-  ;; Strata uses ggml's internal headers and its own pinned tensor layout.
-  ;; https://github.com/Niko1221/Strata/blob/v0.2.11/third_party/ggml/VERSION.txt
-  (origin
-    (method url-fetch)
-    (uri (string-append
-          "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/"
-          "3cf03257f219afbe7334045ff7c6a06ac68c627d"))
-    (file-name "strata-llama.cpp-3cf0325.tar.gz")
-    (sha256
-     (base32 "1052avqwwwd0mqhp4whdvvric73r3sqjbm50q875s3ps999xfxn0"))))
+  "64524fb9fc82222ddce554c0643b64f056ec8366")
 
 (define (strata-resource-path name)
   (canonicalize-path
@@ -56,7 +44,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.13")
+    (version "0.2.16")
     (source
      (origin
        (method url-fetch)
@@ -65,17 +53,13 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "15cicssv2mbm7iv9r49r8l7ccqc2cx076q3rlg4rnkxd4hyji4vh"))
+        (base32 "1bm35hyvy1v57n0dqv477x8v58s9rr72i77qsb279kwkary3byp9"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
-                      (strata-resource-path "strata-hip-deepseek.patch")
-                      (strata-resource-path "strata-hip-align.patch")
-                      (strata-resource-path "strata-hip-monitor.patch")
-                      (strata-resource-path "strata-missing-disk-counters.patch")
                       (strata-resource-path "strata-cgroup-root.patch")))
        (modules '((guix build utils)))
        (snippet
         ;; The optional control vector carries a separate Qwen model license.
-        #~(delete-file-recursively "data/experimental-speed-projection"))))
+        #~(delete-file-recursively "terminal/data/experimental-speed-projection"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -86,11 +70,9 @@
          "-DSTRATA_PORTABLE=ON"
          "-DSTRATA_BUILD_TESTS=OFF"
          "-DSTRATA_BUILD_CONVERSATION_TESTS=ON"
-         "-DSTRATA_BUILD_DSV41=ON"
          #$(string-append "-DSTRATA_BUILD_ID="
                           (string-take %strata-commit 9))
          "-DSTRATA_PREFILL_MMQ=ON"
-         "-DSTRATA_GGML_DIR=../strata-llama-source"
          #$(string-append "-DCMAKE_HIP_ARCHITECTURES="
                           (string-join %strata-hip-architectures ";"))
          (string-append "-DCMAKE_C_COMPILER="
@@ -106,18 +88,11 @@
                         #$(file-append rocm-device-libs "/amdgcn/bitcode")))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'unpack-ggml
-            (lambda* (#:key inputs #:allow-other-keys)
-              (setenv "STRATA_SOURCE_DIR"
-                      (getcwd))
+          (add-after 'unpack 'enter-engine
+            (lambda _
+              (setenv "STRATA_SOURCE_DIR" (canonicalize-path "terminal"))
               (setenv "PYTHONDONTWRITEBYTECODE" "1")
-              (mkdir-p "../strata-llama-source")
-              (invoke "tar"
-                      "xf"
-                      (assoc-ref inputs "llama-source")
-                      "--strip-components=1"
-                      "-C"
-                      "../strata-llama-source")))
+              (chdir "engine")))
           (replace 'build
             (lambda* (#:key parallel-build? #:allow-other-keys)
               (invoke "cmake"
@@ -125,11 +100,6 @@
                       "."
                       "--target"
                       "strata"
-                      "strata-dsv41"
-                      "ds4_iq_test"
-                      "ds4_slot_test"
-                      "ds4_experts_rule_test"
-                      "ds4_pick_rule_test"
                       "strata-device"
                       "strata-gguf"
                       "strata-plan"
@@ -151,8 +121,6 @@
                         (string-append
                          "^(conversation_(cache|memory)|cgroup_path|"
                          "file_expert_source)_test$"))
-                (for-each (lambda (test) (invoke (string-append "./" test)))
-                          '("ds4_slot_test" "ds4_experts_rule_test" "ds4_pick_rule_test"))
                 (with-directory-excursion (getenv "STRATA_SOURCE_DIR")
                   ;; The Windows ZIP fixture uses strata.exe even on Linux.
                   (invoke "python3" "-c"
@@ -184,22 +152,19 @@
                             (symlink (string-append engine "/" name)
                                      (string-append bin "/" name)))
                           '("strata" "strata-device" "strata-gguf"
-                            "strata-plan" "strata-dsv41"))
-                (install-file "ds4_iq_test" (string-append out "/libexec/strata"))
+                            "strata-plan"))
                 (for-each (lambda (name)
                             (copy-recursively (string-append source "/" name)
                                               (string-append share "/" name)))
-                          '("serve" "tools" "data" "strata_control"))
+                          '("serve" "tools" "data" "strata_control" "strata_cli"))
                 (for-each (lambda (name)
                             (install-file (string-append source "/" name)
                                           share))
-                          '("setup.py" "CMakeLists.txt" "requirements.txt"
-                            "LICENSE"))
-                (copy-recursively (string-append source "/third_party/project-maya")
-                                  (string-append share "/third_party/project-maya"))
-                (copy-recursively "../strata-llama-source/gguf-py"
-                                  (string-append share
-                                   "/third_party/llama.cpp/gguf-py"))
+                          '("setup.py" "requirements.txt" "requirements-monitor.txt"))
+                (install-file (string-append source "/../LICENSE") share)
+                (install-file (string-append source "/../engine/CMakeLists.txt") share)
+                (copy-recursively (string-append source "/../engine/third_party/strata-gguf-py")
+                                  (string-append share "/third_party/strata-gguf-py"))
                 (invoke "python3"
                         "-c"
                         (string-append "import json,sys; json.dump({"
@@ -208,7 +173,7 @@
                          "'vision':'none', 'lib_dirs':sys.argv[4:]},"
                          "open(sys.argv[1], 'w'))")
                         (string-append engine "/BUILD.json")
-                        #$version
+                        "0.1.62"
                         #$(string-join %strata-hip-architectures ";")
                         #$(file-append rocm-hip-runtime "/lib")
                         #$(file-append hipblas "/lib")
@@ -240,7 +205,6 @@
                              "--engine strata")))))))))
     (native-inputs (list (list "pkg-config" pkg-config)
                          (list "rocm-toolchain" rocm-toolchain)
-                         (list "llama-source" %strata-llama-source)
                          (list "setup-tests"
                                (local-file (strata-resource-path
                                             "test_setup.py")))))
@@ -262,9 +226,9 @@
                   python-psutil))
     (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/Niko1221/Strata")
-    (synopsis "Local Qwen and DeepSeek inference with AMD HIP")
+    (synopsis "Local Qwen inference with AMD HIP")
     (description
-     "Strata runs Qwen3.8-Flash-Next, DeepSeek-V4.1-Flash, and supported derivatives
+     "Strata runs Qwen3.8-Flash-Next and supported derivatives
 using GPU memory,
 system RAM, and SSD storage.  This package provides the AMD HIP engines, model
 preparation tools, and a local web server with OpenAI- and Anthropic-compatible

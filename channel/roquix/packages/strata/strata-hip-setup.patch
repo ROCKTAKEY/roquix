@@ -1,12 +1,6 @@
-Use the Guix-provided engine and dependencies from a writable setup directory.
-
-Model preparation and configuration writing remain upstream operations.
-The package owns executables and libraries; user state owns model paths.
-Runtime compilation tests exercise the corresponding packaged-engine contract.
-
---- a/setup.py
-+++ b/setup.py
-@@ -60,6 +60,8 @@
+--- a/terminal/setup.py
++++ b/terminal/setup.py
+@@ -65,6 +65,8 @@
  import urllib.parse
  import urllib.request
  import zipfile
@@ -15,63 +9,17 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  from pathlib import Path
  
  from strata_control import acquisition
-@@ -74,7 +76,8 @@
+@@ -79,7 +81,8 @@
  from strata_control.discovery import in_trash
  from strata_control import user_args
  
 -ROOT = Path(__file__).resolve().parent
 +PACKAGE_ROOT = Path(__file__).resolve().parent
 +ROOT = PACKAGE_ROOT
- # The desktop app runs this installer under Strata Control (its bundled Python, STRATA_CONTROL_INSTALL=1). The source
- # (tools/, data/, serve/) stays in ROOT, inside the app; everything the install writes (run configs, logs, third_party,
- # the data folder beside it) goes to home(), a per-user folder (STRATA_INSTALL_DIR). In that mode it installs no Python
-@@ -3827,44 +3830,7 @@
  
  
- def get_llama_cpp():
--    """llama.cpp at the pinned commit (ggml for the build, gguf-py for the tools, mtmd for images), as a zip: no git."""
--    llama = home() / "third_party" / "llama.cpp"
--    if (llama / "ggml" / "CMakeLists.txt").exists() and (llama / "gguf-py").is_dir():
--        return llama
--    z = home() / "third_party" / f"llama.cpp-{LLAMA_CPP_COMMIT[:7]}.zip"
--    download(LLAMA_CPP_ZIP, z, "llama.cpp source")
--    tmp = home() / "third_party" / "_unpack"
--    shutil.rmtree(tmp, ignore_errors=True)
--    try:
--        with zipfile.ZipFile(z) as f:
--            # llama.cpp's own web UI (tools/ui) is not used, and its deep paths passed Windows' 260-character limit in a
--            # folder like Downloads\Strata-main\Strata-main (#206)
--            f.extractall(tmp, [m for m in f.namelist() if "/tools/ui/" not in m])
--    except zipfile.BadZipFile:
--        # #1797: do not let the .done mark make every later run reuse a damaged source archive.
--        try:
--            drop_archive(z)
--        except OSError as e:
--            warn(f"cannot remove damaged {z.name} ({e}): delete it and its .done mark before running setup again")
--        raise
--    top = next(tmp.iterdir())
--    shutil.rmtree(llama, ignore_errors=True)
--    # PR #63: on Windows a rename can fail with PermissionError while an antivirus scanner still holds a file of the
--    # fresh unpack; shutil.move falls back to copy-and-delete, and a few retries let the scanner finish.  The target
--    # is `llama` itself - moving into its parent would keep the zip's `llama.cpp-<sha>` folder name.
--    for attempt in range(5):
--        try:
--            shutil.move(str(top), str(llama))
--            break
--        except PermissionError:
--            if attempt == 4:
--                raise
--            shutil.rmtree(llama, ignore_errors=True)   # a partial copy from the failed attempt
--            time.sleep(2)
--    shutil.rmtree(tmp, ignore_errors=True)
--    z.unlink(missing_ok=True)
--    z.with_name(z.name + ".done").unlink(missing_ok=True)
--    return llama
-+    return PACKAGE_ROOT / "third_party/llama.cpp"
- 
- 
- def req_name(line: str) -> str:
-@@ -3925,29 +3891,7 @@
+ def engine_src() -> Path:
+@@ -3993,29 +3996,7 @@
  
  
  def pip_install(packages, what, extra=()):
@@ -102,7 +50,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  NVFP4_LOCAL_REQUIREMENTS = ROOT / "requirements-nvfp4-local.txt"
-@@ -5158,61 +5102,8 @@
+@@ -5241,61 +5222,8 @@
  
  
  def build_engine_hip(gpu, llama, vision="none") -> Path:
@@ -137,18 +85,18 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -    os.environ.update({"HIP_PLATFORM": "amd", "HIP_COMPILER": "clang", "HIP_RUNTIME": "rocclr", "ROCM_PATH": str(root),
 -                       "HIP_PATH": str(root)})
 -    os.environ["LD_LIBRARY_PATH"] = os.pathsep.join(dirs + [os.environ.get("LD_LIBRARY_PATH", "")]).rstrip(os.pathsep)
--    os.environ["PATH"] = os.pathsep.join([str(root / "bin"), str(root / "llvm" / "bin"), os.environ.get("PATH", "")])
+-    os.environ["PATH"] = os.pathsep.join([str(root / "bin"), str(rocm_clang(root).parent), os.environ.get("PATH", "")])
 -    say("  The engine's source changed: compiling it again (only what changed, a few minutes) ..."
 -        if meta.get("backend") == "hip" and (eng / EXE).exists() and has_archs
 -        else f"  Compiling the Strata engine for your AMD GPU{'s' if len(archs) > 1 else ''} ({', '.join(archs)}; "
 -             "10-20 minutes, once) ...")
--    cmake_build(ROOT, ROOT / "build-hip", "strata",
+-    cmake_build(engine_src(), ROOT / "build-hip", "strata",
 -                ["-DSTRATA_ENABLE_HIP=ON", "-DSTRATA_ENABLE_CUDA=OFF", "-DSTRATA_BUILD_TESTS=OFF",
--                 "-DSTRATA_PREFILL_MMQ=ON", "-DSTRATA_Q6K_EXPERTS=ON", "-DSTRATA_MMQ_KQUANTS=ON", "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
--                 f"-DCMAKE_HIP_COMPILER={root / 'llvm' / 'bin' / 'clang++'}", f"-DCMAKE_HIP_COMPILER_ROCM_ROOT={root}",
+-                 "-DSTRATA_Q6K_EXPERTS=ON", "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
+-                 f"-DCMAKE_HIP_COMPILER={rocm_clang(root)}", f"-DCMAKE_HIP_COMPILER_ROCM_ROOT={root}",
 -                 "-DCMAKE_PREFIX_PATH=" + ";".join([str(root), *libs]),
 -                 f"-DCMAKE_HIP_FLAGS=--rocm-path={root} --rocm-device-lib-path={bitcode}",
--                 f"-DSTRATA_GGML_DIR={llama}", *isa_floor_defs(floor, ROOT / "build-hip", meta)], None, "")
+-                 *ggml_defs(llama), *isa_floor_defs(floor, ROOT / "build-hip", meta)], None, "")
 -    if stale_binary(ROOT / "build-hip" / EXE):            # #2054: no stamp for a binary of another version
 -        fail(f"the engine build finished without a new engine ({EXE} is version "
 -             f"{binary_engine_version(ROOT / 'build-hip' / EXE)}, this source is {source_version()}): "
@@ -166,7 +114,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def hip_vision(asked, vram_gb: float = 0.0) -> str:
-@@ -5893,94 +5784,8 @@
+@@ -6035,94 +5963,8 @@
  
  
  def update_installed_engine(url_base, toolkit=None) -> None:
@@ -209,7 +157,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -                    raise RuntimeError("no supported AMD GPU found")
 -                # every architecture it was built for (a layer split across two families keeps both)
 -                build_engine_hip({**g, "archs": [x for x in arch_names(meta.get("archs")) if x in AMD_ARCHS] or [g["arch"]]},
--                                 get_llama_cpp(), meta.get("vision") or "none")
+-                                 llama_override(), meta.get("vision") or "none")
 -            except (Exception, SystemExit) as e:
 -                warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: "
 -                     "starting the installed one")
@@ -239,7 +187,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 -            gpu = {**gpu, "archs": sorted({int(gpu["arch"]), *arch_numbers(meta.get("archs"))})}
 -            if int(toolkit) == 12:                     # the cards it was compiled for (the main GPU may be newer)
 -                gpu["archs"] = sorted(arch_numbers(meta.get("archs"))) or gpu["archs"]
--            build_engine(gpu, vision, False, get_llama_cpp(), toolkit=toolkit)
+-            build_engine(gpu, vision, False, llama_override(), toolkit=toolkit)
 -        except (Exception, SystemExit) as e:
 -            warn(f"could not compile the updated engine{'' if isinstance(e, SystemExit) else f' ({e})'}: starting the installed one")
 -        return
@@ -263,7 +211,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def pip_cuda_libs(toolkit=13) -> None:
-@@ -9529,6 +9334,119 @@
+@@ -9425,6 +9267,121 @@
      say(f"{fam['title']} is downloaded, but this Strata version cannot run it yet (its engine path is in "
          "development); nothing was configured. Run setup again without --family qwen36 to install a model it runs.")
      return 0
@@ -280,8 +228,9 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +        parser.add_argument("--vision", choices=["none", "no"])
 +        parser.add_argument("--build", action="store_true")
 +        parser.add_argument("--prebuilt")
++        parser.add_argument("--dsv41-package")
 +        options, _ = parser.parse_known_args(arguments)
-+        if options.build or options.prebuilt is not None:
++        if options.build or options.prebuilt is not None or options.dsv41_package is not None:
 +            parser.error("Guix manages the engine; use guix upgrade strata-hip")
 +        return cls(("--vision", "none", *arguments))
 +
@@ -299,7 +248,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +        if not isinstance(metadata, dict) or metadata.get("backend") != "hip":
 +            raise ValueError("the Guix package must provide a HIP engine")
 +        if not (root / "engine/strata").is_file():
-+            raise ValueError("the packaged Strata engine is missing")
++            raise ValueError("the packaged strata engine is missing")
 +        return cls(
 +            root,
 +            cls._metadata_strings(metadata, "archs"),
@@ -333,6 +282,7 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
 +            "tools",
 +            "serve",
 +            "strata_control",
++            "strata_cli",
 +            "data",
 +            "engine",
 +            "third_party",
@@ -383,21 +333,77 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  def mac_vision(asked, model: str, ram: float) -> str:
-@@ -11339,7 +11257,11 @@
+@@ -10907,6 +10864,7 @@
  
  if __name__ == "__main__":
      try:
 +        sys.argv[1:] = prepare_guix_setup(sys.argv[1:])
-         sys.exit(main())
-+    except (OSError, ValueError, TypeError) as error:
-+        print(f"strata-setup: {error}", file=sys.stderr)
-+        sys.exit(1)
-     except acquisition.AcquisitionRefused as e:         # a start that would have installed something: said, not done
-         say(f"\n  [X]  {e}")
-         sys.exit(e.exit_code)
---- a/tools/test_setup_amd.py
-+++ b/tools/test_setup_amd.py
-@@ -208,40 +208,24 @@
+         code = main()
+         if code:
+             event("error", message=f"setup ended with exit code {code}", exit_code=int(code))
+--- a/terminal/tools/test_setup_choices.py
++++ b/terminal/tools/test_setup_choices.py
+@@ -454,7 +454,7 @@
+             if vexe:
+                 (eng / setup.VEXE).write_bytes(b"vision")
+             src, vsrc = "S", "V"
+-            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "src": src, **meta}))
++            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "lib_dirs": ["/store/rocm/lib"], "src": src, **meta}))
+             built = []
+ 
+             def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
+@@ -462,7 +462,7 @@
+                 (bdir / "bin").mkdir(parents=True)
+                 (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
+ 
+-            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
++            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
+                     mock.patch.object(setup, "cpu_info", lambda: ("Test CPU", True, False)), \
+                     mock.patch.object(setup, "source_hash", lambda paths: vsrc if paths == setup.VISION_SOURCES else src):
+                 # an AVX2 CPU whatever the box has: on one without AVX2 (or one whose CPU flags cannot be read) the engine itself
+@@ -470,16 +470,9 @@
+                 quiet(setup.build_engine_hip, {"arch": "gfx1201"}, "llama", vision)
+             return built, json.loads((eng / "BUILD.json").read_text()), (eng / setup.VEXE).exists()
+ 
+-    def test_the_cpu_encoder_is_built_once(self):
+-        built, meta, have = self.build({}, "cpu")
+-        self.assertEqual([t for t, _ in built], ["strata-vision"])
+-        self.assertIn("-DSTRATA_VISION_CUDA=OFF", built[0][1])
+-        self.assertIn("-DSTRATA_PORTABLE=OFF", built[0][1])            # built for this PC (#411: portable is the default)
+-        self.assertEqual((meta["vision"], meta["vision_src"], have), ("cpu", "V", True))
+-        built, meta, _ = self.build({"vision": "cpu", "vision_src": "V"}, "cpu", vexe=True)
+-        self.assertEqual(built, [])                                    # built and unchanged: nothing to do
+-        built, meta, _ = self.build({"vision": "cpu", "vision_src": "old"}, "cpu", vexe=True)
+-        self.assertEqual([t for t, _ in built], ["strata-vision"])     # its source changed: again
++    def test_missing_cpu_encoder_is_rejected(self):
++        with self.assertRaisesRegex(ValueError, "vision"):
++            self.build({}, "cpu")
+ 
+     def test_without_images_nothing_changes(self):
+         built, meta, have = self.build({}, "none")
+@@ -542,7 +535,8 @@
+         if not sys.platform.startswith("linux"):
+             self.assertIsNone(setup.rotational_disk(__file__))   # Windows: never
+             return
+-        self.assertIn(setup.rotational_disk(__file__), (None,) + tuple(os.listdir("/sys/block")))
++        disks = tuple(os.listdir("/sys/block")) if os.path.isdir("/sys/block") else ()
++        self.assertIn(setup.rotational_disk(__file__), (None,) + disks)
+ 
+ 
+ class VramReserve(unittest.TestCase):
+@@ -686,7 +680,8 @@
+                     (bdir / "bin").mkdir(parents=True)
+                     (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
+ 
+-                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
++                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), \
++                    mock.patch.object(setup, "cmake_build", cmake_build), \
+                         mock.patch.object(setup, "source_hash", lambda p: "V" if p == setup.VISION_SOURCES else "S"), \
+                         mock.patch.object(setup, "install_build_tools", lambda gpu, yes: (str(root / "nvcc"), None)), \
+                         mock.patch.object(setup, "gpus", lambda: []), \
+--- a/terminal/tools/test_setup_amd.py
++++ b/terminal/tools/test_setup_amd.py
+@@ -211,40 +211,24 @@
                          cfg.unlink()
                          (sysroot / "include/hip/hip_runtime.h").unlink()
  
@@ -452,59 +458,11 @@ Runtime compilation tests exercise the corresponding packaged-engine contract.
  
  
  class WindowsDetection(unittest.TestCase):
-@@ -731,6 +715,7 @@
-
-
+@@ -734,6 +718,7 @@
+ 
+ 
  class TdrPointer(unittest.TestCase):
 +    @unittest.skipUnless(setup.WIN, "Windows driver documentation does not apply to the Linux HIP package")
      def test_setup_points_windows_gfx12_to_the_entry(self):
          src = Path(setup.__file__).read_text(encoding="utf-8")
          self.assertIn('WIN and str(gpu.get("arch") or "").startswith("gfx12")', src)
---- a/tools/test_setup_choices.py
-+++ b/tools/test_setup_choices.py
-@@ -444,7 +444,7 @@
-             if vexe:
-                 (eng / setup.VEXE).write_bytes(b"vision")
-             src, vsrc = "S", "V"
--            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "src": src, **meta}))
-+            (eng / "BUILD.json").write_text(json.dumps({"backend": "hip", "archs": ["gfx1201"], "lib_dirs": ["/store/rocm/lib"], "src": src, **meta}))
-             built = []
- 
-             def cmake_build(src_dir, bdir, target, defs, vcvars, bat):
-@@ -452,21 +452,15 @@
-                 (bdir / "bin").mkdir(parents=True)
-                 (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
- 
--            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
-+            with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), \
-+                    mock.patch.object(setup, "cmake_build", cmake_build), \
-                     mock.patch.object(setup, "source_hash", lambda paths: vsrc if paths == setup.VISION_SOURCES else src):
-                 quiet(setup.build_engine_hip, {"arch": "gfx1201"}, "llama", vision)
-             return built, json.loads((eng / "BUILD.json").read_text()), (eng / setup.VEXE).exists()
- 
--    def test_the_cpu_encoder_is_built_once(self):
--        built, meta, have = self.build({}, "cpu")
--        self.assertEqual([t for t, _ in built], ["strata-vision"])
--        self.assertIn("-DSTRATA_VISION_CUDA=OFF", built[0][1])
--        self.assertIn("-DSTRATA_PORTABLE=OFF", built[0][1])            # built for this PC (#411: portable is the default)
--        self.assertEqual((meta["vision"], meta["vision_src"], have), ("cpu", "V", True))
--        built, meta, _ = self.build({"vision": "cpu", "vision_src": "V"}, "cpu", vexe=True)
--        self.assertEqual(built, [])                                    # built and unchanged: nothing to do
--        built, meta, _ = self.build({"vision": "cpu", "vision_src": "old"}, "cpu", vexe=True)
--        self.assertEqual([t for t, _ in built], ["strata-vision"])     # its source changed: again
-+    def test_missing_cpu_encoder_is_rejected(self):
-+        with self.assertRaisesRegex(ValueError, "vision"):
-+            self.build({}, "cpu")
- 
-     def test_without_images_nothing_changes(self):
-         built, meta, have = self.build({}, "none")
-@@ -673,7 +667,8 @@
-                     (bdir / "bin").mkdir(parents=True)
-                     (bdir / "bin" / setup.VEXE).write_bytes(b"vision")
- 
--                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "cmake_build", cmake_build), \
-+                with mock.patch.object(setup, "ROOT", root), mock.patch.object(setup, "PACKAGE_ROOT", root), \
-+                    mock.patch.object(setup, "cmake_build", cmake_build), \
-                         mock.patch.object(setup, "source_hash", lambda p: "V" if p == setup.VISION_SOURCES else "S"), \
-                         mock.patch.object(setup, "install_build_tools", lambda gpu, yes: (str(root / "nvcc"), None)), \
-                         mock.patch.object(setup, "gpus", lambda: []), \

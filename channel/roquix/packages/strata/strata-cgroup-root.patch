@@ -1,12 +1,6 @@
-Preserve root cgroup identity when checking resident expert RAM.
-
-Appending an empty relative cgroup path creates a trailing path component.
-The host root has no memory.max; retaining its identity preserves the root
-exception without bypassing child cgroup limits or the RAM headroom guard.
-
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -177,6 +177,9 @@
+--- a/engine/CMakeLists.txt
++++ b/engine/CMakeLists.txt
+@@ -185,6 +185,9 @@
  
  if(STRATA_BUILD_CONVERSATION_TESTS)
    enable_testing()
@@ -16,16 +10,16 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
    add_executable(conversation_cache_test src/core/conversation_cache_test.cpp)
    target_include_directories(conversation_cache_test PRIVATE include)
    add_test(NAME conversation_cache_test COMMAND conversation_cache_test)
---- a/src/core/expert_source.cpp
-+++ b/src/core/expert_source.cpp
+--- a/engine/src/core/expert_source.cpp
++++ b/engine/src/core/expert_source.cpp
 @@ -1,5 +1,6 @@
  // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
  #include "strata/core/expert_source.hpp"
 +#include "strata/core/cgroup_path.hpp"
  #include "strata/core/expert_nibble.hpp"
+ #include "strata/core/conversation_memory.hpp"
  #include "strata/core/foresight_swap.hpp"
- #include "strata/core/on_device.hpp"
-@@ -440,7 +441,7 @@
+@@ -455,7 +456,7 @@
                  if (c == "memory") v1_path = line.substr(c2 + 1);
              continue;
          }
@@ -35,7 +29,7 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
          v2 = true;
          while (path.string().rfind(root.string(), 0) == 0) {
 --- /dev/null
-+++ b/include/strata/core/cgroup_path.hpp
++++ b/engine/include/strata/core/cgroup_path.hpp
 @@ -0,0 +1,13 @@
 +#pragma once
 +
@@ -51,7 +45,7 @@ exception without bypassing child cgroup limits or the RAM headroom guard.
 +}
 +}
 --- /dev/null
-+++ b/tests/core/cgroup_path_test.cpp
++++ b/engine/tests/core/cgroup_path_test.cpp
 @@ -0,0 +1,16 @@
 +#include "strata/core/cgroup_path.hpp"
 +
