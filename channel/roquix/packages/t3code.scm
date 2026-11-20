@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.10")
+  "0.1.11")
 
 (define %t3code-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "09r2c6cgr2ns348ilpj9yaxz7kkiglz825xfd3lfckqflxa65jia"))))
+    (sha256 (base32 "0n13n6rwmv2w1vk3cdfs9ijq76l2lys78p8jfg85ghqj9aibl6ww"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -412,7 +412,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0zq5ly7w8ykx7qw7grq1npjj00y10c5v9imgl2f2892d9sslb3a2"))))
+    (sha256 (base32 "1lgdmcyz9098yd88as9fnqz78l8vf39xmr55d6zq5qz1s8r6xhjz"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -877,7 +877,9 @@
           (when tests?
             ;; These upstream suites cover the bundle boundary and staged resources.
             ;; GUI/provider suites require a running session or credentials.
-            (invoke "vp" "test" "scripts/lib/cli-external-packages.test.ts")
+            (with-directory-excursion "scripts"
+              (invoke "vp" "test" "--config" "../vite.config.ts"
+                      "lib/cli-external-packages.test.ts"))
             (with-directory-excursion "apps/web"
               (invoke "vp" "test" "src/terminal/ghostty/runtimeAbi.test.ts"))
             (when #$desktop?
@@ -1306,7 +1308,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "dad7560fe73fca38e5aa0a07455dc3b59a71bcd5")
+  "6643f1b382856ae47183c92c51b07be63fddc6b0")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1318,7 +1320,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "18aji7a7h0imvsf4p00mc7kqlrpwm5avfj40vcn377bvyy3gdj1q"))))
+    (sha256 (base32 "00kfrbwsd43v82fvyzd5r7hms1a3jlbrdv6cahyfm21cdhkcymq1"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
