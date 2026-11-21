@@ -5,6 +5,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (roquix packages node-xyz)
+  #:use-module (roquix packages marp wasm)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages chromium)
@@ -53,7 +54,7 @@
          (chdir #$(string-append "marp-cli-" %marp-version))
          (invoke "npm" "ci" "--ignore-scripts" "--no-audit" "--no-fund")
          (copy-recursively "node_modules" #$output)
-         (remove-prebuilt-native-code #$output)
+         (remove-prebuilt-code #$output)
          (delete-file (string-append #$output "/.package-lock.json"))))
    #:system system
    #:guile-for-build guile
@@ -65,7 +66,7 @@
   (origin
     (method marp-node-modules-fetch)
     (uri (string-append "marp-node-modules-" %marp-version))
-    (sha256 (base32 "0z0s99caycmznni2va5xfrj93yhz2q28jpdgkih1ch1zhadmznf8"))))
+    (sha256 (base32 "1sa9fidw1rc303q7rxvzs30vdrlwbp92bspl0fqsz0nnmjl5i32q"))))
 
 (define-public marp-cli
   (package
@@ -89,7 +90,11 @@
               (copy-recursively #$%marp-node-modules "node_modules")
               (for-each make-file-writable (find-files "node_modules"))
               (copy-file #$(file-append marp-rollup-native "/lib/rollup.node")
-                         "node_modules/rollup/dist/rollup.linux-x64-gnu.node")))
+                         "node_modules/rollup/dist/rollup.linux-x64-gnu.node")
+              (copy-file #$(file-append marp-quickjs-wasm "/quickjs.cjs")
+                         (string-append "node_modules/@tootallnate/quickjs-emscripten/"
+                                        "dist/generated/"
+                                        "emscripten-module.WASM_RELEASE_SYNC.js"))))
           (replace 'build
             (lambda _
               (invoke "node" "node_modules/rollup/dist/bin/rollup" "-c")))
@@ -122,6 +127,12 @@
             (lambda* (#:key tests? outputs #:allow-other-keys)
               (when tests?
                 (let ((marp (string-append (assoc-ref outputs "out") "/bin/marp")))
+                  (invoke "node"
+                          #$(local-file
+                             (canonicalize-path
+                              (search-path %load-path
+                               "roquix/packages/marp/check-installed-quickjs.cjs")))
+                          (string-append (assoc-ref outputs "out") "/lib/marp-cli"))
                   (invoke marp "--version")
                   (call-with-output-file "slides.md"
                     (lambda (port)
@@ -134,7 +145,7 @@
                            (call-with-input-file "slides.html" get-string-all)
                            "Guix Marp smoke test")
                     (error "Marp did not render the slide content")))))))))
-    (native-inputs (list marp-rollup-native))
+    (native-inputs (list marp-rollup-native marp-quickjs-wasm))
     (inputs (list node bash-minimal ungoogled-chromium))
     (home-page "https://marp.app/")
     (synopsis "Create slide decks from Markdown")
