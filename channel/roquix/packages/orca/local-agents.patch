@@ -1,0 +1,195 @@
+--- a/package.json
++++ b/package.json
+@@ -227,7 +227,6 @@
+     "check:import-boundaries": "bun config/scripts/static-analysis/process-boundaries/check-import-boundaries.mjs"
+   },
+   "dependencies": {
+-    "@anthropic-ai/claude-agent-sdk": "0.3.319",
+     "@floating-ui/dom": "1.8.0",
+     "@linear/sdk": "^97.0.0",
+     "@orca/process-host": "workspace:*",
+@@ -271,7 +270,6 @@
+     "@playwright/test": "^1.64.1",
+     "@sanity/diff-match-patch": "^3.2.1",
+     "@shadcn/lint": "~0.2.5",
+-    "@stablyai/playwright-test": "^2.1.16",
+     "@tailwindcss/vite": "^4.3.5",
+     "@tanstack/react-virtual": "^3.14.13",
+     "@testing-library/jest-dom": "^6.9.1",
+@@ -347,8 +345,6 @@
+     "oxc-transform-react": "~0.152.0",
+     "oxfmt": "^0.74.0",
+     "oxlint": "^1.91.0",
+-    "oxlint-plugin-anti-slop": "github:dmmulroy/anti-slop#c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b",
+-    "oxlint-plugin-react-doctor": "0.9.14",
+     "oxlint-tsgolint": "7.0.2005",
+     "pdfjs-dist": "^6.3.289",
+     "playwright-core": "1.64.1",
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -229,9 +229,6 @@
+ 
+   .:
+     dependencies:
+-      '@anthropic-ai/claude-agent-sdk':
+-        specifier: 0.3.319
+-        version: 0.3.319(@anthropic-ai/sdk@0.122.0(zod@4.6.7))(@modelcontextprotocol/sdk@1.32.1(supports-color@7.2.0)(zod@4.6.7))(zod@4.6.7)
+       '@floating-ui/dom':
+         specifier: 1.8.0
+         version: 1.8.0
+@@ -356,9 +353,6 @@
+       '@shadcn/lint':
+         specifier: ~0.2.5
+         version: 0.2.5(eslint@10.10.0(@types/keyv@3.1.4)(jiti@2.7.0)(supports-color@7.2.0))
+-      '@stablyai/playwright-test':
+-        specifier: ^2.1.16
+-        version: 2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)
+       '@tailwindcss/vite':
+         specifier: ^4.3.5
+         version: 4.3.5(vite@8.3.6(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+@@ -584,12 +578,6 @@
+       oxlint:
+         specifier: ^1.91.0
+         version: 1.91.0(oxlint-tsgolint@7.0.2005)
+-      oxlint-plugin-anti-slop:
+-        specifier: github:dmmulroy/anti-slop#c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b
+-        version: https://codeload.github.com/dmmulroy/anti-slop/tar.gz/c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b(patch_hash=c10c871702365a0c2c59e9f1c5fb92df97cae5755d534c0a3d83c6368f6feafe)
+-      oxlint-plugin-react-doctor:
+-        specifier: 0.9.14
+-        version: 0.9.14
+       oxlint-tsgolint:
+         specifier: 7.0.2005
+         version: 7.0.2005
+@@ -3534,40 +3522,6 @@
+   '@stablelib/base64@1.0.1':
+     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
+ 
+-  '@stablyai/playwright-base@2.1.16':
+-    resolution: {integrity: sha512-mdZ+WO5VA6hhHcWLQFcDwOolosvrA60dY0Uua8L45iWsqa4RdzEpmoDmdf7m3nGdlHDk9uY8XSJFSXK9qr64Ig==}
+-    engines: {node: '>=18'}
+-    peerDependencies:
+-      '@playwright/test': ^1.52.0
+-      '@types/playwright__test': '*'
+-      '@types/zod': '*'
+-      zod: ^3.25.0 || ^4.0.0
+-    peerDependenciesMeta:
+-      '@types/playwright__test':
+-        optional: true
+-      '@types/zod':
+-        optional: true
+-      zod:
+-        optional: true
+-
+-  '@stablyai/playwright-test@2.1.16':
+-    resolution: {integrity: sha512-NLbywKt/Y+AFra2puI2Ja3KADBPOQksPSpl6Zk7IlgZvawbz0CNom90aiAQX/jZ0g2KkF94cAQ08UZeVVwGzyA==}
+-    peerDependencies:
+-      '@playwright/test': ^1.52.0
+-      '@types/playwright__test': '*'
+-    peerDependenciesMeta:
+-      '@types/playwright__test':
+-        optional: true
+-
+-  '@stablyai/playwright@2.1.16':
+-    resolution: {integrity: sha512-gG+TIce/Y6Z8l0hJVuJUmD1c0UF+dPrCfqGrebR5TFgO5Vxag5UzgSyoHXEozn2oAfqrnxPE2l9QmkrclIr61w==}
+-    peerDependencies:
+-      '@playwright/test': ^1.52.0
+-      '@types/playwright__test': '*'
+-    peerDependenciesMeta:
+-      '@types/playwright__test':
+-        optional: true
+-
+   '@swc/core-darwin-arm64@1.16.2':
+     resolution: {integrity: sha512-i/j0HNbnn79qnTVPicvay92Nark8fW8NQqn1e2mGERjUXNpBV0+SwQxlRpk2zBhn6laJ8PDI6Kn1nHZhnz3LCA==}
+     engines: {node: '>=10'}
+@@ -6996,10 +6950,6 @@
+   oxlint-plugin-anti-slop@https://codeload.github.com/dmmulroy/anti-slop/tar.gz/c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b:
+     resolution: {gitHosted: true, integrity: sha512-Vj/M0k5Bt1Q2pGdfXZ24wGXycBcvFHwJ/pjHIFl1hV8soaZKHl1lba5UXlQFY5xgwQ5TNfEWiKfsEt0yyRyVUg==, tarball: https://codeload.github.com/dmmulroy/anti-slop/tar.gz/c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b}
+     version: 0.1.2
+-
+-  oxlint-plugin-react-doctor@0.9.14:
+-    resolution: {integrity: sha512-YGdwFmQXGQulT63SnVD9JI1hV2EwGnZHrgSlUMQaOkvnhYA200QwDeb7DfVT8UBt34lBvbkjtz8VRFJugHjsRQ==}
+-    engines: {node: ^20.19.0 || >=22.13.0}
+ 
+   oxlint-tsgolint@7.0.2005:
+     resolution: {integrity: sha512-6ccPGu4u4J9bwYPHXBFPee3RZrX3BboRdU7k14zRDDB1lvN3O7J/vPRFdaEfa1+CWx4xnQQOp4ctoaF66oO0uw==}
+@@ -10744,32 +10694,6 @@
+   '@sindresorhus/merge-streams@4.0.0': {}
+ 
+   '@stablelib/base64@1.0.1': {}
+-
+-  '@stablyai/playwright-base@2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)':
+-    dependencies:
+-      '@playwright/test': 1.64.1(electron@43.8.10(supports-color@7.2.0))
+-      jpeg-js: 0.4.4
+-      p-retry: 4.6.2
+-      pngjs: 7.0.0
+-    optionalDependencies:
+-      zod: 4.6.7
+-
+-  '@stablyai/playwright-test@2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)':
+-    dependencies:
+-      '@playwright/test': 1.64.1(electron@43.8.10(supports-color@7.2.0))
+-      '@stablyai/playwright': 2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)
+-      '@stablyai/playwright-base': 2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)
+-    transitivePeerDependencies:
+-      - '@types/zod'
+-      - zod
+-
+-  '@stablyai/playwright@2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)':
+-    dependencies:
+-      '@playwright/test': 1.64.1(electron@43.8.10(supports-color@7.2.0))
+-      '@stablyai/playwright-base': 2.1.16(@playwright/test@1.64.1(electron@43.8.10(supports-color@7.2.0)))(zod@4.6.7)
+-    transitivePeerDependencies:
+-      - '@types/zod'
+-      - zod
+ 
+   '@swc/core-darwin-arm64@1.16.2':
+     optional: true
+@@ -14398,15 +14322,6 @@
+   oxlint-plugin-anti-slop@https://codeload.github.com/dmmulroy/anti-slop/tar.gz/c44ef22ca116d0ba62a3ff663a0bd13a3f3fa40b(patch_hash=c10c871702365a0c2c59e9f1c5fb92df97cae5755d534c0a3d83c6368f6feafe):
+     dependencies:
+       '@oxlint/plugins': 1.78.0
+-
+-  oxlint-plugin-react-doctor@0.9.14:
+-    dependencies:
+-      '@shaderfrog/glsl-parser': 7.0.1
+-      '@typescript-eslint/types': 8.70.0
+-      eslint-scope: 9.1.2
+-      eslint-visitor-keys: 5.0.1
+-      lightningcss: 1.33.0
+-      oxc-parser: 0.148.0
+ 
+   oxlint-tsgolint@7.0.2005:
+     optionalDependencies:
+--- a/config/packaged-runtime-node-modules.cjs
++++ b/config/packaged-runtime-node-modules.cjs
+@@ -25,7 +25,6 @@
+ const requireFromProject = createRequire(join(projectDir, 'package.json'))
+ 
+ const PACKAGED_RUNTIME_PACKAGE_ROOTS = [
+-  '@anthropic-ai/claude-agent-sdk',
+   '@linear/sdk',
+   '@orca/process-host',
+   '@parcel/watcher',
+--- a/src/main/claude/claude-stream-json-connection.ts
++++ b/src/main/claude/claude-stream-json-connection.ts
+@@ -35,7 +35,7 @@
+ let claudeAgentSdk: Promise<typeof ClaudeAgentSdk> | null = null
+ 
+ export function loadClaudeAgentSdk(): Promise<typeof ClaudeAgentSdk> {
+-  claudeAgentSdk ??= import('@anthropic-ai/claude-agent-sdk')
++  claudeAgentSdk ??= Promise.reject(new Error('Claude Agent SDK is unavailable in this build'))
+   return claudeAgentSdk
+ }
+ 
+--- a/src/main/claude/transcripts/claude-conversation-fork-worker-entry.ts
++++ b/src/main/claude/transcripts/claude-conversation-fork-worker-entry.ts
+@@ -29,7 +29,7 @@
+ }
+ 
+ async function fork(input: ClaudeConversationForkWork) {
+-  const { forkSession } = await import('@anthropic-ai/claude-agent-sdk')
++  const { forkSession } = await Promise.reject(new Error('Claude Agent SDK is unavailable in this build'))
+   const entries: SessionStoreEntry[] = []
+   const stream = createReadStream(input.sourcePath)
+   try {
