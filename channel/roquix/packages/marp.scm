@@ -4,17 +4,26 @@
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (roquix packages node-xyz)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages chromium)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages elf)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages version-control))
 
 (define %marp-version "4.5.1")
+
+(define marp-rollup-native
+  (package
+    (inherit
+     (native-library
+      "marp-rollup-native" "4.63.1" "rollup/rollup" "v4.63.1"
+      "172akhg014mf2m1dsk1l1vd32fas86s91fqvg08x5k81gsph7dr7"
+      "rust" "bindings_napi" "libbindings_napi.so" "rollup.node"))
+    (native-inputs (list cmake-minimal))))
 
 (define %marp-source
   (origin
@@ -29,9 +38,9 @@
                                   #:key system guile #:allow-other-keys)
   (gexp->derivation
    (or name "marp-node-modules")
-   (with-imported-modules '((guix build utils))
+   (with-imported-modules '((guix build utils) (roquix build marp))
      #~(begin
-         (use-modules (guix build utils))
+         (use-modules (guix build utils) (roquix build marp))
          (setenv "PATH" (string-append #+node "/bin:" #+tar "/bin:"
                                        #+gzip "/bin:" #+git-minimal "/bin:"
                                        #+bash-minimal "/bin"))
@@ -44,6 +53,7 @@
          (chdir #$(string-append "marp-cli-" %marp-version))
          (invoke "npm" "ci" "--ignore-scripts" "--no-audit" "--no-fund")
          (copy-recursively "node_modules" #$output)
+         (remove-prebuilt-native-code #$output)
          (delete-file (string-append #$output "/.package-lock.json"))))
    #:system system
    #:guile-for-build guile
@@ -55,7 +65,7 @@
   (origin
     (method marp-node-modules-fetch)
     (uri (string-append "marp-node-modules-" %marp-version))
-    (sha256 (base32 "1zrg03f57dx3h2wj7sjx1x3g1p75qcvp7wlyc8z72nril6d7ckl8"))))
+    (sha256 (base32 "0z0s99caycmznni2va5xfrj93yhz2q28jpdgkih1ch1zhadmznf8"))))
 
 (define-public marp-cli
   (package
@@ -63,7 +73,7 @@
     (version %marp-version)
     (source %marp-source)
     (build-system gnu-build-system)
-    ;; The npm snapshot includes platform-selected native build tools.
+    ;; The npm snapshot retains platform-selected dependency metadata.
     (supported-systems '("x86_64-linux"))
     (arguments
      (list
@@ -78,12 +88,8 @@
               (mkdir-p (getenv "HOME"))
               (copy-recursively #$%marp-node-modules "node_modules")
               (for-each make-file-writable (find-files "node_modules"))
-              ;; Rollup's native addon needs the Guix C++ runtime while bundling.
-              (for-each
-               (lambda (file)
-                 (invoke "patchelf" "--set-rpath"
-                         (string-append #$gcc:lib "/lib") file))
-               (find-files "node_modules/@rollup" "\\.node$"))))
+              (copy-file #$(file-append marp-rollup-native "/lib/rollup.node")
+                         "node_modules/rollup/dist/rollup.linux-x64-gnu.node")))
           (replace 'build
             (lambda _
               (invoke "node" "node_modules/rollup/dist/bin/rollup" "-c")))
@@ -91,11 +97,7 @@
           (add-after 'build 'prepare-runtime-dependencies
             (lambda _
               (invoke "npm" "prune" "--omit=dev" "--omit=optional" "--offline"
-                      "--ignore-scripts" "--no-audit" "--no-fund")
-              ;; tar-stream selects Node's fs; its Bare addons target another
-              ;; runtime, including binaries for unrelated operating systems.
-              ;; https://github.com/mafintosh/tar-stream/blob/v3.2.1/package.json
-              (for-each delete-file (find-files "node_modules" "\\.bare$"))))
+                      "--ignore-scripts" "--no-audit" "--no-fund")))
           (replace 'install
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
@@ -132,7 +134,7 @@
                            (call-with-input-file "slides.html" get-string-all)
                            "Guix Marp smoke test")
                     (error "Marp did not render the slide content")))))))))
-    (native-inputs (list patchelf))
+    (native-inputs (list marp-rollup-native))
     (inputs (list node bash-minimal ungoogled-chromium))
     (home-page "https://marp.app/")
     (synopsis "Create slide decks from Markdown")

@@ -8,6 +8,8 @@
 (test-begin "marp-package")
 (test-assert "Marp CLI is available from the channel" (package? marp))
 (when (package? marp)
+  (test-assert "Rollup's native parser is a source-built input"
+    (assoc-ref (package-native-inputs marp) "marp-rollup-native"))
   (test-assert "slide export includes a browser"
     (assoc-ref (package-inputs marp) "ungoogled-chromium")))
 (let ((runner (test-runner-current)))
