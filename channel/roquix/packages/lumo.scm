@@ -1,5 +1,8 @@
 (define-module (roquix packages lumo)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages debian)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -12,6 +15,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages rust-crates)
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -25,6 +29,23 @@
     (uri (string-append "https://registry.npmjs.org/@tauri-apps/" name
                         "/-/" name "-" version ".tgz"))
     (sha256 (base32 hash))))
+
+(define tauri-cli
+  (package
+    (name "tauri-cli")
+    (version "2.11.4")
+    (source (crate-source "tauri-cli" version
+                          "0xds4kcqrjvk6pbwpgp44mkh47bihkflsyp18rn6z4li09ycbnpy"))
+    (build-system cargo-build-system)
+    (arguments (list #:install-source? #f))
+    (native-inputs (list pkg-config perl))
+    (inputs (cons* openssl `(,zstd "lib")
+                   (cargo-inputs 'tauri-cli #:module '(roquix packages rust-crates))))
+    (home-page "https://tauri.app")
+    (synopsis "Build and bundle Tauri applications")
+    (description "The Tauri CLI builds desktop applications and packages their
+executables, resources, icons and launchers for distribution.")
+    (license (list license:asl2.0 license:expat))))
 
 (define-public lumo-desktop
   (package
@@ -42,68 +63,58 @@
     (arguments
      (list
       #:install-source? #f
-      #:features ''("tauri/custom-protocol")
-      #:cargo-test-flags ''("--features" "test-utils,tauri/custom-protocol")
+      #:cargo-test-flags ''("--features" "test-utils")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'prepare-webview
             (lambda _
-              (mkdir-p "node_modules/@tauri-apps")
+              ;; Seed the offline npm install with the archives in package-lock.json.
+              (setenv "npm_config_offline" "true")
+              (setenv "npm_config_cache" (string-append (getcwd) "/npm-cache"))
+              (setenv "npm_config_script_shell" (which "sh"))
+              (invoke "npm" "cache" "add"
+                      #$(tauri-js "api" "2.11.1"
+                                 "02lyjd57kaaij334m2xsrv38bn6bp9xp2nkiqarqiqzvpzyxx9kh")
+                      #$(tauri-js "plugin-log" "2.9.1"
+                                 "0ig1v7n2qlw2dw5pxxfswccqivbkllm9k75kpjq2f2isiymf3n49")
+                      #$(tauri-js "plugin-autostart" "2.5.1"
+                                 "04x7r1859hf636p9wsil2q16phqxk9gggwjzbjb9z83ycccx1xr7"))
+              (invoke "npm" "ci" "--omit=dev" "--ignore-scripts" "--no-audit" "--no-fund")
               (symlink #$(file-append node-esbuild "/lib/node_modules/esbuild")
                        "node_modules/esbuild")
-              (for-each
-               (lambda (name archive)
-                 (let ((directory (string-append "node_modules/@tauri-apps/" name)))
-                   (mkdir directory)
-                   (invoke "tar" "xf" archive "-C" directory "--strip-components=1")))
-               '("api" "plugin-log")
-               (list #$(tauri-js "api" "2.11.1"
-                                 "02lyjd57kaaij334m2xsrv38bn6bp9xp2nkiqarqiqzvpzyxx9kh")
-                     #$(tauri-js "plugin-log" "2.9.1"
-                                 "0ig1v7n2qlw2dw5pxxfswccqivbkllm9k75kpjq2f2isiymf3n49")))
-              (invoke "node" "scripts/build-webview.mjs")
-              ;; The upstream fallback selects Proton's development service.
-              (setenv "LUMO_URL" "https://lumo.proton.me")
+              (mkdir-p "node_modules/.bin")
+              (symlink #$(file-append tauri-cli "/bin/cargo-tauri")
+                       "node_modules/.bin/tauri")
               (chdir "src-tauri")))
           (add-before 'configure 'use-profile-command-path
             (lambda _
               ;; Desktop sessions can inherit Guix profiles without a login shell.
               (substitute* "src/tools/command_path.rs"
-                (("let mut candidates = vec!\\[")
+                (("candidates.retain" original)
                  (string-append
-                  "let mut candidates = search_dirs_from_path("
-                  "&std::env::var(\"PATH\").unwrap_or_default());\n"
-                  "        let defaults = vec!["))
-                (("// `uv`/`pipx`") "candidates.extend(defaults);\n        // `uv`/`pipx`"))))
+                  "candidates.splice(0..0, search_dirs_from_path("
+                  "&std::env::var(\"PATH\").unwrap_or_default()));\n        " original)))))
+          (replace 'build
+            (lambda _
+              ;; Upstream defaults to the development service.
+              (setenv "LUMO_URL" "https://lumo.proton.me")
+              (setenv "CARGO_NET_OFFLINE" "true")
+              (setenv "CARGO_BUILD_JOBS" (number->string (parallel-job-count)))
+              (with-directory-excursion ".."
+                (invoke "npm" "run" "build" "--" "--bundles" "deb" "--ci"))))
           (add-before 'check 'prepare-tests
             (lambda _
               (setenv "CARGO_PROFILE_TEST_DEBUG" "0")
               (setenv "SSL_CERT_DIR" #$(file-append nss-certs "/etc/ssl/certs"))))
-          (add-after 'configure 'locate-tray-library
-            (lambda* (#:key vendor-dir #:allow-other-keys)
-              ;; libappindicator-sys loads the tray library with dlopen.
-              (substitute* (string-append vendor-dir
-                                          "/rust-libappindicator-sys-0.9.0.tar.gz/src/lib.rs")
-                (("libappindicator3\\.so\\.1")
-                 #$(file-append libappindicator "/lib/libappindicator3.so.1")))))
-          (add-after 'install 'install-desktop-entry
+          (replace 'install
             (lambda _
-              (let ((desktop "linux/launcher.desktop")
-                    (icons (string-append #$output "/share/icons/hicolor/128x128/apps")))
-                ;; Both optional fields in the Tauri template apply to Lumo.
-                (substitute* desktop
-                  (("^\\{\\{(#if (comment|mime_type)|/if)\\}\\}\n$") "")
-                  (("\\{\\{categories\\}\\}") "Office;")
-                  (("\\{\\{comment\\}\\}") "Lumo: your private assistant")
-                  (("\\{\\{(exec|icon)\\}\\}") "lumo-desktop")
-                  (("\\{\\{mime_type\\}\\}") "x-scheme-handler/proton-lumo"))
-                (rename-file desktop "me.proton.lumo-app.desktop")
-                (install-file "me.proton.lumo-app.desktop"
-                              (string-append #$output "/share/applications"))
-                (mkdir-p icons)
-                (copy-file "icons/128x128.png"
-                           (string-append icons "/lumo-desktop.png"))))))))
-    (native-inputs (list cmake-minimal node perl pkg-config procps))
+              (apply (lambda (deb) (invoke "dpkg-deb" "--extract" deb "bundle"))
+                     (find-files "target/release/bundle/deb" "\\.deb$"))
+              (copy-recursively "bundle/usr" #$output)
+              ;; The tray uses dlopen, so the linker omits this runtime path.
+              (invoke "patchelf" "--add-rpath" #$(file-append libappindicator "/lib")
+                      (string-append #$output "/bin/lumo-desktop")))))))
+    (native-inputs (list cmake-minimal dpkg node patchelf perl pkg-config procps))
     (inputs (cons* dbus gtk+ libappindicator libx11 openssl webkitgtk-for-gtk3
                    (cargo-inputs 'lumo-desktop #:module '(roquix packages rust-crates))))
     (home-page "https://proton.me/lumo")
