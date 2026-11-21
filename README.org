@@ -26,6 +26,31 @@ guix install docker-compose
 docker-compose version
 #+END_SRC
 
+With Guix Home, import =(roquix home services docker)= and
+=(roquix packages docker)=, then add this service to the =services= field of
+your =home-environment=:
+
+#+BEGIN_SRC scheme
+(service home-docker-cli-plugins-service-type
+         (home-docker-cli-plugins-configuration
+          (plugins (list docker-compose))))
+#+END_SRC
+
+The =plugins= field accepts a list of packages, defaulting to an empty list.
+Each package must provide executable =docker-*= files under
+=lib/docker/cli-plugins/=. The service collects those files during the build;
+duplicate plugin names and packages without plugins cause a build error.
+Other files in that directory are ignored.
+
+Running =guix home reconfigure= installs the selected packages in the Home
+profile and manages the entire =~/.docker/cli-plugins= directory for the
+existing Docker CLI. Include every plugin you want managed in =plugins=;
+updates and removals follow the Home configuration. The service uses Docker's
+default =~/.docker= configuration directory, so =DOCKER_CONFIG= must be unset
+or point there. It does not start a Docker daemon.
+
+Without Guix Home, use the following manual registration.
+
 To use =docker compose= with an installed Docker CLI, register the plugin in
 Docker's user plugin directory. Docker does not search Guix profiles for
 plugins automatically:
