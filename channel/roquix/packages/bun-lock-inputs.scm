@@ -41681,7 +41681,7 @@
                                     (file-name "npm-wrappy-1.0.2.tgz")
                                     (sha256 (base32
                                              "1yzx63jf27yz0bk0m78vy4y1cqzm113d2mi9h91y3cdpj46p7wxg")))))))
-(define %opencode-2.2.5-npm-inputs
+(define %opencode-2.3.2-npm-inputs
   (list (bun-lock-package (name "@agentclientprotocol/sdk")
                           (version "1.6.0")
                           (cache-directory
@@ -41726,6 +41726,7 @@
                           (cache-directory
                            "@ai-sdk/provider@3.0.8@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@ai-sdk/openai-compatible/node_modules/@ai-sdk/provider"
+                                           "node_modules/@ai-sdk/provider-utils/node_modules/@ai-sdk/provider"
                                            "packages/plugin/node_modules/@ai-sdk/provider"))
                           (source (origin
                                     (method url-fetch)
@@ -41738,7 +41739,7 @@
                           (version "4.0.23")
                           (cache-directory
                            "@ai-sdk/provider-utils@4.0.23@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@ai-sdk/openai-compatible/node_modules/@ai-sdk/provider-utils"))
+                          (install-paths '("node_modules/@ai-sdk/provider-utils"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -41747,19 +41748,6 @@
                                      "npm-ai-sdk-provider-utils-4.0.23.tgz")
                                     (sha256 (base32
                                              "1zkli9264hxfybc9xplvv8rzad917yv3qa8zrailib4pjrwk1gjr")))))
-        (bun-lock-package (name "@ai-sdk/provider-utils")
-                          (version "4.0.62")
-                          (cache-directory
-                           "@ai-sdk/provider-utils@4.0.62@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@ai-sdk/provider-utils"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@ai-sdk/provider-utils/-/provider-utils-4.0.62.tgz")
-                                    (file-name
-                                     "npm-ai-sdk-provider-utils-4.0.62.tgz")
-                                    (sha256 (base32
-                                             "071i97izag2aicyy6ijc4284xcm1k8s4ric39nv8mjicj8bpjjrq")))))
         (bun-lock-package (name "@ampproject/remapping")
                           (version "2.3.0")
                           (cache-directory
@@ -42046,457 +42034,6 @@
                                      "npm-ast-grep-cli-win32-x64-msvc-0.44.0.tgz")
                                     (sha256 (base32
                                              "0af65cck41a91mn78vy9cblyxjzr2ckbssx7mp5vf1c7xpsvbrlx")))))
-        (bun-lock-package (name "@astrojs/astro2tsx")
-                          (version "0.1.3")
-                          (cache-directory
-                           "@astrojs/astro2tsx@0.1.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/astro2tsx"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/astro2tsx/-/astro2tsx-0.1.3.tgz")
-                                    (file-name
-                                     "npm-astrojs-astro2tsx-0.1.3.tgz")
-                                    (sha256 (base32
-                                             "1g32brfvf3cbyicds7ird37yn41hhqqidprqm295p9qx93z39fpc")))))
-        (bun-lock-package (name "@astrojs/check")
-                          (version "0.9.11")
-                          (cache-directory
-                           "@astrojs/check@0.9.11@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/web/node_modules/@astrojs/check"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/check/-/check-0.9.11.tgz")
-                                    (file-name "npm-astrojs-check-0.9.11.tgz")
-                                    (sha256 (base32
-                                             "04z5znmzmy3ajp47hipg0qap8lmmc6ca2hamhbib9pilahb6bvvm")))))
-        (bun-lock-package (name "@astrojs/check")
-                          (version "0.9.6")
-                          (cache-directory
-                           "@astrojs/check@0.9.6@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/check"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/check/-/check-0.9.6.tgz")
-                                    (file-name "npm-astrojs-check-0.9.6.tgz")
-                                    (sha256 (base32
-                                             "12zlfya766ngm503wyz2ywnb4wb4svdli2cbh74m766hshsv87xv")))))
-        (bun-lock-package (name "@astrojs/cloudflare")
-                          (version "14.1.4")
-                          (cache-directory
-                           "@astrojs/cloudflare@14.1.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/cloudflare"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/cloudflare/-/cloudflare-14.1.4.tgz")
-                                    (file-name
-                                     "npm-astrojs-cloudflare-14.1.4.tgz")
-                                    (sha256 (base32
-                                             "11nklkpqcmihp7f78n2ifm3vljl4kkrmk9cxr53fina5cnq5b6yh")))))
-        (bun-lock-package (name "@astrojs/compiler")
-                          (version "2.13.1")
-                          (cache-directory
-                           "@astrojs/compiler@2.13.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler/-/compiler-2.13.1.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-2.13.1.tgz")
-                                    (sha256 (base32
-                                             "023fg6i6hn7cvz22vxl4kk1wb9w9h9vhka131p7v88vqwlqqvryi")))))
-        (bun-lock-package (name "@astrojs/compiler-binding")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding/-/compiler-binding-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "1l5m24hr399ac81js72dbr6wk7cwf7j6wghz14k7v2l9xqancni3")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-android-arm64")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-android-arm64@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-android-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-android-arm64/-/compiler-binding-android-arm64-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-android-arm64-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0c3w6zhjd41jl26w3131b0znf8pyb18n6w014mks4aggnnbcrdip")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-darwin-arm64")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-darwin-arm64@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-darwin-arm64/-/compiler-binding-darwin-arm64-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-darwin-arm64-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "05h4bv6zsyk4is61mzd01m9s1ybbinf51kivgsgvcy24qs2n7kwf")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-darwin-x64")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-darwin-x64@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-darwin-x64/-/compiler-binding-darwin-x64-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-darwin-x64-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "1l0w55nly4w19rqk5v0chjvkbv6gbdyvbwiyz7g7xn8lnj13ivgj")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-linux-arm64-gnu")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-linux-arm64-gnu@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-linux-arm64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-linux-arm64-gnu/-/compiler-binding-linux-arm64-gnu-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-linux-arm64-gnu-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0qp0r3jf3sslygybg3c45x96df5f0s59rxdddzdlf4p66zjayny4")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-linux-arm64-musl")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-linux-arm64-musl@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-linux-arm64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-linux-arm64-musl/-/compiler-binding-linux-arm64-musl-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-linux-arm64-musl-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0kkdmgnkh6wljssfhbyq1xzy0jb9bl5qkmgila666qddkqgh4qw9")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-linux-x64-gnu")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-linux-x64-gnu@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-linux-x64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-linux-x64-gnu/-/compiler-binding-linux-x64-gnu-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-linux-x64-gnu-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "1s1ck4x02rip72kda8d3qdrgdp1phrylj7m69pk3f9yf64811rfy")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-linux-x64-musl")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-linux-x64-musl@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-linux-x64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-linux-x64-musl/-/compiler-binding-linux-x64-musl-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-linux-x64-musl-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "00ks343yh92kxny0hlahcxx1bzic68f74m1zqvmabmy2rn2y1pxj")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-wasm32-wasi")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-wasm32-wasi@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-wasm32-wasi"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-wasm32-wasi/-/compiler-binding-wasm32-wasi-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-wasm32-wasi-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0q5vvajj2agv5ap1cwkshhar4rryhyzw7sw43qdifhy9bjymzl53")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-win32-arm64-msvc")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-win32-arm64-msvc@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-win32-arm64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-win32-arm64-msvc/-/compiler-binding-win32-arm64-msvc-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-win32-arm64-msvc-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0mkyir09chxy7mj3mnw4xbjs4b5c0bh3bjl12pb5bs9x0svnj2bz")))))
-        (bun-lock-package (name "@astrojs/compiler-binding-win32-x64-msvc")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-binding-win32-x64-msvc@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-win32-x64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-binding-win32-x64-msvc/-/compiler-binding-win32-x64-msvc-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-binding-win32-x64-msvc-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0fmd08j756lhbykkw43r2r7bxs83awsd2b54r166djc7dmp8jbk9")))))
-        (bun-lock-package (name "@astrojs/compiler-rs")
-                          (version "0.5.2")
-                          (cache-directory
-                           "@astrojs/compiler-rs@0.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-rs"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/compiler-rs/-/compiler-rs-0.5.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-compiler-rs-0.5.2.tgz")
-                                    (sha256 (base32
-                                             "0fglq52n7sphirl4h8ak3r7xlr0bm45y1bg4n2nw8vyshym32m7j")))))
-        (bun-lock-package (name "@astrojs/internal-helpers")
-                          (version "0.10.1")
-                          (cache-directory
-                           "@astrojs/internal-helpers@0.10.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/internal-helpers"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/internal-helpers/-/internal-helpers-0.10.1.tgz")
-                                    (file-name
-                                     "npm-astrojs-internal-helpers-0.10.1.tgz")
-                                    (sha256 (base32
-                                             "1hhj7ww0asfpdj78k777b7g6zxgv3gh7cip6z8cqhmnkrh92cd4w")))))
-        (bun-lock-package (name "@astrojs/internal-helpers")
-                          (version "0.10.2")
-                          (cache-directory
-                           "@astrojs/internal-helpers@0.10.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/mdx/node_modules/@astrojs/internal-helpers"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/internal-helpers/-/internal-helpers-0.10.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-internal-helpers-0.10.2.tgz")
-                                    (sha256 (base32
-                                             "15shkx3wnwhli3spsnfa2s56nj77bylvq6db5bmdm20k7w7rn61x")))))
-        (bun-lock-package (name "@astrojs/internal-helpers")
-                          (version "0.10.4")
-                          (cache-directory
-                           "@astrojs/internal-helpers@0.10.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/@astrojs/internal-helpers"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/internal-helpers/-/internal-helpers-0.10.4.tgz")
-                                    (file-name
-                                     "npm-astrojs-internal-helpers-0.10.4.tgz")
-                                    (sha256 (base32
-                                             "094w9x7hgsz8pl0gkjbrrz595jxki137zyiqybhak972rj3fi9bl")))))
-        (bun-lock-package (name "@astrojs/internal-helpers")
-                          (version "0.12.0")
-                          (cache-directory
-                           "@astrojs/internal-helpers@0.12.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-remark/node_modules/@astrojs/internal-helpers"
-                                           "node_modules/@astrojs/markdown-satteri/node_modules/@astrojs/internal-helpers"
-                                           "node_modules/astro/node_modules/@astrojs/internal-helpers"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/internal-helpers/-/internal-helpers-0.12.0.tgz")
-                                    (file-name
-                                     "npm-astrojs-internal-helpers-0.12.0.tgz")
-                                    (sha256 (base32
-                                             "0wwwk10nbbdhjcp52j17c163ckhjzhcq9npbsah5p5adyz92wpya")))))
-        (bun-lock-package (name "@astrojs/language-server")
-                          (version "2.16.14")
-                          (cache-directory
-                           "@astrojs/language-server@2.16.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/language-server"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/language-server/-/language-server-2.16.14.tgz")
-                                    (file-name
-                                     "npm-astrojs-language-server-2.16.14.tgz")
-                                    (sha256 (base32
-                                             "1yy2lngb9vvi3a58ndwrw3wg29zwbbhap98hg6sgm4pwax9yf750")))))
-        (bun-lock-package (name "@astrojs/language-server")
-                          (version "2.17.2")
-                          (cache-directory
-                           "@astrojs/language-server@2.17.2@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/web/node_modules/@astrojs/check/node_modules/@astrojs/language-server"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/language-server/-/language-server-2.17.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-language-server-2.17.2.tgz")
-                                    (sha256 (base32
-                                             "0yqxlyxn91gn3rb71yffxq0xhicdpd7f4z77mrx0pzfcww5f5zld")))))
-        (bun-lock-package (name "@astrojs/markdown-remark")
-                          (version "7.2.2")
-                          (cache-directory
-                           "@astrojs/markdown-remark@7.2.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/mdx/node_modules/@astrojs/markdown-remark"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/markdown-remark/-/markdown-remark-7.2.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-markdown-remark-7.2.2.tgz")
-                                    (sha256 (base32
-                                             "07nn8gxlai9wfg7c688wa92lk0w3b7m8qnkzsda547g69fg3jp3w")))))
-        (bun-lock-package (name "@astrojs/markdown-remark")
-                          (version "7.3.2")
-                          (cache-directory
-                           "@astrojs/markdown-remark@7.3.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-remark"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/markdown-remark/-/markdown-remark-7.3.2.tgz")
-                                    (file-name
-                                     "npm-astrojs-markdown-remark-7.3.2.tgz")
-                                    (sha256 (base32
-                                             "00f2srfzh39511rvccr57qfvlv754f78zakaaj8kc2khrchxdhp8")))))
-        (bun-lock-package (name "@astrojs/markdown-satteri")
-                          (version "0.3.8")
-                          (cache-directory
-                           "@astrojs/markdown-satteri@0.3.8@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/markdown-satteri/-/markdown-satteri-0.3.8.tgz")
-                                    (file-name
-                                     "npm-astrojs-markdown-satteri-0.3.8.tgz")
-                                    (sha256 (base32
-                                             "0fvrq0diicsfrfagyi9qpcf8dfqn3m8bdnxh6a6iw5z4r83vp6hj")))))
-        (bun-lock-package (name "@astrojs/markdown-satteri")
-                          (version "0.4.3")
-                          (cache-directory
-                           "@astrojs/markdown-satteri@0.4.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/markdown-satteri/-/markdown-satteri-0.4.3.tgz")
-                                    (file-name
-                                     "npm-astrojs-markdown-satteri-0.4.3.tgz")
-                                    (sha256 (base32
-                                             "0i725wflkd3j62xn9j9x899dd52cmvfjfhq6wpxn846g0h2k2k3a")))))
-        (bun-lock-package (name "@astrojs/mdx")
-                          (version "7.0.5")
-                          (cache-directory
-                           "@astrojs/mdx@7.0.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/mdx"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/mdx/-/mdx-7.0.5.tgz")
-                                    (file-name "npm-astrojs-mdx-7.0.5.tgz")
-                                    (sha256 (base32
-                                             "1k9d93d1cjz1j2qaj6bi48mq05bvi7k7sv0smppk30x92n88jj4x")))))
-        (bun-lock-package (name "@astrojs/prism")
-                          (version "4.0.2")
-                          (cache-directory
-                           "@astrojs/prism@4.0.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/prism"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/prism/-/prism-4.0.2.tgz")
-                                    (file-name "npm-astrojs-prism-4.0.2.tgz")
-                                    (sha256 (base32
-                                             "01i6dagr1wvjdq7l58blj7sw262igkm20yhk4r0z7g9dbdanzj6a")))))
-        (bun-lock-package (name "@astrojs/sitemap")
-                          (version "3.7.3")
-                          (cache-directory
-                           "@astrojs/sitemap@3.7.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/sitemap"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/sitemap/-/sitemap-3.7.3.tgz")
-                                    (file-name "npm-astrojs-sitemap-3.7.3.tgz")
-                                    (sha256 (base32
-                                             "1z77v6rifivblsmmqjr6620w6akasz5b2cp8j3k41h49pq2r40fg")))))
-        (bun-lock-package (name "@astrojs/solid-js")
-                          (version "7.1.0")
-                          (cache-directory
-                           "@astrojs/solid-js@7.1.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/solid-js/-/solid-js-7.1.0.tgz")
-                                    (file-name
-                                     "npm-astrojs-solid-js-7.1.0.tgz")
-                                    (sha256 (base32
-                                             "0za9va2za4318imkny61djp2m44yqhv1vc6qnjd83bnd5vljkrhl")))))
-        (bun-lock-package (name "@astrojs/starlight")
-                          (version "0.41.11")
-                          (cache-directory
-                           "@astrojs/starlight@0.41.11@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/starlight"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/starlight/-/starlight-0.41.11.tgz")
-                                    (file-name
-                                     "npm-astrojs-starlight-0.41.11.tgz")
-                                    (sha256 (base32
-                                             "1qh442ji7f1myzg46xqaz7myr9jzs835614zgkn8gl8zg44nxkxd")))))
-        (bun-lock-package (name "@astrojs/telemetry")
-                          (version "3.3.3")
-                          (cache-directory
-                           "@astrojs/telemetry@3.3.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/telemetry"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/telemetry/-/telemetry-3.3.3.tgz")
-                                    (file-name
-                                     "npm-astrojs-telemetry-3.3.3.tgz")
-                                    (sha256 (base32
-                                             "0qzg64hz3r4p8km8lw77v9br4mr2kj523ngx9fqjvmz441rcqjbj")))))
-        (bun-lock-package (name "@astrojs/underscore-redirects")
-                          (version "1.0.3")
-                          (cache-directory
-                           "@astrojs/underscore-redirects@1.0.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/underscore-redirects"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/underscore-redirects/-/underscore-redirects-1.0.3.tgz")
-                                    (file-name
-                                     "npm-astrojs-underscore-redirects-1.0.3.tgz")
-                                    (sha256 (base32
-                                             "12w1p79gjw1a59330cw42ca8f6l5ga85ky3j7x6rs337ashg9ki2")))))
-        (bun-lock-package (name "@astrojs/yaml2ts")
-                          (version "0.2.4")
-                          (cache-directory
-                           "@astrojs/yaml2ts@0.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/yaml2ts"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@astrojs/yaml2ts/-/yaml2ts-0.2.4.tgz")
-                                    (file-name "npm-astrojs-yaml2ts-0.2.4.tgz")
-                                    (sha256 (base32
-                                             "1bsq434lc3225lyjlfzvvjwjykakgcjsycpqqldvrz40i7hsrnvk")))))
         (bun-lock-package (name "@aws-crypto/crc32")
                           (version "5.2.0")
                           (cache-directory
@@ -42574,19 +42111,6 @@
                                      "npm-aws-sdk-client-cognito-identity-3.1057.0.tgz")
                                     (sha256 (base32
                                              "06f3gvpika6skrsb0lka0bjas1g7mi6qnr13l3znk9vsynblnw6y")))))
-        (bun-lock-package (name "@aws-sdk/client-lambda")
-                          (version "3.1111.0")
-                          (cache-directory
-                           "@aws-sdk/client-lambda@3.1111.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@aws-sdk/client-lambda"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@aws-sdk/client-lambda/-/client-lambda-3.1111.0.tgz")
-                                    (file-name
-                                     "npm-aws-sdk-client-lambda-3.1111.0.tgz")
-                                    (sha256 (base32
-                                             "15ngki32k79rjhncndv5ghnwldjrngxps6gz957wf3xyid93wfi3")))))
         (bun-lock-package (name "@aws-sdk/core")
                           (version "3.977.8")
                           (cache-directory
@@ -42807,19 +42331,6 @@
                                      "npm-aws-sdk-xml-builder-3.972.39.tgz")
                                     (sha256 (base32
                                              "05ilgap74d9d67gnxbps1wdxi2b3m9rrc2k28sk55a4rfkpqsww3")))))
-        (bun-lock-package (name "@aws/durable-execution-sdk-js")
-                          (version "1.0.2")
-                          (cache-directory
-                           "@aws/durable-execution-sdk-js@1.0.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@aws/durable-execution-sdk-js"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@aws/durable-execution-sdk-js/-/durable-execution-sdk-js-1.0.2.tgz")
-                                    (file-name
-                                     "npm-aws-durable-execution-sdk-js-1.0.2.tgz")
-                                    (sha256 (base32
-                                             "0pghi6xlr4mnjqa663x2gsaahi00i9n4y4910ds2i93p6v7piy3s")))))
         (bun-lock-package (name "@aws/lambda-invoke-store")
                           (version "0.3.0")
                           (cache-directory
@@ -43839,6 +43350,32 @@
                                      "npm-babel-plugin-transform-property-literals-7.29.7.tgz")
                                     (sha256 (base32
                                              "0f0q7q0h4wy4wxaj545ab5s4arj1d8msln2ap7kdwpd6qjsaisga")))))
+        (bun-lock-package (name "@babel/plugin-transform-react-jsx-self")
+                          (version "7.29.7")
+                          (cache-directory
+                           "@babel/plugin-transform-react-jsx-self@7.29.7@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@babel/plugin-transform-react-jsx-self"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@babel/plugin-transform-react-jsx-self/-/plugin-transform-react-jsx-self-7.29.7.tgz")
+                                    (file-name
+                                     "npm-babel-plugin-transform-react-jsx-self-7.29.7.tgz")
+                                    (sha256 (base32
+                                             "1w0bqzybb6zf7rxilzncc6i0c2fy6g19cd015yyjhbnjsz38mgpx")))))
+        (bun-lock-package (name "@babel/plugin-transform-react-jsx-source")
+                          (version "7.29.7")
+                          (cache-directory
+                           "@babel/plugin-transform-react-jsx-source@7.29.7@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@babel/plugin-transform-react-jsx-source"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@babel/plugin-transform-react-jsx-source/-/plugin-transform-react-jsx-source-7.29.7.tgz")
+                                    (file-name
+                                     "npm-babel-plugin-transform-react-jsx-source-7.29.7.tgz")
+                                    (sha256 (base32
+                                             "1ad17wc942yk57r8lngkdg320ssp2h29i2dm2cw0gz5sy45i1yla")))))
         (bun-lock-package (name "@babel/plugin-transform-regenerator")
                           (version "7.29.8")
                           (cache-directory
@@ -44161,262 +43698,6 @@
                                      "npm-brendonovich-vite-plugin-opencode-0.1.3.tgz")
                                     (sha256 (base32
                                              "0x3i7ha287pxl89rmimz69rxvgys4nhq08h0ra0kzj24snh5z5x0")))))
-        (bun-lock-package (name "@bruits/satteri-darwin-arm64")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-darwin-arm64@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-darwin-arm64"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-darwin-arm64/-/satteri-darwin-arm64-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-darwin-arm64-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "14l267663f7mlzb02s8jawv5hw2588ddjnz6vq0g8lsyzn4dsg3p")))))
-        (bun-lock-package (name "@bruits/satteri-darwin-arm64")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-darwin-arm64@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-darwin-arm64/-/satteri-darwin-arm64-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-darwin-arm64-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0nkscaj8ymw0a5iw35ijzhv3lfraq02fh3bb2bn8wy2kbd209qlk")))))
-        (bun-lock-package (name "@bruits/satteri-darwin-x64")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-darwin-x64@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-darwin-x64"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-darwin-x64/-/satteri-darwin-x64-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-darwin-x64-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "0kcgb9vpw7sc6k4g4qc4h5z4iwgcxjj2ah4yd7is4xwbm4gy0p65")))))
-        (bun-lock-package (name "@bruits/satteri-darwin-x64")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-darwin-x64@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-darwin-x64/-/satteri-darwin-x64-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-darwin-x64-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0vi6pgxm5g1hywfqp5wd9pr3nyzfzwzf6klhgcbs4zl8cvzqmwmc")))))
-        (bun-lock-package (name "@bruits/satteri-linux-arm64-gnu")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-arm64-gnu@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-arm64-gnu"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-arm64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-arm64-gnu/-/satteri-linux-arm64-gnu-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-arm64-gnu-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "0l8qjgbvrkdc3ilp06jbv6y2mxjdx7qqs5ncg1phd60z8p1cr3sb")))))
-        (bun-lock-package (name "@bruits/satteri-linux-arm64-gnu")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-arm64-gnu@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-linux-arm64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-arm64-gnu/-/satteri-linux-arm64-gnu-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-arm64-gnu-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0jfdcna8qn64gxzssk3gqqgxjs9q23xjb02lwyp561g1mmdjmayl")))))
-        (bun-lock-package (name "@bruits/satteri-linux-arm64-musl")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-arm64-musl@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-arm64-musl"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-arm64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-arm64-musl/-/satteri-linux-arm64-musl-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-arm64-musl-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "14cq4sw4nzjm56h390nrkryamr98d8ax85kd0940842ifsf9lpri")))))
-        (bun-lock-package (name "@bruits/satteri-linux-arm64-musl")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-arm64-musl@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-linux-arm64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-arm64-musl/-/satteri-linux-arm64-musl-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-arm64-musl-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "104yjp86vvyhx3b0g6x1cbs8jyba9gwvfvz1q1zgi3ishw5izkxi")))))
-        (bun-lock-package (name "@bruits/satteri-linux-x64-gnu")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-x64-gnu@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-x64-gnu"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-x64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-x64-gnu/-/satteri-linux-x64-gnu-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-x64-gnu-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "07larfpagckc0504m57vk4pzlr5zdp0gskbs0bd50j7g5kkk7dy2")))))
-        (bun-lock-package (name "@bruits/satteri-linux-x64-gnu")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-x64-gnu@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-linux-x64-gnu"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-x64-gnu/-/satteri-linux-x64-gnu-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-x64-gnu-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0qplkcq194sbhm7x90vr7ssfzn53k53r0nixid4kakjpvl20bi5w")))))
-        (bun-lock-package (name "@bruits/satteri-linux-x64-musl")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-x64-musl@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-x64-musl"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-linux-x64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-x64-musl/-/satteri-linux-x64-musl-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-x64-musl-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "1h9sgh20985798xbmdz2izgfdaaaml82l48gsd8nkfd9k9w1asl0")))))
-        (bun-lock-package (name "@bruits/satteri-linux-x64-musl")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-linux-x64-musl@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-linux-x64-musl"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-linux-x64-musl/-/satteri-linux-x64-musl-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-linux-x64-musl-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0bss00slay02iv8m4hypdqmzjs1dak801fm047dcl7jswy018ni7")))))
-        (bun-lock-package (name "@bruits/satteri-wasm32-wasi")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-wasm32-wasi@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-wasm32-wasi/-/satteri-wasm32-wasi-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-wasm32-wasi-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "02cz95w81bp1yd3wx7ivjvkkfjhvj860bbwy41qccxjml1rjr4ff")))))
-        (bun-lock-package (name "@bruits/satteri-wasm32-wasi")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-wasm32-wasi@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-wasm32-wasi"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-wasm32-wasi/-/satteri-wasm32-wasi-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-wasm32-wasi-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "11p5kqng3x4dp633sfjvqk5fk1sclm9cb8i81cwdjinqwx5bmvl3")))))
-        (bun-lock-package (name "@bruits/satteri-win32-arm64-msvc")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-win32-arm64-msvc@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-win32-arm64-msvc"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-win32-arm64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-win32-arm64-msvc/-/satteri-win32-arm64-msvc-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-win32-arm64-msvc-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "1cpzwfxj72byx0rmbrczx89i7k0lwcnyxr07j0rxa65ad6nylw3c")))))
-        (bun-lock-package (name "@bruits/satteri-win32-arm64-msvc")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-win32-arm64-msvc@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-win32-arm64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-win32-arm64-msvc/-/satteri-win32-arm64-msvc-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-win32-arm64-msvc-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "02licj04b6kfjg50vl17w7k9smzbd5jq9dcs9w6m35zafl1cdck8")))))
-        (bun-lock-package (name "@bruits/satteri-win32-x64-msvc")
-                          (version "0.10.5")
-                          (cache-directory
-                           "@bruits/satteri-win32-x64-msvc@0.10.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-win32-x64-msvc"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-win32-x64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-win32-x64-msvc/-/satteri-win32-x64-msvc-0.10.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-win32-x64-msvc-0.10.5.tgz")
-                                    (sha256 (base32
-                                             "0i7bqx43nhmrzkhgdxx2z5i6vgvkl42b0i88i3hsil0kmhznlfmr")))))
-        (bun-lock-package (name "@bruits/satteri-win32-x64-msvc")
-                          (version "0.9.5")
-                          (cache-directory
-                           "@bruits/satteri-win32-x64-msvc@0.9.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@bruits/satteri-win32-x64-msvc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@bruits/satteri-win32-x64-msvc/-/satteri-win32-x64-msvc-0.9.5.tgz")
-                                    (file-name
-                                     "npm-bruits-satteri-win32-x64-msvc-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "0wa8rgfxyl882jixnwpki0lrnxa178h7w24qzj7a7r8hz909pw0g")))))
-        (bun-lock-package (name "@capsizecss/unpack")
-                          (version "4.0.1")
-                          (cache-directory
-                           "@capsizecss/unpack@4.0.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@capsizecss/unpack"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@capsizecss/unpack/-/unpack-4.0.1.tgz")
-                                    (file-name
-                                     "npm-capsizecss-unpack-4.0.1.tgz")
-                                    (sha256 (base32
-                                             "1qwiny91jam4p3wxp0dyva4dlbnlaxmb5wiq6vq4lwn98k0mhgcj")))))
         (bun-lock-package (name "@clack/core")
                           (version "1.0.0-alpha.1")
                           (cache-directory
@@ -44430,18 +43711,6 @@
                                      "npm-clack-core-1.0.0-alpha.1.tgz")
                                     (sha256 (base32
                                              "1mq5mf1rfazl9k7cdj8w97214hn0h616ch6nk8223hiis9bq3kdr")))))
-        (bun-lock-package (name "@clack/core")
-                          (version "1.5.1")
-                          (cache-directory
-                           "@clack/core@1.5.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/astro/node_modules/@clack/prompts/node_modules/@clack/core"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@clack/core/-/core-1.5.1.tgz")
-                                    (file-name "npm-clack-core-1.5.1.tgz")
-                                    (sha256 (base32
-                                             "1p90s126nrpm27yn7wiig3mx9jsvx7vp1677qlxmxnhl7sj7nv15")))))
         (bun-lock-package (name "@clack/prompts")
                           (version "1.0.0-alpha.1")
                           (cache-directory
@@ -44455,31 +43724,45 @@
                                      "npm-clack-prompts-1.0.0-alpha.1.tgz")
                                     (sha256 (base32
                                              "0a10kn5hfp73hm4dnmcdrg69vzbz8q0hhnsnqqxg36lf6pqvsa1n")))))
-        (bun-lock-package (name "@clack/prompts")
-                          (version "1.8.1")
+        (bun-lock-package (name "@cloudflare/build-output-utils")
+                          (version "0.8.5")
                           (cache-directory
-                           "@clack/prompts@1.8.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/astro/node_modules/@clack/prompts"))
+                           "@cloudflare/build-output-utils@0.8.5@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/build-output-utils"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@clack/prompts/-/prompts-1.8.1.tgz")
-                                    (file-name "npm-clack-prompts-1.8.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/build-output-utils/-/build-output-utils-0.8.5.tgz")
+                                    (file-name
+                                     "npm-cloudflare-build-output-utils-0.8.5.tgz")
                                     (sha256 (base32
-                                             "02rd7qff63ri048vi06xhnld1080mgbivz53fqmfhddxyh5ygqd4")))))
-        (bun-lock-package (name "@cloudflare/kv-asset-handler")
+                                             "1z37digh8i5r6m6jfndc8k2kfnq89hwr55yj81aqxg7jmbykgfhk")))))
+        (bun-lock-package (name "@cloudflare/codemods")
                           (version "0.4.0")
                           (cache-directory
-                           "@cloudflare/kv-asset-handler@0.4.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/@cloudflare/kv-asset-handler"))
+                           "@cloudflare/codemods@0.4.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/codemods"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/kv-asset-handler/-/kv-asset-handler-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/codemods/-/codemods-0.4.0.tgz")
                                     (file-name
-                                     "npm-cloudflare-kv-asset-handler-0.4.0.tgz")
+                                     "npm-cloudflare-codemods-0.4.0.tgz")
                                     (sha256 (base32
-                                             "01iri616ynmybqcrhmgmzhjacp3854qgqpcwrp4ap9vc6hmvpman")))))
+                                             "134bqi2c701l3daiq08pv4jg1salb9nz1235yb4mz2hvbmfw917d")))))
+        (bun-lock-package (name "@cloudflare/config")
+                          (version "0.23.0")
+                          (cache-directory
+                           "@cloudflare/config@0.23.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/config"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/config/-/config-0.23.0.tgz")
+                                    (file-name
+                                     "npm-cloudflare-config-0.23.0.tgz")
+                                    (sha256 (base32
+                                             "077cfyhhz6mck3nb456xx6krkyjm8177i6q19vawml0n4gc52a6x")))))
         (bun-lock-package (name "@cloudflare/kv-asset-handler")
                           (version "0.5.0")
                           (cache-directory
@@ -44493,6 +43776,19 @@
                                      "npm-cloudflare-kv-asset-handler-0.5.0.tgz")
                                     (sha256 (base32
                                              "043wca2x4wm2b5b1rxkbs1qs2589340lgd98idzbcw4z41ps5paw")))))
+        (bun-lock-package (name "@cloudflare/runtime-types")
+                          (version "0.1.7")
+                          (cache-directory
+                           "@cloudflare/runtime-types@0.1.7@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/runtime-types/-/runtime-types-0.1.7.tgz")
+                                    (file-name
+                                     "npm-cloudflare-runtime-types-0.1.7.tgz")
+                                    (sha256 (base32
+                                             "04bsl556y35by67xq2nf5ypjavrg0ycypilrshgdff51zwfxhrma")))))
         (bun-lock-package (name "@cloudflare/unenv-preset")
                           (version "2.16.1")
                           (cache-directory
@@ -44507,44 +43803,18 @@
                                     (sha256 (base32
                                              "0lk46xzn2b7y9vf3yxg38kbal545y6a83n9mlm2chdjiy4irbklw")))))
         (bun-lock-package (name "@cloudflare/unenv-preset")
-                          (version "2.7.11")
+                          (version "2.16.2")
                           (cache-directory
-                           "@cloudflare/unenv-preset@2.7.11@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/@cloudflare/unenv-preset"))
+                           "@cloudflare/unenv-preset@2.16.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/@cloudflare/unenv-preset"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/unenv-preset/-/unenv-preset-2.7.11.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/unenv-preset/-/unenv-preset-2.16.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-unenv-preset-2.7.11.tgz")
+                                     "npm-cloudflare-unenv-preset-2.16.2.tgz")
                                     (sha256 (base32
-                                             "0blcmqfnp9na1m0vyn2bj7milnng0xcpvy8w50x8j4fsr81cdyc1")))))
-        (bun-lock-package (name "@cloudflare/vite-plugin")
-                          (version "1.52.1")
-                          (cache-directory
-                           "@cloudflare/vite-plugin@1.52.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@cloudflare/vite-plugin/-/vite-plugin-1.52.1.tgz")
-                                    (file-name
-                                     "npm-cloudflare-vite-plugin-1.52.1.tgz")
-                                    (sha256 (base32
-                                             "0yddm4vf3ghm50dx9drg8w0rzq0i6qynwgfij494b8v6ncmz55yl")))))
-        (bun-lock-package (name "@cloudflare/workerd-darwin-64")
-                          (version "1.20251118.0")
-                          (cache-directory
-                           "@cloudflare/workerd-darwin-64@1.20251118.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20251118.0.tgz")
-                                    (file-name
-                                     "npm-cloudflare-workerd-darwin-64-1.20251118.0.tgz")
-                                    (sha256 (base32
-                                             "0hv15zqns5mx5n95b116iaw4rbri5azg3s7x5dwk4z3binimk4m2")))))
+                                             "12xp8bvjaxqjsy59n20km7d473bdzdlczx84yhsy1iw6yhic9fdl")))))
         (bun-lock-package (name "@cloudflare/workerd-darwin-64")
                           (version "1.20260708.1")
                           (cache-directory
@@ -44559,31 +43829,44 @@
                                     (sha256 (base32
                                              "1yiafnq5b432gvfxn33pki928lqx84kyg7k8k7yd77hb6jwhhkq8")))))
         (bun-lock-package (name "@cloudflare/workerd-darwin-64")
-                          (version "1.20260811.1")
+                          (version "1.20260930.2")
                           (cache-directory
-                           "@cloudflare/workerd-darwin-64@1.20260811.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-64"))
+                           "@cloudflare/workerd-darwin-64@1.20260930.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20260930.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-darwin-64-1.20260811.1.tgz")
+                                     "npm-cloudflare-workerd-darwin-64-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "1hqvi0zvynrhk3fca07s24p2f2mxch02ywc1x3w7gw3isbkknxig")))))
-        (bun-lock-package (name "@cloudflare/workerd-darwin-arm64")
-                          (version "1.20251118.0")
+                                             "0k5n18qvi89l2509n0calkc79y5ljhj5qzsirzg58c1iqz7f0b2k")))))
+        (bun-lock-package (name "@cloudflare/workerd-darwin-64")
+                          (version "1.20261001.1")
                           (cache-directory
-                           "@cloudflare/workerd-darwin-arm64@1.20251118.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-arm64"))
+                           "@cloudflare/workerd-darwin-64@1.20261001.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20251118.0.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20261001.1.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-darwin-arm64-1.20251118.0.tgz")
+                                     "npm-cloudflare-workerd-darwin-64-1.20261001.1.tgz")
                                     (sha256 (base32
-                                             "07ch1cq54yx6v3gsnwqy3bgwrmjm12jz5q5bq2r5zsv6n8c1z6m6")))))
+                                             "1sl397rc7fahv1ha6j64vycvcxfbawx15h3ff4kiyg39rl6wfdlk")))))
+        (bun-lock-package (name "@cloudflare/workerd-darwin-64")
+                          (version "1.20261102.1")
+                          (cache-directory
+                           "@cloudflare/workerd-darwin-64@1.20261102.1@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-64/-/workerd-darwin-64-1.20261102.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-darwin-64-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "1hkymzkff3abbssh9gqrm9avqd4a68v00wgncrcl1rb4m8gv39h6")))))
         (bun-lock-package (name "@cloudflare/workerd-darwin-arm64")
                           (version "1.20260708.1")
                           (cache-directory
@@ -44598,31 +43881,44 @@
                                     (sha256 (base32
                                              "03y2rg6d4dch3wd09dxqk6kzmgp3mj2f06n2kpdqc2l6wjmq6vhc")))))
         (bun-lock-package (name "@cloudflare/workerd-darwin-arm64")
-                          (version "1.20260811.1")
+                          (version "1.20260930.2")
                           (cache-directory
-                           "@cloudflare/workerd-darwin-arm64@1.20260811.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-arm64"))
+                           "@cloudflare/workerd-darwin-arm64@1.20260930.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20260930.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-darwin-arm64-1.20260811.1.tgz")
+                                     "npm-cloudflare-workerd-darwin-arm64-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "0rgsqssyfkjcv95g3ixj4gm010ckwh7pv0zdirdmsn4j3yv8sk81")))))
-        (bun-lock-package (name "@cloudflare/workerd-linux-64")
-                          (version "1.20251118.0")
+                                             "1ym1ylbl33k22g0amf0wj1gs6b82vrslz1wdlpfs798pyld392ni")))))
+        (bun-lock-package (name "@cloudflare/workerd-darwin-arm64")
+                          (version "1.20261001.1")
                           (cache-directory
-                           "@cloudflare/workerd-linux-64@1.20251118.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-linux-64"))
+                           "@cloudflare/workerd-darwin-arm64@1.20261001.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20251118.0.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20261001.1.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-linux-64-1.20251118.0.tgz")
+                                     "npm-cloudflare-workerd-darwin-arm64-1.20261001.1.tgz")
                                     (sha256 (base32
-                                             "15fm38l9sd0i18yc21a6nvnkca25h55ia6llwiw94h7w9as8n747")))))
+                                             "1ygmhnqb85p64mb1xfyqjzmkin90j3zgi549d08jq1hkakd2177w")))))
+        (bun-lock-package (name "@cloudflare/workerd-darwin-arm64")
+                          (version "1.20261102.1")
+                          (cache-directory
+                           "@cloudflare/workerd-darwin-arm64@1.20261102.1@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-darwin-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-darwin-arm64/-/workerd-darwin-arm64-1.20261102.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-darwin-arm64-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "0fssr25pfm5zxi4h8q4hwdjlv7zcv5xi2azwnj98zr9m99ck1rwf")))))
         (bun-lock-package (name "@cloudflare/workerd-linux-64")
                           (version "1.20260708.1")
                           (cache-directory
@@ -44637,31 +43933,44 @@
                                     (sha256 (base32
                                              "0n1xx3gb7sdggn1a6vv6x8j8bz58hfy5gvrhzyxxlhq0y75hbn0q")))))
         (bun-lock-package (name "@cloudflare/workerd-linux-64")
-                          (version "1.20260811.1")
+                          (version "1.20260930.2")
                           (cache-directory
-                           "@cloudflare/workerd-linux-64@1.20260811.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd/node_modules/@cloudflare/workerd-linux-64"))
+                           "@cloudflare/workerd-linux-64@1.20260930.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd/node_modules/@cloudflare/workerd-linux-64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20260930.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-linux-64-1.20260811.1.tgz")
+                                     "npm-cloudflare-workerd-linux-64-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "0mkjcb8gxsw1fqj1ir4yni79r2dh9g7dzhw3msf3mqzl4iv8hv7l")))))
-        (bun-lock-package (name "@cloudflare/workerd-linux-arm64")
-                          (version "1.20251118.0")
+                                             "1yssa6xndrslwnd5azmzf0qna2spixfxmp5ghfr3nzdvdkbf938h")))))
+        (bun-lock-package (name "@cloudflare/workerd-linux-64")
+                          (version "1.20261001.1")
                           (cache-directory
-                           "@cloudflare/workerd-linux-arm64@1.20251118.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-linux-arm64"))
+                           "@cloudflare/workerd-linux-64@1.20261001.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd/node_modules/@cloudflare/workerd-linux-64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20251118.0.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20261001.1.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-linux-arm64-1.20251118.0.tgz")
+                                     "npm-cloudflare-workerd-linux-64-1.20261001.1.tgz")
                                     (sha256 (base32
-                                             "06dz75fvmijlsc9lvyglb12w8yl4xjss119y9x135zmc8m04k174")))))
+                                             "0b6qlrnva2fw29cp8n7f2crs4q1fb3k00g0c5l1ij8c3d44qf7qp")))))
+        (bun-lock-package (name "@cloudflare/workerd-linux-64")
+                          (version "1.20261102.1")
+                          (cache-directory
+                           "@cloudflare/workerd-linux-64@1.20261102.1@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-linux-64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-64/-/workerd-linux-64-1.20261102.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-linux-64-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "1mnkn1ldar78xx6g2wpg1b3xjfri8qijd8x6dnhzvbj0sfbls9mq")))))
         (bun-lock-package (name "@cloudflare/workerd-linux-arm64")
                           (version "1.20260708.1")
                           (cache-directory
@@ -44676,31 +43985,44 @@
                                     (sha256 (base32
                                              "0qzvymdlkwrf9wajzmrbkgcndz4z3g11yp4xcn6s6gvgq79z92cf")))))
         (bun-lock-package (name "@cloudflare/workerd-linux-arm64")
-                          (version "1.20260811.1")
+                          (version "1.20260930.2")
                           (cache-directory
-                           "@cloudflare/workerd-linux-arm64@1.20260811.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd/node_modules/@cloudflare/workerd-linux-arm64"))
+                           "@cloudflare/workerd-linux-arm64@1.20260930.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd/node_modules/@cloudflare/workerd-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20260930.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-linux-arm64-1.20260811.1.tgz")
+                                     "npm-cloudflare-workerd-linux-arm64-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "0693dq0d017lq2dpp9idigffxc7h509ycfl4wp3v8z4wf4174ixb")))))
-        (bun-lock-package (name "@cloudflare/workerd-windows-64")
-                          (version "1.20251118.0")
+                                             "01d4xn1yi09w4948r48f8kavmrr5vv5wkss3pvy05cbziz7qng5m")))))
+        (bun-lock-package (name "@cloudflare/workerd-linux-arm64")
+                          (version "1.20261001.1")
                           (cache-directory
-                           "@cloudflare/workerd-windows-64@1.20251118.0@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-windows-64"))
+                           "@cloudflare/workerd-linux-arm64@1.20261001.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd/node_modules/@cloudflare/workerd-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20251118.0.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20261001.1.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-windows-64-1.20251118.0.tgz")
+                                     "npm-cloudflare-workerd-linux-arm64-1.20261001.1.tgz")
                                     (sha256 (base32
-                                             "185f1wvq37p8smr4akxb8cggxv2lxwnhvgbjds6rr0cn3bg05gj7")))))
+                                             "09vbrbh4pwi90rnjmsni2sqmz7xfn01g1lh1x41rsivpjdvcwwb4")))))
+        (bun-lock-package (name "@cloudflare/workerd-linux-arm64")
+                          (version "1.20261102.1")
+                          (cache-directory
+                           "@cloudflare/workerd-linux-arm64@1.20261102.1@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-linux-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-linux-arm64/-/workerd-linux-arm64-1.20261102.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-linux-arm64-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "099cbzb7j6nc0mzx55r98wq3isb3rjl8whk1ysigj2yxa51v086v")))))
         (bun-lock-package (name "@cloudflare/workerd-windows-64")
                           (version "1.20260708.1")
                           (cache-directory
@@ -44715,18 +44037,44 @@
                                     (sha256 (base32
                                              "01izjc0s6qsn45hx9cs2blf4b68cqn2fgzm8lvhcx018ymvgqzpj")))))
         (bun-lock-package (name "@cloudflare/workerd-windows-64")
-                          (version "1.20260811.1")
+                          (version "1.20260930.2")
                           (cache-directory
-                           "@cloudflare/workerd-windows-64@1.20260811.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd/node_modules/@cloudflare/workerd-windows-64"))
+                           "@cloudflare/workerd-windows-64@1.20260930.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd/node_modules/@cloudflare/workerd-windows-64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20260930.2.tgz")
                                     (file-name
-                                     "npm-cloudflare-workerd-windows-64-1.20260811.1.tgz")
+                                     "npm-cloudflare-workerd-windows-64-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "14xy0sbi9plbawd3jxijrw8c33hyy2wpywp8822xyzm032k7xdiv")))))
+                                             "02lyzgpx4f20d73mgk83dv1idazsw6cpn0dvvbhp5pr6y4flszzk")))))
+        (bun-lock-package (name "@cloudflare/workerd-windows-64")
+                          (version "1.20261001.1")
+                          (cache-directory
+                           "@cloudflare/workerd-windows-64@1.20261001.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd/node_modules/@cloudflare/workerd-windows-64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20261001.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-windows-64-1.20261001.1.tgz")
+                                    (sha256 (base32
+                                             "11ami6arppw32xd3b61cqh4ld2nvjnrwwrlcszpb44lc3jrwqff6")))))
+        (bun-lock-package (name "@cloudflare/workerd-windows-64")
+                          (version "1.20261102.1")
+                          (cache-directory
+                           "@cloudflare/workerd-windows-64@1.20261102.1@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd/node_modules/@cloudflare/workerd-windows-64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@cloudflare/workerd-windows-64/-/workerd-windows-64-1.20261102.1.tgz")
+                                    (file-name
+                                     "npm-cloudflare-workerd-windows-64-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "0y67n5xgs2h41icn9brcdc6abf0vkb01dclhkagn5d1f20x9lc0s")))))
         (bun-lock-package (name "@cloudflare/workers-types")
                           (version "4.20251008.0")
                           (cache-directory
@@ -44801,18 +44149,19 @@
                                      "npm-cspotcode-source-map-support-0.8.1.tgz")
                                     (sha256 (base32
                                              "1w543354jmzp4a7h1qawwjvl7dwzqc9nc7dv1yi3qvx884lkn54x")))))
-        (bun-lock-package (name "@ctrl/tinycolor")
-                          (version "4.2.0")
+        (bun-lock-package (name "@dimforge/rapier3d-compat")
+                          (version "0.12.0")
                           (cache-directory
-                           "@ctrl/tinycolor@4.2.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@ctrl/tinycolor"))
+                           "@dimforge/rapier3d-compat@0.12.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@dimforge/rapier3d-compat"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@ctrl/tinycolor/-/tinycolor-4.2.0.tgz")
-                                    (file-name "npm-ctrl-tinycolor-4.2.0.tgz")
+                                     "https://registry.npmjs.org/@dimforge/rapier3d-compat/-/rapier3d-compat-0.12.0.tgz")
+                                    (file-name
+                                     "npm-dimforge-rapier3d-compat-0.12.0.tgz")
                                     (sha256 (base32
-                                             "008n8hnqxh46wnrw3qwv7rnlxphgs03gq2z8igy64nd6b1ylwxyc")))))
+                                             "09kb12pikjadcrcnqczr8pd9hnzzi3aja6p60a5kh4jw6cx1cnc5")))))
         (bun-lock-package (name "@dnd-kit/abstract")
                           (version "0.5.0")
                           (cache-directory
@@ -44902,57 +44251,70 @@
                                     (sha256 (base32
                                              "07vx78hpvhkinmj9l8hzz187rybyrvqrcafz5pbsaa0km5rwp9ic")))))
         (bun-lock-package (name "@effect/opentelemetry")
-                          (version "4.0.6")
+                          (version "4.1.0")
                           (cache-directory
-                           "@effect/opentelemetry@4.0.6@@registry.npmjs.org@@@1")
+                           "@effect/opentelemetry@4.1.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@effect/opentelemetry"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@effect/opentelemetry/-/opentelemetry-4.0.6.tgz")
+                                     "https://registry.npmjs.org/@effect/opentelemetry/-/opentelemetry-4.1.0.tgz")
                                     (file-name
-                                     "npm-effect-opentelemetry-4.0.6.tgz")
+                                     "npm-effect-opentelemetry-4.1.0.tgz")
                                     (sha256 (base32
-                                             "0qj89kay5s3kraan244p5vvda1f0naghffjz796kf9yxs4afd3q8")))))
+                                             "0smzxgfdfxy1nvyx2kqhskj8qzv20hngph0k1x1kjvrry378qyxf")))))
         (bun-lock-package (name "@effect/platform-node")
-                          (version "4.0.6")
+                          (version "4.1.0")
                           (cache-directory
-                           "@effect/platform-node@4.0.6@@registry.npmjs.org@@@1")
+                           "@effect/platform-node@4.1.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@effect/platform-node"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@effect/platform-node/-/platform-node-4.0.6.tgz")
+                                     "https://registry.npmjs.org/@effect/platform-node/-/platform-node-4.1.0.tgz")
                                     (file-name
-                                     "npm-effect-platform-node-4.0.6.tgz")
+                                     "npm-effect-platform-node-4.1.0.tgz")
                                     (sha256 (base32
-                                             "0mhk2x7x1ns3kw2r7cdd6z3b42yaxr3qma22xh1zwrkyzsz0dga1")))))
+                                             "14svgzycxcz79rhvhzbcy8dcf00nbj5f10biblfcmw31h8anmyjf")))))
         (bun-lock-package (name "@effect/platform-node-shared")
-                          (version "4.0.6")
+                          (version "4.1.0")
                           (cache-directory
-                           "@effect/platform-node-shared@4.0.6@@registry.npmjs.org@@@1")
+                           "@effect/platform-node-shared@4.1.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@effect/platform-node-shared"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@effect/platform-node-shared/-/platform-node-shared-4.0.6.tgz")
+                                     "https://registry.npmjs.org/@effect/platform-node-shared/-/platform-node-shared-4.1.0.tgz")
                                     (file-name
-                                     "npm-effect-platform-node-shared-4.0.6.tgz")
+                                     "npm-effect-platform-node-shared-4.1.0.tgz")
                                     (sha256 (base32
-                                             "0dz22c1rg8297v8m0xp8cxignwpk6n422zl7w771r6napap8dc6w")))))
+                                             "13zhxpmf3vd77h45dxhlh9hrq9qvwxwz4kn0ylnz7v5sx1c87h47")))))
         (bun-lock-package (name "@effect/sql-sqlite-bun")
-                          (version "4.0.6")
+                          (version "4.1.0")
                           (cache-directory
-                           "@effect/sql-sqlite-bun@4.0.6@@registry.npmjs.org@@@1")
+                           "@effect/sql-sqlite-bun@4.1.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@effect/sql-sqlite-bun"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@effect/sql-sqlite-bun/-/sql-sqlite-bun-4.0.6.tgz")
+                                     "https://registry.npmjs.org/@effect/sql-sqlite-bun/-/sql-sqlite-bun-4.1.0.tgz")
                                     (file-name
-                                     "npm-effect-sql-sqlite-bun-4.0.6.tgz")
+                                     "npm-effect-sql-sqlite-bun-4.1.0.tgz")
                                     (sha256 (base32
-                                             "1xjzly626vpa58x5zif3cd7nwy2sk5s8kx8a6m8apwbhx1q50gmz")))))
+                                             "0vz318gz42wz45c5wr7y2zb64majk4xyv3prj6qa7qk1smwgy0wq")))))
+        (bun-lock-package (name "@effect/sql-sqlite-node")
+                          (version "4.1.0")
+                          (cache-directory
+                           "@effect/sql-sqlite-node@4.1.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@effect/sql-sqlite-node"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@effect/sql-sqlite-node/-/sql-sqlite-node-4.1.0.tgz")
+                                    (file-name
+                                     "npm-effect-sql-sqlite-node-4.1.0.tgz")
+                                    (sha256 (base32
+                                             "06v2gafc81428gdj8vrwf5cccid3s4ayf33k7v4rz9vdhh634dkz")))))
         (bun-lock-package (name "@electron-internal/extract-zip")
                           (version "1.0.5")
                           (cache-directory
@@ -45079,110 +44441,6 @@
                                      "npm-electron-windows-sign-1.2.2.tgz")
                                     (sha256 (base32
                                              "1jb9hgdnr8ig0sq3g9x1gqaispsfx1bpjqsflzyvnx0jxlq9nydc")))))
-        (bun-lock-package (name "@emmetio/abbreviation")
-                          (version "2.3.3")
-                          (cache-directory
-                           "@emmetio/abbreviation@2.3.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/abbreviation"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/abbreviation/-/abbreviation-2.3.3.tgz")
-                                    (file-name
-                                     "npm-emmetio-abbreviation-2.3.3.tgz")
-                                    (sha256 (base32
-                                             "1f3nvnp2b107sf1assi6hfa6yh1nsbbqbrvivn8n6zv6yfc8bgq4")))))
-        (bun-lock-package (name "@emmetio/css-abbreviation")
-                          (version "2.1.8")
-                          (cache-directory
-                           "@emmetio/css-abbreviation@2.1.8@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/css-abbreviation"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/css-abbreviation/-/css-abbreviation-2.1.8.tgz")
-                                    (file-name
-                                     "npm-emmetio-css-abbreviation-2.1.8.tgz")
-                                    (sha256 (base32
-                                             "0fr22mcgag9sbr68pkyzzg3m4bw74456faa8wrap9g3q49811pzb")))))
-        (bun-lock-package (name "@emmetio/css-parser")
-                          (version "0.4.1")
-                          (cache-directory
-                           "@emmetio/css-parser@0.4.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/css-parser"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/css-parser/-/css-parser-0.4.1.tgz")
-                                    (file-name
-                                     "npm-emmetio-css-parser-0.4.1.tgz")
-                                    (sha256 (base32
-                                             "1nymfkddrn3rzhv9dsq33cyzvlxbyhshlli1nnpk0qf5vzglf65j")))))
-        (bun-lock-package (name "@emmetio/html-matcher")
-                          (version "1.3.0")
-                          (cache-directory
-                           "@emmetio/html-matcher@1.3.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/html-matcher"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/html-matcher/-/html-matcher-1.3.0.tgz")
-                                    (file-name
-                                     "npm-emmetio-html-matcher-1.3.0.tgz")
-                                    (sha256 (base32
-                                             "0abafk4asg06hsaa521mqxa4jwvlspc643lysqh4p886ycpdnwch")))))
-        (bun-lock-package (name "@emmetio/scanner")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@emmetio/scanner@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/scanner"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/scanner/-/scanner-1.0.4.tgz")
-                                    (file-name "npm-emmetio-scanner-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "1jdck44dzfz0yq2qvmighpcf0m71mky3biazra61xg1an98ap6hy")))))
-        (bun-lock-package (name "@emmetio/stream-reader")
-                          (version "2.2.0")
-                          (cache-directory
-                           "@emmetio/stream-reader@2.2.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/stream-reader"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/stream-reader/-/stream-reader-2.2.0.tgz")
-                                    (file-name
-                                     "npm-emmetio-stream-reader-2.2.0.tgz")
-                                    (sha256 (base32
-                                             "1g2wkpaqdh5cw2blcxl6nb9f87z79d8a408s577cf5k4l6m5n7ly")))))
-        (bun-lock-package (name "@emmetio/stream-reader-utils")
-                          (version "0.1.0")
-                          (cache-directory
-                           "@emmetio/stream-reader-utils@0.1.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emmetio/stream-reader-utils"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emmetio/stream-reader-utils/-/stream-reader-utils-0.1.0.tgz")
-                                    (file-name
-                                     "npm-emmetio-stream-reader-utils-0.1.0.tgz")
-                                    (sha256 (base32
-                                             "047kja6fbrgwkhbgqscjylia75m75zp13fl78kdwczc2w62vv832")))))
-        (bun-lock-package (name "@emnapi/core")
-                          (version "1.11.1")
-                          (cache-directory
-                           "@emnapi/core@1.11.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/core"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/core"
-                                           "node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/core"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emnapi/core/-/core-1.11.1.tgz")
-                                    (file-name "npm-emnapi-core-1.11.1.tgz")
-                                    (sha256 (base32
-                                             "0l1rawgxlnc784fm5v04wb52pxkxai8z06y9lqzrnl28lx7xkwfa")))))
         (bun-lock-package (name "@emnapi/core")
                           (version "1.11.2")
                           (cache-directory
@@ -45199,9 +44457,7 @@
                           (version "1.11.3")
                           (cache-directory
                            "@emnapi/core@1.11.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/astro2tsx/node_modules/@emnapi/core"
-                                           "node_modules/@astrojs/compiler-binding-wasm32-wasi/node_modules/@emnapi/core"
-                                           "node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/core"
+                          (install-paths '("node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/core"
                                            "packages/stories/node_modules/@tailwindcss/vite/node_modules/@tailwindcss/oxide/node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/core"))
                           (source (origin
                                     (method url-fetch)
@@ -45211,24 +44467,10 @@
                                     (sha256 (base32
                                              "1pinj41z4adw6vqb41hx2smqqkzr9b7vxnpxb8p74r6gjyhjm41g")))))
         (bun-lock-package (name "@emnapi/runtime")
-                          (version "1.11.1")
-                          (cache-directory
-                           "@emnapi/runtime@1.11.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/runtime"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/runtime"
-                                           "node_modules/@bruits/satteri-wasm32-wasi/node_modules/@emnapi/runtime"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.11.1.tgz")
-                                    (file-name "npm-emnapi-runtime-1.11.1.tgz")
-                                    (sha256 (base32
-                                             "1n0ai7pqgcs1jj2v5ngbi98j5rgpd9cg5n5ikdrblprfk7blbjqa")))))
-        (bun-lock-package (name "@emnapi/runtime")
                           (version "1.11.2")
                           (cache-directory
                            "@emnapi/runtime@1.11.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@emnapi/runtime"))
+                          (install-paths '("node_modules/@oxc-parser/binding-wasm32-wasi/node_modules/@emnapi/runtime"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45240,14 +44482,8 @@
                           (version "1.11.3")
                           (cache-directory
                            "@emnapi/runtime@1.11.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/compiler-binding-wasm32-wasi/node_modules/@emnapi/runtime"
-                                           "node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
-                                           "node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
-                                           "node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
-                                           "node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
-                                           "node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
+                          (install-paths '("node_modules/@emnapi/runtime"
                                            "node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/runtime"
-                                           "packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-wasm32/node_modules/@emnapi/runtime"
                                            "packages/stories/node_modules/@tailwindcss/vite/node_modules/@tailwindcss/oxide/node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/runtime"))
                           (source (origin
                                     (method url-fetch)
@@ -45273,9 +44509,7 @@
                           (version "1.2.3")
                           (cache-directory
                            "@emnapi/wasi-threads@1.2.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/astro2tsx/node_modules/@emnapi/core/node_modules/@emnapi/wasi-threads"
-                                           "node_modules/@astrojs/compiler-binding-wasm32-wasi/node_modules/@emnapi/core/node_modules/@emnapi/wasi-threads"
-                                           "node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/wasi-threads"
+                          (install-paths '("node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/wasi-threads"
                                            "packages/stories/node_modules/@tailwindcss/vite/node_modules/@tailwindcss/oxide/node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@emnapi/wasi-threads"))
                           (source (origin
                                     (method url-fetch)
@@ -45299,24 +44533,10 @@
                                     (sha256 (base32
                                              "1s0hda1j7j01n81waw6yrqd6dddzyf2536407dvjar6j667l8dkg")))))
         (bun-lock-package (name "@esbuild/aix-ppc64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/aix-ppc64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/aix-ppc64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-aix-ppc64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1r6z7xdzva06l3sj4lzm4kd4kc1xiw1p7awzbaf9zv1w2lkjmwjl")))))
-        (bun-lock-package (name "@esbuild/aix-ppc64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/aix-ppc64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/aix-ppc64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/aix-ppc64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/aix-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45325,6 +44545,19 @@
                                      "npm-esbuild-aix-ppc64-0.28.1.tgz")
                                     (sha256 (base32
                                              "1x82m5whf928677i5ychx6w76b3a7l34pwc656n3pakpmcm3w8d8")))))
+        (bun-lock-package (name "@esbuild/aix-ppc64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/aix-ppc64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/aix-ppc64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/aix-ppc64/-/aix-ppc64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-aix-ppc64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1sr5880m5wyy6a0kkw3w062njh84lqhzm8frqd5bakhdjsmh0yfz")))))
         (bun-lock-package (name "@esbuild/android-arm")
                           (version "0.25.12")
                           (cache-directory
@@ -45339,24 +44572,10 @@
                                     (sha256 (base32
                                              "0ziwvam5z58i2skipcw14d9k7xmvpj9a8my3g8l0f6q9dy47bsjs")))))
         (bun-lock-package (name "@esbuild/android-arm")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/android-arm@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-android-arm-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0dgkjmk5cj8ickrjlxpxpgwcf2qhqhd9ajh0z7a8g4pddb19341z")))))
-        (bun-lock-package (name "@esbuild/android-arm")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/android-arm@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45365,6 +44584,19 @@
                                      "npm-esbuild-android-arm-0.28.1.tgz")
                                     (sha256 (base32
                                              "1mmzj08i6n1icb6rr56l4y8n0jj9wvcb7lrbbgh9hazkn7rpppbw")))))
+        (bun-lock-package (name "@esbuild/android-arm")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/android-arm@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/android-arm/-/android-arm-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-android-arm-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "10s1galdm90fm060sh47hlsc01g7d300ml0n0s8gdipfikdah8qp")))))
         (bun-lock-package (name "@esbuild/android-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -45379,24 +44611,10 @@
                                     (sha256 (base32
                                              "08b9gsvillwb39gqzwy7rmvn8870qwmmvrqdqqp267jh9d1rvd4w")))))
         (bun-lock-package (name "@esbuild/android-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/android-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-android-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0scs52ly6h2z5f451nwf785qjsdar8zkwagvksmpilr1fcz8mm09")))))
-        (bun-lock-package (name "@esbuild/android-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/android-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45405,6 +44623,19 @@
                                      "npm-esbuild-android-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0ikh8ds82d7jcwcigk13vhi303wxl5lnlavmcrbkjx5qqmypv06v")))))
+        (bun-lock-package (name "@esbuild/android-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/android-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/android-arm64/-/android-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-android-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0hq9dzzg18b422lxlz2bil9ib2pzmk72r65axm8p0cpx9wgpxw7s")))))
         (bun-lock-package (name "@esbuild/android-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -45419,24 +44650,10 @@
                                     (sha256 (base32
                                              "0278ngamy175acsvmvpq02glgfh3jlnwa5iia10vdx26qqnb27qv")))))
         (bun-lock-package (name "@esbuild/android-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/android-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-android-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1iavcfvb1gj7vhnc08m9hz36dyh8rayi7y5pb4slv64sdlw942g0")))))
-        (bun-lock-package (name "@esbuild/android-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/android-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45445,6 +44662,19 @@
                                      "npm-esbuild-android-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "1w32bcx6q0w80np3hmrqz443ds0icfd2l6m7n62jz59sc79kvzm7")))))
+        (bun-lock-package (name "@esbuild/android-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/android-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/android-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/android-x64/-/android-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-android-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0yv5gs5nbwkfcaj5m8ry8sr2kcldkh65jikvibxc14za7pl6np1g")))))
         (bun-lock-package (name "@esbuild/darwin-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -45459,24 +44689,10 @@
                                     (sha256 (base32
                                              "1msihjanssb3l0kx4jfagbvkhqy5rxadn1y1lmn08i9fhlgh239f")))))
         (bun-lock-package (name "@esbuild/darwin-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/darwin-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-darwin-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0p4b608bi0623aqzrkbx5b12iamdii16bsxyi24w1ybxxhlxzqh8")))))
-        (bun-lock-package (name "@esbuild/darwin-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/darwin-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45485,6 +44701,19 @@
                                      "npm-esbuild-darwin-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0hybbj624pfmgzvfzncdlfpg7f9y57zlg3az1d2rim97qndwqr2x")))))
+        (bun-lock-package (name "@esbuild/darwin-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/darwin-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-darwin-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0ajsrxn9kn8w56bvris94zvv7k45flkgydhdn99482a9jzhcv00r")))))
         (bun-lock-package (name "@esbuild/darwin-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -45499,24 +44728,10 @@
                                     (sha256 (base32
                                              "06i9qbx4n2s9v377qb40s1376k3qbj0dw4zfjm9n1a1hngvwsmmz")))))
         (bun-lock-package (name "@esbuild/darwin-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/darwin-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-darwin-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0nj0h32nz2bn5fh3l927zp3gn1lk95xa1bn7zarphni4v0lvhgvm")))))
-        (bun-lock-package (name "@esbuild/darwin-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/darwin-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45525,6 +44740,19 @@
                                      "npm-esbuild-darwin-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "1jv2qzh6d2x624r80ngz7g40pi5ibb0ns89dmksp3hc1fwl85iac")))))
+        (bun-lock-package (name "@esbuild/darwin-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/darwin-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/darwin-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-darwin-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0mfv4ygi1saldl2klr0sqpz9yis202zw7v3gyc6wrwmajnlagdmb")))))
         (bun-lock-package (name "@esbuild/freebsd-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -45539,24 +44767,10 @@
                                     (sha256 (base32
                                              "0caxihvj6kyxm6l5avmsjnvmll69psyqmjwxg9s8ygby5pyhy51x")))))
         (bun-lock-package (name "@esbuild/freebsd-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/freebsd-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-freebsd-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0ml102svgpnns7bp647adk7xznxh5c7rwlzcak4in6k3cma92wh0")))))
-        (bun-lock-package (name "@esbuild/freebsd-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/freebsd-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45565,6 +44779,19 @@
                                      "npm-esbuild-freebsd-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "124vwxwxw0285cfxsnjncjpcrd8zh6nar5a2r61vhqs96pjf5mi1")))))
+        (bun-lock-package (name "@esbuild/freebsd-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/freebsd-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/freebsd-arm64/-/freebsd-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-freebsd-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1kndwaf2hlid68ffharkv2p262r9mh67l6rnp3vfnwf5pxhr69m3")))))
         (bun-lock-package (name "@esbuild/freebsd-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -45579,24 +44806,10 @@
                                     (sha256 (base32
                                              "18mjcvhannaq1p9rvj53mvd535cnvrnzbjgmd0n38gpk1y763wlb")))))
         (bun-lock-package (name "@esbuild/freebsd-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/freebsd-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-freebsd-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "17nzc8ccid21nnsxghgb3v7qyqp55xcgh4jqv0m3si0wx19wvr2n")))))
-        (bun-lock-package (name "@esbuild/freebsd-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/freebsd-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45605,6 +44818,19 @@
                                      "npm-esbuild-freebsd-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0fk18k1biw5h20941c7vvc3v4qij4w5iha08jkbkffp8l9kpj52f")))))
+        (bun-lock-package (name "@esbuild/freebsd-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/freebsd-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/freebsd-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/freebsd-x64/-/freebsd-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-freebsd-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "12pv0dlg9wdnwi0gfckk0vykqqyhhkzx61mr2a9v6ypwnmqp5rak")))))
         (bun-lock-package (name "@esbuild/linux-arm")
                           (version "0.25.12")
                           (cache-directory
@@ -45619,24 +44845,10 @@
                                     (sha256 (base32
                                              "0hhi99py6jnzdmf7ciwxrpi3kri0rzyj21zvd03jypffb7fg539i")))))
         (bun-lock-package (name "@esbuild/linux-arm")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-arm@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-arm-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1xj7zwrz91pkgk1s3fx4mmpshmf20za924ya7gm98gqj6vnzcsmv")))))
-        (bun-lock-package (name "@esbuild/linux-arm")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-arm@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45645,6 +44857,19 @@
                                      "npm-esbuild-linux-arm-0.28.1.tgz")
                                     (sha256 (base32
                                              "14wrjybfzwxgch2w3x9wrcbqsq76rdx8rl7zxa7drr155d510qg5")))))
+        (bun-lock-package (name "@esbuild/linux-arm")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-arm@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-arm/-/linux-arm-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-arm-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "09yk3a25bkf76cjav3vg1cs97jyi0123p0032jd12x018d297ydx")))))
         (bun-lock-package (name "@esbuild/linux-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -45659,24 +44884,10 @@
                                     (sha256 (base32
                                              "1zc73wy1ivwjnccvamsagkc6zaydrma2bf72b7aj6s021qhivq6m")))))
         (bun-lock-package (name "@esbuild/linux-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "02qzphkqn57q9jq1gfh616pv2bbnv2z6g7ikklzf210jm1azlzcq")))))
-        (bun-lock-package (name "@esbuild/linux-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45685,6 +44896,19 @@
                                      "npm-esbuild-linux-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0sj5srpi1swyrpykcxrdwlh5iy8g5wkkzy4125yf8pn9hvkfji91")))))
+        (bun-lock-package (name "@esbuild/linux-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "15hmjgnaf0k4y1qai4v0x1kr5gl7a46w3c92xz8xpx9y3njbyvd9")))))
         (bun-lock-package (name "@esbuild/linux-ia32")
                           (version "0.25.12")
                           (cache-directory
@@ -45699,24 +44923,10 @@
                                     (sha256 (base32
                                              "0fzqr6lmbispgkfsx3c0nfylhksyzf1m5j8p62zg620zca3mm96r")))))
         (bun-lock-package (name "@esbuild/linux-ia32")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-ia32@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ia32"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-ia32-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0li3d3lkhvbr61akm0n9fngs1vixicdvcc09gj4xl0bxan896zga")))))
-        (bun-lock-package (name "@esbuild/linux-ia32")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-ia32@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ia32"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ia32"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ia32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45725,6 +44935,19 @@
                                      "npm-esbuild-linux-ia32-0.28.1.tgz")
                                     (sha256 (base32
                                              "1kji4qs90jd958957vw91wkc4m6jmqxlw9hwll5ay90wxfxda54b")))))
+        (bun-lock-package (name "@esbuild/linux-ia32")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-ia32@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ia32"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-ia32/-/linux-ia32-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-ia32-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "112h8bmg04kmnkxg3wc75rj21zl35wixqc4nap3al9nfixm0nm27")))))
         (bun-lock-package (name "@esbuild/linux-loong64")
                           (version "0.25.12")
                           (cache-directory
@@ -45739,24 +44962,10 @@
                                     (sha256 (base32
                                              "1ywimli9rb60qa0rlr6bkfavy4cplsnlnhkfzyliq4k37csf1gj5")))))
         (bun-lock-package (name "@esbuild/linux-loong64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-loong64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-loong64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-loong64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1r86dml1ixcbma1abjddq2kbs13hjd577lqk7hbyyfwm78j0lgd8")))))
-        (bun-lock-package (name "@esbuild/linux-loong64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-loong64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-loong64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-loong64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-loong64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45765,6 +44974,19 @@
                                      "npm-esbuild-linux-loong64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0rkspmx97miy7j2r8laz3riwz6jyj7azdr48zzrwn5gd2plmh16s")))))
+        (bun-lock-package (name "@esbuild/linux-loong64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-loong64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-loong64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-loong64/-/linux-loong64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-loong64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1fgxji55q23mvbxc3d7s89f3dv4ghn81nwzliinrb0311qzkl12z")))))
         (bun-lock-package (name "@esbuild/linux-mips64el")
                           (version "0.25.12")
                           (cache-directory
@@ -45779,24 +45001,10 @@
                                     (sha256 (base32
                                              "09a81akp24191xxhypwvdlk086y627qjgilh4g7pjszyqh6lah08")))))
         (bun-lock-package (name "@esbuild/linux-mips64el")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-mips64el@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-mips64el"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-mips64el-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1i28j4pkv4jb25bmzwjjyxmzfsdx1z0n057n1sawbg0lqvcrkzni")))))
-        (bun-lock-package (name "@esbuild/linux-mips64el")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-mips64el@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-mips64el"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-mips64el"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-mips64el"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45805,6 +45013,19 @@
                                      "npm-esbuild-linux-mips64el-0.28.1.tgz")
                                     (sha256 (base32
                                              "1740f9lhxs519aqkig4ri1m1crk9plq7994my37si6wvlz672278")))))
+        (bun-lock-package (name "@esbuild/linux-mips64el")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-mips64el@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-mips64el"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-mips64el/-/linux-mips64el-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-mips64el-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "15kn6aaq1b0y6vfj9hkzpy10az0921mz5csngmb2kyxpnia73af2")))))
         (bun-lock-package (name "@esbuild/linux-ppc64")
                           (version "0.25.12")
                           (cache-directory
@@ -45819,24 +45040,10 @@
                                     (sha256 (base32
                                              "02m1b1wqqrz948yah0g92m5wv8ph5zbq4ks704fv6l7635nz1lhw")))))
         (bun-lock-package (name "@esbuild/linux-ppc64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-ppc64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ppc64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-ppc64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0knaq03h1rb916n10ayzz4ivgzdh3dsnshbj78scnh1cg4ad3iay")))))
-        (bun-lock-package (name "@esbuild/linux-ppc64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-ppc64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ppc64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ppc64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45845,6 +45052,19 @@
                                      "npm-esbuild-linux-ppc64-0.28.1.tgz")
                                     (sha256 (base32
                                              "09wmidp41gs0k62rz5ajz6g53zava0ngnh7gh2qv5l167q3g7j6s")))))
+        (bun-lock-package (name "@esbuild/linux-ppc64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-ppc64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-ppc64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-ppc64/-/linux-ppc64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-ppc64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "01yay6ravhnl1kwpcx8jd7kjm4d7pb631113nnyl9m7nma50dw21")))))
         (bun-lock-package (name "@esbuild/linux-riscv64")
                           (version "0.25.12")
                           (cache-directory
@@ -45859,24 +45079,10 @@
                                     (sha256 (base32
                                              "14gsvsgyhzkz24ndxy1nfvshq3zrxvc1cjb3dhhl3wzbi5rqlwv4")))))
         (bun-lock-package (name "@esbuild/linux-riscv64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-riscv64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-riscv64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-riscv64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "11jk8ifrg1hig4zq69gqbsyi0liva5x865ijns84d1sh2yb7y0vg")))))
-        (bun-lock-package (name "@esbuild/linux-riscv64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-riscv64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-riscv64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-riscv64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45885,6 +45091,19 @@
                                      "npm-esbuild-linux-riscv64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0mnqxinczysc7wa9svyabg7qk1ppliih1kn0212wm7ryvnm2knhq")))))
+        (bun-lock-package (name "@esbuild/linux-riscv64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-riscv64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-riscv64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-riscv64/-/linux-riscv64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-riscv64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1ik6a3d0kmhy47dn4gckq6prm4yqrz937plk152821dj8v30hc8v")))))
         (bun-lock-package (name "@esbuild/linux-s390x")
                           (version "0.25.12")
                           (cache-directory
@@ -45899,24 +45118,10 @@
                                     (sha256 (base32
                                              "1isvi4qyh4r2s9s94wj5ykmdl8g3sa8jyg2kv0bmd6l0ysnqz09m")))))
         (bun-lock-package (name "@esbuild/linux-s390x")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-s390x@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-s390x"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-s390x-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0zmwncf822wdzgpl6xvsnlkzm9m4ysl20c4fjjdw45zmd8i5a6wr")))))
-        (bun-lock-package (name "@esbuild/linux-s390x")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-s390x@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-s390x"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-s390x"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45925,6 +45130,19 @@
                                      "npm-esbuild-linux-s390x-0.28.1.tgz")
                                     (sha256 (base32
                                              "1fabi8pa0v3l5bcars0nrs6gm2vn4biz9w15w3smbgp4azzmj53y")))))
+        (bun-lock-package (name "@esbuild/linux-s390x")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-s390x@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-s390x"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-s390x/-/linux-s390x-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-s390x-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0z8qipssha9xwrg64ypbvap50pz1rd9ywjnnap3n9krr6znsqbzv")))))
         (bun-lock-package (name "@esbuild/linux-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -45939,24 +45157,10 @@
                                     (sha256 (base32
                                              "0pxxa0xiv98ay9invgdcngbgbs2fh00hn8flm76qs44aclkw3vzp")))))
         (bun-lock-package (name "@esbuild/linux-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/linux-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-linux-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "02ghacac4bhij4hscdnzlwqi84y6ahsr8l11n2r6mxnl5vfpfzrq")))))
-        (bun-lock-package (name "@esbuild/linux-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/linux-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -45965,6 +45169,19 @@
                                      "npm-esbuild-linux-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0iimv8kkbznj9872gdbczmyg7s5h3ydakvbk69pki50c6fshml4y")))))
+        (bun-lock-package (name "@esbuild/linux-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/linux-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/linux-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-linux-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1xl88jw4szr62xmxcqfyd0bwq4v1falwrma7fvmgkc5a6cibnwwm")))))
         (bun-lock-package (name "@esbuild/netbsd-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -45979,24 +45196,10 @@
                                     (sha256 (base32
                                              "0n4805xbqcjf4ffhw6sarlkm65f9xha13rnshij6rj2d1ymc2ipp")))))
         (bun-lock-package (name "@esbuild/netbsd-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/netbsd-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-netbsd-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1asz313f1dq7a5a4hxivx5zxw3jvyfcv23rr8mcnj02fp0hdpi3x")))))
-        (bun-lock-package (name "@esbuild/netbsd-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/netbsd-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46005,6 +45208,19 @@
                                      "npm-esbuild-netbsd-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "10ldz1nq9n6xc3mczdfn3bklww7w1xdl3xa5xn5k8y6ndjm6haqm")))))
+        (bun-lock-package (name "@esbuild/netbsd-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/netbsd-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/netbsd-arm64/-/netbsd-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-netbsd-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0k0zbnin8bw21mabpq894m5vl1mzwzskh032z5rrpf9dw99ma2lb")))))
         (bun-lock-package (name "@esbuild/netbsd-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -46019,24 +45235,10 @@
                                     (sha256 (base32
                                              "15az4bxm5m6ccn24pqf16ksdy6cw9dh52vq3fi2ffxr50n5a01np")))))
         (bun-lock-package (name "@esbuild/netbsd-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/netbsd-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-netbsd-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "11fzxfv50x42n4m1p9ri8j9nmzgw0rjdflbxanydc2909g43var1")))))
-        (bun-lock-package (name "@esbuild/netbsd-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/netbsd-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46045,6 +45247,19 @@
                                      "npm-esbuild-netbsd-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "15hgwzw0rw45jxpqna8k1p876n2ilv7a77vc2bmc01r923dlyisy")))))
+        (bun-lock-package (name "@esbuild/netbsd-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/netbsd-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/netbsd-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/netbsd-x64/-/netbsd-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-netbsd-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "15agr402qswqjjdqv5nbbgg44nn3md9hq2idyrmd4ci3ibp2zw6a")))))
         (bun-lock-package (name "@esbuild/openbsd-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -46059,24 +45274,10 @@
                                     (sha256 (base32
                                              "16bz1xks7cr41rvv31akw1daan9f8z3sq13kslps39c638gf62dd")))))
         (bun-lock-package (name "@esbuild/openbsd-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/openbsd-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-openbsd-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "04bav19nahd16q36y2fy2wa358a4sl56rynawjdg9bjys1gp180x")))))
-        (bun-lock-package (name "@esbuild/openbsd-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/openbsd-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46085,6 +45286,19 @@
                                      "npm-esbuild-openbsd-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0p6a2y9l1scv365idp0z732gy8v2ja4iv38dzc8z9w1qmvj8b3qv")))))
+        (bun-lock-package (name "@esbuild/openbsd-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/openbsd-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/openbsd-arm64/-/openbsd-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-openbsd-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "186131ykb91xszckr8p4fbxzfc4jx1im4cynikiycb8q9xgxh0vw")))))
         (bun-lock-package (name "@esbuild/openbsd-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -46099,24 +45313,10 @@
                                     (sha256 (base32
                                              "02rh3rwa9jv059vkp930crv1bplv2x0f47ls4jgb1lr28pvz9qhc")))))
         (bun-lock-package (name "@esbuild/openbsd-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/openbsd-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-openbsd-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0y7ncvz0dw07m6g6xljcgk155kvrpfqgwa5cvhxnx13kp5i5bmgs")))))
-        (bun-lock-package (name "@esbuild/openbsd-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/openbsd-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46125,6 +45325,19 @@
                                      "npm-esbuild-openbsd-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "1kimhx9ic98575a9yilqg9jh7abmka0yh9902qark8ml92di7h4w")))))
+        (bun-lock-package (name "@esbuild/openbsd-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/openbsd-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openbsd-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/openbsd-x64/-/openbsd-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-openbsd-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1grfdmd7s1lqw35jrl95xi2585ndmm21469bdnnrrc19vdzwzn8d")))))
         (bun-lock-package (name "@esbuild/openharmony-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -46142,8 +45355,7 @@
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/openharmony-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openharmony-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openharmony-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openharmony-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46152,6 +45364,19 @@
                                      "npm-esbuild-openharmony-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0yphdrq9bw1gnw4fc603p4614jg9yd52j47p3gkr4sbpawg15njm")))))
+        (bun-lock-package (name "@esbuild/openharmony-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/openharmony-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/openharmony-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/openharmony-arm64/-/openharmony-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-openharmony-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "15xkd98l3fq76sl1ifann37g3m6dd3hpc28clz6xdd5yv4zvc70g")))))
         (bun-lock-package (name "@esbuild/sunos-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -46166,24 +45391,10 @@
                                     (sha256 (base32
                                              "0gry3125higi4i9wcl8aan74rf3azfd7civjn152q477f7p8a8bb")))))
         (bun-lock-package (name "@esbuild/sunos-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/sunos-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/sunos-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-sunos-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "06dbg9c9kv5iqymbgb773hy543rqp35kgz83xiys5l7bjcin0c4d")))))
-        (bun-lock-package (name "@esbuild/sunos-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/sunos-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/sunos-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/sunos-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/sunos-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46192,6 +45403,19 @@
                                      "npm-esbuild-sunos-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "129r3p5dwl307dkr1lwg4znrsqq8xk1xw5mc2bbckpjky2cbdnyr")))))
+        (bun-lock-package (name "@esbuild/sunos-x64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/sunos-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/sunos-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/sunos-x64/-/sunos-x64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-sunos-x64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "1r5r1137wqd3l4s1qbjkbda114zfq4x0gqysjh02hh7hw0lk8dc6")))))
         (bun-lock-package (name "@esbuild/win32-arm64")
                           (version "0.25.12")
                           (cache-directory
@@ -46206,24 +45430,10 @@
                                     (sha256 (base32
                                              "0rpsvh2h1n6zgzjc616qxvix2myjdgbpxmach8ysddjbzgx9z5q1")))))
         (bun-lock-package (name "@esbuild/win32-arm64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/win32-arm64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-win32-arm64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1nwchz7f2f110n8x37pvhdh10p4rzb2xwd55zvd28ywxca529c3d")))))
-        (bun-lock-package (name "@esbuild/win32-arm64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/win32-arm64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-arm64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-arm64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46232,6 +45442,19 @@
                                      "npm-esbuild-win32-arm64-0.28.1.tgz")
                                     (sha256 (base32
                                              "0lgqkrrjyxiw8yjv38jnd1c81dl11vllkh8yc1j25z9mk7qlmv1y")))))
+        (bun-lock-package (name "@esbuild/win32-arm64")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/win32-arm64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/win32-arm64/-/win32-arm64-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-win32-arm64-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "0dkkgkv5grspb9hm98j12vsdbbskd4k1k1lwczdgfd2i2smgxkxk")))))
         (bun-lock-package (name "@esbuild/win32-ia32")
                           (version "0.25.12")
                           (cache-directory
@@ -46246,24 +45469,10 @@
                                     (sha256 (base32
                                              "0wj8mnvqxz0qnyhld41h72zxblm8ymqamy885j98hb96r23qdf50")))))
         (bun-lock-package (name "@esbuild/win32-ia32")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/win32-ia32@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-ia32"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-win32-ia32-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0z3qncncmjg5zm5p9jl15dgipqfb0ji9fpg15ynzhxsxg3jj02m4")))))
-        (bun-lock-package (name "@esbuild/win32-ia32")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/win32-ia32@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-ia32"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-ia32"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-ia32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46272,6 +45481,19 @@
                                      "npm-esbuild-win32-ia32-0.28.1.tgz")
                                     (sha256 (base32
                                              "1lqxq3r4jzs38d2mlm0bi7arj715b81vmhpiqbskpvzqb1579acc")))))
+        (bun-lock-package (name "@esbuild/win32-ia32")
+                          (version "0.28.2")
+                          (cache-directory
+                           "@esbuild/win32-ia32@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-ia32"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@esbuild/win32-ia32/-/win32-ia32-0.28.2.tgz")
+                                    (file-name
+                                     "npm-esbuild-win32-ia32-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "04d0hwzvjv4kx876qgqnq7svldyxch0d08i2n37zmin9n069nnp0")))))
         (bun-lock-package (name "@esbuild/win32-x64")
                           (version "0.25.12")
                           (cache-directory
@@ -46286,24 +45508,10 @@
                                     (sha256 (base32
                                              "0x2vj3jlmz6lci1s6zwgmcwcyvm9brg53gapcap3qclniys7cw67")))))
         (bun-lock-package (name "@esbuild/win32-x64")
-                          (version "0.25.4")
-                          (cache-directory
-                           "@esbuild/win32-x64@0.25.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.4.tgz")
-                                    (file-name
-                                     "npm-esbuild-win32-x64-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "1x5mzg6krjf16slpqxv4nfj1652plg65wncayx8mm0g1yvy7lnq3")))))
-        (bun-lock-package (name "@esbuild/win32-x64")
                           (version "0.28.1")
                           (cache-directory
                            "@esbuild/win32-x64@0.28.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-x64"
-                                           "node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-x64"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46312,58 +45520,19 @@
                                      "npm-esbuild-win32-x64-0.28.1.tgz")
                                     (sha256 (base32
                                              "1i2k8k79ycz3f3pcgs9cs3cba60jdk1yvjm33zf7vdbjfpd64paw")))))
-        (bun-lock-package (name "@expressive-code/core")
-                          (version "0.44.2")
+        (bun-lock-package (name "@esbuild/win32-x64")
+                          (version "0.28.2")
                           (cache-directory
-                           "@expressive-code/core@0.44.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@expressive-code/core"))
+                           "@esbuild/win32-x64@0.28.2@@registry.npmjs.org@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild/node_modules/@esbuild/win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@expressive-code/core/-/core-0.44.2.tgz")
+                                     "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.28.2.tgz")
                                     (file-name
-                                     "npm-expressive-code-core-0.44.2.tgz")
+                                     "npm-esbuild-win32-x64-0.28.2.tgz")
                                     (sha256 (base32
-                                             "17hsv6w4s71bvxkisiq1l75g0pr0qzfmsr9grc0ihpwzfzn73x8v")))))
-        (bun-lock-package (name "@expressive-code/plugin-frames")
-                          (version "0.44.2")
-                          (cache-directory
-                           "@expressive-code/plugin-frames@0.44.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@expressive-code/plugin-frames"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@expressive-code/plugin-frames/-/plugin-frames-0.44.2.tgz")
-                                    (file-name
-                                     "npm-expressive-code-plugin-frames-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "1kg361n7p9nyv30xkv66f7yflcf96x05s310k56mkfj38w8s0shd")))))
-        (bun-lock-package (name "@expressive-code/plugin-shiki")
-                          (version "0.44.2")
-                          (cache-directory
-                           "@expressive-code/plugin-shiki@0.44.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@expressive-code/plugin-shiki"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@expressive-code/plugin-shiki/-/plugin-shiki-0.44.2.tgz")
-                                    (file-name
-                                     "npm-expressive-code-plugin-shiki-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "0vdb4lzdrsb1v6r4sbhsixkag7x0xdar0zns8v6jka55761mhpmj")))))
-        (bun-lock-package (name "@expressive-code/plugin-text-markers")
-                          (version "0.44.2")
-                          (cache-directory
-                           "@expressive-code/plugin-text-markers@0.44.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@expressive-code/plugin-text-markers"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@expressive-code/plugin-text-markers/-/plugin-text-markers-0.44.2.tgz")
-                                    (file-name
-                                     "npm-expressive-code-plugin-text-markers-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "1syxp3ha4d2iagxhf55j9m39vcm7ncc00abm7isq7pzrk42xq7s4")))))
+                                             "069yc5kkxmb1ydknbnga506zy1w48yydq2n9kr6lq7vg3dhw71kj")))))
         (bun-lock-package (name "@ff-labs/fff-bin-android-arm64")
                           (version "0.10.5")
                           (cache-directory
@@ -46545,32 +45714,6 @@
                                      "npm-floating-ui-utils-0.2.12.tgz")
                                     (sha256 (base32
                                              "13wjhyhl20bq2p3h196xd4lnkkl0c3r5nliyysdq371xvsih027y")))))
-        (bun-lock-package (name "@fontsource/commit-mono")
-                          (version "5.3.0")
-                          (cache-directory
-                           "@fontsource/commit-mono@5.3.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@fontsource/commit-mono"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@fontsource/commit-mono/-/commit-mono-5.3.0.tgz")
-                                    (file-name
-                                     "npm-fontsource-commit-mono-5.3.0.tgz")
-                                    (sha256 (base32
-                                             "1wsd3aav2iqlymz7dj632vn5w9vw68bwdncrm4xkg9j2fmv8irjf")))))
-        (bun-lock-package (name "@fontsource/ibm-plex-mono")
-                          (version "5.2.5")
-                          (cache-directory
-                           "@fontsource/ibm-plex-mono@5.2.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@fontsource/ibm-plex-mono"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@fontsource/ibm-plex-mono/-/ibm-plex-mono-5.2.5.tgz")
-                                    (file-name
-                                     "npm-fontsource-ibm-plex-mono-5.2.5.tgz")
-                                    (sha256 (base32
-                                             "0fygsg40s8809l709n0q44dhsn08gjhq8dmm8asnkixqys8zp6p6")))))
         (bun-lock-package (name "@formatjs/ecma402-abstract")
                           (version "2.3.6")
                           (cache-directory
@@ -46675,6 +45818,96 @@
                                      "npm-happy-dom-global-registrator-20.0.11.tgz")
                                     (sha256 (base32
                                              "0q56nh4qlsgb5k2ppv5b9s7c6dz0abljdq3d4p9xhqlk1w9bf5ya")))))
+        (bun-lock-package (name "@hona/strobe")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe/-/strobe-0.42.0.tgz")
+                                    (file-name "npm-hona-strobe-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "1s8rpib29j8qr3rnz85yv06i5k51crv2vqcgf1sd9pa29dg3fcsp")))))
+        (bun-lock-package (name "@hona/strobe-darwin-arm64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-darwin-arm64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-darwin-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-darwin-arm64/-/strobe-darwin-arm64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-darwin-arm64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "1r71dlaa6x1dphkzwyvc0fx5v8lk1539zbv5wnx8gmigdkar1br3")))))
+        (bun-lock-package (name "@hona/strobe-darwin-x64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-darwin-x64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-darwin-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-darwin-x64/-/strobe-darwin-x64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-darwin-x64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "1s8afqx8iphm4qgiamaanimhn6z3w4zl8664hgqs8yj5jzlrnl09")))))
+        (bun-lock-package (name "@hona/strobe-linux-arm64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-linux-arm64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-linux-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-linux-arm64/-/strobe-linux-arm64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-linux-arm64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "0afbzfl9bgfqxdzh83cr683pswwkr3pjq952fy49dwhk736x6lnq")))))
+        (bun-lock-package (name "@hona/strobe-linux-x64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-linux-x64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-linux-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-linux-x64/-/strobe-linux-x64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-linux-x64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "0r6na7v7lm2h95jcgig2b6c75cbfd2yqqgx35bkvchhcx2hg10xh")))))
+        (bun-lock-package (name "@hona/strobe-win32-arm64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-win32-arm64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-win32-arm64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-win32-arm64/-/strobe-win32-arm64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-win32-arm64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "1c2zslskh892s5kwn65nfgwkn31q5vx5gffnh4n92zfixnqpkbjx")))))
+        (bun-lock-package (name "@hona/strobe-win32-x64")
+                          (version "0.42.0")
+                          (cache-directory
+                           "@hona/strobe-win32-x64@0.42.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@hona/strobe-win32-x64"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@hona/strobe-win32-x64/-/strobe-win32-x64-0.42.0.tgz")
+                                    (file-name
+                                     "npm-hona-strobe-win32-x64-0.42.0.tgz")
+                                    (sha256 (base32
+                                             "1ymgqjjh1s0mwhsyd8xhg1x7xc8f9xdkqakjwaa5gbgsi6z5pcw6")))))
         (bun-lock-package (name "@hono/node-server")
                           (version "2.1.5")
                           (cache-directory
@@ -46726,23 +45959,10 @@
                                     (sha256 (base32
                                              "1cc55mq08pxqx9vnd1151kh4n076g6jl52ddj5qn9f6l6fng6bbc")))))
         (bun-lock-package (name "@img/sharp-darwin-arm64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-darwin-arm64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-darwin-arm64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "08mnqd13jdyfjqkg28a3q11j595ihlkmrhi933w92m1hgjj5l78m")))))
-        (bun-lock-package (name "@img/sharp-darwin-arm64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-darwin-arm64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"))
+                          (install-paths '("node_modules/@img/sharp-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46752,23 +45972,24 @@
                                     (sha256 (base32
                                              "1higpy46978dh4apl41r3400c31mz3bxpsjm3q7jkqivz9sdfgjm")))))
         (bun-lock-package (name "@img/sharp-darwin-arm64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-darwin-arm64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"))
+                           "@img/sharp-darwin-arm64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-darwin-arm64/-/sharp-darwin-arm64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-darwin-arm64-0.35.2.tgz")
+                                     "npm-img-sharp-darwin-arm64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "054fpr6yk00c9ln42hjg59jmn45vcnm1as81200qac9bnam78f0h")))))
+                                             "02j5z56fsr696h6i976dy6j1c8jqy4jj9lxh8fryi0q7k6p29r83")))))
         (bun-lock-package (name "@img/sharp-darwin-arm64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-darwin-arm64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-darwin-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46778,23 +45999,10 @@
                                     (sha256 (base32
                                              "1jw0ckqamkg0n6jvi9cf6cj4h93nk5x47yzbidafa8n3hkwql5jj")))))
         (bun-lock-package (name "@img/sharp-darwin-x64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-darwin-x64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-darwin-x64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0f7mx07b8946jfjn05fms6g3ap258axdx44hlxjmg5bcrpab1wmx")))))
-        (bun-lock-package (name "@img/sharp-darwin-x64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-darwin-x64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"))
+                          (install-paths '("node_modules/@img/sharp-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46804,23 +46012,24 @@
                                     (sha256 (base32
                                              "0g5j0d7z829qck07qq4i8ij5fqip5j20w1688xwjsg75qikh1ngr")))))
         (bun-lock-package (name "@img/sharp-darwin-x64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-darwin-x64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"))
+                           "@img/sharp-darwin-x64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-darwin-x64/-/sharp-darwin-x64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-darwin-x64-0.35.2.tgz")
+                                     "npm-img-sharp-darwin-x64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1l9zzma95vss2fll23cymn4fbddq96m7j604f7nnka00zbb13rxf")))))
+                                             "07gj01k89l38mw4xkim5d6ykz8ajwq6c218ffphgcs4bvi8309cv")))))
         (bun-lock-package (name "@img/sharp-darwin-x64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-darwin-x64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-darwin-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46830,23 +46039,23 @@
                                     (sha256 (base32
                                              "1mywbw1rlqhn84sj8kc71mqjqp2h62iphz916a9vp4vdwf531hsn")))))
         (bun-lock-package (name "@img/sharp-freebsd-wasm32")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-freebsd-wasm32@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-freebsd-wasm32"))
+                           "@img/sharp-freebsd-wasm32@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@img/sharp-freebsd-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-freebsd-wasm32/-/sharp-freebsd-wasm32-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-freebsd-wasm32/-/sharp-freebsd-wasm32-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-freebsd-wasm32-0.35.2.tgz")
+                                     "npm-img-sharp-freebsd-wasm32-0.35.4.tgz")
                                     (sha256 (base32
-                                             "10iw9qpkzkb6s0xbczym021dlg220zplrw2hiizj7j7xcsa5ammh")))))
+                                             "0d0v9p74ig6ms6cxv3p9v1wgdgcqj7fkxs68v6mfg6l8spy0jchy")))))
         (bun-lock-package (name "@img/sharp-freebsd-wasm32")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-freebsd-wasm32@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-freebsd-wasm32"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-freebsd-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46856,23 +46065,10 @@
                                     (sha256 (base32
                                              "1znm9gk0kfwa833cy4nd4yqp1zpn2njqdbn9wbd3h1c510rqfcvw")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-arm64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-darwin-arm64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-darwin-arm64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "0dxwswp9vb9qmac22a8h24mqljp44wykfrz4anh1712f09fzza0l")))))
-        (bun-lock-package (name "@img/sharp-libvips-darwin-arm64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-darwin-arm64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46882,23 +46078,24 @@
                                     (sha256 (base32
                                              "1xq2ydn70z9i7lxsq2niq88hq2k1bhq9wyvsladkwv7wg5li0yib")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-arm64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-darwin-arm64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"))
+                           "@img/sharp-libvips-darwin-arm64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-arm64/-/sharp-libvips-darwin-arm64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-darwin-arm64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-darwin-arm64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0diiz9v9kvsad00qgz8w3wqmlm1xfz626f5fwkvismkpc17063yp")))))
+                                             "16bv0r593d8qw7fw2nymqxv0mirxyjn2vsyxq4h29sd2f3dl1cc1")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-arm64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-darwin-arm64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-darwin-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46908,23 +46105,10 @@
                                     (sha256 (base32
                                              "0pv777c7dh5hzk1vhamq9b2qpj51brxdkka6xyapj0jd6ii0wdg8")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-x64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-darwin-x64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-x64/-/sharp-libvips-darwin-x64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-darwin-x64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "18q60qn4d0mxizppkrp61826wnbs0hxxg37fswlsv8yqnvqwxqxa")))))
-        (bun-lock-package (name "@img/sharp-libvips-darwin-x64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-darwin-x64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46934,23 +46118,24 @@
                                     (sha256 (base32
                                              "193czc1736zjpnhiplpr777vifrfvx40a09m5jq8vxcdmq0l56c2")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-x64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-darwin-x64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"))
+                           "@img/sharp-libvips-darwin-x64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-x64/-/sharp-libvips-darwin-x64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-darwin-x64/-/sharp-libvips-darwin-x64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-darwin-x64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-darwin-x64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0z2h4yn6gm5x701qzwm7a0m5164p2dbpd7d2i9hkca6vxljsn0bs")))))
+                                             "1d1qzgcgc04cm8hbbazzn3py9z8hncwnzd8cn5isdj78r37akh13")))))
         (bun-lock-package (name "@img/sharp-libvips-darwin-x64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-darwin-x64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-darwin-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46960,23 +46145,10 @@
                                     (sha256 (base32
                                              "0kwvb79k6zwszgm6m7ik4ik766maw8zqwfahn0dmj14zcs09m982")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm")
-                          (version "1.0.5")
-                          (cache-directory
-                           "@img/sharp-libvips-linux-arm@1.0.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm/-/sharp-libvips-linux-arm-1.0.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linux-arm-1.0.5.tgz")
-                                    (sha256 (base32
-                                             "0f6svmf5227nmmlr6054p2918cl85k1zsmk0dqkaczzvrvazmvb1")))))
-        (bun-lock-package (name "@img/sharp-libvips-linux-arm")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-arm@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -46986,23 +46158,24 @@
                                     (sha256 (base32
                                              "1nx0qb17pwaqbjdcnyhkc92lzjzx8nkw5l71ra41558ccqiq8isc")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-arm@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"))
+                           "@img/sharp-libvips-linux-arm@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm/-/sharp-libvips-linux-arm-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm/-/sharp-libvips-linux-arm-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-arm-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-arm-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0krjiqbnnf77s9m6ifqj8vhwmxcby11ws7p3apfg1w8lvd3sk67g")))))
+                                             "1vsrkc06pi86zgcv76870cwfzgh780hg73ns96058byap9f1fhq4")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-arm@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-arm"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47012,23 +46185,10 @@
                                     (sha256 (base32
                                              "1a5vwqkn4ahyndl6pg03374sibkyl2m4sh3ghkvykw5gblbs2akq")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-linux-arm64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm64/-/sharp-libvips-linux-arm64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linux-arm64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "0qag4yv348v3hwjx5f46h4bpn9djgvybp9xrp42zyapcc5zy66i2")))))
-        (bun-lock-package (name "@img/sharp-libvips-linux-arm64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-arm64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47038,23 +46198,24 @@
                                     (sha256 (base32
                                              "0vd5h63yamp3zyjmsm9pxlqclh5fhwwa54hx0plahfsy7knc5fmv")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-arm64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"))
+                           "@img/sharp-libvips-linux-arm64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm64/-/sharp-libvips-linux-arm64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-arm64/-/sharp-libvips-linux-arm64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-arm64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-arm64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "17jrhdxhfhgy49rz6jc29xrpq8q6lkhzi5lihb50ykx4x0r91xh3")))))
+                                             "0naagqi41h693xq49x98888iffh49c9yhfzxcfj8bhqkw6468vxm")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-arm64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-arm64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47067,7 +46228,7 @@
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-ppc64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-ppc64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47077,23 +46238,24 @@
                                     (sha256 (base32
                                              "0w3x5fdrqj00npyxfqx29mkyaqgaqzcdv9g15kc2pycnklw255hi")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-ppc64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-ppc64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-ppc64"))
+                           "@img/sharp-libvips-linux-ppc64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-ppc64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-ppc64/-/sharp-libvips-linux-ppc64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-ppc64/-/sharp-libvips-linux-ppc64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-ppc64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-ppc64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "1v29cmp1sp7dglnim4qhaahxsrxw71f0iqfk75sld552vlv3mdy5")))))
+                                             "0ln2lxs0nagpwpb8665dijd1m2l80a3s5h4kx9b9biqmx8hqlvl6")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-ppc64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-ppc64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-ppc64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47106,7 +46268,7 @@
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-riscv64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-riscv64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47116,23 +46278,24 @@
                                     (sha256 (base32
                                              "1avgm0s8g2qd468samgsxzl05m911r96dky4ngv0khvdbwz073fp")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-riscv64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-riscv64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-riscv64"))
+                           "@img/sharp-libvips-linux-riscv64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-riscv64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-riscv64/-/sharp-libvips-linux-riscv64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-riscv64/-/sharp-libvips-linux-riscv64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-riscv64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-riscv64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "1hd97vp0mncggk8hvi0s6szafwy1h2hypim1j06p8qj8sybmx2s5")))))
+                                             "1yv562zd56qnvqvy31360vd76l4d07g8632b7c679cydbdlfl7gn")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-riscv64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-riscv64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-riscv64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47142,23 +46305,10 @@
                                     (sha256 (base32
                                              "1nfydd6m5yr26x8brgzjgk5xws5ck7qzqqq0m3y2ml2v0hd3ldbr")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-s390x")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-linux-s390x@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-s390x/-/sharp-libvips-linux-s390x-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linux-s390x-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "0kfbzqbv2w9fq8mq3pl3aq6a1h97msj35npj4yl2y47lzsa30rdc")))))
-        (bun-lock-package (name "@img/sharp-libvips-linux-s390x")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-s390x@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47168,23 +46318,24 @@
                                     (sha256 (base32
                                              "1mvrmxgw8c929nn8cfmgg754m31d1w63hdx7fk72jc2qh9980jij")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-s390x")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-s390x@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"))
+                           "@img/sharp-libvips-linux-s390x@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-s390x/-/sharp-libvips-linux-s390x-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-s390x/-/sharp-libvips-linux-s390x-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-s390x-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-s390x-1.3.3.tgz")
                                     (sha256 (base32
-                                             "15ndy3pzz7zjgvzhsz57kpd1zw28g9np1ps5km0bgf6rjykclww7")))))
+                                             "08h441d0zbw115xg6fj6fz84b7qcckw32skwaz0rgxc1v9gcgn5q")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-s390x")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-s390x@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-s390x"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47194,23 +46345,10 @@
                                     (sha256 (base32
                                              "0iln18gsgqnnxal6sxgxi2qbgqhrx9wbmmbqhv4ij1svcxzmz8g5")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-x64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-linux-x64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linux-x64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "12f5k3gvx6ski2qqv92grkvfqd8mkw6qa23gcq9fixcgz8rnxzqc")))))
-        (bun-lock-package (name "@img/sharp-libvips-linux-x64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-x64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47220,23 +46358,24 @@
                                     (sha256 (base32
                                              "0z600yb9v0pr6vx1vr2ilhc12xmlcv7gsxl3zy5d7h0xlgsk5ha3")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-x64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linux-x64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"))
+                           "@img/sharp-libvips-linux-x64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linux-x64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linux-x64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0f2zsd8p9i222g9xvsmr9z1riypa4nn7gwhmngqq6mllymrcgck1")))))
+                                             "0shz582g4hd0qp265gr53vngb38q8zrf401shmis2h9fpc5gmdkl")))))
         (bun-lock-package (name "@img/sharp-libvips-linux-x64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linux-x64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linux-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47246,23 +46385,10 @@
                                     (sha256 (base32
                                              "02fiy5sqsbdpncgpyvdbxw59sycjs2in1yykl2b2r0n87xqwnwg3")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-arm64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-linuxmusl-arm64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-arm64/-/sharp-libvips-linuxmusl-arm64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linuxmusl-arm64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "05rv4lxxdf2pp0iaiy5j5nn6q63pb30m196395df6vfkqyvksqa6")))))
-        (bun-lock-package (name "@img/sharp-libvips-linuxmusl-arm64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linuxmusl-arm64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47272,23 +46398,24 @@
                                     (sha256 (base32
                                              "14likql7h34l75r5gchf2ab9g1j4v9n7qj4lwh3ihwnp5dzdvq5p")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-arm64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linuxmusl-arm64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"))
+                           "@img/sharp-libvips-linuxmusl-arm64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-arm64/-/sharp-libvips-linuxmusl-arm64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-arm64/-/sharp-libvips-linuxmusl-arm64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linuxmusl-arm64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linuxmusl-arm64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0kiy7akzcgf9q01lysk7iyq4zgic8h5pxr0akqwa6lc7f6z76y7r")))))
+                                             "19kkzswi12323jm5q1rv20chbwirnpxznhqxchz55k37ccqfq02z")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-arm64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linuxmusl-arm64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linuxmusl-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47298,23 +46425,10 @@
                                     (sha256 (base32
                                              "0ngs7dhwdczg6sydsfh0krfx2463yw5g7pvb63vyawqgmbvrb0yr")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-x64")
-                          (version "1.0.4")
-                          (cache-directory
-                           "@img/sharp-libvips-linuxmusl-x64@1.0.4@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.0.4.tgz")
-                                    (file-name
-                                     "npm-img-sharp-libvips-linuxmusl-x64-1.0.4.tgz")
-                                    (sha256 (base32
-                                             "1qf6a3v3cbvpm3sslbwdw45p29kn6c4gyb42jm053hwgbylrbr63")))))
-        (bun-lock-package (name "@img/sharp-libvips-linuxmusl-x64")
                           (version "1.2.4")
                           (cache-directory
                            "@img/sharp-libvips-linuxmusl-x64@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"))
+                          (install-paths '("node_modules/@img/sharp-libvips-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47324,23 +46438,24 @@
                                     (sha256 (base32
                                              "1jdz75h2h53cxgx6q33vpx77g5v81rwlkgc8i5q32cpr73sjqx6n")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-x64")
-                          (version "1.3.1")
+                          (version "1.3.3")
                           (cache-directory
-                           "@img/sharp-libvips-linuxmusl-x64@1.3.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"))
+                           "@img/sharp-libvips-linuxmusl-x64@1.3.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.3.1.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-libvips-linuxmusl-x64/-/sharp-libvips-linuxmusl-x64-1.3.3.tgz")
                                     (file-name
-                                     "npm-img-sharp-libvips-linuxmusl-x64-1.3.1.tgz")
+                                     "npm-img-sharp-libvips-linuxmusl-x64-1.3.3.tgz")
                                     (sha256 (base32
-                                             "0gf02wf4q10h9836611f0x4xyp3494ha12asbpnsmj3xj6c57qb7")))))
+                                             "0cvkjhlfhq0bn1c1zzxq533zwx8wzgdhjsmryjgmdfqd2jpdqqa2")))))
         (bun-lock-package (name "@img/sharp-libvips-linuxmusl-x64")
                           (version "1.3.4")
                           (cache-directory
                            "@img/sharp-libvips-linuxmusl-x64@1.3.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-libvips-linuxmusl-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-libvips-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47350,23 +46465,10 @@
                                     (sha256 (base32
                                              "1gjwxqsfq2xs4mq2kbrcjdasbnxrwb1r1ngk3j54a4b5q412hcf6")))))
         (bun-lock-package (name "@img/sharp-linux-arm")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linux-arm@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-arm/-/sharp-linux-arm-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linux-arm-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "1nvm2yyiyrckrjrffcxrq6q38niyf6yr1mckq6sv0dbg3a103pp1")))))
-        (bun-lock-package (name "@img/sharp-linux-arm")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-arm@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"))
+                          (install-paths '("node_modules/@img/sharp-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47376,23 +46478,24 @@
                                     (sha256 (base32
                                              "0k8bsmyhq4nrh9hd5l2jc3n4xyf5m7rqy5cxcza4wcfsrq4l4ydb")))))
         (bun-lock-package (name "@img/sharp-linux-arm")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-arm@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"))
+                           "@img/sharp-linux-arm@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-arm/-/sharp-linux-arm-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-arm/-/sharp-linux-arm-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-arm-0.35.2.tgz")
+                                     "npm-img-sharp-linux-arm-0.35.4.tgz")
                                     (sha256 (base32
-                                             "08678i4z43w46vlwnp5n3gq32xlsv6cbf7i3k61c77zzdpg33ybx")))))
+                                             "1xks1fpw0wwa1cdqw2pjhl67vcdnsnwixgci8ziqrnv3398xq756")))))
         (bun-lock-package (name "@img/sharp-linux-arm")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-arm@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-arm"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47402,23 +46505,10 @@
                                     (sha256 (base32
                                              "0b0m84aasya6f7yqj0hp3hmhmhw21x6vxd1vira4cw2sf9az68zj")))))
         (bun-lock-package (name "@img/sharp-linux-arm64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linux-arm64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linux-arm64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0j4dhvfpdq0mkkxn3v6m5vqmk35s7sh9icbrjpnc7pbjq5qiaj4m")))))
-        (bun-lock-package (name "@img/sharp-linux-arm64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-arm64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"))
+                          (install-paths '("node_modules/@img/sharp-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47428,23 +46518,24 @@
                                     (sha256 (base32
                                              "1gkhvk6saiz0i8bgxg5w3zsdv4kqjzyajzik1xqfky2r46wapdm1")))))
         (bun-lock-package (name "@img/sharp-linux-arm64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-arm64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"))
+                           "@img/sharp-linux-arm64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-arm64/-/sharp-linux-arm64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-arm64-0.35.2.tgz")
+                                     "npm-img-sharp-linux-arm64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "05vlzzk8xajbl9pyn5q0bq8cq02dqr10ab2zg5q9pzknvl0wqy96")))))
+                                             "0rylsm0wlz6blzakf331jpmxlj42zlicwb1d085kz6fyypi5fqam")))))
         (bun-lock-package (name "@img/sharp-linux-arm64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-arm64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47457,7 +46548,7 @@
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-ppc64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-ppc64"))
+                          (install-paths '("node_modules/@img/sharp-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47467,23 +46558,24 @@
                                     (sha256 (base32
                                              "05amsr53ygy2riznadpl528ccg3sphpz3700wmr6y9z188kxl8sn")))))
         (bun-lock-package (name "@img/sharp-linux-ppc64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-ppc64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-ppc64"))
+                           "@img/sharp-linux-ppc64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-ppc64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-ppc64/-/sharp-linux-ppc64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-ppc64-0.35.2.tgz")
+                                     "npm-img-sharp-linux-ppc64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "11fljc6d21vwiw066dks5aqyg21zl9mmcfn3vd50sd4ljdzzdd0l")))))
+                                             "1pnfgp4aalzjlziq9pq501f5vp6law25444d72i6r9pvkbkl3ln1")))))
         (bun-lock-package (name "@img/sharp-linux-ppc64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-ppc64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-ppc64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-ppc64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47496,7 +46588,7 @@
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-riscv64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-riscv64"))
+                          (install-paths '("node_modules/@img/sharp-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47506,23 +46598,24 @@
                                     (sha256 (base32
                                              "1xz6kx07v0gkjc8i4aqval91bqfcirv09l36yvdilp4f44cnkcxg")))))
         (bun-lock-package (name "@img/sharp-linux-riscv64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-riscv64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-riscv64"))
+                           "@img/sharp-linux-riscv64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-riscv64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-riscv64/-/sharp-linux-riscv64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-riscv64-0.35.2.tgz")
+                                     "npm-img-sharp-linux-riscv64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "0rn0yhv5nwxxsvwkvv2ch400mrwvrl4lgdwzskab9czx8x6a4wfi")))))
+                                             "0wf0rihgmzgadz1w84h21m851kwlnsp8714sbkhd7vig599l58lx")))))
         (bun-lock-package (name "@img/sharp-linux-riscv64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-riscv64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-riscv64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-riscv64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47532,23 +46625,10 @@
                                     (sha256 (base32
                                              "1hfwgh758jaldxgyf0ms6s0x0vvfzair6dmkxbi80nsm9qmvg604")))))
         (bun-lock-package (name "@img/sharp-linux-s390x")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linux-s390x@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linux-s390x-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0d6hvikzl5h77f7cb1z8vlv4cldabsgy089j7gr8yqaa10nbqvy3")))))
-        (bun-lock-package (name "@img/sharp-linux-s390x")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-s390x@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"))
+                          (install-paths '("node_modules/@img/sharp-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47558,23 +46638,24 @@
                                     (sha256 (base32
                                              "19pwh5rm7fbgr209r4j4f506rdlzpjm0ixly9qcl2z8n5xy55bh1")))))
         (bun-lock-package (name "@img/sharp-linux-s390x")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-s390x@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"))
+                           "@img/sharp-linux-s390x@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-s390x/-/sharp-linux-s390x-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-s390x-0.35.2.tgz")
+                                     "npm-img-sharp-linux-s390x-0.35.4.tgz")
                                     (sha256 (base32
-                                             "0bc3j1f9243kj9yjq5cdmk8b8c6g2nibv39s9sdx5yyf96lzb7pd")))))
+                                             "06w9p2ggrg6pidqsbnn4djwiyjns63lhs7q4hl03yw9g86h4mimc")))))
         (bun-lock-package (name "@img/sharp-linux-s390x")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-s390x@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-s390x"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-s390x"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47584,23 +46665,10 @@
                                     (sha256 (base32
                                              "0grm37g678jpjcnx548pk39vcacy0iqrk64a6ix6ilj6bk0zjj41")))))
         (bun-lock-package (name "@img/sharp-linux-x64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linux-x64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linux-x64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0gpalbvp0r2wmmh2mkk1fc9xxa91y0vmjg5pmypxm0nbxbw2n2wc")))))
-        (bun-lock-package (name "@img/sharp-linux-x64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linux-x64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"))
+                          (install-paths '("node_modules/@img/sharp-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47610,23 +46678,24 @@
                                     (sha256 (base32
                                              "1ycfj6vql4fx4m3c43w8l1mlbjcjbmyq7gql89cdj1r94adnf4zy")))))
         (bun-lock-package (name "@img/sharp-linux-x64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linux-x64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"))
+                           "@img/sharp-linux-x64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linux-x64-0.35.2.tgz")
+                                     "npm-img-sharp-linux-x64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1qr2lq5fpjhjq8ixy341q74in9vsln65aal6k6773dsj52r7szil")))))
+                                             "0fxzca8ykcfamaa50vx7kqic3cffgliyvm8n7xhfnhvnyl5xxqlz")))))
         (bun-lock-package (name "@img/sharp-linux-x64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linux-x64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linux-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47636,23 +46705,10 @@
                                     (sha256 (base32
                                              "0d1kxab6lxaffqjbz197l4ch0kacb9dxwmd3hrvc0i1jbll8frsm")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-arm64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linuxmusl-arm64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linuxmusl-arm64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "1b6lq9dlxmmsjpl9cibhwhvkhra1932ri30pix90zagqhd6f9frf")))))
-        (bun-lock-package (name "@img/sharp-linuxmusl-arm64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linuxmusl-arm64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"))
+                          (install-paths '("node_modules/@img/sharp-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47662,23 +46718,24 @@
                                     (sha256 (base32
                                              "1ggbh3hydxiq5x2pfkx2hirivd6qkblkkr32c56y75vzsnc3lgc3")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-arm64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linuxmusl-arm64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"))
+                           "@img/sharp-linuxmusl-arm64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-arm64/-/sharp-linuxmusl-arm64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linuxmusl-arm64-0.35.2.tgz")
+                                     "npm-img-sharp-linuxmusl-arm64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "0nnsy2r2xjpg7sbsfpqnkcks6yd0p6n0w55bl6x26ivq4sdl7dwl")))))
+                                             "0lzzj6jjzbrw76ajgrbysd3yf66yi3w87yahnbzif0zhy6dqcwi3")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-arm64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linuxmusl-arm64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linuxmusl-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47688,23 +46745,10 @@
                                     (sha256 (base32
                                              "1c84k9vw6apmvmxn366i8xadcrwxpylcs6k2382yvvika8dw0vl7")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-x64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-linuxmusl-x64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-linuxmusl-x64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "13n449abhbpcqz0rhcqdqpxzpl0w4a6prp2bj5ba4vbfbyhsnqn6")))))
-        (bun-lock-package (name "@img/sharp-linuxmusl-x64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-linuxmusl-x64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"))
+                          (install-paths '("node_modules/@img/sharp-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47714,23 +46758,24 @@
                                     (sha256 (base32
                                              "1xfmzagnl58qxwp6wwpas70v4w5b80js0cz88a6py7dz59mndxl4")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-x64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-linuxmusl-x64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"))
+                           "@img/sharp-linuxmusl-x64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-linuxmusl-x64/-/sharp-linuxmusl-x64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-linuxmusl-x64-0.35.2.tgz")
+                                     "npm-img-sharp-linuxmusl-x64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1lngnlbjvxh4vp2582hg8hwlixnis6h0amv98gxrxiz4ggxggp02")))))
+                                             "061c6has82irsvyxirkahh7kck7kc96nx15gv6p29mw6bi7505ca")))))
         (bun-lock-package (name "@img/sharp-linuxmusl-x64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-linuxmusl-x64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-linuxmusl-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-linuxmusl-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47739,19 +46784,6 @@
                                      "npm-img-sharp-linuxmusl-x64-0.35.5.tgz")
                                     (sha256 (base32
                                              "181fmddzfi4m48nkh0q82c2gcaqd518kh87wi66jssxnmcgwlysp")))))
-        (bun-lock-package (name "@img/sharp-wasm32")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-wasm32@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-wasm32"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-wasm32-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "03n026b41zg0c7vy9rpykw69sd3yprifxklgqvh6014p82al1lnc")))))
         (bun-lock-package (name "@img/sharp-wasm32")
                           (version "0.34.5")
                           (cache-directory
@@ -47766,25 +46798,25 @@
                                     (sha256 (base32
                                              "171i1x9g15nbsfyqzgdpwlgj2xjvk7a40av6smkvzakailwfdjyf")))))
         (bun-lock-package (name "@img/sharp-wasm32")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-wasm32@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32"
-                                           "node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32"))
+                           "@img/sharp-wasm32@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32"
+                                           "node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-wasm32/-/sharp-wasm32-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-wasm32-0.35.2.tgz")
+                                     "npm-img-sharp-wasm32-0.35.4.tgz")
                                     (sha256 (base32
-                                             "03v8fpwcgzgfvjk45kqz2p0pkq6gll0zaqcvk5fy4i1k5jc7d9w5")))))
+                                             "0swbbnzpqw9bqfv4bglkh4q9g8qg3h267qzlxx341irhvjijisnr")))))
         (bun-lock-package (name "@img/sharp-wasm32")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-wasm32@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32"
-                                           "node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-freebsd-wasm32/node_modules/@img/sharp-wasm32"
+                                           "services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-webcontainers-wasm32/node_modules/@img/sharp-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47794,23 +46826,23 @@
                                     (sha256 (base32
                                              "0f5vwnzz0dpfj8c14vff0bg4nvg1c8w5lf2kgfrdglhs7vsvv2n6")))))
         (bun-lock-package (name "@img/sharp-webcontainers-wasm32")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-webcontainers-wasm32@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-webcontainers-wasm32"))
+                           "@img/sharp-webcontainers-wasm32@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@img/sharp-webcontainers-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-webcontainers-wasm32/-/sharp-webcontainers-wasm32-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-webcontainers-wasm32/-/sharp-webcontainers-wasm32-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-webcontainers-wasm32-0.35.2.tgz")
+                                     "npm-img-sharp-webcontainers-wasm32-0.35.4.tgz")
                                     (sha256 (base32
-                                             "07jicbdi31kv4zi2krly8jx7sn82fzdk4nr5wy5lz99rpcp29m0s")))))
+                                             "0vws1w6q9ahxss6d5gg0j5smh1j5paack2nbvknkdxb89pkysgmp")))))
         (bun-lock-package (name "@img/sharp-webcontainers-wasm32")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-webcontainers-wasm32@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-webcontainers-wasm32"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-webcontainers-wasm32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47823,7 +46855,7 @@
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-win32-arm64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-arm64"))
+                          (install-paths '("node_modules/@img/sharp-win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47833,23 +46865,24 @@
                                     (sha256 (base32
                                              "1vmr34l170ykg8kmmf0vpcy6sncjxyh6jyvqw0ziqavg9p1rj8y5")))))
         (bun-lock-package (name "@img/sharp-win32-arm64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-win32-arm64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-arm64"))
+                           "@img/sharp-win32-arm64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-arm64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-win32-arm64/-/sharp-win32-arm64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-win32-arm64-0.35.2.tgz")
+                                     "npm-img-sharp-win32-arm64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1yzazbsspkmxvgvmms7pix3b2nbhql4mxc9x9ija12q8mmah52fc")))))
+                                             "0c0xmbf1s2n4nnbgzvkrcaqi530q0mz7b9azwld4pbzzild9130s")))))
         (bun-lock-package (name "@img/sharp-win32-arm64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-win32-arm64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-win32-arm64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47859,23 +46892,10 @@
                                     (sha256 (base32
                                              "00sn1va56lhaxrqf1iqqpg2a0kdgnrdks3ayzaga8cj0l5n313ks")))))
         (bun-lock-package (name "@img/sharp-win32-ia32")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-win32-ia32@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-win32-ia32-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "1snqxx5zqm2jp601r4d5i8awirh02y64kf55mqh9h5bjgvh5jcmd")))))
-        (bun-lock-package (name "@img/sharp-win32-ia32")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-win32-ia32@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"))
+                          (install-paths '("node_modules/@img/sharp-win32-ia32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47885,23 +46905,24 @@
                                     (sha256 (base32
                                              "0pp860c7b4g8p6yaj2ykrsvinrnj94as8ywv51as0qxalgsglp2z")))))
         (bun-lock-package (name "@img/sharp-win32-ia32")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-win32-ia32@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"))
+                           "@img/sharp-win32-ia32@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-win32-ia32/-/sharp-win32-ia32-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-win32-ia32-0.35.2.tgz")
+                                     "npm-img-sharp-win32-ia32-0.35.4.tgz")
                                     (sha256 (base32
-                                             "0aap33hwxd7wrnjixddhcmd6lj1mljjfsvz0ikmg34jyhbxk8cpd")))))
+                                             "1m4qbiypnn4m499ga6pdpwhras9588y3sivlwlqnwar9b3c80vzn")))))
         (bun-lock-package (name "@img/sharp-win32-ia32")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-win32-ia32@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-win32-ia32"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-ia32"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47911,23 +46932,10 @@
                                     (sha256 (base32
                                              "0vk810l7d2il98ah4brpxm7jq6kgf9z8gxrwil7cr8azykh2yg38")))))
         (bun-lock-package (name "@img/sharp-win32-x64")
-                          (version "0.33.5")
-                          (cache-directory
-                           "@img/sharp-win32-x64@0.33.5@@registry.npmjs.org@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.33.5.tgz")
-                                    (file-name
-                                     "npm-img-sharp-win32-x64-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0n9a3m50m0mxfccwl1vr7mwxrv68g39scc9yxlszw4k87svjhn3q")))))
-        (bun-lock-package (name "@img/sharp-win32-x64")
                           (version "0.34.5")
                           (cache-directory
                            "@img/sharp-win32-x64@0.34.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"))
+                          (install-paths '("node_modules/@img/sharp-win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -47937,23 +46945,24 @@
                                     (sha256 (base32
                                              "1263h5qdjc3rjsb7jq311pjrkfzjg85pwqxw2zyc79wdi67pmiz6")))))
         (bun-lock-package (name "@img/sharp-win32-x64")
-                          (version "0.35.2")
+                          (version "0.35.4")
                           (cache-directory
-                           "@img/sharp-win32-x64@0.35.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"))
+                           "@img/sharp-win32-x64@0.35.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"
+                                           "node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.35.2.tgz")
+                                     "https://registry.npmjs.org/@img/sharp-win32-x64/-/sharp-win32-x64-0.35.4.tgz")
                                     (file-name
-                                     "npm-img-sharp-win32-x64-0.35.2.tgz")
+                                     "npm-img-sharp-win32-x64-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1jcxcqvbfhacl2dn10lznq6l70cl6l6bwjaa4pbfwh1hd9wsihb3")))))
+                                             "12q0ykgi1hxdklx1d3w3dhqqvahw4jdxvhxbi1bi2z8cm84q3bjv")))))
         (bun-lock-package (name "@img/sharp-win32-x64")
                           (version "0.35.5")
                           (cache-directory
                            "@img/sharp-win32-x64@0.35.5@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@img/sharp-win32-x64"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp/node_modules/@img/sharp-win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -48090,19 +47099,6 @@
                                      "npm-jridgewell-sourcemap-codec-1.5.5.tgz")
                                     (sha256 (base32
                                              "11b5h4hihb2n8203znalqm53s7pv82a84jahsqgf7rd2406kpba7")))))
-        (bun-lock-package (name "@jridgewell/sourcemap-codec")
-                          (version "1.6.0")
-                          (cache-directory
-                           "@jridgewell/sourcemap-codec@1.6.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/astro/node_modules/magic-string/node_modules/@jridgewell/sourcemap-codec"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz")
-                                    (file-name
-                                     "npm-jridgewell-sourcemap-codec-1.6.0.tgz")
-                                    (sha256 (base32
-                                             "09byp689l93cv026g48vy9n9hz9g4xi8cbzzp00psd4cmzv3a2pk")))))
         (bun-lock-package (name "@jridgewell/trace-mapping")
                           (version "0.3.31")
                           (cache-directory
@@ -48335,31 +47331,31 @@
                                     (sha256 (base32
                                              "1qzsnmlzpzjndl3pw3gv97kd5n5mmxvprmk2d1m3jv15i45xqxg0")))))
         (bun-lock-package (name "@modelcontextprotocol/client")
-                          (version "2.3.1")
+                          (version "2.4.0")
                           (cache-directory
-                           "@modelcontextprotocol/client@2.3.1@@registry.npmjs.org@@@1")
+                           "@modelcontextprotocol/client@2.4.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@modelcontextprotocol/client"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@modelcontextprotocol/client/-/client-2.3.1.tgz")
+                                     "https://registry.npmjs.org/@modelcontextprotocol/client/-/client-2.4.0.tgz")
                                     (file-name
-                                     "npm-modelcontextprotocol-client-2.3.1.tgz")
+                                     "npm-modelcontextprotocol-client-2.4.0.tgz")
                                     (sha256 (base32
-                                             "13xnkgxlbcfwjzbj294fqw36p82z7i2v2vpsx7a07dsmwfcy7sqg")))))
+                                             "1rqd2x254x1kv37b22madx8cd8yryp0mrxzn2jv393z63qg6vhsm")))))
         (bun-lock-package (name "@modelcontextprotocol/core")
-                          (version "2.3.1")
+                          (version "2.4.0")
                           (cache-directory
-                           "@modelcontextprotocol/core@2.3.1@@registry.npmjs.org@@@1")
+                           "@modelcontextprotocol/core@2.4.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@modelcontextprotocol/core"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@modelcontextprotocol/core/-/core-2.3.1.tgz")
+                                     "https://registry.npmjs.org/@modelcontextprotocol/core/-/core-2.4.0.tgz")
                                     (file-name
-                                     "npm-modelcontextprotocol-core-2.3.1.tgz")
+                                     "npm-modelcontextprotocol-core-2.4.0.tgz")
                                     (sha256 (base32
-                                             "0mnvs6vr8hid1iiii2fdjviv3lrxvv89y94ndax2ix54gdmj93x4")))))
+                                             "1359wcavvljq753zj8fs9pfnr5vkqk8dpx782acnrsrywicyphg0")))))
         (bun-lock-package (name "@modelcontextprotocol/sdk")
                           (version "1.32.2")
                           (cache-directory
@@ -48374,18 +47370,18 @@
                                     (sha256 (base32
                                              "1vqrzvj741nxnwwxxpf586d6rx7k780w8q5yv47pr4xpli9jbmdq")))))
         (bun-lock-package (name "@modelcontextprotocol/server")
-                          (version "2.3.1")
+                          (version "2.4.0")
                           (cache-directory
-                           "@modelcontextprotocol/server@2.3.1@@registry.npmjs.org@@@1")
+                           "@modelcontextprotocol/server@2.4.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@modelcontextprotocol/server"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@modelcontextprotocol/server/-/server-2.3.1.tgz")
+                                     "https://registry.npmjs.org/@modelcontextprotocol/server/-/server-2.4.0.tgz")
                                     (file-name
-                                     "npm-modelcontextprotocol-server-2.3.1.tgz")
+                                     "npm-modelcontextprotocol-server-2.4.0.tgz")
                                     (sha256 (base32
-                                             "06651pfpfsws9b1yc2adlf79hpvs70qwb49z784p56mw1kh3zg4n")))))
+                                             "1xs9bq7b3p4l00d3kpbajcn4ngi6im0pm2s08h96nvysii39gqaz")))))
         (bun-lock-package (name "@napi-rs/lzma-linux-x64-gnu")
                           (version "1.5.1")
                           (cache-directory
@@ -48416,9 +47412,7 @@
                           (version "1.2.3")
                           (cache-directory
                            "@napi-rs/wasm-runtime@1.2.3@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@napi-rs/wasm-runtime"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri/node_modules/@bruits/satteri-wasm32-wasi/node_modules/@napi-rs/wasm-runtime"
-                                           "node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@napi-rs/wasm-runtime"))
+                          (install-paths '("node_modules/@tailwindcss/oxide-wasm32-wasi/node_modules/@napi-rs/wasm-runtime"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -48427,19 +47421,6 @@
                                      "npm-napi-rs-wasm-runtime-1.2.3.tgz")
                                     (sha256 (base32
                                              "1cj6fdrryfgvkn7p1dp3ryrv1snhv9f775ymb98fkwnf692iykj3")))))
-        (bun-lock-package (name "@napi-rs/wasm-runtime")
-                          (version "1.2.4")
-                          (cache-directory
-                           "@napi-rs/wasm-runtime@1.2.4@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/astro2tsx/node_modules/@napi-rs/wasm-runtime"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.4.tgz")
-                                    (file-name
-                                     "npm-napi-rs-wasm-runtime-1.2.4.tgz")
-                                    (sha256 (base32
-                                             "11xqrj84d4zjgbqsnzlb9200s32pi9ng156g9iidc6m5xc9j0k76")))))
         (bun-lock-package (name "@napi-rs/wasm-runtime")
                           (version "1.2.5")
                           (cache-directory
@@ -49051,121 +48032,121 @@
                                     (sha256 (base32
                                              "0zc5ppxkyxw5l5sy36l390cwa4wvjk8fbm2j5znch24nlcgsf30p")))))
         (bun-lock-package (name "@opencode/pty")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty/-/pty-0.4.0.tgz")
-                                    (file-name "npm-opencode-pty-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty/-/pty-0.6.0.tgz")
+                                    (file-name "npm-opencode-pty-0.6.0.tgz")
                                     (sha256 (base32
-                                             "045sia5k95bhnwmblblq394l7ji3a1da2zsdwcnxqpf9xgk7cfnq")))))
+                                             "0iv0wq7a5icbm6qyiny5p45npd919ywc395p4xb1mikjl3xgcdkk")))))
         (bun-lock-package (name "@opencode/pty-darwin-arm64")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-darwin-arm64@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-darwin-arm64@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-darwin-arm64/-/pty-darwin-arm64-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-darwin-arm64/-/pty-darwin-arm64-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-darwin-arm64-0.4.0.tgz")
+                                     "npm-opencode-pty-darwin-arm64-0.6.0.tgz")
                                     (sha256 (base32
-                                             "06jrx00w665i0v0cgazwzr6skm3ykbrizwihbla2k5wqlkhzw34a")))))
+                                             "0w9xyz4ly4pvisdmv9qgsg2xycgs1k23sfw13zsbljbcb94gxyjy")))))
         (bun-lock-package (name "@opencode/pty-darwin-x64")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-darwin-x64@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-darwin-x64@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-darwin-x64/-/pty-darwin-x64-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-darwin-x64/-/pty-darwin-x64-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-darwin-x64-0.4.0.tgz")
+                                     "npm-opencode-pty-darwin-x64-0.6.0.tgz")
                                     (sha256 (base32
-                                             "1pwsgz72c5zwx9c4gv0rr759g0qbzihzzdyxskpigfk4sarrph65")))))
+                                             "06xiqh7jd6qmm3g11pxx747ippgasdlphnprcvzbb7c6m03aradz")))))
         (bun-lock-package (name "@opencode/pty-linux-arm64-gnu")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-linux-arm64-gnu@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-linux-arm64-gnu@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-linux-arm64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-linux-arm64-gnu/-/pty-linux-arm64-gnu-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-linux-arm64-gnu/-/pty-linux-arm64-gnu-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-linux-arm64-gnu-0.4.0.tgz")
+                                     "npm-opencode-pty-linux-arm64-gnu-0.6.0.tgz")
                                     (sha256 (base32
-                                             "00hr44inkffv049dg0wlvqf6z0wa8dnp5x3c5pddgzbagwkn53z9")))))
+                                             "1k8x9ixzay4brx19mzz6hci8caxap6ays4zvc7ifi6ib0cqvj32w")))))
         (bun-lock-package (name "@opencode/pty-linux-arm64-musl")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-linux-arm64-musl@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-linux-arm64-musl@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-linux-arm64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-linux-arm64-musl/-/pty-linux-arm64-musl-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-linux-arm64-musl/-/pty-linux-arm64-musl-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-linux-arm64-musl-0.4.0.tgz")
+                                     "npm-opencode-pty-linux-arm64-musl-0.6.0.tgz")
                                     (sha256 (base32
-                                             "0vy105w7b9nrk61v443f5nx873jw7qv2dkv3h4ckyx9ysi6pam4r")))))
+                                             "0i2h7djywgyz5cygdhd13lw5hm1hg9vsik1v59anff7hiaffjflm")))))
         (bun-lock-package (name "@opencode/pty-linux-x64-gnu")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-linux-x64-gnu@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-linux-x64-gnu@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-linux-x64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-linux-x64-gnu/-/pty-linux-x64-gnu-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-linux-x64-gnu/-/pty-linux-x64-gnu-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-linux-x64-gnu-0.4.0.tgz")
+                                     "npm-opencode-pty-linux-x64-gnu-0.6.0.tgz")
                                     (sha256 (base32
-                                             "1a80ccsqadwzl0w41fkgzmbgnxskb7k1dy9v7kjnxk0a0lc00yba")))))
+                                             "01glx4p2q1ffynldv7si9p4sq8bzndh9n88kabh3zsddayamgwmz")))))
         (bun-lock-package (name "@opencode/pty-linux-x64-musl")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-linux-x64-musl@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-linux-x64-musl@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-linux-x64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-linux-x64-musl/-/pty-linux-x64-musl-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-linux-x64-musl/-/pty-linux-x64-musl-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-linux-x64-musl-0.4.0.tgz")
+                                     "npm-opencode-pty-linux-x64-musl-0.6.0.tgz")
                                     (sha256 (base32
-                                             "0p2xbky341bs8kg9v6dn21nh84dhk2lwn8k2capglw82kixs8nzs")))))
+                                             "1csnabzh5yly13pyy907xxpx3gg799iir3dw857pfxdakfzyp2a5")))))
         (bun-lock-package (name "@opencode/pty-win32-arm64")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-win32-arm64@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-win32-arm64@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-win32-arm64/-/pty-win32-arm64-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-win32-arm64/-/pty-win32-arm64-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-win32-arm64-0.4.0.tgz")
+                                     "npm-opencode-pty-win32-arm64-0.6.0.tgz")
                                     (sha256 (base32
-                                             "05rpqh8s7clxvs6d3vgf7f8fhqbbj2n42fpg4mnk6w89vvx81ck8")))))
+                                             "1r7pzvwxydz6hblxckshc1p19f0vq8dijmzw8gd657d7sm85fzsq")))))
         (bun-lock-package (name "@opencode/pty-win32-x64")
-                          (version "0.4.0")
+                          (version "0.6.0")
                           (cache-directory
-                           "@opencode/pty-win32-x64@0.4.0@@registry.npmjs.org@@@1")
+                           "@opencode/pty-win32-x64@0.6.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opencode/pty-win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opencode/pty-win32-x64/-/pty-win32-x64-0.4.0.tgz")
+                                     "https://registry.npmjs.org/@opencode/pty-win32-x64/-/pty-win32-x64-0.6.0.tgz")
                                     (file-name
-                                     "npm-opencode-pty-win32-x64-0.4.0.tgz")
+                                     "npm-opencode-pty-win32-x64-0.6.0.tgz")
                                     (sha256 (base32
-                                             "0ka66pfai9c47rda58i32c1kdd5wcgmhp5r85aypa5bfqmql94zq")))))
+                                             "1xnxc055ssrwbmlbcs1cgpv4k4fc6zb2msfbyfzc3ifpdlmh89qd")))))
         (bun-lock-package (name "@opentelemetry/api")
                           (version "1.9.0")
                           (cache-directory
@@ -49432,145 +48413,145 @@
                                     (sha256 (base32
                                              "0hjxv05xdfil08ckaqrm8qsh6bbsisikfkmnmip089fgz6fq6ra4")))))
         (bun-lock-package (name "@opentui/core")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core/-/core-0.8.0.tgz")
-                                    (file-name "npm-opentui-core-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core/-/core-0.8.4.tgz")
+                                    (file-name "npm-opentui-core-0.8.4.tgz")
                                     (sha256 (base32
-                                             "14z1xsacsv46k9lh3y7r7xsq6jpayx20zbazjykamswgz5s7km4r")))))
+                                             "0x0hv60gj4938csghf3nv3flvxlkvimzkki8lb25qllhz3y2jc26")))))
         (bun-lock-package (name "@opentui/core-darwin-arm64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-darwin-arm64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-darwin-arm64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-darwin-arm64/-/core-darwin-arm64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-darwin-arm64/-/core-darwin-arm64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-darwin-arm64-0.8.0.tgz")
+                                     "npm-opentui-core-darwin-arm64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "16j0i7hz6yshmc43rnjk8hzzcpfnydg1lnqxf11lajzddbgzdiv6")))))
+                                             "19z1wsgv0i41i4zgylxgl4gkhngag84wljpjiskda8gsmbjb0f75")))))
         (bun-lock-package (name "@opentui/core-darwin-x64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-darwin-x64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-darwin-x64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-darwin-x64/-/core-darwin-x64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-darwin-x64/-/core-darwin-x64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-darwin-x64-0.8.0.tgz")
+                                     "npm-opentui-core-darwin-x64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "0w07rwir70zv7mqgc37iq4rzyhzhq7db8i5m1h8lxzjbqiahxxfd")))))
+                                             "0s2yfdzbfz8w4sinq6ipcmnarcv14ddx524lm968pvgkzjaf7shf")))))
         (bun-lock-package (name "@opentui/core-linux-arm64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-linux-arm64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-linux-arm64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-linux-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-linux-arm64/-/core-linux-arm64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-linux-arm64/-/core-linux-arm64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-linux-arm64-0.8.0.tgz")
+                                     "npm-opentui-core-linux-arm64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "0i8sc0rys155gaa7i5hb9w3jzcga3238fmy8a9rjjfsfsj1r7iv2")))))
+                                             "1islrl43a670lp9vgymm1mpb1wx54icnsd68pjjcifv5nasp42qr")))))
         (bun-lock-package (name "@opentui/core-linux-arm64-musl")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-linux-arm64-musl@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-linux-arm64-musl@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-linux-arm64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-linux-arm64-musl/-/core-linux-arm64-musl-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-linux-arm64-musl/-/core-linux-arm64-musl-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-linux-arm64-musl-0.8.0.tgz")
+                                     "npm-opentui-core-linux-arm64-musl-0.8.4.tgz")
                                     (sha256 (base32
-                                             "1mljyl0r0iljj3p2mm9l2y7y69maz4w2914jggn5srihlxxkr3sd")))))
+                                             "15hrzcprk51jpsx8jaydc8krvzs0v3zsb343gzj8nv7c9yf1104a")))))
         (bun-lock-package (name "@opentui/core-linux-x64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-linux-x64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-linux-x64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-linux-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-linux-x64/-/core-linux-x64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-linux-x64/-/core-linux-x64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-linux-x64-0.8.0.tgz")
+                                     "npm-opentui-core-linux-x64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "0kfnfk6rg0lbpnw028rk28427jhs5p5s855fnp7564wayaqz3gy6")))))
+                                             "0vihfsl4y1hbzs7yad2v13519ir9hdq5y8hqbjpnr5ysc149q3l0")))))
         (bun-lock-package (name "@opentui/core-linux-x64-musl")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-linux-x64-musl@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-linux-x64-musl@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-linux-x64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-linux-x64-musl/-/core-linux-x64-musl-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-linux-x64-musl/-/core-linux-x64-musl-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-linux-x64-musl-0.8.0.tgz")
+                                     "npm-opentui-core-linux-x64-musl-0.8.4.tgz")
                                     (sha256 (base32
-                                             "1rwj0apkd1ylr4f5j2x3qhj623970r9va79ydchyqk2pvfkxg41l")))))
+                                             "0hgixb4j0vh27alfxkb7vd6v621pl4n0hjg9k7388km5ddlw2291")))))
         (bun-lock-package (name "@opentui/core-win32-arm64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-win32-arm64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-win32-arm64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-win32-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-win32-arm64/-/core-win32-arm64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-win32-arm64/-/core-win32-arm64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-win32-arm64-0.8.0.tgz")
+                                     "npm-opentui-core-win32-arm64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "1h04iii2pk6jv2ad4pl05s9jajnxbl58ninldp8dmgdnq30hx4d1")))))
+                                             "00avg3122pbqs1kainqfzsalz7sgxd7y1rng8b2as6w8bi9c2da3")))))
         (bun-lock-package (name "@opentui/core-win32-x64")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/core-win32-x64@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/core-win32-x64@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/core-win32-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/core-win32-x64/-/core-win32-x64-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/core-win32-x64/-/core-win32-x64-0.8.4.tgz")
                                     (file-name
-                                     "npm-opentui-core-win32-x64-0.8.0.tgz")
+                                     "npm-opentui-core-win32-x64-0.8.4.tgz")
                                     (sha256 (base32
-                                             "1sbim6q0l32jw9qh1nwkr9k8kfscvngd475d8xd3arb8jvq4gy33")))))
+                                             "1znf69bvngh94cm5ifcnrqmkbx3pbqr0xmia02w6l7gk977vwb5g")))))
         (bun-lock-package (name "@opentui/keymap")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/keymap@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/keymap@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/keymap"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/keymap/-/keymap-0.8.0.tgz")
-                                    (file-name "npm-opentui-keymap-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/keymap/-/keymap-0.8.4.tgz")
+                                    (file-name "npm-opentui-keymap-0.8.4.tgz")
                                     (sha256 (base32
-                                             "12h7nagn69bz44hb32p8q9q49n3x2k9z222x63ki8myvdwjrpn5d")))))
+                                             "03rwvp2gf61jgyhnlc20a6mnphhviqlzgrb7pfrb8kysb5ybr51x")))))
         (bun-lock-package (name "@opentui/solid")
-                          (version "0.8.0")
+                          (version "0.8.4")
                           (cache-directory
-                           "@opentui/solid@0.8.0@@registry.npmjs.org@@@1")
+                           "@opentui/solid@0.8.4@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@opentui/solid"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@opentui/solid/-/solid-0.8.0.tgz")
-                                    (file-name "npm-opentui-solid-0.8.0.tgz")
+                                     "https://registry.npmjs.org/@opentui/solid/-/solid-0.8.4.tgz")
+                                    (file-name "npm-opentui-solid-0.8.4.tgz")
                                     (sha256 (base32
-                                             "139aqjmyk7zf2a84zkcr87c92drahnx56mxxy4agxkyg19al30fq")))))
+                                             "03zlh8h741fx3vnbjw57p2pcckspwsmj4b43cr32jyc0q902fyyq")))))
         (bun-lock-package (name "@opentunnel/client")
                           (version "0.6.1")
                           (cache-directory
@@ -49597,18 +48578,6 @@
                                      "npm-opentunnel-protocol-0.6.1.tgz")
                                     (sha256 (base32
                                              "0a05s4nzcsfakx4hdz56mcq2lcn4abiv3d2ydrnpcmi56811hvrf")))))
-        (bun-lock-package (name "@oslojs/encoding")
-                          (version "1.1.0")
-                          (cache-directory
-                           "@oslojs/encoding@1.1.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@oslojs/encoding"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@oslojs/encoding/-/encoding-1.1.0.tgz")
-                                    (file-name "npm-oslojs-encoding-1.1.0.tgz")
-                                    (sha256 (base32
-                                             "01cscwjfaz03hyx4svjkk9gmlasb5ryp8az4hx1q2wyy6803zdiv")))))
         (bun-lock-package (name "@oxc-parser/binding-android-arm-eabi")
                           (version "0.141.0")
                           (cache-directory
@@ -49899,9 +48868,7 @@
                           (version "0.154.0")
                           (cache-directory
                            "@oxc-project/types@0.154.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@oxc-project/types"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@oxc-project/types"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@oxc-project/types"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@oxc-project/types"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -49911,264 +48878,264 @@
                                     (sha256 (base32
                                              "0d2mqs2iqwjyq50ja17srksg8k60msqli5ndmnbm699swq5xvj38")))))
         (bun-lock-package (name "@oxlint/binding-android-arm-eabi")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-android-arm-eabi@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-android-arm-eabi@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-android-arm-eabi"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-android-arm-eabi-1.60.0.tgz")
+                                     "npm-oxlint-binding-android-arm-eabi-1.93.0.tgz")
                                     (sha256 (base32
-                                             "07cxi1sk5na0alnlb2k0y7apa9jdrghz0sz7w16ycmjdc1cwsrpl")))))
+                                             "1d25r07gs7f5hfmzghz1r9f95han6bsgnx6j7b12iq3q7cjcflmm")))))
         (bun-lock-package (name "@oxlint/binding-android-arm64")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-android-arm64@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-android-arm64@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-android-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-android-arm64-1.60.0.tgz")
+                                     "npm-oxlint-binding-android-arm64-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0rjb0g6lj5791fsmvpm92a6d4nkawr59jcgmvxkzqfixsq243b8z")))))
+                                             "1wsp8ywbk0lphsaqszj8a1h7sla8s4ikbfviharklyvsk8wp0406")))))
         (bun-lock-package (name "@oxlint/binding-darwin-arm64")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-darwin-arm64@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-darwin-arm64@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-darwin-arm64-1.60.0.tgz")
+                                     "npm-oxlint-binding-darwin-arm64-1.93.0.tgz")
                                     (sha256 (base32
-                                             "148vl44v2g95ya8vjfhg2b7akr5x3wa7q18g8yvpgkl463xhsmwq")))))
+                                             "16bd2jvc1h50n0w4gchi25zfcs8ksr618608fncf7zqql5qpcy6k")))))
         (bun-lock-package (name "@oxlint/binding-darwin-x64")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-darwin-x64@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-darwin-x64@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-darwin-x64-1.60.0.tgz")
+                                     "npm-oxlint-binding-darwin-x64-1.93.0.tgz")
                                     (sha256 (base32
-                                             "1nd8wz538mhg12jbfb7i3dhw74kl6s08jbznw4g8bvzhq1wkj4jy")))))
+                                             "0ishabw0m9y08644xrd010y8h9yd6i2k3hvd15fda70rxmdfcy0i")))))
         (bun-lock-package (name "@oxlint/binding-freebsd-x64")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-freebsd-x64@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-freebsd-x64@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-freebsd-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-freebsd-x64-1.60.0.tgz")
+                                     "npm-oxlint-binding-freebsd-x64-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0hc5g2wvbyiaqchi8icn7h6yka88csx6nf7pgzwzsnz6x3dqwazs")))))
+                                             "1l0vprn6a2ildp6gaahj30523hfw0biwfha3mkjjan5g9aplnzsi")))))
         (bun-lock-package (name "@oxlint/binding-linux-arm-gnueabihf")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-arm-gnueabihf@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-arm-gnueabihf@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-arm-gnueabihf"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-arm-gnueabihf-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-arm-gnueabihf-1.93.0.tgz")
                                     (sha256 (base32
-                                             "1vzxq13mzwhq0jgkb1q3w9ywfp5cv1gf93ksr63jfa5wdqq60b9c")))))
+                                             "1l1yab4gcyd0g818k7ddp04xcvq2n833lzd5r3080xjb58wb5ij1")))))
         (bun-lock-package (name "@oxlint/binding-linux-arm-musleabihf")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-arm-musleabihf@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-arm-musleabihf@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-arm-musleabihf"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-arm-musleabihf-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-arm-musleabihf-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0nf9jfb36a59k3yf1bkm7yjh68wj1k4n2mdg8a8g708qwpi08nxh")))))
+                                             "0clhzxddaj0iw6m8f59baq8i4h89x3yf0ni00b58xsgps272i1s9")))))
         (bun-lock-package (name "@oxlint/binding-linux-arm64-gnu")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-arm64-gnu@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-arm64-gnu@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-arm64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-arm64-gnu-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-arm64-gnu-1.93.0.tgz")
                                     (sha256 (base32
-                                             "1kk5368xk7vx8iyjgjzy9y9f3d5lcnsx9b3ix637yap2xydznzgw")))))
+                                             "08b3lgs6lm5cdg0h9z9sx5spar9d2aykkc65has3244w9za5x31x")))))
         (bun-lock-package (name "@oxlint/binding-linux-arm64-musl")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-arm64-musl@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-arm64-musl@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-arm64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-arm64-musl-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-arm64-musl-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0al28g4a1mi933hw07ya0l7a2fnq38wsypin21mhmk55wq704jaj")))))
+                                             "0afky1wj4cg3cadi0iayjj18q0h6avww32w4pfd5ds9h9hdcbz86")))))
         (bun-lock-package (name "@oxlint/binding-linux-ppc64-gnu")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-ppc64-gnu@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-ppc64-gnu@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-ppc64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-ppc64-gnu-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-ppc64-gnu-1.93.0.tgz")
                                     (sha256 (base32
-                                             "05cfg046l6hc0b1ng2rp96hdb60j3yiljf61j5lbxylgwzyw9qda")))))
+                                             "04g3gpdy0a6bd6k2c25wca2ihnvrmmv0f7w7ry0sb6yi8p1dva2k")))))
         (bun-lock-package (name "@oxlint/binding-linux-riscv64-gnu")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-riscv64-gnu@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-riscv64-gnu@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-riscv64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-riscv64-gnu-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-riscv64-gnu-1.93.0.tgz")
                                     (sha256 (base32
-                                             "1q4dhil5lz5p4zlf1z3gi055cgv5mvx7bcnpw4jcm5rz3dirqksj")))))
+                                             "0jqr4757shapkssdnh60i15wwwc85w436629rnbqhd211j759drr")))))
         (bun-lock-package (name "@oxlint/binding-linux-riscv64-musl")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-riscv64-musl@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-riscv64-musl@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-riscv64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-riscv64-musl-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-riscv64-musl-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0c0abl72fyjzvb0ch5cjgfi4lr9f9jppdgzzvzxd4whkbzlirv7g")))))
+                                             "0h9y0mgrnyi12p6gpwapilkvrpmqddqn1kvpcpymjklj0vzilkjx")))))
         (bun-lock-package (name "@oxlint/binding-linux-s390x-gnu")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-s390x-gnu@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-s390x-gnu@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-s390x-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-s390x-gnu-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-s390x-gnu-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0z7f2bq15rnn05879w80gpnhbrwm2nxl87c2v5kqbz41pil39c23")))))
+                                             "1zhh3qsfzzdpaachbsqchzl9b7h01zfiqnnhd6f3qdz2pamkzkfz")))))
         (bun-lock-package (name "@oxlint/binding-linux-x64-gnu")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-x64-gnu@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-x64-gnu@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-x64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-x64-gnu-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-x64-gnu-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0i04pfj5mmw25nmmfqlkha44lbz1j7r04p961xypajrpbnga1yw2")))))
+                                             "1h6p9j22x1494dnjqjvw3sg1p4glay3z1jx7abx6m5rfijbcm6y8")))))
         (bun-lock-package (name "@oxlint/binding-linux-x64-musl")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-linux-x64-musl@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-linux-x64-musl@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-linux-x64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-linux-x64-musl-1.60.0.tgz")
+                                     "npm-oxlint-binding-linux-x64-musl-1.93.0.tgz")
                                     (sha256 (base32
-                                             "09sv9l2ndlqp1lf05smrjvlc336q62003ka5wiihv4pn5qadhqw9")))))
+                                             "17j09rij89wjny500hhndbxjn1scg596a5ky7rra7jlzmp5fpgda")))))
         (bun-lock-package (name "@oxlint/binding-openharmony-arm64")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-openharmony-arm64@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-openharmony-arm64@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-openharmony-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-openharmony-arm64-1.60.0.tgz")
+                                     "npm-oxlint-binding-openharmony-arm64-1.93.0.tgz")
                                     (sha256 (base32
-                                             "1lifwj2y920yqyjl5almlp0svx24r5x1s9m923052pghysgfijp1")))))
+                                             "04yd391ckwsjpk7dffn37zw3s6hw2imyyshi2ix97gab92xk1942")))))
         (bun-lock-package (name "@oxlint/binding-win32-arm64-msvc")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-win32-arm64-msvc@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-win32-arm64-msvc@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-win32-arm64-msvc"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-win32-arm64-msvc-1.60.0.tgz")
+                                     "npm-oxlint-binding-win32-arm64-msvc-1.93.0.tgz")
                                     (sha256 (base32
-                                             "11l3r00yc0ncmmdvjayzpyqar95wlkrq43vpflwq8dlp9hjv03rl")))))
+                                             "1wayy6m8d54bkm467k1d2j7bwgsvzh9p8qjz8wfd1xx0p5nqphms")))))
         (bun-lock-package (name "@oxlint/binding-win32-ia32-msvc")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-win32-ia32-msvc@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-win32-ia32-msvc@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-win32-ia32-msvc"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-win32-ia32-msvc-1.60.0.tgz")
+                                     "npm-oxlint-binding-win32-ia32-msvc-1.93.0.tgz")
                                     (sha256 (base32
-                                             "147c2hi6jh3laqr6g16cvjbbzm8bkrl4dx1sknnglzrgpm6qrfaj")))))
+                                             "00wh03w35jgdz3b2d7wvzsb3fr9hqsf7scxcggl6bwpf6rj43hvr")))))
         (bun-lock-package (name "@oxlint/binding-win32-x64-msvc")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/binding-win32-x64-msvc@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/binding-win32-x64-msvc@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/binding-win32-x64-msvc"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.93.0.tgz")
                                     (file-name
-                                     "npm-oxlint-binding-win32-x64-msvc-1.60.0.tgz")
+                                     "npm-oxlint-binding-win32-x64-msvc-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0nnwllrpg1jgcxzp73byfcsrplmv9i74nrvkc1ysiar9cck0idf1")))))
+                                             "0z9smlnvm5rcfs52n4080abaxhm7gwaaspcx0n2nzkcj4l98y3yl")))))
         (bun-lock-package (name "@oxlint/plugins")
-                          (version "1.60.0")
+                          (version "1.93.0")
                           (cache-directory
-                           "@oxlint/plugins@1.60.0@@registry.npmjs.org@@@1")
+                           "@oxlint/plugins@1.93.0@@registry.npmjs.org@@@1")
                           (install-paths '("node_modules/@oxlint/plugins"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@oxlint/plugins/-/plugins-1.60.0.tgz")
-                                    (file-name "npm-oxlint-plugins-1.60.0.tgz")
+                                     "https://registry.npmjs.org/@oxlint/plugins/-/plugins-1.93.0.tgz")
+                                    (file-name "npm-oxlint-plugins-1.93.0.tgz")
                                     (sha256 (base32
-                                             "0128cf9w06ni2zbg3330laxab2q1rh95qyallhivzajggm87rg3w")))))
+                                             "1k691m0v62h2pivyzlpan4x427p5qxqabqvagsf55xbhga7xz1qr")))))
         (bun-lock-package (name "@pagefind/darwin-arm64")
                           (version "1.5.2")
                           (cache-directory
@@ -50195,19 +49162,6 @@
                                      "npm-pagefind-darwin-x64-1.5.2.tgz")
                                     (sha256 (base32
                                              "0gqax804w899j7mig4i9x923ibzmmfvfmdazd41l334v3r2mgjk0")))))
-        (bun-lock-package (name "@pagefind/default-ui")
-                          (version "1.5.2")
-                          (cache-directory
-                           "@pagefind/default-ui@1.5.2@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@pagefind/default-ui"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@pagefind/default-ui/-/default-ui-1.5.2.tgz")
-                                    (file-name
-                                     "npm-pagefind-default-ui-1.5.2.tgz")
-                                    (sha256 (base32
-                                             "0fxp7rkn2spvfc44xa0p8kb03csyafvyxl171kvch8p8jr54qzh9")))))
         (bun-lock-package (name "@pagefind/freebsd-x64")
                           (version "1.5.2")
                           (cache-directory
@@ -50755,13 +49709,24 @@
                                      "npm-redis-time-series-6.2.1.tgz")
                                     (sha256 (base32
                                              "1kc72yxwmf6lxacm05xvgp96fmhxclasqygngpmr13v3bxkwc0n4")))))
+        (bun-lock-package (name "@resvg/resvg-wasm")
+                          (version "2.6.2")
+                          (cache-directory
+                           "@resvg/resvg-wasm@2.6.2@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@resvg/resvg-wasm"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@resvg/resvg-wasm/-/resvg-wasm-2.6.2.tgz")
+                                    (file-name
+                                     "npm-resvg-resvg-wasm-2.6.2.tgz")
+                                    (sha256 (base32
+                                             "0w9x96cdvp1s5mnpyy5ga9kk93d14s9flfswnw0lc1z0bsxsqlgz")))))
         (bun-lock-package (name "@rolldown/binding-android-arm-eabi")
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-android-arm-eabi@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-android-arm-eabi"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm-eabi"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm-eabi"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm-eabi"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50787,9 +49752,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-android-arm64@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-android-arm64"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm64"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm64"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-android-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50815,9 +49778,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-darwin-arm64@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-darwin-arm64"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-arm64"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-arm64"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50843,9 +49804,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-darwin-x64@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-darwin-x64"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-x64"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-x64"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-darwin-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50871,9 +49830,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-freebsd-x64@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-freebsd-x64"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-freebsd-x64"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-freebsd-x64"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-freebsd-x64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50899,9 +49856,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-arm-gnueabihf@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm-gnueabihf"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm-gnueabihf"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm-gnueabihf"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm-gnueabihf"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50927,9 +49882,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-arm64-gnu@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-gnu"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-gnu"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-gnu"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50955,9 +49908,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-arm64-musl@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-musl"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-musl"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-musl"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-arm64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -50983,9 +49934,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-ppc64-gnu@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-ppc64-gnu"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-ppc64-gnu"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-ppc64-gnu"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-ppc64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51011,9 +49960,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-s390x-gnu@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-s390x-gnu"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-s390x-gnu"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-s390x-gnu"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-s390x-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51039,9 +49986,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-x64-gnu@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-gnu"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-gnu"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-gnu"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-gnu"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51067,9 +50012,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-linux-x64-musl@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-musl"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-musl"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-musl"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-linux-x64-musl"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51095,9 +50038,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-openharmony-arm64@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-openharmony-arm64"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-openharmony-arm64"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-openharmony-arm64"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-openharmony-arm64"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51123,9 +50064,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-win32-arm64-msvc@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-win32-arm64-msvc"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-win32-arm64-msvc"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-win32-arm64-msvc"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-win32-arm64-msvc"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51151,9 +50090,7 @@
                           (version "1.2.14")
                           (cache-directory
                            "@rolldown/binding-win32-x64-msvc@1.2.14@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown/node_modules/@rolldown/binding-win32-x64-msvc"
-                                           "node_modules/astro/node_modules/rolldown/node_modules/@rolldown/binding-win32-x64-msvc"
-                                           "node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-win32-x64-msvc"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown/node_modules/@rolldown/binding-win32-x64-msvc"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -51175,6 +50112,19 @@
                                      "npm-rolldown-binding-win32-x64-msvc-1.2.5.tgz")
                                     (sha256 (base32
                                              "1mfpbj5pl5yxab3qk63bza6wphb0zbf2ivabdm7bwx2y380p85lj")))))
+        (bun-lock-package (name "@rolldown/pluginutils")
+                          (version "1.0.0-beta.27")
+                          (cache-directory
+                           "@rolldown/pluginutils@1.0.0-beta.27@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/app/node_modules/@vitejs/plugin-react/node_modules/@rolldown/pluginutils"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz")
+                                    (file-name
+                                     "npm-rolldown-pluginutils-1.0.0-beta.27.tgz")
+                                    (sha256 (base32
+                                             "01qmmcgfza75y8ynlxxlwvahvq6npwyhha26q43912bi9672mj4y")))))
         (bun-lock-package (name "@rolldown/pluginutils")
                           (version "1.0.1")
                           (cache-directory
@@ -51987,6 +50937,19 @@
                                      "npm-shikijs-vscode-textmate-10.0.2.tgz")
                                     (sha256 (base32
                                              "0d3z43k209kyx5blg74x6nwjm4jz6k7m76d0za8vir6pr27r0r11")))))
+        (bun-lock-package (name "@shuding/opentype.js")
+                          (version "1.4.0-beta.0")
+                          (cache-directory
+                           "@shuding/opentype.js@1.4.0-beta.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@shuding/opentype.js"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@shuding/opentype.js/-/opentype.js-1.4.0-beta.0.tgz")
+                                    (file-name
+                                     "npm-shuding-opentype.js-1.4.0-beta.0.tgz")
+                                    (sha256 (base32
+                                             "1man4vbj6mp9xgqm9zd04plvgndby7pj8qw2fxnvwpd5zwd2pmzs")))))
         (bun-lock-package (name "@sigstore/bundle")
                           (version "4.0.0")
                           (cache-directory
@@ -53016,6 +51979,54 @@
                                      "npm-tanstack-virtual-core-3.17.8.tgz")
                                     (sha256 (base32
                                              "0499f7d2hjim9kz5cwkjy12slq97gipyr5n443l3yx97bg5cl0yw")))))
+        (bun-lock-package (name "@textjs/app")
+                          (version "1.6.1")
+                          (cache-directory
+                           "@textjs/app@1.6.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/app"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@textjs/app/-/app-1.6.1.tgz")
+                                    (file-name "npm-textjs-app-1.6.1.tgz")
+                                    (sha256 (base32
+                                             "1zkpb3wky88cxa4p5jxr9rj9a1yxlj5q96c8x8ggsqwnlfqhpvg6")))))
+        (bun-lock-package (name "@textjs/core")
+                          (version "1.6.1")
+                          (cache-directory
+                           "@textjs/core@1.6.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/core"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@textjs/core/-/core-1.6.1.tgz")
+                                    (file-name "npm-textjs-core-1.6.1.tgz")
+                                    (sha256 (base32
+                                             "0k5jkh7i7rvghim5irz4cxipy963mvk0mj3hjvyr7p1x9d8ixs9n")))))
+        (bun-lock-package (name "@textjs/opencode")
+                          (version "1.6.1")
+                          (cache-directory
+                           "@textjs/opencode@1.6.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/opencode"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@textjs/opencode/-/opencode-1.6.1.tgz")
+                                    (file-name "npm-textjs-opencode-1.6.1.tgz")
+                                    (sha256 (base32
+                                             "0539ymq7jmk5zmvzp240nwi75c9iyy02r99k3bmji4qxv08pz0hl")))))
+        (bun-lock-package (name "@textjs/react")
+                          (version "1.6.1")
+                          (cache-directory
+                           "@textjs/react@1.6.1@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/react"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@textjs/react/-/react-1.6.1.tgz")
+                                    (file-name "npm-textjs-react-1.6.1.tgz")
+                                    (sha256 (base32
+                                             "0al1apqm6rmwzc2159iqmwzaki91i3z54ll5nwnm9k4y8m5x35kz")))))
         (bun-lock-package (name "@trickfilm400/rollup-plugin-off-main-thread")
                           (version "3.0.0-pre1")
                           (cache-directory
@@ -53156,6 +52167,19 @@
                                      "npm-turbo-windows-arm64-2.10.2.tgz")
                                     (sha256 (base32
                                              "1fw5vljq9x057jk6akv8mfaavn3bn62jg904dmjydcm8ak8463w6")))))
+        (bun-lock-package (name "@tweenjs/tween.js")
+                          (version "23.1.3")
+                          (cache-directory
+                           "@tweenjs/tween.js@23.1.3@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@tweenjs/tween.js"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@tweenjs/tween.js/-/tween.js-23.1.3.tgz")
+                                    (file-name
+                                     "npm-tweenjs-tween.js-23.1.3.tgz")
+                                    (sha256 (base32
+                                             "12pbsi7k2r59hwbil1703hwk3x8fih0rls6jxwwr5libr54ahbp9")))))
         (bun-lock-package (name "@tybys/wasm-util")
                           (version "0.10.3")
                           (cache-directory
@@ -53395,18 +52419,6 @@
                                      "npm-types-http-cache-semantics-4.2.0.tgz")
                                     (sha256 (base32
                                              "0si8d9ad5sxflhq7cj292pf3kmmvb79p3awkn0qa158zmpcaswv5")))))
-        (bun-lock-package (name "@types/js-yaml")
-                          (version "4.0.9")
-                          (cache-directory
-                           "@types/js-yaml@4.0.9@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@types/js-yaml"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@types/js-yaml/-/js-yaml-4.0.9.tgz")
-                                    (file-name "npm-types-js-yaml-4.0.9.tgz")
-                                    (sha256 (base32
-                                             "1zclc1fwi2kbx4pv81ccalak4awpya7nq9grlk83abpli10j76lc")))))
         (bun-lock-package (name "@types/keyv")
                           (version "3.1.4")
                           (cache-directory
@@ -53419,18 +52431,6 @@
                                     (file-name "npm-types-keyv-3.1.4.tgz")
                                     (sha256 (base32
                                              "0lindx0xh0p57z20y7iylidl3w00dksr02q393h186iva957j732")))))
-        (bun-lock-package (name "@types/luxon")
-                          (version "3.7.1")
-                          (cache-directory
-                           "@types/luxon@3.7.1@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@types/luxon"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@types/luxon/-/luxon-3.7.1.tgz")
-                                    (file-name "npm-types-luxon-3.7.1.tgz")
-                                    (sha256 (base32
-                                             "0z8mrzv5dipypi0n4cjwmdzcwdglcf07imn42xzlx0hidkddxkhc")))))
         (bun-lock-package (name "@types/mdast")
                           (version "4.0.4")
                           (cache-directory
@@ -53631,6 +52631,18 @@
                                     (file-name "npm-types-react-19.2.17.tgz")
                                     (sha256 (base32
                                              "080wa4j9p4mn9gm17j23zwly5r4bc7yiwn1fbj7ffynca0bjjpqz")))))
+        (bun-lock-package (name "@types/react")
+                          (version "19.3.0")
+                          (cache-directory
+                           "@types/react@19.3.0@@registry.npmjs.org@@@1")
+                          (install-paths '("services/site/node_modules/@types/react"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@types/react/-/react-19.3.0.tgz")
+                                    (file-name "npm-types-react-19.3.0.tgz")
+                                    (sha256 (base32
+                                             "0rkpiw9dph171bqwfpk8v3gsfx83k58dfx7xl1kmybn8ppypz9zz")))))
         (bun-lock-package (name "@types/resolve")
                           (version "1.20.2")
                           (cache-directory
@@ -53656,18 +52668,6 @@
                                      "npm-types-responselike-1.0.3.tgz")
                                     (sha256 (base32
                                              "0lfhnawymczrpbn8p215hwl3lba2rmxbqfs4fmilnf5m5ifnz3nn")))))
-        (bun-lock-package (name "@types/sax")
-                          (version "1.2.7")
-                          (cache-directory
-                           "@types/sax@1.2.7@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@types/sax"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@types/sax/-/sax-1.2.7.tgz")
-                                    (file-name "npm-types-sax-1.2.7.tgz")
-                                    (sha256 (base32
-                                             "0fwy5fkb8hq95dv5x9qj4wlcynk8m66im8p05lp73k957v6py2gf")))))
         (bun-lock-package (name "@types/semver")
                           (version "7.7.1")
                           (cache-directory
@@ -53704,6 +52704,30 @@
                                     (file-name "npm-types-ssri-7.1.5.tgz")
                                     (sha256 (base32
                                              "1rswxhajpbg4lv798r422wgvskd7rqqyjp5cvn5qq015whjljivk")))))
+        (bun-lock-package (name "@types/stats.js")
+                          (version "0.17.4")
+                          (cache-directory
+                           "@types/stats.js@0.17.4@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@types/stats.js"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@types/stats.js/-/stats.js-0.17.4.tgz")
+                                    (file-name "npm-types-stats.js-0.17.4.tgz")
+                                    (sha256 (base32
+                                             "1j3fyi8n79vzrbplwgavp90vlayax9gigar1y38yzc1bx4298w9l")))))
+        (bun-lock-package (name "@types/three")
+                          (version "0.180.0")
+                          (cache-directory
+                           "@types/three@0.180.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@types/three"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@types/three/-/three-0.180.0.tgz")
+                                    (file-name "npm-types-three-0.180.0.tgz")
+                                    (sha256 (base32
+                                             "0084s9ykkp43kz1h69fd8nn0gphbv06pr2mydjrb0zcpwaxfzx9w")))))
         (bun-lock-package (name "@types/trusted-types")
                           (version "2.0.7")
                           (cache-directory
@@ -53741,6 +52765,18 @@
                                     (file-name "npm-types-unist-3.0.3.tgz")
                                     (sha256 (base32
                                              "0hr858rqfsvrf7mv9i830k5zjgh0vp4v1w3fr7ld21wjfcpx63xm")))))
+        (bun-lock-package (name "@types/webxr")
+                          (version "0.5.24")
+                          (cache-directory
+                           "@types/webxr@0.5.24@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@types/webxr"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/@types/webxr/-/webxr-0.5.24.tgz")
+                                    (file-name "npm-types-webxr-0.5.24.tgz")
+                                    (sha256 (base32
+                                             "0yj8r58c5miipzww0dhm4rkvkvw963mwk2bc3fbsnsbkg7r6r11w")))))
         (bun-lock-package (name "@types/whatwg-mimetype")
                           (version "3.0.2")
                           (cache-directory
@@ -54089,108 +53125,19 @@
                                      "npm-ungap-structured-clone-1.3.3.tgz")
                                     (sha256 (base32
                                              "0bn998kn1mssn8rslpj86zryc60wbr4pwdhal875pib670jdm6sw")))))
-        (bun-lock-package (name "@volar/kit")
-                          (version "2.4.28")
+        (bun-lock-package (name "@vitejs/plugin-react")
+                          (version "4.7.0")
                           (cache-directory
-                           "@volar/kit@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/kit"))
+                           "@vitejs/plugin-react@4.7.0@@registry.npmjs.org@@@1")
+                          (install-paths '("node_modules/@textjs/app/node_modules/@vitejs/plugin-react"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/@volar/kit/-/kit-2.4.28.tgz")
-                                    (file-name "npm-volar-kit-2.4.28.tgz")
-                                    (sha256 (base32
-                                             "05n582ksk62g5gxq9hw79wv5h4wvy0dsszk0fml8swk238502lbm")))))
-        (bun-lock-package (name "@volar/language-core")
-                          (version "2.4.28")
-                          (cache-directory
-                           "@volar/language-core@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/language-core"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@volar/language-core/-/language-core-2.4.28.tgz")
+                                     "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-4.7.0.tgz")
                                     (file-name
-                                     "npm-volar-language-core-2.4.28.tgz")
+                                     "npm-vitejs-plugin-react-4.7.0.tgz")
                                     (sha256 (base32
-                                             "11ljrz1wncsl2xb5zx3xamawdb8ffjp812h6gapra6kljzba4d4n")))))
-        (bun-lock-package (name "@volar/language-server")
-                          (version "2.4.28")
-                          (cache-directory
-                           "@volar/language-server@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/language-server"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@volar/language-server/-/language-server-2.4.28.tgz")
-                                    (file-name
-                                     "npm-volar-language-server-2.4.28.tgz")
-                                    (sha256 (base32
-                                             "1crn4q4qvrqdxk4r5zm975j8dnznm436mldl8ff5wkpr41dil8za")))))
-        (bun-lock-package (name "@volar/language-service")
-                          (version "2.4.28")
-                          (cache-directory
-                           "@volar/language-service@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/language-service"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@volar/language-service/-/language-service-2.4.28.tgz")
-                                    (file-name
-                                     "npm-volar-language-service-2.4.28.tgz")
-                                    (sha256 (base32
-                                             "0r59xvcwnhp4jss1mhnrxh56plcwg6ra1bn11cicjjpw9n1kn81a")))))
-        (bun-lock-package (name "@volar/source-map")
-                          (version "2.4.28")
-                          (cache-directory
-                           "@volar/source-map@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/source-map"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@volar/source-map/-/source-map-2.4.28.tgz")
-                                    (file-name
-                                     "npm-volar-source-map-2.4.28.tgz")
-                                    (sha256 (base32
-                                             "19kicv609j8ff1sli2xpw0am793i34cc4g7zmkaay13s00da4g05")))))
-        (bun-lock-package (name "@volar/typescript")
-                          (version "2.4.28")
-                          (cache-directory
-                           "@volar/typescript@2.4.28@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@volar/typescript"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@volar/typescript/-/typescript-2.4.28.tgz")
-                                    (file-name
-                                     "npm-volar-typescript-2.4.28.tgz")
-                                    (sha256 (base32
-                                             "0sp9bil74n2y35l9hj3pn40232plwnzlr34vd9ij3nk75kmwi7s8")))))
-        (bun-lock-package (name "@vscode/emmet-helper")
-                          (version "2.11.0")
-                          (cache-directory
-                           "@vscode/emmet-helper@2.11.0@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@vscode/emmet-helper"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@vscode/emmet-helper/-/emmet-helper-2.11.0.tgz")
-                                    (file-name
-                                     "npm-vscode-emmet-helper-2.11.0.tgz")
-                                    (sha256 (base32
-                                             "1qkv9clr963qf994v84ijdhx1qwvkk49ldgzdpb82d31w43km427")))))
-        (bun-lock-package (name "@vscode/l10n")
-                          (version "0.0.18")
-                          (cache-directory
-                           "@vscode/l10n@0.0.18@@registry.npmjs.org@@@1")
-                          (install-paths '("node_modules/@vscode/l10n"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/@vscode/l10n/-/l10n-0.0.18.tgz")
-                                    (file-name "npm-vscode-l10n-0.0.18.tgz")
-                                    (sha256 (base32
-                                             "0p3wxm8k570rah3mbjldgignlv2waagqc891nimmync8fj4xrhpi")))))
+                                             "0ap3zzpf65xnyya6v034mxhcvrkavf2j33jcqrlny6ripkvjkh7w")))))
         (bun-lock-package (name "@webgpu/types")
                           (version "0.1.54")
                           (cache-directory
@@ -54446,18 +53393,6 @@
                                     (file-name "npm-abbrev-4.0.0.tgz")
                                     (sha256 (base32
                                              "1bihvvixv81j3qjalrn8qcka2wlj97bvsrwzadq2xn21rxq3cmaw")))))
-        (bun-lock-package (name "abort-controller")
-                          (version "3.0.0")
-                          (cache-directory "abort-controller@3.0.0@@@1")
-                          (install-paths '("node_modules/abort-controller"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/abort-controller/-/abort-controller-3.0.0.tgz")
-                                    (file-name
-                                     "npm-abort-controller-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "0bxba0gy4rglq44q0dx5s2fzm8rw7vb11ihjgkjiisqhs3alkqnj")))))
         (bun-lock-package (name "accepts")
                           (version "2.0.0")
                           (cache-directory "accepts@2.0.0@@@1")
@@ -54469,17 +53404,6 @@
                                     (file-name "npm-accepts-2.0.0.tgz")
                                     (sha256 (base32
                                              "0hi56wcavwsv8s4mpvks7gywmjdiqcqa0a91vga8rpw8gmgr2g8p")))))
-        (bun-lock-package (name "acorn")
-                          (version "8.14.0")
-                          (cache-directory "acorn@8.14.0@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/acorn"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/acorn/-/acorn-8.14.0.tgz")
-                                    (file-name "npm-acorn-8.14.0.tgz")
-                                    (sha256 (base32
-                                             "01118r4wdvxww8q16cz62c177zagpk5v8mmvi3i414afbragbh84")))))
         (bun-lock-package (name "acorn")
                           (version "8.15.0")
                           (cache-directory "acorn@8.15.0@@@1")
@@ -54494,9 +53418,7 @@
         (bun-lock-package (name "acorn")
                           (version "8.18.0")
                           (cache-directory "acorn@8.18.0@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-remark/node_modules/acorn"
-                                           "node_modules/@astrojs/mdx/node_modules/acorn"
-                                           "node_modules/@mdx-js/mdx/node_modules/acorn"
+                          (install-paths '("node_modules/@mdx-js/mdx/node_modules/acorn"
                                            "node_modules/esast-util-from-js/node_modules/acorn"
                                            "node_modules/micromark-extension-mdxjs/node_modules/acorn"
                                            "node_modules/terser/node_modules/acorn"))
@@ -54518,17 +53440,6 @@
                                     (file-name "npm-acorn-jsx-5.3.2.tgz")
                                     (sha256 (base32
                                              "1k2qj4av0nmrqa5xcn0hrjv9r5kv8x83238fsxb6lff581gb0ryr")))))
-        (bun-lock-package (name "acorn-walk")
-                          (version "8.3.2")
-                          (cache-directory "acorn-walk@8.3.2@@@1")
-                          (install-paths '("node_modules/acorn-walk"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.3.2.tgz")
-                                    (file-name "npm-acorn-walk-8.3.2.tgz")
-                                    (sha256 (base32
-                                             "03wd1hf3s6r9mswxk0lzmpblbxh22ls5a5ylrdw33pjx76mjpyba")))))
         (bun-lock-package (name "agent-base")
                           (version "6.0.2")
                           (cache-directory "agent-base@6.0.2@@@1")
@@ -54551,17 +53462,6 @@
                                     (file-name "npm-agent-base-7.1.4.tgz")
                                     (sha256 (base32
                                              "0zmmkk3xhnkwb6djnvri7zyxllsdz5aa5w83x7afi959d0badm3x")))))
-        (bun-lock-package (name "agentkeepalive")
-                          (version "4.6.0")
-                          (cache-directory "agentkeepalive@4.6.0@@@1")
-                          (install-paths '("node_modules/agentkeepalive"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-4.6.0.tgz")
-                                    (file-name "npm-agentkeepalive-4.6.0.tgz")
-                                    (sha256 (base32
-                                             "16jns5qpamw5p7xkjmp5gffwa9d1800ld81brngzhv14z49pbpn3")))))
         (bun-lock-package (name "ajv")
                           (version "8.20.0")
                           (cache-directory "ajv@8.20.0@@@1")
@@ -54573,17 +53473,6 @@
                                     (file-name "npm-ajv-8.20.0.tgz")
                                     (sha256 (base32
                                              "1cz7yr42yf4kb0znhwyxslqrxqcr2j5z0538zdgcrf5vjflb7w5j")))))
-        (bun-lock-package (name "ajv-draft-04")
-                          (version "1.0.0")
-                          (cache-directory "ajv-draft-04@1.0.0@@@1")
-                          (install-paths '("node_modules/ajv-draft-04"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ajv-draft-04/-/ajv-draft-04-1.0.0.tgz")
-                                    (file-name "npm-ajv-draft-04-1.0.0.tgz")
-                                    (sha256 (base32
-                                             "1ry2341w27h9av009j8kb5mxhknk5l67g2c714x1nnrskg7qlcmj")))))
         (bun-lock-package (name "ajv-formats")
                           (version "3.0.1")
                           (cache-directory "ajv-formats@3.0.1@@@1")
@@ -54595,28 +53484,6 @@
                                     (file-name "npm-ajv-formats-3.0.1.tgz")
                                     (sha256 (base32
                                              "1idca2hn65drqp1bc4v696bqvnv3x08nj1lrj791yf37sc7rimpl")))))
-        (bun-lock-package (name "ajv-i18n")
-                          (version "4.2.0")
-                          (cache-directory "ajv-i18n@4.2.0@@@1")
-                          (install-paths '("node_modules/ajv-i18n"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ajv-i18n/-/ajv-i18n-4.2.0.tgz")
-                                    (file-name "npm-ajv-i18n-4.2.0.tgz")
-                                    (sha256 (base32
-                                             "0fbjhq4ifbmmhnffrbc60504jl7706dnmp5sb6zlg94l8pqr0k5q")))))
-        (bun-lock-package (name "am-i-vibing")
-                          (version "0.5.0")
-                          (cache-directory "am-i-vibing@0.5.0@@@1")
-                          (install-paths '("node_modules/am-i-vibing"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/am-i-vibing/-/am-i-vibing-0.5.0.tgz")
-                                    (file-name "npm-am-i-vibing-0.5.0.tgz")
-                                    (sha256 (base32
-                                             "1g5p26im1gn7wa8dn3qw2nyh13cvqdh0mxz6aj4mgj3saf3mjd84")))))
         (bun-lock-package (name "ansi-colors")
                           (version "4.1.3")
                           (cache-directory "ansi-colors@4.1.3@@@1")
@@ -54672,8 +53539,7 @@
                           (cache-directory "ansi-styles@6.2.3@@@1")
                           (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui/node_modules/wrap-ansi/node_modules/ansi-styles"
                                            "node_modules/rimraf/node_modules/glob/node_modules/jackspeak/node_modules/@isaacs/cliui/node_modules/wrap-ansi/node_modules/ansi-styles"
-                                           "node_modules/slice-ansi/node_modules/ansi-styles"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/cliui/node_modules/wrap-ansi/node_modules/ansi-styles"))
+                                           "node_modules/slice-ansi/node_modules/ansi-styles"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -54681,17 +53547,6 @@
                                     (file-name "npm-ansi-styles-6.2.3.tgz")
                                     (sha256 (base32
                                              "06wihdisbyp9ryhmf4ck0lrrbckp6lax1b0087ix99fp718wyfg9")))))
-        (bun-lock-package (name "anymatch")
-                          (version "3.1.3")
-                          (cache-directory "anymatch@3.1.3@@@1")
-                          (install-paths '("node_modules/anymatch"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/anymatch/-/anymatch-3.1.3.tgz")
-                                    (file-name "npm-anymatch-3.1.3.tgz")
-                                    (sha256 (base32
-                                             "13zpp0hqd1racg5vwp8qpfh1y5igpyi6ff32y4ks2wrbhdn9sqmv")))))
         (bun-lock-package (name "app-builder-lib")
                           (version "26.15.7")
                           (cache-directory "app-builder-lib@26.15.7@@@1")
@@ -54704,21 +53559,10 @@
                                      "npm-app-builder-lib-26.15.7.tgz")
                                     (sha256 (base32
                                              "0lx05y53yi8fwwsrihkshgx5a0r4d8adc560hsqy1yslnq0dx5gg")))))
-        (bun-lock-package (name "arg")
-                          (version "5.0.2")
-                          (cache-directory "arg@5.0.2@@@1")
-                          (install-paths '("node_modules/arg"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/arg/-/arg-5.0.2.tgz")
-                                    (file-name "npm-arg-5.0.2.tgz")
-                                    (sha256 (base32
-                                             "13gqq5gh2kb0pzim5zm97mcj61ccxrpc16rmf71yl113yd26vfi9")))))
         (bun-lock-package (name "argparse")
                           (version "1.0.10")
                           (cache-directory "argparse@1.0.10@@@1")
-                          (install-paths '("node_modules/argparse"))
+                          (install-paths '("node_modules/js-yaml/node_modules/argparse"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -54729,13 +53573,7 @@
         (bun-lock-package (name "argparse")
                           (version "2.0.1")
                           (cache-directory "argparse@2.0.1@@@1")
-                          (install-paths '("node_modules/@astrojs/internal-helpers/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/@astrojs/mdx/node_modules/@astrojs/internal-helpers/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/@astrojs/starlight/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/app-builder-lib/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/builder-util/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/dmg-builder/node_modules/js-yaml/node_modules/argparse"
-                                           "node_modules/electron-updater/node_modules/js-yaml/node_modules/argparse"))
+                          (install-paths '("node_modules/argparse"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -54743,17 +53581,6 @@
                                     (file-name "npm-argparse-2.0.1.tgz")
                                     (sha256 (base32
                                              "133jjyhcr25rf4vy7bca7x06dfmsyy819s1kbbyfc5c2zi3ki417")))))
-        (bun-lock-package (name "aria-query")
-                          (version "5.3.2")
-                          (cache-directory "aria-query@5.3.2@@@1")
-                          (install-paths '("node_modules/aria-query"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz")
-                                    (file-name "npm-aria-query-5.3.2.tgz")
-                                    (sha256 (base32
-                                             "0dxdwhr1lab74g03xhvln2v8xp6y9bla1nmjgpwwx2id499ijsb2")))))
         (bun-lock-package (name "array-buffer-byte-length")
                           (version "1.0.2")
                           (cache-directory
@@ -54813,29 +53640,6 @@
                                     (file-name "npm-astring-1.9.0.tgz")
                                     (sha256 (base32
                                              "0jgvgbk21rs2ydgk4si32pa7l5habaydnkxmbvl978mc0ybwlb22")))))
-        (bun-lock-package (name "astro")
-                          (version "7.3.8")
-                          (cache-directory "astro@7.3.8@@@1")
-                          (install-paths '("node_modules/astro"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/astro/-/astro-7.3.8.tgz")
-                                    (file-name "npm-astro-7.3.8.tgz")
-                                    (sha256 (base32
-                                             "12p6wa34w5j7li3lifkj5fxh62wh9h7ngl9y1s0yi9dy6v2yyqzn")))))
-        (bun-lock-package (name "astro-expressive-code")
-                          (version "0.44.2")
-                          (cache-directory "astro-expressive-code@0.44.2@@@1")
-                          (install-paths '("node_modules/astro-expressive-code"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/astro-expressive-code/-/astro-expressive-code-0.44.2.tgz")
-                                    (file-name
-                                     "npm-astro-expressive-code-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "023a6irx9vv7k0l85l635asl4qm0lhys094zxhjrg58a85mzzc5w")))))
         (bun-lock-package (name "async")
                           (version "3.2.6")
                           (cache-directory "async@3.2.6@@@1")
@@ -54926,17 +53730,6 @@
                                     (sha256 (base32
                                              "0qmd9r83904l4hgrrh4fm19swr99776m4c15ggpf116ihr0c3w4v")))))
         (bun-lock-package (name "aws4fetch")
-                          (version "1.0.18")
-                          (cache-directory "aws4fetch@1.0.18@@@1")
-                          (install-paths '("node_modules/sst/node_modules/aws4fetch"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/aws4fetch/-/aws4fetch-1.0.18.tgz")
-                                    (file-name "npm-aws4fetch-1.0.18.tgz")
-                                    (sha256 (base32
-                                             "1q6z80n6s7l10xrxjlb2134qw6ld40girq8pj4dchd6a5s8zcc92")))))
-        (bun-lock-package (name "aws4fetch")
                           (version "1.0.20")
                           (cache-directory "aws4fetch@1.0.20@@@1")
                           (install-paths '("node_modules/aws4fetch"))
@@ -54958,17 +53751,6 @@
                                     (file-name "npm-axe-core-4.13.0.tgz")
                                     (sha256 (base32
                                              "0w1zncfa28p299kxlm70ipcl5nwia3k7njrhr5gnjjvvwzv14s89")))))
-        (bun-lock-package (name "axobject-query")
-                          (version "4.1.0")
-                          (cache-directory "axobject-query@4.1.0@@@1")
-                          (install-paths '("node_modules/axobject-query"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/axobject-query/-/axobject-query-4.1.0.tgz")
-                                    (file-name "npm-axobject-query-4.1.0.tgz")
-                                    (sha256 (base32
-                                             "00lddiaf6nm5nb5cgdv59r6v68rdinirq1mlizsfkr8jja19f384")))))
         (bun-lock-package (name "babel-plugin-jsx-dom-expressions")
                           (version "0.40.10")
                           (cache-directory
@@ -55111,6 +53893,17 @@
                                     (sha256 (base32
                                              "05pva90symmxg31miw4msmd9g0q1aspf7764pcqybvi5j66m09ch")))))
         (bun-lock-package (name "base64-js")
+                          (version "0.0.8")
+                          (cache-directory "base64-js@0.0.8@@@1")
+                          (install-paths '("node_modules/linebreak/node_modules/base64-js"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/base64-js/-/base64-js-0.0.8.tgz")
+                                    (file-name "npm-base64-js-0.0.8.tgz")
+                                    (sha256 (base32
+                                             "1h7kqzzn4gv8w2fzyzmgx8447jpb9wlrshzdwgnbyqff93dzc7j4")))))
+        (bun-lock-package (name "base64-js")
                           (version "1.5.1")
                           (cache-directory "base64-js@1.5.1@@@1")
                           (install-paths '("node_modules/base64-js"))
@@ -55134,28 +53927,6 @@
                                      "npm-baseline-browser-mapping-2.11.15.tgz")
                                     (sha256 (base32
                                              "0h009myprxdg6y51s94q6fmpz4d1d49hk99rh5pkhmpyryy44m9v")))))
-        (bun-lock-package (name "bcp-47")
-                          (version "2.1.1")
-                          (cache-directory "bcp-47@2.1.1@@@1")
-                          (install-paths '("node_modules/bcp-47"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/bcp-47/-/bcp-47-2.1.1.tgz")
-                                    (file-name "npm-bcp-47-2.1.1.tgz")
-                                    (sha256 (base32
-                                             "00nv14dlb14ikri6f4zgvrhh1kzdgh5q5nlayq02hfwm81a8fv8y")))))
-        (bun-lock-package (name "bcp-47-match")
-                          (version "2.0.3")
-                          (cache-directory "bcp-47-match@2.0.3@@@1")
-                          (install-paths '("node_modules/bcp-47-match"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/bcp-47-match/-/bcp-47-match-2.0.3.tgz")
-                                    (file-name "npm-bcp-47-match-2.0.3.tgz")
-                                    (sha256 (base32
-                                             "1rhwrm92ikizvaxgwh5n27gg3jih47579zjls4yn6gpypgjwsv3y")))))
         (bun-lock-package (name "before-after-hook")
                           (version "4.0.0")
                           (cache-directory "before-after-hook@4.0.0@@@1")
@@ -55523,6 +54294,17 @@
                                     (file-name "npm-call-bound-1.0.4.tgz")
                                     (sha256 (base32
                                              "0cmxdglg3lrrz7apqgvqbkd57jicr98fxwhi92rvkwgd5x4ny21j")))))
+        (bun-lock-package (name "camelize")
+                          (version "1.0.1")
+                          (cache-directory "camelize@1.0.1@@@1")
+                          (install-paths '("node_modules/camelize"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/camelize/-/camelize-1.0.1.tgz")
+                                    (file-name "npm-camelize-1.0.1.tgz")
+                                    (sha256 (base32
+                                             "0zk27z765rp21mg70hwdq8yfrbmhgvkgc03cf7vswj3c7k90b7sd")))))
         (bun-lock-package (name "caniuse-lite")
                           (version "1.0.30001809")
                           (cache-directory "caniuse-lite@1.0.30001809@@@1")
@@ -55546,6 +54328,17 @@
                                     (file-name "npm-ccount-2.0.1.tgz")
                                     (sha256 (base32
                                              "1jl4g6idvwp9w7p5i7y0j0xlfcw0cgih36la26xljc3w7i5qpnmx")))))
+        (bun-lock-package (name "cf")
+                          (version "1.0.0-beta.12")
+                          (cache-directory "cf@1.0.0-beta.12@@@1")
+                          (install-paths '("node_modules/cf"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/cf/-/cf-1.0.0-beta.12.tgz")
+                                    (file-name "npm-cf-1.0.0-beta.12.tgz")
+                                    (sha256 (base32
+                                             "0xihrgjch0lw7l5zg7yy9l3g6lgg02y9b12vmd83rdx95gwqsric")))))
         (bun-lock-package (name "chalk")
                           (version "4.1.2")
                           (cache-directory "chalk@4.1.2@@@1")
@@ -55619,29 +54412,6 @@
                                      "npm-character-reference-invalid-2.0.1.tgz")
                                     (sha256 (base32
                                              "00ng7rpxc46a73fp7751d33680jch631ji1bwzkg4488s9lgfz0w")))))
-        (bun-lock-package (name "chokidar")
-                          (version "4.0.3")
-                          (cache-directory "chokidar@4.0.3@@@1")
-                          (install-paths '("node_modules/chokidar"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/chokidar/-/chokidar-4.0.3.tgz")
-                                    (file-name "npm-chokidar-4.0.3.tgz")
-                                    (sha256 (base32
-                                             "12c3hr28bai0n50vxm73fc365i0l900jfwxylwrwvhhlsflrv8k1")))))
-        (bun-lock-package (name "chokidar")
-                          (version "5.0.0")
-                          (cache-directory "chokidar@5.0.0@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage/node_modules/chokidar"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/chokidar"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/chokidar/-/chokidar-5.0.0.tgz")
-                                    (file-name "npm-chokidar-5.0.0.tgz")
-                                    (sha256 (base32
-                                             "1qzmyw8jg7gr3zj0f593phii9p4yqiy58g5b6g3q5r3ysnkpxl25")))))
         (bun-lock-package (name "chownr")
                           (version "3.0.0")
                           (cache-directory "chownr@3.0.0@@@1")
@@ -55701,9 +54471,7 @@
         (bun-lock-package (name "ci-info")
                           (version "4.4.0")
                           (cache-directory "ci-info@4.4.0@@@1")
-                          (install-paths '("node_modules/@astrojs/telemetry/node_modules/ci-info"
-                                           "node_modules/@npmcli/config/node_modules/ci-info"
-                                           "node_modules/astro/node_modules/ci-info"
+                          (install-paths '("node_modules/@npmcli/config/node_modules/ci-info"
                                            "node_modules/electron-builder/node_modules/ci-info"))
                           (source (origin
                                     (method url-fetch)
@@ -55749,8 +54517,7 @@
         (bun-lock-package (name "cliui")
                           (version "9.0.1")
                           (cache-directory "cliui@9.0.1@@@1")
-                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/cliui"))
+                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -55769,28 +54536,6 @@
                                     (file-name "npm-clone-response-1.0.3.tgz")
                                     (sha256 (base32
                                              "0rp9mi1n1dfya1ibq3r17z6g9iqx3q7nz9gphslkwj6vpf14kf1i")))))
-        (bun-lock-package (name "cloudflare")
-                          (version "5.2.0")
-                          (cache-directory "cloudflare@5.2.0@@@1")
-                          (install-paths '("node_modules/cloudflare"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/cloudflare/-/cloudflare-5.2.0.tgz")
-                                    (file-name "npm-cloudflare-5.2.0.tgz")
-                                    (sha256 (base32
-                                             "1x95hm128y2kjbs338lxxq9ax0bdqj6kixk1lymslybwh8vapwhn")))))
-        (bun-lock-package (name "clsx")
-                          (version "2.1.1")
-                          (cache-directory "clsx@2.1.1@@@1")
-                          (install-paths '("node_modules/clsx"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/clsx/-/clsx-2.1.1.tgz")
-                                    (file-name "npm-clsx-2.1.1.tgz")
-                                    (sha256 (base32
-                                             "00q36aavs4d035khd05s6yrizzv3wsf5i6cg1q94b9hw955i0833")))))
         (bun-lock-package (name "cluster-key-slot")
                           (version "1.1.2")
                           (cache-directory "cluster-key-slot@1.1.2@@@1")
@@ -55826,17 +54571,6 @@
                                      "npm-collapse-white-space-2.1.0.tgz")
                                     (sha256 (base32
                                              "0phx47x2rl99anbyqg7bwrnc3l3yk77yiv68yhf0bkpcbmjh08vy")))))
-        (bun-lock-package (name "color")
-                          (version "4.2.3")
-                          (cache-directory "color@4.2.3@@@1")
-                          (install-paths '("node_modules/color"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/color/-/color-4.2.3.tgz")
-                                    (file-name "npm-color-4.2.3.tgz")
-                                    (sha256 (base32
-                                             "1b9var7aqvhm9xny0f1qlxl1k134lsapgiidj15v5ga3vlas3b59")))))
         (bun-lock-package (name "color-convert")
                           (version "2.0.1")
                           (cache-directory "color-convert@2.0.1@@@1")
@@ -55859,17 +54593,6 @@
                                     (file-name "npm-color-name-1.1.4.tgz")
                                     (sha256 (base32
                                              "020p7x7k8rlph38lhsqpqvkx0b70lzlmk6mgal9r9sz8c527qysh")))))
-        (bun-lock-package (name "color-string")
-                          (version "1.9.1")
-                          (cache-directory "color-string@1.9.1@@@1")
-                          (install-paths '("node_modules/color-string"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/color-string/-/color-string-1.9.1.tgz")
-                                    (file-name "npm-color-string-1.9.1.tgz")
-                                    (sha256 (base32
-                                             "11mj2kydpsa4b53crq6s4bwrqlhx5dv62rhk23z47n6r5vahsfrj")))))
         (bun-lock-package (name "combined-stream")
                           (version "1.0.8")
                           (cache-directory "combined-stream@1.0.8@@@1")
@@ -55893,17 +54616,6 @@
                                      "npm-comma-separated-tokens-2.0.3.tgz")
                                     (sha256 (base32
                                              "11n8kvi4vqbk0b08h4xxjglw42ja1z4569hiza7099h7pgpkw4l8")))))
-        (bun-lock-package (name "commander")
-                          (version "11.1.0")
-                          (cache-directory "commander@11.1.0@@@1")
-                          (install-paths '("node_modules/svgo/node_modules/commander"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/commander/-/commander-11.1.0.tgz")
-                                    (file-name "npm-commander-11.1.0.tgz")
-                                    (sha256 (base32
-                                             "0pnhld6ssccfww0kzlpskxghz4cnal3b7yz90iqcfs13wy4cijsl")))))
         (bun-lock-package (name "commander")
                           (version "15.0.0")
                           (cache-directory "commander@15.0.0@@@1")
@@ -56101,7 +54813,7 @@
         (bun-lock-package (name "cookie")
                           (version "1.1.1")
                           (cache-directory "cookie@1.1.1@@@1")
-                          (install-paths '("node_modules/youch/node_modules/cookie"))
+                          (install-paths '("node_modules/cookie"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -56109,28 +54821,6 @@
                                     (file-name "npm-cookie-1.1.1.tgz")
                                     (sha256 (base32
                                              "0q0vv5j84lw10pwkzmdkj2p2x1ikh0iqn44vil4j4rwqcsq454qf")))))
-        (bun-lock-package (name "cookie")
-                          (version "2.0.1")
-                          (cache-directory "cookie@2.0.1@@@1")
-                          (install-paths '("node_modules/cookie"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/cookie/-/cookie-2.0.1.tgz")
-                                    (file-name "npm-cookie-2.0.1.tgz")
-                                    (sha256 (base32
-                                             "1w3gn2s6fwnfml4b27gf3m0d0xyvap04f42n2s4i4mgwd1k145l5")))))
-        (bun-lock-package (name "cookie-es")
-                          (version "1.2.3")
-                          (cache-directory "cookie-es@1.2.3@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage/node_modules/h3/node_modules/cookie-es"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/cookie-es/-/cookie-es-1.2.3.tgz")
-                                    (file-name "npm-cookie-es-1.2.3.tgz")
-                                    (sha256 (base32
-                                             "0lj3zp5krdbmbqynkcq126pbi6rvhlx8g4fbfb2is3kxv2skyhqi")))))
         (bun-lock-package (name "cookie-es")
                           (version "3.1.1")
                           (cache-directory "cookie-es@3.1.1@@@1")
@@ -56221,17 +54911,6 @@
                                     (sha256 (base32
                                              "1siqxlydjwpihy7klgd15cah56vsmxrdm3q90gndyfj1vh63530q")))))
         (bun-lock-package (name "crossws")
-                          (version "0.3.5")
-                          (cache-directory "crossws@0.3.5@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage/node_modules/h3/node_modules/crossws"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/crossws/-/crossws-0.3.5.tgz")
-                                    (file-name "npm-crossws-0.3.5.tgz")
-                                    (sha256 (base32
-                                             "0iikivfcm8yy8byikr4z44dhk97xkgg0hjk0awvpwhmb9awi377v")))))
-        (bun-lock-package (name "crossws")
                           (version "0.4.15")
                           (cache-directory "crossws@0.4.15@@@1")
                           (install-paths '("node_modules/crossws"))
@@ -56265,10 +54944,58 @@
                                     (file-name "npm-csp_evaluator-1.1.8.tgz")
                                     (sha256 (base32
                                              "016r5ws1lr0sfvqjkyn0lssx1fnck9avl1ccf049k8v7xlq2lkrb")))))
+        (bun-lock-package (name "css-background-parser")
+                          (version "0.1.0")
+                          (cache-directory "css-background-parser@0.1.0@@@1")
+                          (install-paths '("node_modules/css-background-parser"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/css-background-parser/-/css-background-parser-0.1.0.tgz")
+                                    (file-name
+                                     "npm-css-background-parser-0.1.0.tgz")
+                                    (sha256 (base32
+                                             "0n7vybqaswyx7gz18bq8la7lhqz14bk13xr0mb48mz3wrax0rzlf")))))
+        (bun-lock-package (name "css-box-shadow")
+                          (version "1.0.0-3")
+                          (cache-directory "css-box-shadow@1.0.0-3@@@1")
+                          (install-paths '("node_modules/css-box-shadow"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/css-box-shadow/-/css-box-shadow-1.0.0-3.tgz")
+                                    (file-name
+                                     "npm-css-box-shadow-1.0.0-3.tgz")
+                                    (sha256 (base32
+                                             "0jga0v96x72d21y4f6lrfgj1567kba01q3c1k7lw0v8bly6dfim0")))))
+        (bun-lock-package (name "css-color-keywords")
+                          (version "1.0.0")
+                          (cache-directory "css-color-keywords@1.0.0@@@1")
+                          (install-paths '("node_modules/css-color-keywords"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/css-color-keywords/-/css-color-keywords-1.0.0.tgz")
+                                    (file-name
+                                     "npm-css-color-keywords-1.0.0.tgz")
+                                    (sha256 (base32
+                                             "09c825dnngvjaqsd33lh8j71x5ww3dh7jj3nf0fx9cd0q49fm8zw")))))
+        (bun-lock-package (name "css-gradient-parser")
+                          (version "0.0.17")
+                          (cache-directory "css-gradient-parser@0.0.17@@@1")
+                          (install-paths '("node_modules/css-gradient-parser"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/css-gradient-parser/-/css-gradient-parser-0.0.17.tgz")
+                                    (file-name
+                                     "npm-css-gradient-parser-0.0.17.tgz")
+                                    (sha256 (base32
+                                             "18svs3f03l66vxqlc7v2i6hf13dha4rr1xzinxrm33hvh9im7w72")))))
         (bun-lock-package (name "css-select")
                           (version "5.2.2")
                           (cache-directory "css-select@5.2.2@@@1")
-                          (install-paths '("node_modules/node-html-parser/node_modules/css-select"))
+                          (install-paths '("node_modules/css-select"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -56276,55 +55003,22 @@
                                     (file-name "npm-css-select-5.2.2.tgz")
                                     (sha256 (base32
                                              "0xdfnahx0iq1jjqg88wnkvnq0z58dms6d7skpgj59hxb8yf2lg5b")))))
-        (bun-lock-package (name "css-select")
-                          (version "6.0.0")
-                          (cache-directory "css-select@6.0.0@@@1")
-                          (install-paths '("node_modules/css-select"))
+        (bun-lock-package (name "css-to-react-native")
+                          (version "3.2.0")
+                          (cache-directory "css-to-react-native@3.2.0@@@1")
+                          (install-paths '("node_modules/css-to-react-native"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/css-select/-/css-select-6.0.0.tgz")
-                                    (file-name "npm-css-select-6.0.0.tgz")
-                                    (sha256 (base32
-                                             "1idg9nwhwh7zvk0sax075f6q23lxxy3j7s75wsmk9bcnr8hgs1bx")))))
-        (bun-lock-package (name "css-selector-parser")
-                          (version "3.3.0")
-                          (cache-directory "css-selector-parser@3.3.0@@@1")
-                          (install-paths '("node_modules/css-selector-parser"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/css-selector-parser/-/css-selector-parser-3.3.0.tgz")
+                                     "https://registry.npmjs.org/css-to-react-native/-/css-to-react-native-3.2.0.tgz")
                                     (file-name
-                                     "npm-css-selector-parser-3.3.0.tgz")
+                                     "npm-css-to-react-native-3.2.0.tgz")
                                     (sha256 (base32
-                                             "0j0yda4m1nwfwcqh5j7r9hql1ajccz03h02ifpjcvqh4y9d66rw6")))))
-        (bun-lock-package (name "css-tree")
-                          (version "2.2.1")
-                          (cache-directory "css-tree@2.2.1@@@1")
-                          (install-paths '("node_modules/csso/node_modules/css-tree"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/css-tree/-/css-tree-2.2.1.tgz")
-                                    (file-name "npm-css-tree-2.2.1.tgz")
-                                    (sha256 (base32
-                                             "09prxi8pxh93ng8xrkhcr5qi1jrwgv9cng0m6khl5k8w95ckn4y5")))))
-        (bun-lock-package (name "css-tree")
-                          (version "3.2.1")
-                          (cache-directory "css-tree@3.2.1@@@1")
-                          (install-paths '("node_modules/css-tree"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/css-tree/-/css-tree-3.2.1.tgz")
-                                    (file-name "npm-css-tree-3.2.1.tgz")
-                                    (sha256 (base32
-                                             "02mfzz1vklyj68ff481ym2vbcbiv1a7cy3879hx101nh6gkvy1jc")))))
+                                             "0v5pcpghqhjmbsb9i594vvh6llba9kbskdgqsx98lijyn7nhb84p")))))
         (bun-lock-package (name "css-what")
                           (version "6.2.2")
                           (cache-directory "css-what@6.2.2@@@1")
-                          (install-paths '("node_modules/node-html-parser/node_modules/css-select/node_modules/css-what"))
+                          (install-paths '("node_modules/css-what"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -56332,17 +55026,6 @@
                                     (file-name "npm-css-what-6.2.2.tgz")
                                     (sha256 (base32
                                              "1c3s4apsrvi2y1awmx1fv1f55b650cszlwqx8kigdd84dhfzapi7")))))
-        (bun-lock-package (name "css-what")
-                          (version "7.0.0")
-                          (cache-directory "css-what@7.0.0@@@1")
-                          (install-paths '("node_modules/css-what"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/css-what/-/css-what-7.0.0.tgz")
-                                    (file-name "npm-css-what-7.0.0.tgz")
-                                    (sha256 (base32
-                                             "0b6zhs7k2d2k36cmn3rm3vxsf6afbp98lvn4dpfnw6bgwlzywcg7")))))
         (bun-lock-package (name "cssesc")
                           (version "3.0.0")
                           (cache-directory "cssesc@3.0.0@@@1")
@@ -56354,17 +55037,6 @@
                                     (file-name "npm-cssesc-3.0.0.tgz")
                                     (sha256 (base32
                                              "0hqp21y2h4089cwrfk6c2hszimk7k4nn74ciwx2hhmk4nwirb99i")))))
-        (bun-lock-package (name "csso")
-                          (version "5.0.5")
-                          (cache-directory "csso@5.0.5@@@1")
-                          (install-paths '("node_modules/csso"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/csso/-/csso-5.0.5.tgz")
-                                    (file-name "npm-csso-5.0.5.tgz")
-                                    (sha256 (base32
-                                             "1n2gwm8fz8c7r52hf1lwyz08w3wgi2yfshdp03fj1ppjmwc5jq7p")))))
         (bun-lock-package (name "csstype")
                           (version "3.2.3")
                           (cache-directory "csstype@3.2.3@@@1")
@@ -56685,17 +55357,6 @@
                                     (file-name "npm-dequal-2.0.3.tgz")
                                     (sha256 (base32
                                              "0dawdan67ns9pdm629n8mh9zmy7qdn65v86j21yicy4qcbb907cl")))))
-        (bun-lock-package (name "destr")
-                          (version "2.0.5")
-                          (cache-directory "destr@2.0.5@@@1")
-                          (install-paths '("node_modules/destr"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/destr/-/destr-2.0.5.tgz")
-                                    (file-name "npm-destr-2.0.5.tgz")
-                                    (sha256 (base32
-                                             "0r0as8xq55pb5l2dwj4gj1cmmj27rmjkhr18ayb6a7chgps15rvl")))))
         (bun-lock-package (name "detect-libc")
                           (version "1.0.3")
                           (cache-directory "detect-libc@1.0.3@@@1")
@@ -56729,17 +55390,6 @@
                                     (file-name "npm-detect-node-2.1.0.tgz")
                                     (sha256 (base32
                                              "1qw23a1wlk4fpk4j0nc74hgwwgafd25vbrq1l7ppmpsnd3p0aq03")))))
-        (bun-lock-package (name "devalue")
-                          (version "5.9.4")
-                          (cache-directory "devalue@5.9.4@@@1")
-                          (install-paths '("node_modules/devalue"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/devalue/-/devalue-5.9.4.tgz")
-                                    (file-name "npm-devalue-5.9.4.tgz")
-                                    (sha256 (base32
-                                             "0ssphh0691lr3aypqk1gnpzry922pxnmv9gv4q9jwcc4pcsckz6k")))))
         (bun-lock-package (name "devlop")
                           (version "1.1.0")
                           (cache-directory "devlop@1.1.0@@@1")
@@ -56813,8 +55463,7 @@
                           (version "9.0.0")
                           (cache-directory "diff@9.0.0@@@1")
                           (install-paths '("node_modules/@opentui/core/node_modules/diff"
-                                           "node_modules/@pierre/diffs/node_modules/diff"
-                                           "node_modules/astro/node_modules/diff"))
+                                           "node_modules/@pierre/diffs/node_modules/diff"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -56833,17 +55482,6 @@
                                     (file-name "npm-dir-compare-4.2.0.tgz")
                                     (sha256 (base32
                                              "1jyvlbmsdzxgd4zfbcalfx3l0isvi9119zkhs7ki4n4k5xnkamxq")))))
-        (bun-lock-package (name "direction")
-                          (version "2.0.1")
-                          (cache-directory "direction@2.0.1@@@1")
-                          (install-paths '("node_modules/direction"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/direction/-/direction-2.0.1.tgz")
-                                    (file-name "npm-direction-2.0.1.tgz")
-                                    (sha256 (base32
-                                             "165arp20d01g2chvrv9b8jc0s2651gvlvlp7cx3ks46hhc0r5xy0")))))
         (bun-lock-package (name "dmg-builder")
                           (version "26.15.7")
                           (cache-directory "dmg-builder@26.15.7@@@1")
@@ -56980,17 +55618,6 @@
                                      "npm-drizzle-orm-1.0.0-rc.5-169397b.tgz")
                                     (sha256 (base32
                                              "0i73ik4x3xbpn6aa8gxsazb46m4jr4328d2dnn6n1awwjhax6plf")))))
-        (bun-lock-package (name "dset")
-                          (version "3.1.4")
-                          (cache-directory "dset@3.1.4@@@1")
-                          (install-paths '("node_modules/dset"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/dset/-/dset-3.1.4.tgz")
-                                    (file-name "npm-dset-3.1.4.tgz")
-                                    (sha256 (base32
-                                             "0mw39i6zj49zpfgk6g0qv738d69svcqkiwph6mn438p65csm6mza")))))
         (bun-lock-package (name "dunder-proto")
                           (version "1.0.1")
                           (cache-directory "dunder-proto@1.0.1@@@1")
@@ -57048,16 +55675,16 @@
                                     (sha256 (base32
                                              "175r500n567a04qmswzw5hkgdnika3dvn63n284jlar2gvmyhj2i")))))
         (bun-lock-package (name "effect")
-                          (version "4.0.6")
-                          (cache-directory "effect@4.0.6@@@1")
+                          (version "4.1.0")
+                          (cache-directory "effect@4.1.0@@@1")
                           (install-paths '("node_modules/effect"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/effect/-/effect-4.0.6.tgz")
-                                    (file-name "npm-effect-4.0.6.tgz")
+                                     "https://registry.npmjs.org/effect/-/effect-4.1.0.tgz")
+                                    (file-name "npm-effect-4.1.0.tgz")
                                     (sha256 (base32
-                                             "0pdpgr0af3m1dv6wl17pa9x44a3wh93aw0r1qycik3v5ydi2hvd3")))))
+                                             "03ibdwrkl2cvs037mmibzykwsz3jk7hg0qr8fky2s6b4r4smlw21")))))
         (bun-lock-package (name "ejs")
                           (version "3.1.10")
                           (cache-directory "ejs@3.1.10@@@1")
@@ -57210,17 +55837,6 @@
                                      "npm-electron-winstaller-5.4.0.tgz")
                                     (sha256 (base32
                                              "1cddh2ab2gpy1zi8zw7afrg2ggg4addypg5lhgkwqji24srrgbs7")))))
-        (bun-lock-package (name "emmet")
-                          (version "2.4.11")
-                          (cache-directory "emmet@2.4.11@@@1")
-                          (install-paths '("node_modules/emmet"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/emmet/-/emmet-2.4.11.tgz")
-                                    (file-name "npm-emmet-2.4.11.tgz")
-                                    (sha256 (base32
-                                             "080gg0187a7mfdg8i1g46vg3jpsvm3bl0zp3qllja2bkv727m1hi")))))
         (bun-lock-package (name "emoji-regex")
                           (version "10.6.0")
                           (cache-directory "emoji-regex@10.6.0@@@1")
@@ -57258,6 +55874,17 @@
                                     (file-name "npm-emoji-regex-9.2.2.tgz")
                                     (sha256 (base32
                                              "0zmfcyy2d2ki43dakckq4h649q8w4jiyl0b5lc6bsfmjh3x8viqx")))))
+        (bun-lock-package (name "emoji-regex-xs")
+                          (version "2.0.1")
+                          (cache-directory "emoji-regex-xs@2.0.1@@@1")
+                          (install-paths '("node_modules/emoji-regex-xs"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/emoji-regex-xs/-/emoji-regex-xs-2.0.1.tgz")
+                                    (file-name "npm-emoji-regex-xs-2.0.1.tgz")
+                                    (sha256 (base32
+                                             "1ckpl59g9p0cv7qs3hg9al8l8k6vwl0xp22hghf5khskqw89kfh2")))))
         (bun-lock-package (name "encodeurl")
                           (version "2.0.0")
                           (cache-directory "encodeurl@2.0.0@@@1")
@@ -57496,17 +56123,6 @@
                                     (file-name "npm-es-module-lexer-2.3.2.tgz")
                                     (sha256 (base32
                                              "19z1a95bvw4c0dsc7gn5dai1s2mi6y8fx4nqyf1l9k6p7dgxmd4r")))))
-        (bun-lock-package (name "es-module-lexer")
-                          (version "3.0.4")
-                          (cache-directory "es-module-lexer@3.0.4@@@1")
-                          (install-paths '("node_modules/astro/node_modules/es-module-lexer"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-3.0.4.tgz")
-                                    (file-name "npm-es-module-lexer-3.0.4.tgz")
-                                    (sha256 (base32
-                                             "1mz1r204bjmd4rbhjjl55sv496qvmwjbxbmvz79z7md8x92f9bgf")))))
         (bun-lock-package (name "es-object-atoms")
                           (version "1.1.2")
                           (cache-directory "es-object-atoms@1.1.2@@@1")
@@ -57588,21 +56204,9 @@
                                     (sha256 (base32
                                              "1ya3wm6rsgba1q3wzmkn52hnm75lj5xzpcrl4xwc9r99b0a88x92")))))
         (bun-lock-package (name "esbuild")
-                          (version "0.25.4")
-                          (cache-directory "esbuild@0.25.4@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/esbuild"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/esbuild/-/esbuild-0.25.4.tgz")
-                                    (file-name "npm-esbuild-0.25.4.tgz")
-                                    (sha256 (base32
-                                             "0iqjjxx15nzjw91nmybk35wjx4vwv2c7bqw9pgjkyz028cy2jjyz")))))
-        (bun-lock-package (name "esbuild")
                           (version "0.28.1")
                           (cache-directory "esbuild@0.28.1@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler/node_modules/esbuild"
-                                           "node_modules/wrangler/node_modules/esbuild"))
+                          (install-paths '("node_modules/wrangler/node_modules/esbuild"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -57610,6 +56214,17 @@
                                     (file-name "npm-esbuild-0.28.1.tgz")
                                     (sha256 (base32
                                              "19a0xl7330f16xxxn07m4fcs4nvidmh7hmmkr3aid799z1bgg3pb")))))
+        (bun-lock-package (name "esbuild")
+                          (version "0.28.2")
+                          (cache-directory "esbuild@0.28.2@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/esbuild"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz")
+                                    (file-name "npm-esbuild-0.28.2.tgz")
+                                    (sha256 (base32
+                                             "124sjlciwz2zhjkw6ivbdd4ipi5yqxwsb8kvwx8dqyjw4d6gjig0")))))
         (bun-lock-package (name "escalade")
                           (version "3.2.0")
                           (cache-directory "escalade@3.2.0@@@1")
@@ -57668,17 +56283,6 @@
                                      "npm-escape-string-regexp-5.0.0.tgz")
                                     (sha256 (base32
                                              "1ri87l4by2953xhr1n5v3wszh0m5hkjndmr7rhp8aaxax2pn5dn8")))))
-        (bun-lock-package (name "esm-env")
-                          (version "1.2.2")
-                          (cache-directory "esm-env@1.2.2@@@1")
-                          (install-paths '("node_modules/esm-env"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/esm-env/-/esm-env-1.2.2.tgz")
-                                    (file-name "npm-esm-env-1.2.2.tgz")
-                                    (sha256 (base32
-                                             "0bij8qagql1npjmbw8rgasb15ngwjmalsz72pyadqd574hz1jsj2")))))
         (bun-lock-package (name "esprima")
                           (version "4.0.1")
                           (cache-directory "esprima@4.0.1@@@1")
@@ -57819,29 +56423,6 @@
                                     (file-name "npm-etag-1.8.1.tgz")
                                     (sha256 (base32
                                              "1bqgznlsrqcmxnhmnqkhwzcrqfaalxmfxzly1ikaplkkm5w6ragn")))))
-        (bun-lock-package (name "event-target-shim")
-                          (version "5.0.1")
-                          (cache-directory "event-target-shim@5.0.1@@@1")
-                          (install-paths '("node_modules/event-target-shim"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz")
-                                    (file-name
-                                     "npm-event-target-shim-5.0.1.tgz")
-                                    (sha256 (base32
-                                             "1g16bd7qlk5q6v23k52fq4xc4na9f8ind4365swh7iz5rni7swgh")))))
-        (bun-lock-package (name "eventemitter3")
-                          (version "5.0.4")
-                          (cache-directory "eventemitter3@5.0.4@@@1")
-                          (install-paths '("node_modules/eventemitter3"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.4.tgz")
-                                    (file-name "npm-eventemitter3-5.0.4.tgz")
-                                    (sha256 (base32
-                                             "1djfas2x131yk4wxm9548x69lgzp79hni6n381k9wav7fmhs7m11")))))
         (bun-lock-package (name "eventsource")
                           (version "3.0.7")
                           (cache-directory "eventsource@3.0.7@@@1")
@@ -57865,17 +56446,6 @@
                                      "npm-eventsource-parser-3.1.1.tgz")
                                     (sha256 (base32
                                              "1v9niv3704fq0s4l1dpkp2zxncpb9i0p6gny8yn7dspcdk5a1824")))))
-        (bun-lock-package (name "exit-hook")
-                          (version "2.2.1")
-                          (cache-directory "exit-hook@2.2.1@@@1")
-                          (install-paths '("node_modules/exit-hook"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/exit-hook/-/exit-hook-2.2.1.tgz")
-                                    (file-name "npm-exit-hook-2.2.1.tgz")
-                                    (sha256 (base32
-                                             "03l2py0dp7wz14gyp5c4qvambsp2m6l5ryz7g4h5lxnq6v1b8b8z")))))
         (bun-lock-package (name "exponential-backoff")
                           (version "3.1.3")
                           (cache-directory "exponential-backoff@3.1.3@@@1")
@@ -57911,18 +56481,6 @@
                                      "npm-express-rate-limit-8.7.1.tgz")
                                     (sha256 (base32
                                              "1j1gh0w5qmva1k1xbphv628ws6bkww5zsb9k7hrd2m1fgxy57hf7")))))
-        (bun-lock-package (name "expressive-code")
-                          (version "0.44.2")
-                          (cache-directory "expressive-code@0.44.2@@@1")
-                          (install-paths '("node_modules/expressive-code"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/expressive-code/-/expressive-code-0.44.2.tgz")
-                                    (file-name
-                                     "npm-expressive-code-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "1nrmr4jhppbch8c5m4x06qs5qfymg6wj9byvdwx4fbablmgxi9j7")))))
         (bun-lock-package (name "exsolve")
                           (version "1.1.3")
                           (cache-directory "exsolve@1.1.3@@@1")
@@ -58035,31 +56593,6 @@
                                     (file-name "npm-fast-sha256-1.3.0.tgz")
                                     (sha256 (base32
                                              "1xl45kfg22wr0qnzybw05aahbwdlcl7lsz8f4nqwzjadb6i7x2ag")))))
-        (bun-lock-package (name "fast-string-truncated-width")
-                          (version "3.0.3")
-                          (cache-directory
-                           "fast-string-truncated-width@3.0.3@@@1")
-                          (install-paths '("node_modules/fast-string-truncated-width"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/fast-string-truncated-width/-/fast-string-truncated-width-3.0.3.tgz")
-                                    (file-name
-                                     "npm-fast-string-truncated-width-3.0.3.tgz")
-                                    (sha256 (base32
-                                             "1cay7d986m3yy4rkh8ybcn54n4jjj10j1fjxxm9v8w1l88swxnmm")))))
-        (bun-lock-package (name "fast-string-width")
-                          (version "3.0.2")
-                          (cache-directory "fast-string-width@3.0.2@@@1")
-                          (install-paths '("node_modules/fast-string-width"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/fast-string-width/-/fast-string-width-3.0.2.tgz")
-                                    (file-name
-                                     "npm-fast-string-width-3.0.2.tgz")
-                                    (sha256 (base32
-                                             "0akmnc694qnsl8vdmiargfh9va9wd1i5zzr7l9ahx6r0vw9z3nkj")))))
         (bun-lock-package (name "fast-uri")
                           (version "3.1.5")
                           (cache-directory "fast-uri@3.1.5@@@1")
@@ -58071,17 +56604,6 @@
                                     (file-name "npm-fast-uri-3.1.5.tgz")
                                     (sha256 (base32
                                              "0byfag2gbsi6br0h087jkr9wy506x2y641xc5hwqrp0n6xz1x9w2")))))
-        (bun-lock-package (name "fast-wrap-ansi")
-                          (version "0.2.2")
-                          (cache-directory "fast-wrap-ansi@0.2.2@@@1")
-                          (install-paths '("node_modules/fast-wrap-ansi"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/fast-wrap-ansi/-/fast-wrap-ansi-0.2.2.tgz")
-                                    (file-name "npm-fast-wrap-ansi-0.2.2.tgz")
-                                    (sha256 (base32
-                                             "0lg0zb9z4bx13v8rwh3zjwas7axi556bwd0p3bq0ai3b6h7s3d7n")))))
         (bun-lock-package (name "fastq")
                           (version "1.20.1")
                           (cache-directory "fastq@1.20.1@@@1")
@@ -58126,6 +56648,28 @@
                                     (file-name "npm-ffi-rs-1.3.7.tgz")
                                     (sha256 (base32
                                              "0k23xgvns6q2px0ndaqb1h8namfhlhhghaa23h4j1ll6snx0phc1")))))
+        (bun-lock-package (name "fflate")
+                          (version "0.7.3")
+                          (cache-directory "fflate@0.7.3@@@1")
+                          (install-paths '("node_modules/fflate"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/fflate/-/fflate-0.7.3.tgz")
+                                    (file-name "npm-fflate-0.7.3.tgz")
+                                    (sha256 (base32
+                                             "1bhpwpwapva62ilbmy7q76104yfzk5jbmqkg3pyp5y1ahwyzpj0h")))))
+        (bun-lock-package (name "fflate")
+                          (version "0.8.3")
+                          (cache-directory "fflate@0.8.3@@@1")
+                          (install-paths '("node_modules/@types/three/node_modules/fflate"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz")
+                                    (file-name "npm-fflate-0.8.3.tgz")
+                                    (sha256 (base32
+                                             "14kxhl2w7wn58fvs0jlfd3m87sn2mrs24y1w2m1pnh028j1cvhiq")))))
         (bun-lock-package (name "filelist")
                           (version "1.0.6")
                           (cache-directory "filelist@1.0.6@@@1")
@@ -58171,17 +56715,6 @@
                                      "npm-find-babel-config-2.1.2.tgz")
                                     (sha256 (base32
                                              "1vzh9sypmgh1yrizyg1rwmhhxbysf8666nc7ygdpzaalvc1wacr2")))))
-        (bun-lock-package (name "find-proc")
-                          (version "0.2.0")
-                          (cache-directory "find-proc@0.2.0@@@1")
-                          (install-paths '("node_modules/find-proc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/find-proc/-/find-proc-0.2.0.tgz")
-                                    (file-name "npm-find-proc-0.2.0.tgz")
-                                    (sha256 (base32
-                                             "1g89ai5g3rjslaj8b4mx2vhcmj4fr9x2pjzanwwj4ximdfpxz8lc")))))
         (bun-lock-package (name "find-up")
                           (version "3.0.0")
                           (cache-directory "find-up@3.0.0@@@1")
@@ -58204,39 +56737,6 @@
                                     (file-name "npm-find-up-5.0.0.tgz")
                                     (sha256 (base32
                                              "1d3mr9ifkyz3dljjm6gr6av87a3s7zyn66fq72bc0s9pb3xlx9pl")))))
-        (bun-lock-package (name "flattie")
-                          (version "1.1.1")
-                          (cache-directory "flattie@1.1.1@@@1")
-                          (install-paths '("node_modules/flattie"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/flattie/-/flattie-1.1.1.tgz")
-                                    (file-name "npm-flattie-1.1.1.tgz")
-                                    (sha256 (base32
-                                             "15cjq7vgvv6y8v1g35l63pjwzxfs3h02yyj7ahbrdai1q3gd2ny5")))))
-        (bun-lock-package (name "fontace")
-                          (version "0.4.1")
-                          (cache-directory "fontace@0.4.1@@@1")
-                          (install-paths '("node_modules/fontace"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/fontace/-/fontace-0.4.1.tgz")
-                                    (file-name "npm-fontace-0.4.1.tgz")
-                                    (sha256 (base32
-                                             "1x3g72qz2svhmbs9jhxqxlfn4jp056q8vlipsj22l22ng9s2cq9b")))))
-        (bun-lock-package (name "fontkitten")
-                          (version "1.0.3")
-                          (cache-directory "fontkitten@1.0.3@@@1")
-                          (install-paths '("node_modules/fontkitten"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/fontkitten/-/fontkitten-1.0.3.tgz")
-                                    (file-name "npm-fontkitten-1.0.3.tgz")
-                                    (sha256 (base32
-                                             "1wdcavkb36l0srqkpl8n0v9rq55vmz162x36lzbaa4zq44za0z1r")))))
         (bun-lock-package (name "for-each")
                           (version "0.3.5")
                           (cache-directory "for-each@0.3.5@@@1")
@@ -58271,29 +56771,6 @@
                                     (file-name "npm-form-data-4.0.6.tgz")
                                     (sha256 (base32
                                              "0mxmic4kv6icgkarrj953v09cmhijryxlimscy1kgx99nvlr8kgw")))))
-        (bun-lock-package (name "form-data-encoder")
-                          (version "1.7.2")
-                          (cache-directory "form-data-encoder@1.7.2@@@1")
-                          (install-paths '("node_modules/form-data-encoder"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/form-data-encoder/-/form-data-encoder-1.7.2.tgz")
-                                    (file-name
-                                     "npm-form-data-encoder-1.7.2.tgz")
-                                    (sha256 (base32
-                                             "1gnv4l5d3i8fvpwvjk5dk1mmhk6j87zh4ifq1hrdahzi7r3h1zhh")))))
-        (bun-lock-package (name "formdata-node")
-                          (version "4.4.1")
-                          (cache-directory "formdata-node@4.4.1@@@1")
-                          (install-paths '("node_modules/formdata-node"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/formdata-node/-/formdata-node-4.4.1.tgz")
-                                    (file-name "npm-formdata-node-4.4.1.tgz")
-                                    (sha256 (base32
-                                             "1i4g8r7g2mns70d1fj4jzgjbkgp7nb9mnqwyvw796jcf470nivw9")))))
         (bun-lock-package (name "formdata-polyfill")
                           (version "4.0.10")
                           (cache-directory "formdata-polyfill@4.0.10@@@1")
@@ -58636,18 +57113,6 @@
                                     (file-name "npm-get-tsconfig-4.14.3.tgz")
                                     (sha256 (base32
                                              "05h7qc8d2ma2g6qjc75h3w5jkaylbmwl4d8r7hfdzjd47dk5mfbc")))))
-        (bun-lock-package (name "get-tsconfig")
-                          (version "5.0.0-beta.6")
-                          (cache-directory "get-tsconfig@5.0.0-beta.6@@@1")
-                          (install-paths '("node_modules/astro/node_modules/get-tsconfig"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/get-tsconfig/-/get-tsconfig-5.0.0-beta.6.tgz")
-                                    (file-name
-                                     "npm-get-tsconfig-5.0.0-beta.6.tgz")
-                                    (sha256 (base32
-                                             "1gwrmsk9w7h8w8z49xqk626g552a2ma7nksjr0gvz2zvg2k918yp")))))
         (bun-lock-package (name "ghostty-web")
                           (version "e91e38a")
                           (cache-directory
@@ -58677,17 +57142,17 @@
                                     (sha256 (base32
                                              "03vx6vqn5n0ham08syfybpkygjpcb9cyfy6lqgr2ywkxdglndpnx")))))
         (bun-lock-package (name "gitlab-ai-provider")
-                          (version "6.23.1")
-                          (cache-directory "gitlab-ai-provider@6.23.1@@@1")
+                          (version "6.24.0")
+                          (cache-directory "gitlab-ai-provider@6.24.0@@@1")
                           (install-paths '("node_modules/gitlab-ai-provider"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/gitlab-ai-provider/-/gitlab-ai-provider-6.23.1.tgz")
+                                     "https://registry.npmjs.org/gitlab-ai-provider/-/gitlab-ai-provider-6.24.0.tgz")
                                     (file-name
-                                     "npm-gitlab-ai-provider-6.23.1.tgz")
+                                     "npm-gitlab-ai-provider-6.24.0.tgz")
                                     (sha256 (base32
-                                             "0f70jmqw543gia87746c0mkfqrq1736pn9vj848g3vv8x1d19xrp")))))
+                                             "0rn7b25y5j8v7k5bpr8rvn9slmrgvq7api234llnvircjryd6lnl")))))
         (bun-lock-package (name "glob")
                           (version "10.5.0")
                           (cache-directory "glob@10.5.0@@@1")
@@ -58767,17 +57232,6 @@
                                     (file-name "npm-glob-parent-5.1.2.tgz")
                                     (sha256 (base32
                                              "1mfna9lpp82lapng0qq5x4x5j10nhimcx36lg4m5k4wbs7msy5ln")))))
-        (bun-lock-package (name "glob-to-regexp")
-                          (version "0.4.1")
-                          (cache-directory "glob-to-regexp@0.4.1@@@1")
-                          (install-paths '("node_modules/glob-to-regexp"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.4.1.tgz")
-                                    (file-name "npm-glob-to-regexp-0.4.1.tgz")
-                                    (sha256 (base32
-                                             "1b6hmxj0hrqfrb9ymnliryndch81gmmb2pg8x0hg9kw98znkxd8z")))))
         (bun-lock-package (name "global-agent")
                           (version "3.0.0")
                           (cache-directory "global-agent@3.0.0@@@1")
@@ -58914,17 +57368,6 @@
                                     (sha256 (base32
                                              "02phrblj99sqwd50a3rip7l2rxpnrkqs9w6qhqrync4js9chpms0")))))
         (bun-lock-package (name "h3")
-                          (version "1.15.11")
-                          (cache-directory "h3@1.15.11@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage/node_modules/h3"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/h3/-/h3-1.15.11.tgz")
-                                    (file-name "npm-h3-1.15.11.tgz")
-                                    (sha256 (base32
-                                             "1x4hgvr487snxm58vq52njyvxa0xzkrf1hq9q32fmnm3xzgmp5qa")))))
-        (bun-lock-package (name "h3")
                           (version "2.0.7")
                           (cache-directory "h3@2.0.7@@@1")
                           (install-paths '("node_modules/h3"))
@@ -58946,6 +57389,17 @@
                                     (file-name "npm-happy-dom-20.11.1.tgz")
                                     (sha256 (base32
                                              "03abgdg5a436mk6aq5wlnyjm5x6rx4f0fn6lq02pr3g2m7fiw7f8")))))
+        (bun-lock-package (name "harfbuzzjs")
+                          (version "0.10.0")
+                          (cache-directory "harfbuzzjs@0.10.0@@@1")
+                          (install-paths '("node_modules/harfbuzzjs"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/harfbuzzjs/-/harfbuzzjs-0.10.0.tgz")
+                                    (file-name "npm-harfbuzzjs-0.10.0.tgz")
+                                    (sha256 (base32
+                                             "13qqq7k953m6c5dy1xlrmz7b6qgwl1d0q373jsf80is5rvvwclp8")))))
         (bun-lock-package (name "has-bigints")
                           (version "1.1.0")
                           (cache-directory "has-bigints@1.1.0@@@1")
@@ -59025,91 +57479,6 @@
                                     (file-name "npm-hasown-2.0.4.tgz")
                                     (sha256 (base32
                                              "0k2fia5l1m6wpsala5ldacnfshiiirhww91iq7hh0djpjlzv1lp9")))))
-        (bun-lock-package (name "hast-util-embedded")
-                          (version "3.0.0")
-                          (cache-directory "hast-util-embedded@3.0.0@@@1")
-                          (install-paths '("node_modules/hast-util-embedded"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-embedded/-/hast-util-embedded-3.0.0.tgz")
-                                    (file-name
-                                     "npm-hast-util-embedded-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "1nz4fbkzmdicax72x9yrikjk5ppsyswcpwpgwnkpv1h0gv172f4c")))))
-        (bun-lock-package (name "hast-util-format")
-                          (version "1.1.0")
-                          (cache-directory "hast-util-format@1.1.0@@@1")
-                          (install-paths '("node_modules/hast-util-format"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-format/-/hast-util-format-1.1.0.tgz")
-                                    (file-name
-                                     "npm-hast-util-format-1.1.0.tgz")
-                                    (sha256 (base32
-                                             "1r7asnnh1z6aa3vzvpwfcidvhyhbjs86kzsr4fvajx1wwbzf5qdm")))))
-        (bun-lock-package (name "hast-util-from-html")
-                          (version "2.0.3")
-                          (cache-directory "hast-util-from-html@2.0.3@@@1")
-                          (install-paths '("node_modules/hast-util-from-html"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-from-html/-/hast-util-from-html-2.0.3.tgz")
-                                    (file-name
-                                     "npm-hast-util-from-html-2.0.3.tgz")
-                                    (sha256 (base32
-                                             "1sx4fxb5xi58vghckl61d9l4gkrkspwxkqv3bgl8h8i53hq33wky")))))
-        (bun-lock-package (name "hast-util-from-parse5")
-                          (version "8.0.3")
-                          (cache-directory "hast-util-from-parse5@8.0.3@@@1")
-                          (install-paths '("node_modules/hast-util-from-parse5"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-from-parse5/-/hast-util-from-parse5-8.0.3.tgz")
-                                    (file-name
-                                     "npm-hast-util-from-parse5-8.0.3.tgz")
-                                    (sha256 (base32
-                                             "0sihphkqqrycysw4qnia3ng4gjhgl9hswg6jjgyrqfsd0b0mcp08")))))
-        (bun-lock-package (name "hast-util-has-property")
-                          (version "3.0.0")
-                          (cache-directory "hast-util-has-property@3.0.0@@@1")
-                          (install-paths '("node_modules/hast-util-has-property"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-has-property/-/hast-util-has-property-3.0.0.tgz")
-                                    (file-name
-                                     "npm-hast-util-has-property-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "051l32rvm343qz274ppv1dbba0kwqjryf1crf7gziycdx1i9zgrg")))))
-        (bun-lock-package (name "hast-util-heading-rank")
-                          (version "3.0.0")
-                          (cache-directory "hast-util-heading-rank@3.0.0@@@1")
-                          (install-paths '("node_modules/hast-util-heading-rank"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-heading-rank/-/hast-util-heading-rank-3.0.0.tgz")
-                                    (file-name
-                                     "npm-hast-util-heading-rank-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "1hbyvyws47wx6wb46bhcfqqns0c0bj8ll2ifbxr363w37n1gn2s3")))))
-        (bun-lock-package (name "hast-util-is-body-ok-link")
-                          (version "3.0.1")
-                          (cache-directory
-                           "hast-util-is-body-ok-link@3.0.1@@@1")
-                          (install-paths '("node_modules/hast-util-is-body-ok-link"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-is-body-ok-link/-/hast-util-is-body-ok-link-3.0.1.tgz")
-                                    (file-name
-                                     "npm-hast-util-is-body-ok-link-3.0.1.tgz")
-                                    (sha256 (base32
-                                             "0rc3ib9649p876a33nc6qra3crds355m72gwd31qf2sggxbh6lfl")))))
         (bun-lock-package (name "hast-util-is-element")
                           (version "3.0.0")
                           (cache-directory "hast-util-is-element@3.0.0@@@1")
@@ -59122,67 +57491,6 @@
                                      "npm-hast-util-is-element-3.0.0.tgz")
                                     (sha256 (base32
                                              "1vnxa38zhwbp8sp1b9vzx23r9l67ngw5rhn2l1sxdzib8225pbkw")))))
-        (bun-lock-package (name "hast-util-minify-whitespace")
-                          (version "1.0.1")
-                          (cache-directory
-                           "hast-util-minify-whitespace@1.0.1@@@1")
-                          (install-paths '("node_modules/hast-util-minify-whitespace"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-minify-whitespace/-/hast-util-minify-whitespace-1.0.1.tgz")
-                                    (file-name
-                                     "npm-hast-util-minify-whitespace-1.0.1.tgz")
-                                    (sha256 (base32
-                                             "0kfjax1lyzm26fisqw01f378pddxy7l910l4f97rdppnjmd3y6wb")))))
-        (bun-lock-package (name "hast-util-parse-selector")
-                          (version "4.0.0")
-                          (cache-directory
-                           "hast-util-parse-selector@4.0.0@@@1")
-                          (install-paths '("node_modules/hast-util-parse-selector"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-parse-selector/-/hast-util-parse-selector-4.0.0.tgz")
-                                    (file-name
-                                     "npm-hast-util-parse-selector-4.0.0.tgz")
-                                    (sha256 (base32
-                                             "1148im6vlffmia8cprydw5xcpbl221ph3r3gaxc4fjas5jfvcyfz")))))
-        (bun-lock-package (name "hast-util-phrasing")
-                          (version "3.0.1")
-                          (cache-directory "hast-util-phrasing@3.0.1@@@1")
-                          (install-paths '("node_modules/hast-util-phrasing"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-phrasing/-/hast-util-phrasing-3.0.1.tgz")
-                                    (file-name
-                                     "npm-hast-util-phrasing-3.0.1.tgz")
-                                    (sha256 (base32
-                                             "1c06qfpc2ajkj464zqbf3ygs4qkg49aifiyizvk7yhsqdbzkwy18")))))
-        (bun-lock-package (name "hast-util-raw")
-                          (version "9.1.0")
-                          (cache-directory "hast-util-raw@9.1.0@@@1")
-                          (install-paths '("node_modules/hast-util-raw"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-raw/-/hast-util-raw-9.1.0.tgz")
-                                    (file-name "npm-hast-util-raw-9.1.0.tgz")
-                                    (sha256 (base32
-                                             "0jvlz98mn2820vzff95bwm1zcpayn37h7s864lgkji0805abgkk6")))))
-        (bun-lock-package (name "hast-util-select")
-                          (version "6.0.4")
-                          (cache-directory "hast-util-select@6.0.4@@@1")
-                          (install-paths '("node_modules/hast-util-select"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-select/-/hast-util-select-6.0.4.tgz")
-                                    (file-name
-                                     "npm-hast-util-select-6.0.4.tgz")
-                                    (sha256 (base32
-                                             "1m5whi0dmlm5svpf2y63f5za6maazli6khw11qm90wi3za4z877w")))))
         (bun-lock-package (name "hast-util-to-estree")
                           (version "3.1.3")
                           (cache-directory "hast-util-to-estree@3.1.3@@@1")
@@ -59220,30 +57528,6 @@
                                      "npm-hast-util-to-jsx-runtime-2.3.6.tgz")
                                     (sha256 (base32
                                              "1p2zs2slvslm3b435daairciwabk26l53sz25jc308mnhqc8yil3")))))
-        (bun-lock-package (name "hast-util-to-parse5")
-                          (version "8.0.1")
-                          (cache-directory "hast-util-to-parse5@8.0.1@@@1")
-                          (install-paths '("node_modules/hast-util-to-parse5"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-to-parse5/-/hast-util-to-parse5-8.0.1.tgz")
-                                    (file-name
-                                     "npm-hast-util-to-parse5-8.0.1.tgz")
-                                    (sha256 (base32
-                                             "07jh2mnqvwhyn0mrh0xaimqjzd9sksmilq5cfzp1ch5giybrzjf1")))))
-        (bun-lock-package (name "hast-util-to-string")
-                          (version "3.0.1")
-                          (cache-directory "hast-util-to-string@3.0.1@@@1")
-                          (install-paths '("node_modules/hast-util-to-string"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hast-util-to-string/-/hast-util-to-string-3.0.1.tgz")
-                                    (file-name
-                                     "npm-hast-util-to-string-3.0.1.tgz")
-                                    (sha256 (base32
-                                             "1cz5xjszns8am4qgady92k76npaw902is5f0b733ryp6jam8b9pf")))))
         (bun-lock-package (name "hast-util-to-text")
                           (version "4.0.2")
                           (cache-directory "hast-util-to-text@4.0.2@@@1")
@@ -59268,17 +57552,6 @@
                                      "npm-hast-util-whitespace-3.0.0.tgz")
                                     (sha256 (base32
                                              "1srcvasf82dz9ygpd6l39d1y8wq2fnjikx968wcc1jm3pgsrfgv7")))))
-        (bun-lock-package (name "hastscript")
-                          (version "9.0.1")
-                          (cache-directory "hastscript@9.0.1@@@1")
-                          (install-paths '("node_modules/hastscript"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/hastscript/-/hastscript-9.0.1.tgz")
-                                    (file-name "npm-hastscript-9.0.1.tgz")
-                                    (sha256 (base32
-                                             "1wz303n7xxlaxk813sqvcnpq9c5nmpxk4wphaj7klffd4v6gs4hp")))))
         (bun-lock-package (name "he")
                           (version "1.2.0")
                           (cache-directory "he@1.2.0@@@1")
@@ -59290,6 +57563,17 @@
                                     (file-name "npm-he-1.2.0.tgz")
                                     (sha256 (base32
                                              "0s0v3k8xgrcdch31p0ig12qkdfzdbk66s4rqhsz0nv0v1h1pqykp")))))
+        (bun-lock-package (name "hex-rgb")
+                          (version "4.3.0")
+                          (cache-directory "hex-rgb@4.3.0@@@1")
+                          (install-paths '("node_modules/hex-rgb"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/hex-rgb/-/hex-rgb-4.3.0.tgz")
+                                    (file-name "npm-hex-rgb-4.3.0.tgz")
+                                    (sha256 (base32
+                                             "0z1pa4bfjpc0qy4wdsnhn3ssm3q3kh50myc2g98shfzajmaqm2v4")))))
         (bun-lock-package (name "hono")
                           (version "4.13.13")
                           (cache-directory "hono@4.13.13@@@1")
@@ -59347,17 +57631,6 @@
                                     (file-name "npm-html-entities-2.3.3.tgz")
                                     (sha256 (base32
                                              "0j3sy1j20lnhlfmfmpx5kf7iwdpsnzinijwsi7vwcn1zynkxm3hs")))))
-        (bun-lock-package (name "html-escaper")
-                          (version "3.0.3")
-                          (cache-directory "html-escaper@3.0.3@@@1")
-                          (install-paths '("node_modules/html-escaper"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/html-escaper/-/html-escaper-3.0.3.tgz")
-                                    (file-name "npm-html-escaper-3.0.3.tgz")
-                                    (sha256 (base32
-                                             "02fidnwy7dccc1xpdqv1f4jspxg85q9q0b5zvnh5cb83m1y65i8r")))))
         (bun-lock-package (name "html-to-image")
                           (version "1.11.13")
                           (cache-directory "html-to-image@1.11.13@@@1")
@@ -59381,19 +57654,6 @@
                                      "npm-html-void-elements-3.0.0.tgz")
                                     (sha256 (base32
                                              "0c1m6x2jw1p6g6ix817k87jsf98h4504hz437yxrdljq3bsnw6rh")))))
-        (bun-lock-package (name "html-whitespace-sensitive-tag-names")
-                          (version "3.0.1")
-                          (cache-directory
-                           "html-whitespace-sensitive-tag-names@3.0.1@@@1")
-                          (install-paths '("node_modules/html-whitespace-sensitive-tag-names"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/html-whitespace-sensitive-tag-names/-/html-whitespace-sensitive-tag-names-3.0.1.tgz")
-                                    (file-name
-                                     "npm-html-whitespace-sensitive-tag-names-3.0.1.tgz")
-                                    (sha256 (base32
-                                             "15nkv1k6sgiws9hzlbfvkrzr0mw9dggy56n0aklwdv2gr4aglzz1")))))
         (bun-lock-package (name "htmlparser2")
                           (version "8.0.2")
                           (cache-directory "htmlparser2@8.0.2@@@1")
@@ -59498,17 +57758,6 @@
                                     (file-name "npm-httpxy-0.5.5.tgz")
                                     (sha256 (base32
                                              "0rsprfvf806di88y6rb5qfn1zmimlddqrhjgxm2wfai36z8zm79s")))))
-        (bun-lock-package (name "humanize-ms")
-                          (version "1.2.1")
-                          (cache-directory "humanize-ms@1.2.1@@@1")
-                          (install-paths '("node_modules/humanize-ms"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/humanize-ms/-/humanize-ms-1.2.1.tgz")
-                                    (file-name "npm-humanize-ms-1.2.1.tgz")
-                                    (sha256 (base32
-                                             "09sy84kkmvq1la85iws84w2jv1phdsf5jswg7mk7qjbr47dyc3sl")))))
         (bun-lock-package (name "husky")
                           (version "9.1.7")
                           (cache-directory "husky@9.1.7@@@1")
@@ -59532,17 +57781,6 @@
                                      "npm-i18n-iso-countries-7.14.0.tgz")
                                     (sha256 (base32
                                              "0p42ypb4q8ififkisq039gv1x44di1cywzffpk7ryy35p6zqwhdv")))))
-        (bun-lock-package (name "i18next")
-                          (version "26.5.3")
-                          (cache-directory "i18next@26.5.3@@@1")
-                          (install-paths '("node_modules/i18next"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/i18next/-/i18next-26.5.3.tgz")
-                                    (file-name "npm-i18next-26.5.3.tgz")
-                                    (sha256 (base32
-                                             "0fp4vraiv8mzkmwvillqvnn4lcrbfjh1ffm2ybfr0p241y85khsv")))))
         (bun-lock-package (name "iconv-lite")
                           (version "0.7.3")
                           (cache-directory "iconv-lite@0.7.3@@@1")
@@ -59711,17 +57949,6 @@
                                     (file-name "npm-ipaddr.js-1.9.1.tgz")
                                     (sha256 (base32
                                              "1vlg9vgdlx13dvh6h6sg3rgdbp04lkljmn6gxih43zk77xidjhbl")))))
-        (bun-lock-package (name "iron-webcrypto")
-                          (version "1.2.1")
-                          (cache-directory "iron-webcrypto@1.2.1@@@1")
-                          (install-paths '("node_modules/iron-webcrypto"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/iron-webcrypto/-/iron-webcrypto-1.2.1.tgz")
-                                    (file-name "npm-iron-webcrypto-1.2.1.tgz")
-                                    (sha256 (base32
-                                             "1z973h51vjgny3jlz2lfmnqh114m598yvbl8p3jpjrnc753yxwlf")))))
         (bun-lock-package (name "is-alphabetical")
                           (version "2.0.1")
                           (cache-directory "is-alphabetical@2.0.1@@@1")
@@ -59756,17 +57983,6 @@
                                     (file-name "npm-is-array-buffer-3.0.5.tgz")
                                     (sha256 (base32
                                              "1vwisxc2n61jn4ikxd05y0bfc8z6ij8rwc5kd22hicvjy9dp56g1")))))
-        (bun-lock-package (name "is-arrayish")
-                          (version "0.3.4")
-                          (cache-directory "is-arrayish@0.3.4@@@1")
-                          (install-paths '("node_modules/is-arrayish"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/is-arrayish/-/is-arrayish-0.3.4.tgz")
-                                    (file-name "npm-is-arrayish-0.3.4.tgz")
-                                    (sha256 (base32
-                                             "18paxdv1bk2isxjiifxxnr5c26in213plzzwavsfl8cy6j84g2vv")))))
         (bun-lock-package (name "is-async-function")
                           (version "2.1.1")
                           (cache-directory "is-async-function@2.1.1@@@1")
@@ -59871,7 +58087,7 @@
         (bun-lock-package (name "is-docker")
                           (version "3.0.0")
                           (cache-directory "is-docker@3.0.0@@@1")
-                          (install-paths '("node_modules/is-inside-container/node_modules/is-docker"))
+                          (install-paths '("node_modules/is-docker"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -59879,17 +58095,6 @@
                                     (file-name "npm-is-docker-3.0.0.tgz")
                                     (sha256 (base32
                                              "1vnxw8y4p31nx66rbgxhd40jc5zx8akmcf7fpl3gy7n84l5hn8qs")))))
-        (bun-lock-package (name "is-docker")
-                          (version "4.0.0")
-                          (cache-directory "is-docker@4.0.0@@@1")
-                          (install-paths '("node_modules/is-docker"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/is-docker/-/is-docker-4.0.0.tgz")
-                                    (file-name "npm-is-docker-4.0.0.tgz")
-                                    (sha256 (base32
-                                             "1cxnl6jzm044i6fw2dg4a8i27r7m7p8ky3zpbk4c9yzvpyxzayr4")))))
         (bun-lock-package (name "is-document.all")
                           (version "1.0.0")
                           (cache-directory "is-document.all@1.0.0@@@1")
@@ -60408,28 +58613,6 @@
                                     (sha256 (base32
                                              "1ji8rzdyqd7w8r1hk4j4q9phba9dzgv0v86n8b6fgh29zdjx7l4d")))))
         (bun-lock-package (name "jose")
-                          (version "4.15.9")
-                          (cache-directory "jose@4.15.9@@@1")
-                          (install-paths '("node_modules/openid-client/node_modules/jose"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/jose/-/jose-4.15.9.tgz")
-                                    (file-name "npm-jose-4.15.9.tgz")
-                                    (sha256 (base32
-                                             "186s3pr31q70cg157q9c4pnjz1xzbxaa833p02lyhw65243jrn8m")))))
-        (bun-lock-package (name "jose")
-                          (version "5.2.3")
-                          (cache-directory "jose@5.2.3@@@1")
-                          (install-paths '("node_modules/sst/node_modules/jose"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/jose/-/jose-5.2.3.tgz")
-                                    (file-name "npm-jose-5.2.3.tgz")
-                                    (sha256 (base32
-                                             "1lcv05gg9zsbf3bjkxlzjmwdjhd6i9wp64fhijicqwvj00sggaxn")))))
-        (bun-lock-package (name "jose")
                           (version "6.0.11")
                           (cache-directory "jose@6.0.11@@@1")
                           (install-paths '("node_modules/jose"))
@@ -60463,17 +58646,6 @@
                                     (file-name "npm-jpeg-js-0.4.4.tgz")
                                     (sha256 (base32
                                              "0q0ibs9lk40lw88sn3lbpfxmnjq6varfi5xgigjyywdwcy19i7r6")))))
-        (bun-lock-package (name "js-base64")
-                          (version "3.7.7")
-                          (cache-directory "js-base64@3.7.7@@@1")
-                          (install-paths '("node_modules/js-base64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/js-base64/-/js-base64-3.7.7.tgz")
-                                    (file-name "npm-js-base64-3.7.7.tgz")
-                                    (sha256 (base32
-                                             "1hs2jfwyyik2y384hzjh9icbgg6qkvr1j1sf88a35r2fkr0zlzh9")))))
         (bun-lock-package (name "js-library-detector")
                           (version "6.7.0")
                           (cache-directory "js-library-detector@6.7.0@@@1")
@@ -60511,10 +58683,7 @@
         (bun-lock-package (name "js-yaml")
                           (version "4.3.2")
                           (cache-directory "js-yaml@4.3.2@@@1")
-                          (install-paths '("node_modules/@astrojs/internal-helpers/node_modules/js-yaml"
-                                           "node_modules/@astrojs/mdx/node_modules/@astrojs/internal-helpers/node_modules/js-yaml"
-                                           "node_modules/@astrojs/starlight/node_modules/js-yaml"
-                                           "node_modules/app-builder-lib/node_modules/js-yaml"
+                          (install-paths '("node_modules/app-builder-lib/node_modules/js-yaml"
                                            "node_modules/builder-util/node_modules/js-yaml"
                                            "node_modules/dmg-builder/node_modules/js-yaml"
                                            "node_modules/electron-updater/node_modules/js-yaml"))
@@ -60677,17 +58846,6 @@
                                     (sha256 (base32
                                              "0yrpsb1frqahc48n6w2jzvhd7m8r9w2w9ylqkg41zl80nqyv7bq8")))))
         (bun-lock-package (name "jsonc-parser")
-                          (version "2.3.1")
-                          (cache-directory "jsonc-parser@2.3.1@@@1")
-                          (install-paths '("node_modules/@vscode/emmet-helper/node_modules/jsonc-parser"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-2.3.1.tgz")
-                                    (file-name "npm-jsonc-parser-2.3.1.tgz")
-                                    (sha256 (base32
-                                             "135by7iq337mzybb25gwmmcdcc4nrymgcqbnchxcmgyhh5i15a5h")))))
-        (bun-lock-package (name "jsonc-parser")
                           (version "3.3.1")
                           (cache-directory "jsonc-parser@3.3.1@@@1")
                           (install-paths '("node_modules/jsonc-parser"))
@@ -60842,39 +59000,6 @@
                                     (file-name "npm-kleur-4.1.5.tgz")
                                     (sha256 (base32
                                              "0s8l15rp851az3yz3jjxfp34llls523vcmrarsps9z42rwm5d68d")))))
-        (bun-lock-package (name "klona")
-                          (version "2.0.6")
-                          (cache-directory "klona@2.0.6@@@1")
-                          (install-paths '("node_modules/klona"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/klona/-/klona-2.0.6.tgz")
-                                    (file-name "npm-klona-2.0.6.tgz")
-                                    (sha256 (base32
-                                             "0sscgm4l83qfxxgbnq3ah15c597vqjkjfj813ihdccz4pdqik3yq")))))
-        (bun-lock-package (name "lang-map")
-                          (version "0.4.0")
-                          (cache-directory "lang-map@0.4.0@@@1")
-                          (install-paths '("node_modules/lang-map"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/lang-map/-/lang-map-0.4.0.tgz")
-                                    (file-name "npm-lang-map-0.4.0.tgz")
-                                    (sha256 (base32
-                                             "0qd86s99r855swm2q2iir9asyqqn0blcj5lmf487qplcf870fz7j")))))
-        (bun-lock-package (name "language-map")
-                          (version "1.5.0")
-                          (cache-directory "language-map@1.5.0@@@1")
-                          (install-paths '("node_modules/language-map"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/language-map/-/language-map-1.5.0.tgz")
-                                    (file-name "npm-language-map-1.5.0.tgz")
-                                    (sha256 (base32
-                                             "1jxlkb99wssngd2hrzs2dxb2i91wwq9392hkssnjbwrr2gnj7dgy")))))
         (bun-lock-package (name "lazy-val")
                           (version "1.0.5")
                           (cache-directory "lazy-val@1.0.5@@@1")
@@ -61393,6 +59518,17 @@
                                      "npm-lightningcss-win32-x64-msvc-1.33.0.tgz")
                                     (sha256 (base32
                                              "15qi3w9mwv7140rdvg5nirgkag5mf5y7f8gm4sc17x5xygx0ddgy")))))
+        (bun-lock-package (name "linebreak")
+                          (version "1.1.0")
+                          (cache-directory "linebreak@1.1.0@@@1")
+                          (install-paths '("node_modules/linebreak"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/linebreak/-/linebreak-1.1.0.tgz")
+                                    (file-name "npm-linebreak-1.1.0.tgz")
+                                    (sha256 (base32
+                                             "1mjzfpifcb7228mnrbqrmzc68cd9ra6bcgbaqgcfvnrfqmn4ha1q")))))
         (bun-lock-package (name "locate-path")
                           (version "3.0.0")
                           (cache-directory "locate-path@3.0.0@@@1")
@@ -61542,8 +59678,7 @@
         (bun-lock-package (name "lru-cache")
                           (version "6.0.0")
                           (cache-directory "lru-cache@6.0.0@@@1")
-                          (install-paths '("node_modules/hosted-git-info/node_modules/lru-cache"
-                                           "node_modules/openid-client/node_modules/lru-cache"))
+                          (install-paths '("node_modules/hosted-git-info/node_modules/lru-cache"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -61562,17 +59697,6 @@
                                     (file-name "npm-lru_map-0.4.1.tgz")
                                     (sha256 (base32
                                              "0kkcf9br93qq0hhf48vj25hzpxi74f8psphrq6k151z4xip2ngmz")))))
-        (bun-lock-package (name "luxon")
-                          (version "3.6.1")
-                          (cache-directory "luxon@3.6.1@@@1")
-                          (install-paths '("node_modules/luxon"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/luxon/-/luxon-3.6.1.tgz")
-                                    (file-name "npm-luxon-3.6.1.tgz")
-                                    (sha256 (base32
-                                             "087kp5686z76pakvfvlhv9j6dh1g0bsmp5jp55wz00nvw3ycdbi1")))))
         (bun-lock-package (name "magic-string")
                           (version "0.30.21")
                           (cache-directory "magic-string@0.30.21@@@1")
@@ -61584,28 +59708,6 @@
                                     (file-name "npm-magic-string-0.30.21.tgz")
                                     (sha256 (base32
                                              "0vv5mh4rnr83gnpd0kkspy1c810f4mfkczrjry64x96wcwjpcjgs")))))
-        (bun-lock-package (name "magic-string")
-                          (version "1.4.3")
-                          (cache-directory "magic-string@1.4.3@@@1")
-                          (install-paths '("node_modules/astro/node_modules/magic-string"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/magic-string/-/magic-string-1.4.3.tgz")
-                                    (file-name "npm-magic-string-1.4.3.tgz")
-                                    (sha256 (base32
-                                             "024xi01qqhvpagxgh3yx7vldy263synbvd416hq9c1w0vc6pg7bc")))))
-        (bun-lock-package (name "magicast")
-                          (version "0.5.5")
-                          (cache-directory "magicast@0.5.5@@@1")
-                          (install-paths '("node_modules/magicast"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/magicast/-/magicast-0.5.5.tgz")
-                                    (file-name "npm-magicast-0.5.5.tgz")
-                                    (sha256 (base32
-                                             "1v6vqxi491l08lbqrf3x0v9a6g90zjgjlkz6hzwq2ilhpmmdhqam")))))
         (bun-lock-package (name "make-fetch-happen")
                           (version "15.0.6")
                           (cache-directory "make-fetch-happen@15.0.6@@@1")
@@ -61663,17 +59765,6 @@
                                     (file-name "npm-marked-18.0.11.tgz")
                                     (sha256 (base32
                                              "155rcvljxqk6s957g70fjvwyxxz9zrlzl64im3hp67jmqxv59xff")))))
-        (bun-lock-package (name "marked-shiki")
-                          (version "1.2.1")
-                          (cache-directory "marked-shiki@1.2.1@@@1")
-                          (install-paths '("node_modules/marked-shiki"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/marked-shiki/-/marked-shiki-1.2.1.tgz")
-                                    (file-name "npm-marked-shiki-1.2.1.tgz")
-                                    (sha256 (base32
-                                             "142818966z2hn2my01c0s9v0xrv4ck4sdix2ns860mi9qnign153")))))
         (bun-lock-package (name "marky")
                           (version "1.3.0")
                           (cache-directory "marky@1.3.0@@@1")
@@ -61707,18 +59798,6 @@
                                     (file-name "npm-math-intrinsics-1.1.0.tgz")
                                     (sha256 (base32
                                              "19s3yi9ziz007ymq0r1k2xk1nrg2m5lc9kw8vy3c0ga9fmaw7hmq")))))
-        (bun-lock-package (name "mdast-util-definitions")
-                          (version "6.0.0")
-                          (cache-directory "mdast-util-definitions@6.0.0@@@1")
-                          (install-paths '("node_modules/mdast-util-definitions"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/mdast-util-definitions/-/mdast-util-definitions-6.0.0.tgz")
-                                    (file-name
-                                     "npm-mdast-util-definitions-6.0.0.tgz")
-                                    (sha256 (base32
-                                             "0ls13qsvzw69fxq5i47qi0ic8crgc6n3a40ns76xz41rzp921fal")))))
         (bun-lock-package (name "mdast-util-directive")
                           (version "3.1.0")
                           (cache-directory "mdast-util-directive@3.1.0@@@1")
@@ -61927,28 +60006,6 @@
                                      "npm-mdast-util-to-string-4.0.0.tgz")
                                     (sha256 (base32
                                              "0ym3pdj5x0vivi9fv304mnxxv6y6fm4nfks8irzdy193cnjp1zmv")))))
-        (bun-lock-package (name "mdn-data")
-                          (version "2.0.28")
-                          (cache-directory "mdn-data@2.0.28@@@1")
-                          (install-paths '("node_modules/csso/node_modules/css-tree/node_modules/mdn-data"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/mdn-data/-/mdn-data-2.0.28.tgz")
-                                    (file-name "npm-mdn-data-2.0.28.tgz")
-                                    (sha256 (base32
-                                             "096gc061hb22d84kq3ca49bpl0bzds738b4ni61sfwb8d4zkqb63")))))
-        (bun-lock-package (name "mdn-data")
-                          (version "2.27.1")
-                          (cache-directory "mdn-data@2.27.1@@@1")
-                          (install-paths '("node_modules/mdn-data"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/mdn-data/-/mdn-data-2.27.1.tgz")
-                                    (file-name "npm-mdn-data-2.27.1.tgz")
-                                    (sha256 (base32
-                                             "0w38wk6ji9sl5m8zk8vdxzrqii2lgwx5qikh5laa1sb4rva5p633")))))
         (bun-lock-package (name "mdurl")
                           (version "1.0.1")
                           (cache-directory "mdurl@1.0.1@@@1")
@@ -62005,6 +60062,17 @@
                                     (file-name "npm-merge2-1.4.1.tgz")
                                     (sha256 (base32
                                              "10bq7m23r366fk3r6j058i1l4jz6vn5xlxcfnp2mkj5kr68i4f5q")))))
+        (bun-lock-package (name "meshoptimizer")
+                          (version "0.22.0")
+                          (cache-directory "meshoptimizer@0.22.0@@@1")
+                          (install-paths '("node_modules/meshoptimizer"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/meshoptimizer/-/meshoptimizer-0.22.0.tgz")
+                                    (file-name "npm-meshoptimizer-0.22.0.tgz")
+                                    (sha256 (base32
+                                             "0bgwhh1wz2m0dh4i84980ivayxlam4hsrj66p26kqd9j2fyz5is7")))))
         (bun-lock-package (name "micromark")
                           (version "4.0.2")
                           (cache-directory "micromark@4.0.2@@@1")
@@ -62478,7 +60546,7 @@
         (bun-lock-package (name "mime")
                           (version "2.6.0")
                           (cache-directory "mime@2.6.0@@@1")
-                          (install-paths '("node_modules/electron-publish/node_modules/mime"))
+                          (install-paths '("node_modules/mime"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -62486,17 +60554,6 @@
                                     (file-name "npm-mime-2.6.0.tgz")
                                     (sha256 (base32
                                              "0dmnrpwk42m7cr2v8knszz4qg1py6645jgbmha2smm1gxakil0dk")))))
-        (bun-lock-package (name "mime")
-                          (version "3.0.0")
-                          (cache-directory "mime@3.0.0@@@1")
-                          (install-paths '("node_modules/mime"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/mime/-/mime-3.0.0.tgz")
-                                    (file-name "npm-mime-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "0m3zkx15qf4qxxch3ilgssglhm6djkbx12asd85zyflds1kdhd0n")))))
         (bun-lock-package (name "mime-db")
                           (version "1.52.0")
                           (cache-directory "mime-db@1.52.0@@@1")
@@ -62564,21 +60621,9 @@
                                     (sha256 (base32
                                              "0m6xcg030cw88cja84avw63q3jkvqgbdp74xvs1p3m2w2my9n7ij")))))
         (bun-lock-package (name "miniflare")
-                          (version "4.20251118.1")
-                          (cache-directory "miniflare@4.20251118.1@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/miniflare/-/miniflare-4.20251118.1.tgz")
-                                    (file-name
-                                     "npm-miniflare-4.20251118.1.tgz")
-                                    (sha256 (base32
-                                             "1rahv699galcs2qm5hpg7cd0p69amh3gf4wxmb75nks3k9yh3hsb")))))
-        (bun-lock-package (name "miniflare")
                           (version "4.20260708.1")
                           (cache-directory "miniflare@4.20260708.1@@@1")
-                          (install-paths '("node_modules/miniflare"))
+                          (install-paths '("node_modules/wrangler/node_modules/miniflare"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -62588,17 +60633,41 @@
                                     (sha256 (base32
                                              "1allkrq0cvaqdww35i6caavyd9g4h91g8ivpisd2y4hglw9pving")))))
         (bun-lock-package (name "miniflare")
-                          (version "5.20260811.1-alpha")
-                          (cache-directory "miniflare@5.20260811.1-alpha@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare"))
+                          (version "5.20260930.0-alpha")
+                          (cache-directory "miniflare@5.20260930.0-alpha@@@1")
+                          (install-paths '("node_modules/miniflare"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/miniflare/-/miniflare-5.20260811.1-alpha.tgz")
+                                     "https://registry.npmjs.org/miniflare/-/miniflare-5.20260930.0-alpha.tgz")
                                     (file-name
-                                     "npm-miniflare-5.20260811.1-alpha.tgz")
+                                     "npm-miniflare-5.20260930.0-alpha.tgz")
                                     (sha256 (base32
-                                             "0da4xx3j26hp258aji8a4p6n4p7pzp72bn78n1zrvap7bg15l5g5")))))
+                                             "1rw8mwp4h3k7hdmj8yva9wh5a2fj7laspndxv6ffdnpy004mas91")))))
+        (bun-lock-package (name "miniflare")
+                          (version "5.20261001.0-alpha")
+                          (cache-directory "miniflare@5.20261001.0-alpha@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/miniflare/-/miniflare-5.20261001.0-alpha.tgz")
+                                    (file-name
+                                     "npm-miniflare-5.20261001.0-alpha.tgz")
+                                    (sha256 (base32
+                                             "0ch5klkhaq2gnnbgm98z0afkb8d0xybczkpwixj6wiflprqyrw60")))))
+        (bun-lock-package (name "miniflare")
+                          (version "5.20261102.0-beta")
+                          (cache-directory "miniflare@5.20261102.0-beta@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/miniflare/-/miniflare-5.20261102.0-beta.tgz")
+                                    (file-name
+                                     "npm-miniflare-5.20261102.0-beta.tgz")
+                                    (sha256 (base32
+                                             "1aw8aqw3i7ifhilp2w5r0cqw1h9wgvi8c76d0l3298dp0f757v5z")))))
         (bun-lock-package (name "minimatch")
                           (version "10.2.5")
                           (cache-directory "minimatch@10.2.5@@@1")
@@ -62760,6 +60829,17 @@
                                     (file-name "npm-minipass-sized-2.0.0.tgz")
                                     (sha256 (base32
                                              "01kdj1sj6ka9czfm43zdnv5j62xlp15hlclf7ss2rcbx38drwk2v")))))
+        (bun-lock-package (name "minisearch")
+                          (version "7.2.0")
+                          (cache-directory "minisearch@7.2.0@@@1")
+                          (install-paths '("node_modules/minisearch"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/minisearch/-/minisearch-7.2.0.tgz")
+                                    (file-name "npm-minisearch-7.2.0.tgz")
+                                    (sha256 (base32
+                                             "12i1w0w5csh6i1vg7y3h1fja83ibg7q98wkqhyrxcrgalck82fyb")))))
         (bun-lock-package (name "minizlib")
                           (version "3.1.0")
                           (cache-directory "minizlib@3.1.0@@@1")
@@ -62839,17 +60919,6 @@
                                     (file-name "npm-motion-utils-14.0.0.tgz")
                                     (sha256 (base32
                                              "1vgyjf6by0wr3dpj6ivvymfdd3m8hyhqwhi1gwldawbji59a35j3")))))
-        (bun-lock-package (name "mrmime")
-                          (version "2.0.1")
-                          (cache-directory "mrmime@2.0.1@@@1")
-                          (install-paths '("node_modules/mrmime"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/mrmime/-/mrmime-2.0.1.tgz")
-                                    (file-name "npm-mrmime-2.0.1.tgz")
-                                    (sha256 (base32
-                                             "1pdsmmghivkd6vir3hpbj4if50mrg8xrng2irc6zfy0zpcsdbiic")))))
         (bun-lock-package (name "ms")
                           (version "2.1.3")
                           (cache-directory "ms@2.1.3@@@1")
@@ -62861,17 +60930,6 @@
                                     (file-name "npm-ms-2.1.3.tgz")
                                     (sha256 (base32
                                              "1ii24v83yrryzmj9p369qxmpr53337kkqbdaklpmbv9hwlanwqgn")))))
-        (bun-lock-package (name "muggle-string")
-                          (version "0.4.1")
-                          (cache-directory "muggle-string@0.4.1@@@1")
-                          (install-paths '("node_modules/muggle-string"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/muggle-string/-/muggle-string-0.4.1.tgz")
-                                    (file-name "npm-muggle-string-0.4.1.tgz")
-                                    (sha256 (base32
-                                             "0rw04xcf7fakicpq4nfnm5xbd556mylsp6cr2c41r661gkp1aqv2")))))
         (bun-lock-package (name "nanoevents")
                           (version "7.0.1")
                           (cache-directory "nanoevents@7.0.1@@@1")
@@ -62897,9 +60955,7 @@
         (bun-lock-package (name "nanoid")
                           (version "3.3.20")
                           (cache-directory "nanoid@3.3.20@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/postcss/node_modules/nanoid"
-                                           "node_modules/@expressive-code/core/node_modules/postcss/node_modules/nanoid"
-                                           "node_modules/astro/node_modules/vite/node_modules/postcss/node_modules/nanoid"))
+                          (install-paths '("node_modules/@textjs/app/node_modules/vite/node_modules/postcss/node_modules/nanoid"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -62918,17 +60974,6 @@
                                     (file-name "npm-negotiator-1.0.0.tgz")
                                     (sha256 (base32
                                              "015w5p5p4sb02cd9zq20mp7l32jspq206p6d4g355b603ppdz8mm")))))
-        (bun-lock-package (name "neotraverse")
-                          (version "1.0.1")
-                          (cache-directory "neotraverse@1.0.1@@@1")
-                          (install-paths '("node_modules/neotraverse"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/neotraverse/-/neotraverse-1.0.1.tgz")
-                                    (file-name "npm-neotraverse-1.0.1.tgz")
-                                    (sha256 (base32
-                                             "03vm25hdyi24ybrbc5qsizkgnldmdcd6imhnwqzd76j44gkvridb")))))
         (bun-lock-package (name "nf3")
                           (version "0.3.24")
                           (cache-directory "nf3@0.3.24@@@1")
@@ -63011,7 +61056,8 @@
         (bun-lock-package (name "node-fetch")
                           (version "2.7.0")
                           (cache-directory "node-fetch@2.7.0@@@1")
-                          (install-paths '("node_modules/node-fetch"))
+                          (install-paths '("node_modules/@sentry/cli/node_modules/node-fetch"
+                                           "node_modules/cross-fetch/node_modules/node-fetch"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63022,8 +61068,7 @@
         (bun-lock-package (name "node-fetch")
                           (version "3.3.2")
                           (cache-directory "node-fetch@3.3.2@@@1")
-                          (install-paths '("node_modules/gaxios/node_modules/node-fetch"
-                                           "node_modules/gcp-metadata/node_modules/gaxios/node_modules/node-fetch"))
+                          (install-paths '("node_modules/node-fetch"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63031,18 +61076,6 @@
                                     (file-name "npm-node-fetch-3.3.2.tgz")
                                     (sha256 (base32
                                              "1ardip9x9gicwpbpv1nqw7f8cdngcg0ydy2l9dmjg3rz6q7gjnk1")))))
-        (bun-lock-package (name "node-fetch-native")
-                          (version "1.6.7")
-                          (cache-directory "node-fetch-native@1.6.7@@@1")
-                          (install-paths '("node_modules/node-fetch-native"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/node-fetch-native/-/node-fetch-native-1.6.7.tgz")
-                                    (file-name
-                                     "npm-node-fetch-native-1.6.7.tgz")
-                                    (sha256 (base32
-                                             "19ql2fc6q4wm5ndfwpnl3z7mqvynjynx7ivfqkih3x4yr6vic0gn")))))
         (bun-lock-package (name "node-gyp")
                           (version "12.4.0")
                           (cache-directory "node-gyp@12.4.0@@@1")
@@ -63077,17 +61110,6 @@
                                     (file-name "npm-node-int64-0.4.0.tgz")
                                     (sha256 (base32
                                              "0mr21y67mxrzp7ps8w52q8sjp0f4ags8z97f5ig995f86y4n40i5")))))
-        (bun-lock-package (name "node-mock-http")
-                          (version "1.0.5")
-                          (cache-directory "node-mock-http@1.0.5@@@1")
-                          (install-paths '("node_modules/node-mock-http"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/node-mock-http/-/node-mock-http-1.0.5.tgz")
-                                    (file-name "npm-node-mock-http-1.0.5.tgz")
-                                    (sha256 (base32
-                                             "03gli3k5y9mgm8gww7rfx8imml5vcgq82qny8friqph1smsd0yqn")))))
         (bun-lock-package (name "node-releases")
                           (version "2.0.53")
                           (cache-directory "node-releases@2.0.53@@@1")
@@ -63110,17 +61132,6 @@
                                     (file-name "npm-nopt-9.0.0.tgz")
                                     (sha256 (base32
                                              "094bq860gxzxby901s536azhwc790hmlpi11s98cga2bc7ji968g")))))
-        (bun-lock-package (name "normalize-path")
-                          (version "3.0.0")
-                          (cache-directory "normalize-path@3.0.0@@@1")
-                          (install-paths '("node_modules/normalize-path"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz")
-                                    (file-name "npm-normalize-path-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "1zl49w6pdbgi96sgxpzr0gizcj261v6mxv8rx70csmf5ap53r60b")))))
         (bun-lock-package (name "normalize-url")
                           (version "6.1.0")
                           (cache-directory "normalize-url@6.1.0@@@1")
@@ -63226,17 +61237,6 @@
                                     (file-name "npm-nth-check-2.1.1.tgz")
                                     (sha256 (base32
                                              "0hin0v480d3nzk4p96vk1ss72jy04p3p90xy1xn6a1a2qcmhmp25")))))
-        (bun-lock-package (name "number-flow")
-                          (version "0.6.2")
-                          (cache-directory "number-flow@0.6.2@@@1")
-                          (install-paths '("node_modules/number-flow"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/number-flow/-/number-flow-0.6.2.tgz")
-                                    (file-name "npm-number-flow-0.6.2.tgz")
-                                    (sha256 (base32
-                                             "1qm4l2rilrikx1qyfcdq9r90941dgzqvc4sz0jr94878hygk6f2w")))))
         (bun-lock-package (name "object-assign")
                           (version "4.1.1")
                           (cache-directory "object-assign@4.1.1@@@1")
@@ -63248,17 +61248,6 @@
                                     (file-name "npm-object-assign-4.1.1.tgz")
                                     (sha256 (base32
                                              "1v999sycxcp74j2pikdhyinm2d80p2bsy4nnrrnb59rv4rm74bbq")))))
-        (bun-lock-package (name "object-hash")
-                          (version "2.2.0")
-                          (cache-directory "object-hash@2.2.0@@@1")
-                          (install-paths '("node_modules/object-hash"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/object-hash/-/object-hash-2.2.0.tgz")
-                                    (file-name "npm-object-hash-2.2.0.tgz")
-                                    (sha256 (base32
-                                             "12kf2hxx3z2fsv4zskn8ghvhyxd9n9bv784kmqbk5kd7kk8ldv96")))))
         (bun-lock-package (name "object-inspect")
                           (version "1.13.4")
                           (cache-directory "object-inspect@1.13.4@@@1")
@@ -63292,17 +61281,6 @@
                                     (file-name "npm-object.assign-4.1.7.tgz")
                                     (sha256 (base32
                                              "1wzw3gqdzdpvvc4j82xzr9bn5ijldfvkngdc028n3b7p339drr08")))))
-        (bun-lock-package (name "obug")
-                          (version "3.0.0")
-                          (cache-directory "obug@3.0.0@@@1")
-                          (install-paths '("node_modules/obug"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/obug/-/obug-3.0.0.tgz")
-                                    (file-name "npm-obug-3.0.0.tgz")
-                                    (sha256 (base32
-                                             "049xzxvap2l45ck4naird4zmphrz3hx2zi73pmm8n14c670c1zpc")))))
         (bun-lock-package (name "ocache")
                           (version "0.3.1")
                           (cache-directory "ocache@0.3.1@@@1")
@@ -63314,39 +61292,6 @@
                                     (file-name "npm-ocache-0.3.1.tgz")
                                     (sha256 (base32
                                              "0zc2mr3fv60ipjcbl0bqqmyqm5yhlihfhk3kvyb402z3mikn7345")))))
-        (bun-lock-package (name "ofetch")
-                          (version "1.5.1")
-                          (cache-directory "ofetch@1.5.1@@@1")
-                          (install-paths '("node_modules/ofetch"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ofetch/-/ofetch-1.5.1.tgz")
-                                    (file-name "npm-ofetch-1.5.1.tgz")
-                                    (sha256 (base32
-                                             "1yji985jk3rvgkn2y6vakdr3fxv7p15m9lm8xmkrv7yfpxpwx0q4")))))
-        (bun-lock-package (name "ohash")
-                          (version "2.0.12")
-                          (cache-directory "ohash@2.0.12@@@1")
-                          (install-paths '("node_modules/ohash"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ohash/-/ohash-2.0.12.tgz")
-                                    (file-name "npm-ohash-2.0.12.tgz")
-                                    (sha256 (base32
-                                             "11q70x95s1rk9lf9mwlphr6wgcppw30n2aanp39x3rm3l0r5z1q5")))))
-        (bun-lock-package (name "oidc-token-hash")
-                          (version "5.2.0")
-                          (cache-directory "oidc-token-hash@5.2.0@@@1")
-                          (install-paths '("node_modules/oidc-token-hash"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/oidc-token-hash/-/oidc-token-hash-5.2.0.tgz")
-                                    (file-name "npm-oidc-token-hash-5.2.0.tgz")
-                                    (sha256 (base32
-                                             "0xkq774mxqw3l3yf31426pmhzf1g49f1smngqgc0q2wg964pm4vy")))))
         (bun-lock-package (name "on-finished")
                           (version "2.4.2")
                           (cache-directory "on-finished@2.4.2@@@1")
@@ -63414,17 +61359,6 @@
                                     (file-name "npm-openai-6.49.0.tgz")
                                     (sha256 (base32
                                              "1vfcd3hwapblwvhx6fzzw39prq4vlig3y8v4p3gfpv6vqpsf13g4")))))
-        (bun-lock-package (name "openid-client")
-                          (version "5.6.4")
-                          (cache-directory "openid-client@5.6.4@@@1")
-                          (install-paths '("node_modules/openid-client"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/openid-client/-/openid-client-5.6.4.tgz")
-                                    (file-name "npm-openid-client-5.6.4.tgz")
-                                    (sha256 (base32
-                                             "1yk1alcw4whlmqa7hqdqwa537j3sr9q4x8jz1anyxrdch97fw7hk")))))
         (bun-lock-package (name "own-keys")
                           (version "1.0.2")
                           (cache-directory "own-keys@1.0.2@@@1")
@@ -63448,16 +61382,16 @@
                                     (sha256 (base32
                                              "09h839glin65ryhibxbipw0vc0igji0w458ns8i9yj9khrcjzy1j")))))
         (bun-lock-package (name "oxlint")
-                          (version "1.60.0")
-                          (cache-directory "oxlint@1.60.0@@@1")
+                          (version "1.93.0")
+                          (cache-directory "oxlint@1.93.0@@@1")
                           (install-paths '("node_modules/oxlint"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/oxlint/-/oxlint-1.60.0.tgz")
-                                    (file-name "npm-oxlint-1.60.0.tgz")
+                                     "https://registry.npmjs.org/oxlint/-/oxlint-1.93.0.tgz")
+                                    (file-name "npm-oxlint-1.93.0.tgz")
                                     (sha256 (base32
-                                             "13aayhwpvfxf6yigr71dpibm6zl739b5hh7hshwl43mnsa8nzd8l")))))
+                                             "1f3jcqkhjkbsqjzcfwn8dcq0yqlpi56fy7qyxcpbda0a9mjnphb9")))))
         (bun-lock-package (name "p-cancelable")
                           (version "2.1.1")
                           (cache-directory "p-cancelable@2.1.1@@@1")
@@ -63483,8 +61417,7 @@
         (bun-lock-package (name "p-limit")
                           (version "3.1.0")
                           (cache-directory "p-limit@3.1.0@@@1")
-                          (install-paths '("node_modules/dir-compare/node_modules/p-limit"
-                                           "node_modules/p-locate/node_modules/p-limit"))
+                          (install-paths '("node_modules/p-limit"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63492,17 +61425,6 @@
                                     (file-name "npm-p-limit-3.1.0.tgz")
                                     (sha256 (base32
                                              "1q69dflz7cr8j18l0va73jyg2nrzd0vq3jhvvica3yna6sbm3rin")))))
-        (bun-lock-package (name "p-limit")
-                          (version "7.3.3")
-                          (cache-directory "p-limit@7.3.3@@@1")
-                          (install-paths '("node_modules/p-limit"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/p-limit/-/p-limit-7.3.3.tgz")
-                                    (file-name "npm-p-limit-7.3.3.tgz")
-                                    (sha256 (base32
-                                             "1xrj4im7p3x7fgg6kzj6a8kpg65spjpcxzw9x9zlbcidp0q21pmf")))))
         (bun-lock-package (name "p-locate")
                           (version "3.0.0")
                           (cache-directory "p-locate@3.0.0@@@1")
@@ -63536,28 +61458,6 @@
                                     (file-name "npm-p-map-7.0.6.tgz")
                                     (sha256 (base32
                                              "1w5m2pdyyr3cxrwag2fnq5amqs95h71bxhk75mwyb9sh95lfab5m")))))
-        (bun-lock-package (name "p-queue")
-                          (version "9.3.3")
-                          (cache-directory "p-queue@9.3.3@@@1")
-                          (install-paths '("node_modules/p-queue"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/p-queue/-/p-queue-9.3.3.tgz")
-                                    (file-name "npm-p-queue-9.3.3.tgz")
-                                    (sha256 (base32
-                                             "187jnx9s822ww5wcpjx53kw3b73wzs98zbsy857kqavxcm2mr583")))))
-        (bun-lock-package (name "p-timeout")
-                          (version "7.0.1")
-                          (cache-directory "p-timeout@7.0.1@@@1")
-                          (install-paths '("node_modules/p-timeout"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/p-timeout/-/p-timeout-7.0.1.tgz")
-                                    (file-name "npm-p-timeout-7.0.1.tgz")
-                                    (sha256 (base32
-                                             "00iwn60brri3qmdyd71pcikswq9rngla2iwccqd5fzhl5rgfyf8a")))))
         (bun-lock-package (name "p-try")
                           (version "2.2.0")
                           (cache-directory "p-try@2.2.0@@@1")
@@ -63581,19 +61481,6 @@
                                      "npm-package-json-from-dist-1.0.1.tgz")
                                     (sha256 (base32
                                              "082fpkvrfsxnsrzdqjf7mzaa8qzavzidavf5n4bhx7b88cz4hp0k")))))
-        (bun-lock-package (name "package-manager-detector")
-                          (version "1.8.0")
-                          (cache-directory
-                           "package-manager-detector@1.8.0@@@1")
-                          (install-paths '("node_modules/package-manager-detector"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/package-manager-detector/-/package-manager-detector-1.8.0.tgz")
-                                    (file-name
-                                     "npm-package-manager-detector-1.8.0.tgz")
-                                    (sha256 (base32
-                                             "1cd6b4df7jvp4kiqanvbjih1hahyr1cc7d802llyvnasal4jvy7w")))))
         (bun-lock-package (name "pacote")
                           (version "21.5.1")
                           (cache-directory "pacote@21.5.1@@@1")
@@ -63616,6 +61503,17 @@
                                     (file-name "npm-pagefind-1.5.2.tgz")
                                     (sha256 (base32
                                              "0j4kpqy07pqk1nivbrdd76ldac178d5pgg8hxz5risj73gsmg4sk")))))
+        (bun-lock-package (name "pako")
+                          (version "0.2.9")
+                          (cache-directory "pako@0.2.9@@@1")
+                          (install-paths '("node_modules/pako"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/pako/-/pako-0.2.9.tgz")
+                                    (file-name "npm-pako-0.2.9.tgz")
+                                    (sha256 (base32
+                                             "17ydqdhy9g76ppkbg0lgkk9837vkpga6gzw8w0m04mfinzqik4sa")))))
         (bun-lock-package (name "parse-conflict-json")
                           (version "5.0.1")
                           (cache-directory "parse-conflict-json@5.0.1@@@1")
@@ -63628,6 +61526,17 @@
                                      "npm-parse-conflict-json-5.0.1.tgz")
                                     (sha256 (base32
                                              "0pxa6k9lb12rdf2qlmdbq8czmml8l7z9j2mx0ckpnqg7i95ha4kq")))))
+        (bun-lock-package (name "parse-css-color")
+                          (version "0.2.1")
+                          (cache-directory "parse-css-color@0.2.1@@@1")
+                          (install-paths '("node_modules/parse-css-color"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/parse-css-color/-/parse-css-color-0.2.1.tgz")
+                                    (file-name "npm-parse-css-color-0.2.1.tgz")
+                                    (sha256 (base32
+                                             "1vx0ia8s28x6fbnm0wkr7v1jk83r4w5hpmmzz68ymvyykg11i4dp")))))
         (bun-lock-package (name "parse-entities")
                           (version "4.0.2")
                           (cache-directory "parse-entities@4.0.2@@@1")
@@ -63672,17 +61581,6 @@
                                     (file-name "npm-parseurl-1.3.3.tgz")
                                     (sha256 (base32
                                              "06h2bx1rilkdir3v9jlg94r1q2fn895s0vxjjs0wx5z027x4pvsn")))))
-        (bun-lock-package (name "path-browserify")
-                          (version "1.0.1")
-                          (cache-directory "path-browserify@1.0.1@@@1")
-                          (install-paths '("node_modules/path-browserify"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/path-browserify/-/path-browserify-1.0.1.tgz")
-                                    (file-name "npm-path-browserify-1.0.1.tgz")
-                                    (sha256 (base32
-                                             "0ggrp0bhy58j19j1gd87az58w8y3jn0d960pgg8n3jzqqrjnkbbl")))))
         (bun-lock-package (name "path-exists")
                           (version "3.0.0")
                           (cache-directory "path-exists@3.0.0@@@1")
@@ -63776,7 +61674,8 @@
         (bun-lock-package (name "path-to-regexp")
                           (version "6.3.0")
                           (cache-directory "path-to-regexp@6.3.0@@@1")
-                          (install-paths '("node_modules/path-to-regexp"))
+                          (install-paths '("node_modules/wrangler/node_modules/path-to-regexp"
+                                           "services/legacy/node_modules/wrangler/node_modules/path-to-regexp"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63787,8 +61686,7 @@
         (bun-lock-package (name "path-to-regexp")
                           (version "8.4.2")
                           (cache-directory "path-to-regexp@8.4.2@@@1")
-                          (install-paths '("node_modules/@solidjs/start/node_modules/path-to-regexp"
-                                           "node_modules/router/node_modules/path-to-regexp"))
+                          (install-paths '("node_modules/path-to-regexp"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63829,17 +61727,6 @@
                                     (file-name "npm-pele-1.7.0.tgz")
                                     (sha256 (base32
                                              "1n3hyc0dwx19svc4xdw9yrmppjnsm0hryynwv7kgg1921654xyjn")))))
-        (bun-lock-package (name "piccolore")
-                          (version "0.1.3")
-                          (cache-directory "piccolore@0.1.3@@@1")
-                          (install-paths '("node_modules/piccolore"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/piccolore/-/piccolore-0.1.3.tgz")
-                                    (file-name "npm-piccolore-0.1.3.tgz")
-                                    (sha256 (base32
-                                             "16wvqpby5j7bxsl9hxanhrhsc3j8jqmgf79a727mccgl4f2cl2nq")))))
         (bun-lock-package (name "picocolors")
                           (version "1.1.1")
                           (cache-directory "picocolors@1.1.1@@@1")
@@ -63854,8 +61741,7 @@
         (bun-lock-package (name "picomatch")
                           (version "2.3.2")
                           (cache-directory "picomatch@2.3.2@@@1")
-                          (install-paths '("node_modules/anymatch/node_modules/picomatch"
-                                           "node_modules/micromatch/node_modules/picomatch"))
+                          (install-paths '("node_modules/micromatch/node_modules/picomatch"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63866,8 +61752,7 @@
         (bun-lock-package (name "picomatch")
                           (version "4.0.5")
                           (cache-directory "picomatch@4.0.5@@@1")
-                          (install-paths '("node_modules/astro/node_modules/@astrojs/internal-helpers/node_modules/picomatch"
-                                           "node_modules/picomatch"))
+                          (install-paths '("node_modules/picomatch"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63878,9 +61763,7 @@
         (bun-lock-package (name "picomatch")
                           (version "4.0.7")
                           (cache-directory "picomatch@4.0.7@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/picomatch"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/@astrojs/internal-helpers/node_modules/picomatch"
-                                           "node_modules/astro/node_modules/picomatch"))
+                          (install-paths '("node_modules/@textjs/app/node_modules/vite/node_modules/picomatch"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63933,9 +61816,21 @@
                                     (sha256 (base32
                                              "0qdxsnnhn3qi9jdl4qdiq53pbp5djdzf9s3skf34r296gqippf53")))))
         (bun-lock-package (name "playwright-core")
+                          (version "1.59.1")
+                          (cache-directory "playwright-core@1.59.1@@@1")
+                          (install-paths '("node_modules/playwright-core"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/playwright-core/-/playwright-core-1.59.1.tgz")
+                                    (file-name
+                                     "npm-playwright-core-1.59.1.tgz")
+                                    (sha256 (base32
+                                             "1ynnv0qafy9h87qng1fz2wmkmg4kb9j6yraqzxr87v86j4ylqc12")))))
+        (bun-lock-package (name "playwright-core")
                           (version "1.60.0")
                           (cache-directory "playwright-core@1.60.0@@@1")
-                          (install-paths '("node_modules/playwright-core"))
+                          (install-paths '("node_modules/playwright/node_modules/playwright-core"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63982,9 +61877,7 @@
         (bun-lock-package (name "postcss")
                           (version "8.5.31")
                           (cache-directory "postcss@8.5.31@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/postcss"
-                                           "node_modules/@expressive-code/core/node_modules/postcss"
-                                           "node_modules/astro/node_modules/vite/node_modules/postcss"))
+                          (install-paths '("node_modules/@textjs/app/node_modules/vite/node_modules/postcss"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -63992,29 +61885,6 @@
                                     (file-name "npm-postcss-8.5.31.tgz")
                                     (sha256 (base32
                                              "0611p8r5sv3wlp2mfyrypcg9hx55hh0fbxwyk30pnra7ls69jg0i")))))
-        (bun-lock-package (name "postcss-nested")
-                          (version "6.2.0")
-                          (cache-directory "postcss-nested@6.2.0@@@1")
-                          (install-paths '("node_modules/postcss-nested"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/postcss-nested/-/postcss-nested-6.2.0.tgz")
-                                    (file-name "npm-postcss-nested-6.2.0.tgz")
-                                    (sha256 (base32
-                                             "06d6ch1r7gzsqz51xjjw3ip1ang70b9f4yvy2vcamzjq4fb8aalp")))))
-        (bun-lock-package (name "postcss-selector-parser")
-                          (version "6.1.5")
-                          (cache-directory "postcss-selector-parser@6.1.5@@@1")
-                          (install-paths '("node_modules/postcss-nested/node_modules/postcss-selector-parser"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/postcss-selector-parser/-/postcss-selector-parser-6.1.5.tgz")
-                                    (file-name
-                                     "npm-postcss-selector-parser-6.1.5.tgz")
-                                    (sha256 (base32
-                                             "07bmp54gp9s01i6q7zwhd3pninpi35pzkzlmvjyrm65dgagbc785")))))
         (bun-lock-package (name "postcss-selector-parser")
                           (version "7.1.6")
                           (cache-directory "postcss-selector-parser@7.1.6@@@1")
@@ -64027,6 +61897,18 @@
                                      "npm-postcss-selector-parser-7.1.6.tgz")
                                     (sha256 (base32
                                              "1djpnvs1n97ng6d20if6fja4ad9lrgaqkwqndz9di4amikwh7ja8")))))
+        (bun-lock-package (name "postcss-value-parser")
+                          (version "4.2.0")
+                          (cache-directory "postcss-value-parser@4.2.0@@@1")
+                          (install-paths '("node_modules/postcss-value-parser"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz")
+                                    (file-name
+                                     "npm-postcss-value-parser-4.2.0.tgz")
+                                    (sha256 (base32
+                                             "19whda1if07mb56pyqw7y750xclqnaqld82qn92a6rjvz4n3gr9x")))))
         (bun-lock-package (name "postject")
                           (version "1.0.0-alpha.6")
                           (cache-directory "postject@1.0.0-alpha.6@@@1")
@@ -64097,17 +61979,6 @@
                                     (file-name "npm-prettier-3.6.2.tgz")
                                     (sha256 (base32
                                              "1psvhwxg27w32lscypsavl3jbv28dxw17l5p0635l5sgcy1sp0dw")))))
-        (bun-lock-package (name "prettier")
-                          (version "3.9.6")
-                          (cache-directory "prettier@3.9.6@@@1")
-                          (install-paths '("node_modules/yaml-language-server/node_modules/prettier"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/prettier/-/prettier-3.9.6.tgz")
-                                    (file-name "npm-prettier-3.9.6.tgz")
-                                    (sha256 (base32
-                                             "0br1zcjrbqgjn5zda6f6ybii5p78lqig37n7mwy0b0dfy9fajzcr")))))
         (bun-lock-package (name "pretty-bytes")
                           (version "5.6.0")
                           (cache-directory "pretty-bytes@5.6.0@@@1")
@@ -64130,17 +62001,6 @@
                                     (file-name "npm-pretty-bytes-6.1.1.tgz")
                                     (sha256 (base32
                                              "1ra0lplm4c65qwb86qn7mwcapy9yf2348vwy5g3hxh816rh0n4v0")))))
-        (bun-lock-package (name "prismjs")
-                          (version "1.30.0")
-                          (cache-directory "prismjs@1.30.0@@@1")
-                          (install-paths '("node_modules/prismjs"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/prismjs/-/prismjs-1.30.0.tgz")
-                                    (file-name "npm-prismjs-1.30.0.tgz")
-                                    (sha256 (base32
-                                             "04gwm4azjgbhq57n3mzgvxgm40isda0kr68kcdm3pi98d88aj5mc")))))
         (bun-lock-package (name "proc-log")
                           (version "6.1.0")
                           (cache-directory "proc-log@6.1.0@@@1")
@@ -64152,18 +62012,6 @@
                                     (file-name "npm-proc-log-6.1.0.tgz")
                                     (sha256 (base32
                                              "1iar7wz9xvqn30pjx9s9z6g6zy2p6lf23p94jy9mjifplvvkglq2")))))
-        (bun-lock-package (name "process-ancestry")
-                          (version "0.1.0")
-                          (cache-directory "process-ancestry@0.1.0@@@1")
-                          (install-paths '("node_modules/process-ancestry"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/process-ancestry/-/process-ancestry-0.1.0.tgz")
-                                    (file-name
-                                     "npm-process-ancestry-0.1.0.tgz")
-                                    (sha256 (base32
-                                             "1ksfk9q7sshc05cy7qhbr5ms0adv25xjw4g9gbc3y7v80bq8afmp")))))
         (bun-lock-package (name "process-nextick-args")
                           (version "2.0.1")
                           (cache-directory "process-nextick-args@2.0.1@@@1")
@@ -64422,27 +62270,50 @@
                                     (sha256 (base32
                                              "1nqrhjp2v55z7rd13f1qlgnk6vgc4hmd9c8awnxmipina012mpk6")))))
         (bun-lock-package (name "react")
-                          (version "19.2.8")
-                          (cache-directory "react@19.2.8@@@1")
+                          (version "19.3.1")
+                          (cache-directory "react@19.3.1@@@1")
                           (install-paths '("node_modules/react"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/react/-/react-19.2.8.tgz")
-                                    (file-name "npm-react-19.2.8.tgz")
+                                     "https://registry.npmjs.org/react/-/react-19.3.1.tgz")
+                                    (file-name "npm-react-19.3.1.tgz")
                                     (sha256 (base32
-                                             "04d6mplk8hcdfzlgaah0m6v1gl1yqc2yr332v7jx4m2qg3hbkill")))))
+                                             "1akiz179qpng17l5qrc818h1hjzmkpkq91z5dxx1zkwdj49nk4sn")))))
         (bun-lock-package (name "react-dom")
-                          (version "19.2.8")
-                          (cache-directory "react-dom@19.2.8@@@1")
+                          (version "19.3.1")
+                          (cache-directory "react-dom@19.3.1@@@1")
                           (install-paths '("node_modules/react-dom"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/react-dom/-/react-dom-19.2.8.tgz")
-                                    (file-name "npm-react-dom-19.2.8.tgz")
+                                     "https://registry.npmjs.org/react-dom/-/react-dom-19.3.1.tgz")
+                                    (file-name "npm-react-dom-19.3.1.tgz")
                                     (sha256 (base32
-                                             "1fvxakwpc7xxpzrnjc8mbp6flcm8i5krnjh06lcb8wa2b6prkz0z")))))
+                                             "0bi6mdhrr0zr6f53h5v5hwy2a8vr6fwg9cyj00g33ipf45c9fjcb")))))
+        (bun-lock-package (name "react-reconciler")
+                          (version "0.34.0")
+                          (cache-directory "react-reconciler@0.34.0@@@1")
+                          (install-paths '("node_modules/react-reconciler"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/react-reconciler/-/react-reconciler-0.34.0.tgz")
+                                    (file-name
+                                     "npm-react-reconciler-0.34.0.tgz")
+                                    (sha256 (base32
+                                             "13qa9aivzwskm4n8llshf3vfh570wpa7s0i4w1bdm8d9lzrapw3i")))))
+        (bun-lock-package (name "react-refresh")
+                          (version "0.17.0")
+                          (cache-directory "react-refresh@0.17.0@@@1")
+                          (install-paths '("node_modules/react-refresh"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/react-refresh/-/react-refresh-0.17.0.tgz")
+                                    (file-name "npm-react-refresh-0.17.0.tgz")
+                                    (sha256 (base32
+                                             "17y0zrx3ji467f31zmklrp4p048sd9dprp0cmiabg0mjrgvjdaj0")))))
         (bun-lock-package (name "read-binary-file-arch")
                           (version "1.0.6")
                           (cache-directory "read-binary-file-arch@1.0.6@@@1")
@@ -64477,29 +62348,6 @@
                                     (file-name "npm-readable-stream-2.3.8.tgz")
                                     (sha256 (base32
                                              "0cm5g4a5mfqb5im98mzv5y3dpv377bws6wlgpv5wk2pn90wn2j0n")))))
-        (bun-lock-package (name "readdirp")
-                          (version "4.1.2")
-                          (cache-directory "readdirp@4.1.2@@@1")
-                          (install-paths '("node_modules/readdirp"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/readdirp/-/readdirp-4.1.2.tgz")
-                                    (file-name "npm-readdirp-4.1.2.tgz")
-                                    (sha256 (base32
-                                             "0njzcnyjv31k0lw1rswaay334iyck4wvx6wwjdmzxbhlcfxa4vkn")))))
-        (bun-lock-package (name "readdirp")
-                          (version "5.1.1")
-                          (cache-directory "readdirp@5.1.1@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage/node_modules/chokidar/node_modules/readdirp"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/chokidar/node_modules/readdirp"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/readdirp/-/readdirp-5.1.1.tgz")
-                                    (file-name "npm-readdirp-5.1.1.tgz")
-                                    (sha256 (base32
-                                             "19fm2ijz7kd44ifq0v9cbfkrkgka5ma5cjjf316a2pkijy0nhnlk")))))
         (bun-lock-package (name "recma-build-jsx")
                           (version "1.0.0")
                           (cache-directory "recma-build-jsx@1.0.0@@@1")
@@ -64669,75 +62517,6 @@
                                     (file-name "npm-regjsparser-0.13.2.tgz")
                                     (sha256 (base32
                                              "02w41mhy7rbfg0p8xvr5wdpx14m5xr98z2zzkafypmmdaiymbq6q")))))
-        (bun-lock-package (name "rehype")
-                          (version "13.0.2")
-                          (cache-directory "rehype@13.0.2@@@1")
-                          (install-paths '("node_modules/rehype"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype/-/rehype-13.0.2.tgz")
-                                    (file-name "npm-rehype-13.0.2.tgz")
-                                    (sha256 (base32
-                                             "18gazcgz4xc912kds68rm3ghck85kj6ljfmpy20p020w9y0mc7kr")))))
-        (bun-lock-package (name "rehype-autolink-headings")
-                          (version "7.1.0")
-                          (cache-directory
-                           "rehype-autolink-headings@7.1.0@@@1")
-                          (install-paths '("node_modules/rehype-autolink-headings"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-autolink-headings/-/rehype-autolink-headings-7.1.0.tgz")
-                                    (file-name
-                                     "npm-rehype-autolink-headings-7.1.0.tgz")
-                                    (sha256 (base32
-                                             "1cfd5w2szrhqm79v27zdsq35w3s9b16y677109v64b6gdgwrxjb2")))))
-        (bun-lock-package (name "rehype-expressive-code")
-                          (version "0.44.2")
-                          (cache-directory "rehype-expressive-code@0.44.2@@@1")
-                          (install-paths '("node_modules/rehype-expressive-code"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-expressive-code/-/rehype-expressive-code-0.44.2.tgz")
-                                    (file-name
-                                     "npm-rehype-expressive-code-0.44.2.tgz")
-                                    (sha256 (base32
-                                             "14sjs2jwq8qhv839av0wbyc6mywpgbg668nb4zj17qaarvq2yhz7")))))
-        (bun-lock-package (name "rehype-format")
-                          (version "5.0.1")
-                          (cache-directory "rehype-format@5.0.1@@@1")
-                          (install-paths '("node_modules/rehype-format"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-format/-/rehype-format-5.0.1.tgz")
-                                    (file-name "npm-rehype-format-5.0.1.tgz")
-                                    (sha256 (base32
-                                             "0i5sn7f6iv7lia9gg8ji7yc9rw6pb187alhhlp5glf00rykpgqnx")))))
-        (bun-lock-package (name "rehype-parse")
-                          (version "9.0.1")
-                          (cache-directory "rehype-parse@9.0.1@@@1")
-                          (install-paths '("node_modules/rehype-parse"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-parse/-/rehype-parse-9.0.1.tgz")
-                                    (file-name "npm-rehype-parse-9.0.1.tgz")
-                                    (sha256 (base32
-                                             "1655m817k90mvpgd5q9r44gmn76y20zlz4pkhvpqgfd0rivrj5qw")))))
-        (bun-lock-package (name "rehype-raw")
-                          (version "7.0.0")
-                          (cache-directory "rehype-raw@7.0.0@@@1")
-                          (install-paths '("node_modules/rehype-raw"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-raw/-/rehype-raw-7.0.0.tgz")
-                                    (file-name "npm-rehype-raw-7.0.0.tgz")
-                                    (sha256 (base32
-                                             "04ibfjq9ij56yzxnd6109d8c808kyy3cd5q3zcdbz54qmsjdbyar")))))
         (bun-lock-package (name "rehype-recma")
                           (version "1.0.0")
                           (cache-directory "rehype-recma@1.0.0@@@1")
@@ -64749,18 +62528,6 @@
                                     (file-name "npm-rehype-recma-1.0.0.tgz")
                                     (sha256 (base32
                                              "1q6aidzp7crbkaa8qyjkl33wyfkfr2k8k4dg8v6jmz95na9ll2bq")))))
-        (bun-lock-package (name "rehype-stringify")
-                          (version "10.0.1")
-                          (cache-directory "rehype-stringify@10.0.1@@@1")
-                          (install-paths '("node_modules/rehype-stringify"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/rehype-stringify/-/rehype-stringify-10.0.1.tgz")
-                                    (file-name
-                                     "npm-rehype-stringify-10.0.1.tgz")
-                                    (sha256 (base32
-                                             "11y04d8jmnfrdrx6h8s58smmr1v8q0mibk75vli9xdsvbf99ci77")))))
         (bun-lock-package (name "remark-directive")
                           (version "4.0.0")
                           (cache-directory "remark-directive@4.0.0@@@1")
@@ -64852,28 +62619,6 @@
                                     (file-name "npm-remeda-2.26.0.tgz")
                                     (sha256 (base32
                                              "07ap0fmwhx0i4rld02pisjslmkldfh0y0gw5h394720hnb677kkh")))))
-        (bun-lock-package (name "request-light")
-                          (version "0.5.8")
-                          (cache-directory "request-light@0.5.8@@@1")
-                          (install-paths '("node_modules/yaml-language-server/node_modules/request-light"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/request-light/-/request-light-0.5.8.tgz")
-                                    (file-name "npm-request-light-0.5.8.tgz")
-                                    (sha256 (base32
-                                             "1fbm8gr69sr9nx2bna7svpkf1jxs0kwsb900ncsn8185z944nvab")))))
-        (bun-lock-package (name "request-light")
-                          (version "0.7.0")
-                          (cache-directory "request-light@0.7.0@@@1")
-                          (install-paths '("node_modules/request-light"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/request-light/-/request-light-0.7.0.tgz")
-                                    (file-name "npm-request-light-0.7.0.tgz")
-                                    (sha256 (base32
-                                             "1rdchn9f57b3cixsgsaz2rrbcq772w2g1w681gzrw7icl46hvmhm")))))
         (bun-lock-package (name "require-directory")
                           (version "2.1.1")
                           (cache-directory "require-directory@2.1.1@@@1")
@@ -65092,9 +62837,7 @@
         (bun-lock-package (name "rolldown")
                           (version "1.2.14")
                           (cache-directory "rolldown@1.2.14@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite/node_modules/rolldown"
-                                           "node_modules/astro/node_modules/rolldown"
-                                           "node_modules/nitro/node_modules/rolldown"))
+                          (install-paths '("node_modules/nitro/node_modules/rolldown"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -65270,29 +63013,17 @@
                                      "npm-sanitize-filename-1.6.4.tgz")
                                     (sha256 (base32
                                              "1spkmc7s99fixfsn3dzix9m07a6wd0zbsmz463qalhv2b8h6x4s2")))))
-        (bun-lock-package (name "satteri")
-                          (version "0.10.5")
-                          (cache-directory "satteri@0.10.5@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-satteri/node_modules/satteri"
-                                           "node_modules/@astrojs/starlight/node_modules/@astrojs/markdown-satteri/node_modules/satteri"))
+        (bun-lock-package (name "satori")
+                          (version "0.63.2")
+                          (cache-directory "satori@0.63.2@@@1")
+                          (install-paths '("node_modules/satori"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/satteri/-/satteri-0.10.5.tgz")
-                                    (file-name "npm-satteri-0.10.5.tgz")
+                                     "https://registry.npmjs.org/satori/-/satori-0.63.2.tgz")
+                                    (file-name "npm-satori-0.63.2.tgz")
                                     (sha256 (base32
-                                             "04vnj2daz94wnv8hbzag4xn1q0adniq9lh9jvxg7brsj567h7wda")))))
-        (bun-lock-package (name "satteri")
-                          (version "0.9.5")
-                          (cache-directory "satteri@0.9.5@@@1")
-                          (install-paths '("node_modules/satteri"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/satteri/-/satteri-0.9.5.tgz")
-                                    (file-name "npm-satteri-0.9.5.tgz")
-                                    (sha256 (base32
-                                             "1l0cmb2l3lm3nikrj4hi7hs4s8xfd50lvf86kivxlw0x4z9n7zm2")))))
+                                             "052k0a535jimimrbpkkfldqyz5wm9p7k0pb8swld2x951njiqpp8")))))
         (bun-lock-package (name "sax")
                           (version "1.6.1")
                           (cache-directory "sax@1.6.1@@@1")
@@ -65315,6 +63046,18 @@
                                     (file-name "npm-scheduler-0.27.0.tgz")
                                     (sha256 (base32
                                              "15ahpkgc65b3mal36m3szvlmhcz1rysbpifgg15z0cj0rqsww9mb")))))
+        (bun-lock-package (name "scheduler")
+                          (version "0.28.0")
+                          (cache-directory "scheduler@0.28.0@@@1")
+                          (install-paths '("node_modules/react-dom/node_modules/scheduler"
+                                           "node_modules/react-reconciler/node_modules/scheduler"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/scheduler/-/scheduler-0.28.0.tgz")
+                                    (file-name "npm-scheduler-0.28.0.tgz")
+                                    (sha256 (base32
+                                             "1mij9xhypynmrn2rsnax2c01ipy1k7rd1la0xcga3h73j3araa9h")))))
         (bun-lock-package (name "section-matter")
                           (version "1.0.0")
                           (cache-directory "section-matter@1.0.0@@@1")
@@ -65504,20 +63247,9 @@
                                     (sha256 (base32
                                              "1qnzx8bl8h1vga28pf59mjd52wvh1hf3ma18d4zpwmijlrpcqfy8")))))
         (bun-lock-package (name "sharp")
-                          (version "0.33.5")
-                          (cache-directory "sharp@0.33.5@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/sharp"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sharp/-/sharp-0.33.5.tgz")
-                                    (file-name "npm-sharp-0.33.5.tgz")
-                                    (sha256 (base32
-                                             "0y4fy2b6ix5pkf6c1ipvzw5pa1rl00ybjrsjg23qahlj7k1v9c8z")))))
-        (bun-lock-package (name "sharp")
                           (version "0.34.5")
                           (cache-directory "sharp@0.34.5@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/sharp"))
+                          (install-paths '("node_modules/sharp"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -65526,20 +63258,21 @@
                                     (sha256 (base32
                                              "1hr602c29dlxgaj6q6ykkcbskgr8x1ds2axw4p7hiy4xdx8141s6")))))
         (bun-lock-package (name "sharp")
-                          (version "0.35.2")
-                          (cache-directory "sharp@0.35.2@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/sharp"))
+                          (version "0.35.4")
+                          (cache-directory "sharp@0.35.4@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/sharp"
+                                           "node_modules/miniflare/node_modules/sharp"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/sharp/-/sharp-0.35.2.tgz")
-                                    (file-name "npm-sharp-0.35.2.tgz")
+                                     "https://registry.npmjs.org/sharp/-/sharp-0.35.4.tgz")
+                                    (file-name "npm-sharp-0.35.4.tgz")
                                     (sha256 (base32
-                                             "1q3xds1iygpk4y9sr2pv7q2794bfg2dzl3964cq6lgzyyb6nf8dj")))))
+                                             "0nka9ypghkchma1kszz0lqx6mjijkv5kwbp2v44p6b1pj01g3gkf")))))
         (bun-lock-package (name "sharp")
                           (version "0.35.5")
                           (cache-directory "sharp@0.35.5@@@1")
-                          (install-paths '("node_modules/sharp"))
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/sharp"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -65661,17 +63394,6 @@
                                     (file-name "npm-sigstore-4.1.1.tgz")
                                     (sha256 (base32
                                              "181814a0lpy7mf9dx1hjrgjla0f5cjd0vaxd15r4ancmrmrwqzjd")))))
-        (bun-lock-package (name "simple-swizzle")
-                          (version "0.2.4")
-                          (cache-directory "simple-swizzle@0.2.4@@@1")
-                          (install-paths '("node_modules/simple-swizzle"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/simple-swizzle/-/simple-swizzle-0.2.4.tgz")
-                                    (file-name "npm-simple-swizzle-0.2.4.tgz")
-                                    (sha256 (base32
-                                             "09kx4yrhgc8a55v6n62h4mbxsy1af1m6cr5hnzq7ybmlyiz5hqvc")))))
         (bun-lock-package (name "simple-update-notifier")
                           (version "2.0.0")
                           (cache-directory "simple-update-notifier@2.0.0@@@1")
@@ -65695,17 +63417,6 @@
                                     (file-name "npm-sisteransi-1.0.5.tgz")
                                     (sha256 (base32
                                              "1cvl75j0rn1nzsan50rl8nq0px0njyqa2z3nl7jisq8m8fr2jkcy")))))
-        (bun-lock-package (name "sitemap")
-                          (version "9.0.1")
-                          (cache-directory "sitemap@9.0.1@@@1")
-                          (install-paths '("node_modules/sitemap"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sitemap/-/sitemap-9.0.1.tgz")
-                                    (file-name "npm-sitemap-9.0.1.tgz")
-                                    (sha256 (base32
-                                             "0x85cbmd79yfcf2qd02bpc3fzw6qndp402kh78m7bvshvlm1hg21")))))
         (bun-lock-package (name "slice-ansi")
                           (version "5.0.0")
                           (cache-directory "slice-ansi@5.0.0@@@1")
@@ -65739,17 +63450,6 @@
                                     (file-name "npm-smob-1.6.2.tgz")
                                     (sha256 (base32
                                              "0z40rpz0idgs3mszd842g60fmfmbdngqjd4yf5z70x3rxh2592fb")))))
-        (bun-lock-package (name "smol-toml")
-                          (version "1.9.1")
-                          (cache-directory "smol-toml@1.9.1@@@1")
-                          (install-paths '("node_modules/smol-toml"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/smol-toml/-/smol-toml-1.9.1.tgz")
-                                    (file-name "npm-smol-toml-1.9.1.tgz")
-                                    (sha256 (base32
-                                             "0wmixyz66cpp5qdp2k3x0x32d91symy086dycr1jmhhq34pkkj2a")))))
         (bun-lock-package (name "socket.io-client")
                           (version "4.8.3")
                           (cache-directory "socket.io-client@4.8.3@@@1")
@@ -66105,108 +63805,6 @@
                                     (file-name "npm-ssri-13.0.1.tgz")
                                     (sha256 (base32
                                              "0yw9ax242dzk4qn0vhak0vhqis2z4m3xm10viw99y3gv9lc7wdh3")))))
-        (bun-lock-package (name "sst")
-                          (version "4.13.1")
-                          (cache-directory "sst@4.13.1@@@1")
-                          (install-paths '("node_modules/sst"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst/-/sst-4.13.1.tgz")
-                                    (file-name "npm-sst-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "189vn4inm8a88mdgxb59mfwnvbgrnznh3m2yy7c04z91mbka12sl")))))
-        (bun-lock-package (name "sst-darwin-arm64")
-                          (version "4.13.1")
-                          (cache-directory "sst-darwin-arm64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-darwin-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-darwin-arm64/-/sst-darwin-arm64-4.13.1.tgz")
-                                    (file-name
-                                     "npm-sst-darwin-arm64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "0nsp1q42g6vls1nyfn35lagqgp1zbqs6s864k2p2cxpzwvfjc72l")))))
-        (bun-lock-package (name "sst-darwin-x64")
-                          (version "4.13.1")
-                          (cache-directory "sst-darwin-x64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-darwin-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-darwin-x64/-/sst-darwin-x64-4.13.1.tgz")
-                                    (file-name "npm-sst-darwin-x64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "0y1cppi1gwq0m5zghgg1mqydlib2dakp441g8i7spf1xavr114zz")))))
-        (bun-lock-package (name "sst-linux-arm64")
-                          (version "4.13.1")
-                          (cache-directory "sst-linux-arm64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-linux-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-linux-arm64/-/sst-linux-arm64-4.13.1.tgz")
-                                    (file-name
-                                     "npm-sst-linux-arm64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "049dnywx3ympmb9x3dsr2csn5b3fwg6jz5x4hbpzrcidiamhlqgj")))))
-        (bun-lock-package (name "sst-linux-x64")
-                          (version "4.13.1")
-                          (cache-directory "sst-linux-x64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-linux-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-linux-x64/-/sst-linux-x64-4.13.1.tgz")
-                                    (file-name "npm-sst-linux-x64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "0nhfzpfnr5s1y9k4vj7hv6bmk3fh380sslvibkjlnyqwclaxqwdm")))))
-        (bun-lock-package (name "sst-linux-x86")
-                          (version "4.13.1")
-                          (cache-directory "sst-linux-x86@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-linux-x86"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-linux-x86/-/sst-linux-x86-4.13.1.tgz")
-                                    (file-name "npm-sst-linux-x86-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "1d4jvw2j9i6k3h1xzvwj1ssbpyqy75l2q7bgsh5bi0bqg249q11b")))))
-        (bun-lock-package (name "sst-win32-arm64")
-                          (version "4.13.1")
-                          (cache-directory "sst-win32-arm64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-win32-arm64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-win32-arm64/-/sst-win32-arm64-4.13.1.tgz")
-                                    (file-name
-                                     "npm-sst-win32-arm64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "08vq5433bdk1733iqdjizhgcygidyyd8ch7d52lv268kjqkq27qq")))))
-        (bun-lock-package (name "sst-win32-x64")
-                          (version "4.13.1")
-                          (cache-directory "sst-win32-x64@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-win32-x64"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-win32-x64/-/sst-win32-x64-4.13.1.tgz")
-                                    (file-name "npm-sst-win32-x64-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "1vgli793svxjl7758x87nfm10xiy43g7yrbsgz4lc2pg3hgcdzb5")))))
-        (bun-lock-package (name "sst-win32-x86")
-                          (version "4.13.1")
-                          (cache-directory "sst-win32-x86@4.13.1@@@1")
-                          (install-paths '("node_modules/sst-win32-x86"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/sst-win32-x86/-/sst-win32-x86-4.13.1.tgz")
-                                    (file-name "npm-sst-win32-x86-4.13.1.tgz")
-                                    (sha256 (base32
-                                             "0r923if2dy0gm050yzqbcgjwc6sglzcqxgjch1n3rms8fj8wi7wq")))))
         (bun-lock-package (name "standardwebhooks")
                           (version "1.1.1")
                           (cache-directory "standardwebhooks@1.1.1@@@1")
@@ -66253,29 +63851,6 @@
                                      "npm-stop-iteration-iterator-1.1.0.tgz")
                                     (sha256 (base32
                                              "1j1ayd3jqd7mlv7afy62swg4j9z7hh0n0nliqpzd5n95s7wif063")))))
-        (bun-lock-package (name "stoppable")
-                          (version "1.1.0")
-                          (cache-directory "stoppable@1.1.0@@@1")
-                          (install-paths '("node_modules/stoppable"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/stoppable/-/stoppable-1.1.0.tgz")
-                                    (file-name "npm-stoppable-1.1.0.tgz")
-                                    (sha256 (base32
-                                             "1s47dx3gs6kkgzk9qkijxkagiv26xa5zr4ndrlybbjm93kizjgnm")))))
-        (bun-lock-package (name "stream-replace-string")
-                          (version "2.0.0")
-                          (cache-directory "stream-replace-string@2.0.0@@@1")
-                          (install-paths '("node_modules/stream-replace-string"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/stream-replace-string/-/stream-replace-string-2.0.0.tgz")
-                                    (file-name
-                                     "npm-stream-replace-string-2.0.0.tgz")
-                                    (sha256 (base32
-                                             "1s983pgzcc9qigb6h8898bs7f9glwqzp6qwchxi1kzmpbgs0k6kv")))))
         (bun-lock-package (name "string-width")
                           (version "4.2.3")
                           (cache-directory "string-width@4.2.3@@@1")
@@ -66306,8 +63881,7 @@
                           (version "7.2.0")
                           (cache-directory "string-width@7.2.0@@@1")
                           (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui/node_modules/string-width"
-                                           "node_modules/string-width"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/cliui/node_modules/string-width"))
+                                           "node_modules/string-width"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -66318,8 +63892,7 @@
         (bun-lock-package (name "string-width")
                           (version "8.2.2")
                           (cache-directory "string-width@8.2.2@@@1")
-                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/string-width"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/string-width"))
+                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/string-width"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -66327,6 +63900,19 @@
                                     (file-name "npm-string-width-8.2.2.tgz")
                                     (sha256 (base32
                                              "1yz08bcqb1y9xvyrybh9wkyf5g95cjlq7vrqdvyfrp8jaaxhahxr")))))
+        (bun-lock-package (name "string.prototype.codepointat")
+                          (version "0.2.1")
+                          (cache-directory
+                           "string.prototype.codepointat@0.2.1@@@1")
+                          (install-paths '("node_modules/string.prototype.codepointat"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/string.prototype.codepointat/-/string.prototype.codepointat-0.2.1.tgz")
+                                    (file-name
+                                     "npm-string.prototype.codepointat-0.2.1.tgz")
+                                    (sha256 (base32
+                                             "0g614v0ldhv81xbx0qyxh7k6p0bmq30j0sqkmdyd1g2q2xi07dan")))))
         (bun-lock-package (name "string.prototype.matchall")
                           (version "4.0.12")
                           (cache-directory
@@ -66555,17 +64141,6 @@
                                      "npm-supports-preserve-symlinks-flag-1.0.0.tgz")
                                     (sha256 (base32
                                              "1ygp0kk7p6df5p6p2q1csdshilklhfbh49g7h90m6i2kmxh13nlp")))))
-        (bun-lock-package (name "svgo")
-                          (version "4.1.0")
-                          (cache-directory "svgo@4.1.0@@@1")
-                          (install-paths '("node_modules/svgo"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/svgo/-/svgo-4.1.0.tgz")
-                                    (file-name "npm-svgo-4.1.0.tgz")
-                                    (sha256 (base32
-                                             "19ikld941nbiy68q0z7gfmkp9fc5p1jfw27710pxqf0d6lkswik6")))))
         (bun-lock-package (name "tailwindcss")
                           (version "4.1.11")
                           (cache-directory "tailwindcss@4.1.11@@@1")
@@ -66689,6 +64264,17 @@
                                      "npm-third-party-web-0.29.2.tgz")
                                     (sha256 (base32
                                              "1aijlpa7nasigig66jvx4yga8bjjpz3kg6phxipxnrf1byyqv7zp")))))
+        (bun-lock-package (name "three")
+                          (version "0.180.0")
+                          (cache-directory "three@0.180.0@@@1")
+                          (install-paths '("node_modules/three"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/three/-/three-0.180.0.tgz")
+                                    (file-name "npm-three-0.180.0.tgz")
+                                    (sha256 (base32
+                                             "0i21s46awswzyag6wi4ddcfj3l2ym96shzr7cwj9mqjyaqjdfrmd")))))
         (bun-lock-package (name "tiny-async-pool")
                           (version "1.3.0")
                           (cache-directory "tiny-async-pool@1.3.0@@@1")
@@ -66723,21 +64309,10 @@
                                      "npm-tiny-typed-emitter-2.1.0.tgz")
                                     (sha256 (base32
                                              "0fmbwq3qbk29nkm87hx1hnfsxirr0mysrl1i226k12j1ijzwi1rr")))))
-        (bun-lock-package (name "tinyclip")
-                          (version "1.0.3")
-                          (cache-directory "tinyclip@1.0.3@@@1")
-                          (install-paths '("node_modules/tinyclip"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/tinyclip/-/tinyclip-1.0.3.tgz")
-                                    (file-name "npm-tinyclip-1.0.3.tgz")
-                                    (sha256 (base32
-                                             "17iy15qmb1l90fxqsfnjccp3fdm5v2m65f9ybwa02mqbs6fgcd68")))))
         (bun-lock-package (name "tinyexec")
                           (version "0.3.2")
                           (cache-directory "tinyexec@0.3.2@@@1")
-                          (install-paths '("node_modules/vite-plugin-icons-spritesheet/node_modules/tinyexec"))
+                          (install-paths '("node_modules/tinyexec"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -66745,17 +64320,6 @@
                                     (file-name "npm-tinyexec-0.3.2.tgz")
                                     (sha256 (base32
                                              "1s7xjg30d8zn3svpilm3mjwrqkknbvd5nw55k327a8wkmx24295i")))))
-        (bun-lock-package (name "tinyexec")
-                          (version "1.3.1")
-                          (cache-directory "tinyexec@1.3.1@@@1")
-                          (install-paths '("node_modules/tinyexec"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/tinyexec/-/tinyexec-1.3.1.tgz")
-                                    (file-name "npm-tinyexec-1.3.1.tgz")
-                                    (sha256 (base32
-                                             "07rg7vcqrv9i3fmglffvi4nhxcfr8d6mw22j48inqwf7757q02sl")))))
         (bun-lock-package (name "tinyglobby")
                           (version "0.2.17")
                           (cache-directory "tinyglobby@0.2.17@@@1")
@@ -66844,18 +64408,6 @@
                                     (file-name "npm-toidentifier-1.0.1.tgz")
                                     (sha256 (base32
                                              "021fp42m51qbqbqabwhxky8bkfkkwza65lqiz7d2gqwd91vwqvqq")))))
-        (bun-lock-package (name "toolbeam-docs-theme")
-                          (version "0.4.8")
-                          (cache-directory "toolbeam-docs-theme@0.4.8@@@1")
-                          (install-paths '("node_modules/toolbeam-docs-theme"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/toolbeam-docs-theme/-/toolbeam-docs-theme-0.4.8.tgz")
-                                    (file-name
-                                     "npm-toolbeam-docs-theme-0.4.8.tgz")
-                                    (sha256 (base32
-                                             "1cf6wyh9mr0gbpzihg1z7972pfrldim6zpfa1w03fklrs21nrhg0")))))
         (bun-lock-package (name "tr46")
                           (version "0.0.3")
                           (cache-directory "tr46@0.0.3@@@1")
@@ -67073,17 +64625,6 @@
                                      "npm-typed-query-selector-2.12.2.tgz")
                                     (sha256 (base32
                                              "0mrxy736mga6l7zfr6bbnahfafvxsxir0yksm4x1zscs2349gnxg")))))
-        (bun-lock-package (name "typesafe-path")
-                          (version "0.2.2")
-                          (cache-directory "typesafe-path@0.2.2@@@1")
-                          (install-paths '("node_modules/typesafe-path"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/typesafe-path/-/typesafe-path-0.2.2.tgz")
-                                    (file-name "npm-typesafe-path-0.2.2.tgz")
-                                    (sha256 (base32
-                                             "121l504hdyl6yip0hb2r91wpii62dmh92nwyb63f2p63rw88q7wx")))))
         (bun-lock-package (name "typescript")
                           (version "6.0.3")
                           (cache-directory "typescript@6.0.3@@@1")
@@ -67106,41 +64647,6 @@
                                     (file-name "npm-typescript-7.1.0-beta.tgz")
                                     (sha256 (base32
                                              "1j9mmdyfah87pcdlrx3mmvfasfhibvyh1c8xldxsyiih2ibm9m7p")))))
-        (bun-lock-package (name "typescript-auto-import-cache")
-                          (version "0.3.6")
-                          (cache-directory
-                           "typescript-auto-import-cache@0.3.6@@@1")
-                          (install-paths '("node_modules/typescript-auto-import-cache"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/typescript-auto-import-cache/-/typescript-auto-import-cache-0.3.6.tgz")
-                                    (file-name
-                                     "npm-typescript-auto-import-cache-0.3.6.tgz")
-                                    (sha256 (base32
-                                             "0zm1nrkv1vydrs7mak4n1k0m8mkgqv695wa5c60nzf44gki48iac")))))
-        (bun-lock-package (name "ufo")
-                          (version "1.6.4")
-                          (cache-directory "ufo@1.6.4@@@1")
-                          (install-paths '("node_modules/ufo"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ufo/-/ufo-1.6.4.tgz")
-                                    (file-name "npm-ufo-1.6.4.tgz")
-                                    (sha256 (base32
-                                             "1c3a5q0hzrkkg80bdwmbzryn1fg853xw13fmp6lgdy2y906y4q5h")))))
-        (bun-lock-package (name "ultrahtml")
-                          (version "1.7.0")
-                          (cache-directory "ultrahtml@1.7.0@@@1")
-                          (install-paths '("node_modules/ultrahtml"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ultrahtml/-/ultrahtml-1.7.0.tgz")
-                                    (file-name "npm-ultrahtml-1.7.0.tgz")
-                                    (sha256 (base32
-                                             "0nx4r3yy8xbk79d9q3wh7hchglkg3d3smk9098y76qnbj64iv170")))))
         (bun-lock-package (name "unbox-primitive")
                           (version "1.1.0")
                           (cache-directory "unbox-primitive@1.1.0@@@1")
@@ -67152,22 +64658,10 @@
                                     (file-name "npm-unbox-primitive-1.1.0.tgz")
                                     (sha256 (base32
                                              "19qssm9wxpp688wdap2b99h5rz55l7gdfzf63rgaz44gwvllpm0x")))))
-        (bun-lock-package (name "uncrypto")
-                          (version "0.1.3")
-                          (cache-directory "uncrypto@0.1.3@@@1")
-                          (install-paths '("node_modules/uncrypto"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/uncrypto/-/uncrypto-0.1.3.tgz")
-                                    (file-name "npm-uncrypto-0.1.3.tgz")
-                                    (sha256 (base32
-                                             "0w8cwj8fj888a7923igpyr4wnjhk58jmpbaqmf1arjx4x9bmz4y4")))))
         (bun-lock-package (name "undici")
                           (version "6.29.1")
                           (cache-directory "undici@6.29.1@@@1")
-                          (install-paths '("node_modules/@ai-sdk/provider-utils/node_modules/undici"
-                                           "node_modules/node-gyp/node_modules/undici"))
+                          (install-paths '("node_modules/node-gyp/node_modules/undici"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -67176,20 +64670,9 @@
                                     (sha256 (base32
                                              "0kx0f3kk2z7l6n1qad7xxha7l1ff2a89bhbiamwvhv6qnbhbii19")))))
         (bun-lock-package (name "undici")
-                          (version "7.14.0")
-                          (cache-directory "undici@7.14.0@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/undici"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/undici/-/undici-7.14.0.tgz")
-                                    (file-name "npm-undici-7.14.0.tgz")
-                                    (sha256 (base32
-                                             "1isbrdkxn2m7xlacfrfg2w43r17xy1fsn736z0c64hnik3vv745r")))))
-        (bun-lock-package (name "undici")
                           (version "7.28.0")
                           (cache-directory "undici@7.28.0@@@1")
-                          (install-paths '("node_modules/miniflare/node_modules/undici"))
+                          (install-paths '("node_modules/wrangler/node_modules/miniflare/node_modules/undici"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -67198,20 +64681,22 @@
                                     (sha256 (base32
                                              "0pvx33jrvxgx7zyq9c5zxipxs40wmz291mla31r836s7dhyzhf9b")))))
         (bun-lock-package (name "undici")
-                          (version "7.29.0")
-                          (cache-directory "undici@7.29.0@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/miniflare/node_modules/undici"))
+                          (version "7.29.1")
+                          (cache-directory "undici@7.29.1@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/miniflare/node_modules/undici"
+                                           "node_modules/miniflare/node_modules/undici"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/undici/-/undici-7.29.0.tgz")
-                                    (file-name "npm-undici-7.29.0.tgz")
+                                     "https://registry.npmjs.org/undici/-/undici-7.29.1.tgz")
+                                    (file-name "npm-undici-7.29.1.tgz")
                                     (sha256 (base32
-                                             "0w1sbb463k7552q5l8y67wfby87pn585vvn313y6aivk4bc0a87c")))))
+                                             "0m3dwki4ds1acrbr1vgz90ikjll9znljjf2zif9mha4x5biapcwk")))))
         (bun-lock-package (name "undici")
                           (version "7.30.1")
                           (cache-directory "undici@7.30.1@@@1")
-                          (install-paths '("node_modules/electron/node_modules/@electron/get/node_modules/undici"))
+                          (install-paths '("node_modules/electron/node_modules/@electron/get/node_modules/undici"
+                                           "services/legacy/node_modules/wrangler/node_modules/miniflare/node_modules/undici"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -67304,6 +64789,17 @@
                                      "npm-unicode-property-aliases-ecmascript-2.2.0.tgz")
                                     (sha256 (base32
                                              "1rb6syshkfb36gs816bpylz6s8rdlpv3a7nqpk96xk6z9ql4jnk7")))))
+        (bun-lock-package (name "unicode-trie")
+                          (version "2.0.0")
+                          (cache-directory "unicode-trie@2.0.0@@@1")
+                          (install-paths '("node_modules/unicode-trie"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/unicode-trie/-/unicode-trie-2.0.0.tgz")
+                                    (file-name "npm-unicode-trie-2.0.0.tgz")
+                                    (sha256 (base32
+                                             "1dffvsb50qy1wpcc3zpakgrv3rk9ggpbai6m5g25w3ar5427bfbx")))))
         (bun-lock-package (name "unified")
                           (version "11.0.5")
                           (cache-directory "unified@11.0.5@@@1")
@@ -67315,17 +64811,6 @@
                                     (file-name "npm-unified-11.0.5.tgz")
                                     (sha256 (base32
                                              "0y5aqi2blpmri146wjjd4mssw8r58qlhm7rn7igpfzbd6fg6svdw")))))
-        (bun-lock-package (name "unifont")
-                          (version "0.7.5")
-                          (cache-directory "unifont@0.7.5@@@1")
-                          (install-paths '("node_modules/unifont"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/unifont/-/unifont-0.7.5.tgz")
-                                    (file-name "npm-unifont-0.7.5.tgz")
-                                    (sha256 (base32
-                                             "1hcxgphcddq8ajz6fwqmc4236r7d5gmcyyxbkv121rniv3drxykm")))))
         (bun-lock-package (name "unique-string")
                           (version "2.0.0")
                           (cache-directory "unique-string@2.0.0@@@1")
@@ -67398,19 +64883,6 @@
                                      "npm-unist-util-position-from-estree-2.0.0.tgz")
                                     (sha256 (base32
                                              "1c5iy3k7wa0r2z6h8clhhndia4qy9b7gfwrhbvzyzrjk6gkhg50g")))))
-        (bun-lock-package (name "unist-util-remove-position")
-                          (version "5.0.0")
-                          (cache-directory
-                           "unist-util-remove-position@5.0.0@@@1")
-                          (install-paths '("node_modules/unist-util-remove-position"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/unist-util-remove-position/-/unist-util-remove-position-5.0.0.tgz")
-                                    (file-name
-                                     "npm-unist-util-remove-position-5.0.0.tgz")
-                                    (sha256 (base32
-                                             "0mpyx8pkj9aw365hxv8rdzmx956dcxn02lq7m61wph9g3ifsrh3m")))))
         (bun-lock-package (name "unist-util-stringify-position")
                           (version "4.0.0")
                           (cache-directory
@@ -67522,17 +64994,6 @@
                                     (sha256 (base32
                                              "1dnzbqfmchls4jyvkw0wnkc09pig98y66zzsy3lizgyls435xyrd")))))
         (bun-lock-package (name "unstorage")
-                          (version "1.17.5")
-                          (cache-directory "unstorage@1.17.5@@@1")
-                          (install-paths '("node_modules/astro/node_modules/unstorage"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/unstorage/-/unstorage-1.17.5.tgz")
-                                    (file-name "npm-unstorage-1.17.5.tgz")
-                                    (sha256 (base32
-                                             "0ijlw8wyprzn4biz25nf41zfwxzdf70drlz0vnyah03k9p68aiiz")))))
-        (bun-lock-package (name "unstorage")
                           (version "2.0.0-beta.0")
                           (cache-directory "unstorage@2.0.0-beta.0@@@1")
                           (install-paths '("node_modules/unstorage"))
@@ -67589,17 +65050,17 @@
                                      "npm-update-browserslist-db-1.3.1.tgz")
                                     (sha256 (base32
                                              "1qd4k9dwljfhx3ik4rhwnyqc2g997aqf6hr0fi43d4ql3hm1hgqc")))))
-        (bun-lock-package (name "url-extras")
-                          (version "0.1.0")
-                          (cache-directory "url-extras@0.1.0@@@1")
-                          (install-paths '("node_modules/url-extras"))
+        (bun-lock-package (name "uqr")
+                          (version "0.1.3")
+                          (cache-directory "uqr@0.1.3@@@1")
+                          (install-paths '("node_modules/uqr"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/url-extras/-/url-extras-0.1.0.tgz")
-                                    (file-name "npm-url-extras-0.1.0.tgz")
+                                     "https://registry.npmjs.org/uqr/-/uqr-0.1.3.tgz")
+                                    (file-name "npm-uqr-0.1.3.tgz")
                                     (sha256 (base32
-                                             "0d0b7xsm0khxmmkwbkqfbf5hi1nxnr2qp8yxkjdqlwgah4k9xg73")))))
+                                             "1by1kqd6y529y79indj6hdp9vv1zwnzhyk2si1fniwmrpxqfydjn")))))
         (bun-lock-package (name "utf8-byte-length")
                           (version "1.0.5")
                           (cache-directory "utf8-byte-length@1.0.5@@@1")
@@ -67647,17 +65108,6 @@
                                     (file-name "npm-vary-1.1.2.tgz")
                                     (sha256 (base32
                                              "0wbf4kmfyzc23dc0vjcmymkd1ks50z5gvv23lkkkayipf438cy3k")))))
-        (bun-lock-package (name "verkit")
-                          (version "0.5.0")
-                          (cache-directory "verkit@0.5.0@@@1")
-                          (install-paths '("node_modules/verkit"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/verkit/-/verkit-0.5.0.tgz")
-                                    (file-name "npm-verkit-0.5.0.tgz")
-                                    (sha256 (base32
-                                             "1zaibarc1y8acwfrl0dm0ypydmrq4ndyijvpkysgqmdbwcvs3s5a")))))
         (bun-lock-package (name "vfile")
                           (version "6.0.3")
                           (cache-directory "vfile@6.0.3@@@1")
@@ -67669,17 +65119,6 @@
                                     (file-name "npm-vfile-6.0.3.tgz")
                                     (sha256 (base32
                                              "036zw2hdpk4hj7mjrv588cldpd8xkaj6pvidcngsxjfwv0psvnx0")))))
-        (bun-lock-package (name "vfile-location")
-                          (version "5.0.3")
-                          (cache-directory "vfile-location@5.0.3@@@1")
-                          (install-paths '("node_modules/vfile-location"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vfile-location/-/vfile-location-5.0.3.tgz")
-                                    (file-name "npm-vfile-location-5.0.3.tgz")
-                                    (sha256 (base32
-                                             "0n6f804x0gk7q8ymz6y6263n4acfz71msj64m0n4i5b3w8kg934b")))))
         (bun-lock-package (name "vfile-message")
                           (version "4.0.3")
                           (cache-directory "vfile-message@4.0.3@@@1")
@@ -67691,6 +65130,17 @@
                                     (file-name "npm-vfile-message-4.0.3.tgz")
                                     (sha256 (base32
                                              "1jy2ans57wyx4w2ivaqni0yzw5x45f89x9qpc98z0vi9b7p98vcx")))))
+        (bun-lock-package (name "vite")
+                          (version "6.4.5")
+                          (cache-directory "vite@6.4.5@@@1")
+                          (install-paths '("node_modules/@textjs/app/node_modules/vite"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/vite/-/vite-6.4.5.tgz")
+                                    (file-name "npm-vite-6.4.5.tgz")
+                                    (sha256 (base32
+                                             "1xicbh753mmqxbyaf6hic4rj9d7gixd35l1x5n3nld5hjmcdk809")))))
         (bun-lock-package (name "vite")
                           (version "7.3.7")
                           (cache-directory "vite@7.3.7@@@1")
@@ -67718,18 +65168,6 @@
                                     (file-name "npm-vite-8.2.4.tgz")
                                     (sha256 (base32
                                              "16hk2493l4ygs0g7jw0wp1g0zndf523wghg12nxjq2wqyj22l4qx")))))
-        (bun-lock-package (name "vite")
-                          (version "8.3.4")
-                          (cache-directory "vite@8.3.4@@@1")
-                          (install-paths '("node_modules/@astrojs/solid-js/node_modules/vite"
-                                           "node_modules/astro/node_modules/vite"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vite/-/vite-8.3.4.tgz")
-                                    (file-name "npm-vite-8.3.4.tgz")
-                                    (sha256 (base32
-                                             "1radkfqlcjhrb6fppakj9c1wvnbn9f8ixhclm5w3drfj8cn5nwzq")))))
         (bun-lock-package (name "vite-plugin-icons-spritesheet")
                           (version "3.0.1")
                           (cache-directory
@@ -67804,142 +65242,6 @@
                                     (file-name "npm-vitefu-1.1.3.tgz")
                                     (sha256 (base32
                                              "1lc5myxa2l4whxi44d6hk7cwsnjfrm7d6y3h4wbnyallclvrbb4i")))))
-        (bun-lock-package (name "volar-service-css")
-                          (version "0.0.71")
-                          (cache-directory "volar-service-css@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-css"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-css/-/volar-service-css-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-css-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "130d6z31vddpvd5hryvxl7fpnbv8sfdqwcsbw6yzk8v06kzlr8pf")))))
-        (bun-lock-package (name "volar-service-emmet")
-                          (version "0.0.71")
-                          (cache-directory "volar-service-emmet@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-emmet"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-emmet/-/volar-service-emmet-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-emmet-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "1chj5z2xxfw67zn43bavvxvxad622bw75ns96z8dcbf9b637l5fk")))))
-        (bun-lock-package (name "volar-service-html")
-                          (version "0.0.71")
-                          (cache-directory "volar-service-html@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-html"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-html/-/volar-service-html-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-html-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "1343q8lds0kcf73n0j139z5bh1sjcj05405bxy438rdjfbn815i8")))))
-        (bun-lock-package (name "volar-service-prettier")
-                          (version "0.0.71")
-                          (cache-directory "volar-service-prettier@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-prettier"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-prettier/-/volar-service-prettier-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-prettier-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "1zns6n7gs2mbxdgkvxlwzmp89f00j5bdg06wvk86qs0ihmjvpfnf")))))
-        (bun-lock-package (name "volar-service-typescript")
-                          (version "0.0.71")
-                          (cache-directory
-                           "volar-service-typescript@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-typescript"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-typescript/-/volar-service-typescript-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-typescript-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "1n4rbz3d8ck2hhf2bf5l5kc1bci6m1ahf24z53w8pk8islrnxy15")))))
-        (bun-lock-package (name "volar-service-typescript-twoslash-queries")
-                          (version "0.0.71")
-                          (cache-directory
-                           "volar-service-typescript-twoslash-queries@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-typescript-twoslash-queries"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-typescript-twoslash-queries/-/volar-service-typescript-twoslash-queries-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-typescript-twoslash-queries-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "16bia7g7pzp0ynqcfrraxiwz9aszm7kcxf7f5dd9da0cj5vma25r")))))
-        (bun-lock-package (name "volar-service-yaml")
-                          (version "0.0.71")
-                          (cache-directory "volar-service-yaml@0.0.71@@@1")
-                          (install-paths '("node_modules/volar-service-yaml"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/volar-service-yaml/-/volar-service-yaml-0.0.71.tgz")
-                                    (file-name
-                                     "npm-volar-service-yaml-0.0.71.tgz")
-                                    (sha256 (base32
-                                             "189ibx8brrq4girnkd0x2rxhi9lb1aisf3bfiwcdc9w1y21l50fs")))))
-        (bun-lock-package (name "vscode-css-languageservice")
-                          (version "6.3.10")
-                          (cache-directory
-                           "vscode-css-languageservice@6.3.10@@@1")
-                          (install-paths '("node_modules/vscode-css-languageservice"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.10.tgz")
-                                    (file-name
-                                     "npm-vscode-css-languageservice-6.3.10.tgz")
-                                    (sha256 (base32
-                                             "0j4lzjgplamikm9w4c7w54g718r4h9549m8pikq8v6ragd5gzpvm")))))
-        (bun-lock-package (name "vscode-html-languageservice")
-                          (version "5.6.2")
-                          (cache-directory
-                           "vscode-html-languageservice@5.6.2@@@1")
-                          (install-paths '("node_modules/vscode-html-languageservice"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.2.tgz")
-                                    (file-name
-                                     "npm-vscode-html-languageservice-5.6.2.tgz")
-                                    (sha256 (base32
-                                             "0aijjjhqzwb8xyj64n2h7hh5yqrqf0q85n7n9iylvkx8kl1f86d5")))))
-        (bun-lock-package (name "vscode-json-languageservice")
-                          (version "4.1.8")
-                          (cache-directory
-                           "vscode-json-languageservice@4.1.8@@@1")
-                          (install-paths '("node_modules/vscode-json-languageservice"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-json-languageservice/-/vscode-json-languageservice-4.1.8.tgz")
-                                    (file-name
-                                     "npm-vscode-json-languageservice-4.1.8.tgz")
-                                    (sha256 (base32
-                                             "041nb74f79ayadvhsjzhi3yilmsf0hsd3wh4vp09047r2pjasb68")))))
-        (bun-lock-package (name "vscode-jsonrpc")
-                          (version "8.2.0")
-                          (cache-directory "vscode-jsonrpc@8.2.0@@@1")
-                          (install-paths '("node_modules/vscode-languageserver/node_modules/vscode-languageserver-protocol/node_modules/vscode-jsonrpc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-8.2.0.tgz")
-                                    (file-name "npm-vscode-jsonrpc-8.2.0.tgz")
-                                    (sha256 (base32
-                                             "1jy7p4l0fbzl8z472wdcz2wkabw2k8sqwwnbfi859wcqqcqlb91x")))))
         (bun-lock-package (name "vscode-jsonrpc")
                           (version "8.2.1")
                           (cache-directory "vscode-jsonrpc@8.2.1@@@1")
@@ -67951,127 +65253,6 @@
                                     (file-name "npm-vscode-jsonrpc-8.2.1.tgz")
                                     (sha256 (base32
                                              "1g1gw6nngkv3daywldnc4lr7gw6crjmrs3zfgn4z34xqx1izk64i")))))
-        (bun-lock-package (name "vscode-jsonrpc")
-                          (version "9.0.1")
-                          (cache-directory "vscode-jsonrpc@9.0.1@@@1")
-                          (install-paths '("node_modules/vscode-languageserver-protocol/node_modules/vscode-jsonrpc"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-9.0.1.tgz")
-                                    (file-name "npm-vscode-jsonrpc-9.0.1.tgz")
-                                    (sha256 (base32
-                                             "1hl9ai2zd2ik4nkpmq1mkmb7v2qq1v6zhhz7y5wgmib30vy1f7bz")))))
-        (bun-lock-package (name "vscode-languageserver")
-                          (version "9.0.1")
-                          (cache-directory "vscode-languageserver@9.0.1@@@1")
-                          (install-paths '("node_modules/vscode-languageserver"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver/-/vscode-languageserver-9.0.1.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-9.0.1.tgz")
-                                    (sha256 (base32
-                                             "04i4c100bsqmwy0rll0p6pjk5zkmjhadapnxlj4fawkqmriz9mvc")))))
-        (bun-lock-package (name "vscode-languageserver-protocol")
-                          (version "3.17.5")
-                          (cache-directory
-                           "vscode-languageserver-protocol@3.17.5@@@1")
-                          (install-paths '("node_modules/vscode-languageserver/node_modules/vscode-languageserver-protocol"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.17.5.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-protocol-3.17.5.tgz")
-                                    (sha256 (base32
-                                             "1j6cwf1yams1djad6rbbb5g1k6kq0gcgji4nl2zgiwv344nynwvl")))))
-        (bun-lock-package (name "vscode-languageserver-protocol")
-                          (version "3.18.2")
-                          (cache-directory
-                           "vscode-languageserver-protocol@3.18.2@@@1")
-                          (install-paths '("node_modules/vscode-languageserver-protocol"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.18.2.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-protocol-3.18.2.tgz")
-                                    (sha256 (base32
-                                             "1b90g5dadcamds3s309a8illzhn8p1mzh7prc1bp9bsryv0xzxmh")))))
-        (bun-lock-package (name "vscode-languageserver-textdocument")
-                          (version "1.0.12")
-                          (cache-directory
-                           "vscode-languageserver-textdocument@1.0.12@@@1")
-                          (install-paths '("node_modules/vscode-languageserver-textdocument"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.12.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-textdocument-1.0.12.tgz")
-                                    (sha256 (base32
-                                             "1nxhygxja2js6ih8kr3dxcihlsmv434whnrgymki5s3f9n0jh7cz")))))
-        (bun-lock-package (name "vscode-languageserver-types")
-                          (version "3.17.5")
-                          (cache-directory
-                           "vscode-languageserver-types@3.17.5@@@1")
-                          (install-paths '("node_modules/vscode-languageserver-types"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-types-3.17.5.tgz")
-                                    (sha256 (base32
-                                             "1h6a173990rn6g36pf7bf2k9gynwshr8ziaipr8i7rdvz3kzjwyn")))))
-        (bun-lock-package (name "vscode-languageserver-types")
-                          (version "3.18.0")
-                          (cache-directory
-                           "vscode-languageserver-types@3.18.0@@@1")
-                          (install-paths '("node_modules/vscode-languageserver-protocol/node_modules/vscode-languageserver-types"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-languageserver-types/-/vscode-languageserver-types-3.18.0.tgz")
-                                    (file-name
-                                     "npm-vscode-languageserver-types-3.18.0.tgz")
-                                    (sha256 (base32
-                                             "0plzwjkp76ky7sfsx4kddp3hjh5qr3w8wxlc77wv66rwwjzm3g9d")))))
-        (bun-lock-package (name "vscode-nls")
-                          (version "5.2.0")
-                          (cache-directory "vscode-nls@5.2.0@@@1")
-                          (install-paths '("node_modules/vscode-nls"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-nls/-/vscode-nls-5.2.0.tgz")
-                                    (file-name "npm-vscode-nls-5.2.0.tgz")
-                                    (sha256 (base32
-                                             "0yd7kkd6wif95acfp7d61gf17v92llch4xv95zzlwap5d8wra7s4")))))
-        (bun-lock-package (name "vscode-uri")
-                          (version "3.1.0")
-                          (cache-directory "vscode-uri@3.1.0@@@1")
-                          (install-paths '("node_modules/vscode-uri"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.1.0.tgz")
-                                    (file-name "npm-vscode-uri-3.1.0.tgz")
-                                    (sha256 (base32
-                                             "0m7w7kj30ixmm49d47070vvg3hh5mkav8gxji5rj6n28g8npbv66")))))
-        (bun-lock-package (name "vscode-uri")
-                          (version "3.2.0")
-                          (cache-directory "vscode-uri@3.2.0@@@1")
-                          (install-paths '("packages/web/node_modules/@astrojs/check/node_modules/@astrojs/language-server/node_modules/vscode-uri"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.2.0.tgz")
-                                    (file-name "npm-vscode-uri-3.2.0.tgz")
-                                    (sha256 (base32
-                                             "0jq10jzy22xbc9kvrn9xxp430h65lvnm3qvrlv1h994cf93lmyhj")))))
         (bun-lock-package (name "walk-up-path")
                           (version "4.0.0")
                           (cache-directory "walk-up-path@4.0.0@@@1")
@@ -68083,6 +65264,17 @@
                                     (file-name "npm-walk-up-path-4.0.0.tgz")
                                     (sha256 (base32
                                              "1rmp7fdjk594vaq89q1m0mgqmwsz86g4ki3s5phpzryk9qai5qcd")))))
+        (bun-lock-package (name "wawoff2")
+                          (version "2.0.1")
+                          (cache-directory "wawoff2@2.0.1@@@1")
+                          (install-paths '("node_modules/wawoff2"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/wawoff2/-/wawoff2-2.0.1.tgz")
+                                    (file-name "npm-wawoff2-2.0.1.tgz")
+                                    (sha256 (base32
+                                             "0mlsv74lyc7cx9an5wb99nwbfllbpii8inmpjc68w8h9p2d0amn3")))))
         (bun-lock-package (name "web-features")
                           (version "3.37.0")
                           (cache-directory "web-features@3.37.0@@@1")
@@ -68094,21 +65286,10 @@
                                     (file-name "npm-web-features-3.37.0.tgz")
                                     (sha256 (base32
                                              "08icv8n7fg73wx7y91p2jymsv7i2yf1pxzax1a1zivg19ip8zr8j")))))
-        (bun-lock-package (name "web-namespaces")
-                          (version "2.0.1")
-                          (cache-directory "web-namespaces@2.0.1@@@1")
-                          (install-paths '("node_modules/web-namespaces"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/web-namespaces/-/web-namespaces-2.0.1.tgz")
-                                    (file-name "npm-web-namespaces-2.0.1.tgz")
-                                    (sha256 (base32
-                                             "114s2jsnym6c4117awnib28v1sxx8vq3aqs802bzfc9kqyfhs9fz")))))
         (bun-lock-package (name "web-streams-polyfill")
                           (version "3.3.3")
                           (cache-directory "web-streams-polyfill@3.3.3@@@1")
-                          (install-paths '("node_modules/fetch-blob/node_modules/web-streams-polyfill"))
+                          (install-paths '("node_modules/web-streams-polyfill"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68117,19 +65298,6 @@
                                      "npm-web-streams-polyfill-3.3.3.tgz")
                                     (sha256 (base32
                                              "0m5v1r411b7vlziw4bgk1vxc8mkxbnklsq20bk9ylqq2vk9kiq8y")))))
-        (bun-lock-package (name "web-streams-polyfill")
-                          (version "4.0.0-beta.3")
-                          (cache-directory
-                           "web-streams-polyfill@4.0.0-beta.3@@@1")
-                          (install-paths '("node_modules/web-streams-polyfill"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-4.0.0-beta.3.tgz")
-                                    (file-name
-                                     "npm-web-streams-polyfill-4.0.0-beta.3.tgz")
-                                    (sha256 (base32
-                                             "1c5kg7wz2x1s7xgi91llfh80mhk9qnad6m88ba5q8n8a0qr52lxh")))))
         (bun-lock-package (name "web-tree-sitter")
                           (version "0.25.10")
                           (cache-directory "web-tree-sitter@0.25.10@@@1")
@@ -68482,17 +65650,6 @@
                                     (sha256 (base32
                                              "0lg7ypikikf3mdmrp5wr5pd1gk26pjsi0wc4mmif9r2362zs3h9y")))))
         (bun-lock-package (name "workerd")
-                          (version "1.20251118.0")
-                          (cache-directory "workerd@1.20251118.0@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/workerd"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/workerd/-/workerd-1.20251118.0.tgz")
-                                    (file-name "npm-workerd-1.20251118.0.tgz")
-                                    (sha256 (base32
-                                             "0wagidsq0ml114cw31p5mvl8hh9qwlmnr9h8npp4pln09k2a54w7")))))
-        (bun-lock-package (name "workerd")
                           (version "1.20260708.1")
                           (cache-directory "workerd@1.20260708.1@@@1")
                           (install-paths '("node_modules/workerd"))
@@ -68504,16 +65661,38 @@
                                     (sha256 (base32
                                              "1g04r3815q1cgbd5ffagkn4b69jp9q5ngzsxmxip1w385fn9ms68")))))
         (bun-lock-package (name "workerd")
-                          (version "1.20260811.1")
-                          (cache-directory "workerd@1.20260811.1@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/workerd"))
+                          (version "1.20260930.2")
+                          (cache-directory "workerd@1.20260930.2@@@1")
+                          (install-paths '("node_modules/miniflare/node_modules/workerd"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/workerd/-/workerd-1.20260811.1.tgz")
-                                    (file-name "npm-workerd-1.20260811.1.tgz")
+                                     "https://registry.npmjs.org/workerd/-/workerd-1.20260930.2.tgz")
+                                    (file-name "npm-workerd-1.20260930.2.tgz")
                                     (sha256 (base32
-                                             "1y4w7p9w2acdss4zms6y5d60x2k7gmdf7vykz1lp2hs6lawknll9")))))
+                                             "03rhg16324gph8l1ss6kvmyiii7qlbcnry71wg5hwgfmi8a7a4zs")))))
+        (bun-lock-package (name "workerd")
+                          (version "1.20261001.1")
+                          (cache-directory "workerd@1.20261001.1@@@1")
+                          (install-paths '("node_modules/@cloudflare/runtime-types/node_modules/workerd"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/workerd/-/workerd-1.20261001.1.tgz")
+                                    (file-name "npm-workerd-1.20261001.1.tgz")
+                                    (sha256 (base32
+                                             "1c1nzjdlzf3hpk4ndr7fhhmjlqrw5mhgvi4angw0g3zxyrcwh43j")))))
+        (bun-lock-package (name "workerd")
+                          (version "1.20261102.1")
+                          (cache-directory "workerd@1.20261102.1@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler/node_modules/workerd"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/workerd/-/workerd-1.20261102.1.tgz")
+                                    (file-name "npm-workerd-1.20261102.1.tgz")
+                                    (sha256 (base32
+                                             "0z30g774kfznlnm1bw40933713aalnj6p9sv5x0l0qhff47k76rg")))))
         (bun-lock-package (name "wrangler")
                           (version "4.110.0")
                           (cache-directory "wrangler@4.110.0@@@1")
@@ -68526,27 +65705,16 @@
                                     (sha256 (base32
                                              "01hiyxqiyd0vmfr9blpdrc9422rd64g7rc8lbyr73n1n6dshj2a7")))))
         (bun-lock-package (name "wrangler")
-                          (version "4.123.0")
-                          (cache-directory "wrangler@4.123.0@@@1")
-                          (install-paths '("node_modules/@cloudflare/vite-plugin/node_modules/wrangler"))
+                          (version "4.156.2")
+                          (cache-directory "wrangler@4.156.2@@@1")
+                          (install-paths '("services/legacy/node_modules/wrangler"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/wrangler/-/wrangler-4.123.0.tgz")
-                                    (file-name "npm-wrangler-4.123.0.tgz")
+                                     "https://registry.npmjs.org/wrangler/-/wrangler-4.156.2.tgz")
+                                    (file-name "npm-wrangler-4.156.2.tgz")
                                     (sha256 (base32
-                                             "1k6rmn951zma8rwz6z23b3rvs0v7izyslrahhlki1d2zmqnh0bkn")))))
-        (bun-lock-package (name "wrangler")
-                          (version "4.50.0")
-                          (cache-directory "wrangler@4.50.0@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/wrangler/-/wrangler-4.50.0.tgz")
-                                    (file-name "npm-wrangler-4.50.0.tgz")
-                                    (sha256 (base32
-                                             "01x4vx9137ajafgavrd8dwnddhn348kfhs5k5y6h8dr1371yg0l8")))))
+                                             "0kng03ppl3c902ra88h3dnlxbr7hn36r7qryml61w64db0hx9366")))))
         (bun-lock-package (name "wrap-ansi")
                           (version "7.0.0")
                           (cache-directory "wrap-ansi@7.0.0@@@1")
@@ -68573,8 +65741,7 @@
         (bun-lock-package (name "wrap-ansi")
                           (version "9.0.2")
                           (cache-directory "wrap-ansi@9.0.2@@@1")
-                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui/node_modules/wrap-ansi"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/cliui/node_modules/wrap-ansi"))
+                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/cliui/node_modules/wrap-ansi"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68616,17 +65783,6 @@
                                     (file-name "npm-ws-7.5.13.tgz")
                                     (sha256 (base32
                                              "1dq2zs3c306ygylm64xy7w6sh73i61qj1g0y02llj26xb2wjklpj")))))
-        (bun-lock-package (name "ws")
-                          (version "8.18.0")
-                          (cache-directory "ws@8.18.0@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/ws"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/ws/-/ws-8.18.0.tgz")
-                                    (file-name "npm-ws-8.18.0.tgz")
-                                    (sha256 (base32
-                                             "086aqhby8vzclz4az64rplzz9iw8k2ddhy01r92cjwhlhpr230m0")))))
         (bun-lock-package (name "ws")
                           (version "8.21.0")
                           (cache-directory "ws@8.21.0@@@1")
@@ -68705,17 +65861,6 @@
                                      "npm-xmlhttprequest-ssl-2.1.2.tgz")
                                     (sha256 (base32
                                              "0kzpq4xs34c0m09nr8qrzpvpa2giza8jq1f2asgnkm985jc08ilf")))))
-        (bun-lock-package (name "xxhash-wasm")
-                          (version "1.1.0")
-                          (cache-directory "xxhash-wasm@1.1.0@@@1")
-                          (install-paths '("node_modules/xxhash-wasm"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/xxhash-wasm/-/xxhash-wasm-1.1.0.tgz")
-                                    (file-name "npm-xxhash-wasm-1.1.0.tgz")
-                                    (sha256 (base32
-                                             "1ba0cgqwi9airhf8b24mga52clajw51sc4cff99x4b01jbvr1pfd")))))
         (bun-lock-package (name "y18n")
                           (version "5.0.8")
                           (cache-directory "y18n@5.0.8@@@1")
@@ -68743,8 +65888,7 @@
                           (cache-directory "yallist@4.0.0@@@1")
                           (install-paths '("node_modules/hosted-git-info/node_modules/lru-cache/node_modules/yallist"
                                            "node_modules/minipass-flush/node_modules/minipass/node_modules/yallist"
-                                           "node_modules/minipass-pipeline/node_modules/minipass/node_modules/yallist"
-                                           "node_modules/openid-client/node_modules/lru-cache/node_modules/yallist"))
+                                           "node_modules/minipass-pipeline/node_modules/minipass/node_modules/yallist"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68764,20 +65908,9 @@
                                     (sha256 (base32
                                              "15ffxgcsvvq8yp4rxcqnacl84i012jpsbrmh6cqkpavwmgdl77bw")))))
         (bun-lock-package (name "yaml")
-                          (version "2.8.3")
-                          (cache-directory "yaml@2.8.3@@@1")
-                          (install-paths '("node_modules/yaml-language-server/node_modules/yaml"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/yaml/-/yaml-2.8.3.tgz")
-                                    (file-name "npm-yaml-2.8.3.tgz")
-                                    (sha256 (base32
-                                             "1bc5pw65zwxjf8sdkidbh1g2qdl3qanard65snzg5pj7fifq0fcm")))))
-        (bun-lock-package (name "yaml")
                           (version "2.9.0")
                           (cache-directory "yaml@2.9.0@@@1")
-                          (install-paths '("node_modules/yaml"))
+                          (install-paths '("services/update/node_modules/yaml"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68788,9 +65921,7 @@
         (bun-lock-package (name "yaml")
                           (version "2.9.1")
                           (cache-directory "yaml@2.9.1@@@1")
-                          (install-paths '("node_modules/@astrojs/markdown-remark/node_modules/@astrojs/internal-helpers/node_modules/yaml"
-                                           "node_modules/@astrojs/markdown-satteri/node_modules/@astrojs/internal-helpers/node_modules/yaml"
-                                           "node_modules/astro/node_modules/@astrojs/internal-helpers/node_modules/yaml"))
+                          (install-paths '("node_modules/yaml"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68798,18 +65929,6 @@
                                     (file-name "npm-yaml-2.9.1.tgz")
                                     (sha256 (base32
                                              "1lz5kpawfrwc1sb196r3my21qnl06213f65mnw3s5f2rym6cbxjf")))))
-        (bun-lock-package (name "yaml-language-server")
-                          (version "1.23.0")
-                          (cache-directory "yaml-language-server@1.23.0@@@1")
-                          (install-paths '("node_modules/yaml-language-server"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/yaml-language-server/-/yaml-language-server-1.23.0.tgz")
-                                    (file-name
-                                     "npm-yaml-language-server-1.23.0.tgz")
-                                    (sha256 (base32
-                                             "1kqnybg5mpp3k6fqap8090dr08vd8i008zb667xfj1wm2rzyrdph")))))
         (bun-lock-package (name "yargs")
                           (version "17.7.3")
                           (cache-directory "yargs@17.7.3@@@1")
@@ -68832,17 +65951,6 @@
                                     (file-name "npm-yargs-18.1.0.tgz")
                                     (sha256 (base32
                                              "0li24fdmil7j4c2x5n26zi7i21sgzs8axn0nwci884cq7sbn7g1b")))))
-        (bun-lock-package (name "yargs")
-                          (version "18.2.0")
-                          (cache-directory "yargs@18.2.0@@@1")
-                          (install-paths '("packages/web/node_modules/@astrojs/check/node_modules/yargs"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/yargs/-/yargs-18.2.0.tgz")
-                                    (file-name "npm-yargs-18.2.0.tgz")
-                                    (sha256 (base32
-                                             "04qx33v1vlrlrbi5kvwlsdaxcbxry8lx5dllswyxg9s1kv9xkpa4")))))
         (bun-lock-package (name "yargs-parser")
                           (version "21.1.1")
                           (cache-directory "yargs-parser@21.1.1@@@1")
@@ -68857,9 +65965,7 @@
         (bun-lock-package (name "yargs-parser")
                           (version "22.0.0")
                           (cache-directory "yargs-parser@22.0.0@@@1")
-                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/yargs-parser"
-                                           "node_modules/astro/node_modules/yargs-parser"
-                                           "packages/web/node_modules/@astrojs/check/node_modules/yargs/node_modules/yargs-parser"))
+                          (install-paths '("node_modules/@puppeteer/browsers/node_modules/yargs/node_modules/yargs-parser"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68870,8 +65976,7 @@
         (bun-lock-package (name "yocto-queue")
                           (version "0.1.0")
                           (cache-directory "yocto-queue@0.1.0@@@1")
-                          (install-paths '("node_modules/dir-compare/node_modules/p-limit/node_modules/yocto-queue"
-                                           "node_modules/p-locate/node_modules/p-limit/node_modules/yocto-queue"))
+                          (install-paths '("node_modules/yocto-queue"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
@@ -68879,17 +65984,17 @@
                                     (file-name "npm-yocto-queue-0.1.0.tgz")
                                     (sha256 (base32
                                              "1w99c4y6vl1q5dmw9hnkbiqxnmaz72x22qdc13mg084glpnbqwn7")))))
-        (bun-lock-package (name "yocto-queue")
-                          (version "1.2.2")
-                          (cache-directory "yocto-queue@1.2.2@@@1")
-                          (install-paths '("node_modules/yocto-queue"))
+        (bun-lock-package (name "yoga-layout")
+                          (version "3.2.1")
+                          (cache-directory "yoga-layout@3.2.1@@@1")
+                          (install-paths '("node_modules/yoga-layout"))
                           (source (origin
                                     (method url-fetch)
                                     (uri
-                                     "https://registry.npmjs.org/yocto-queue/-/yocto-queue-1.2.2.tgz")
-                                    (file-name "npm-yocto-queue-1.2.2.tgz")
+                                     "https://registry.npmjs.org/yoga-layout/-/yoga-layout-3.2.1.tgz")
+                                    (file-name "npm-yoga-layout-3.2.1.tgz")
                                     (sha256 (base32
-                                             "1bhbd2ncrbx8ijmpfpwil87lzykr3fiwf4pvrsr1dg6g7wav3rv9")))))
+                                             "1zvzgraw9i0a0gfgbs9bnbh3hz2l5s33iy53lqmpaskki9hpgg28")))))
         (bun-lock-package (name "youch")
                           (version "4.1.0-beta.10")
                           (cache-directory "youch@4.1.0-beta.10@@@1")
@@ -68913,17 +66018,6 @@
                                     (sha256 (base32
                                              "0ym1fhapwhzvgf9q62aa6gmrxhc70zazvpkkdybbc4x1nn989wwd")))))
         (bun-lock-package (name "zod")
-                          (version "3.22.3")
-                          (cache-directory "zod@3.22.3@@@1")
-                          (install-paths '("packages/console/app/node_modules/wrangler/node_modules/miniflare/node_modules/zod"))
-                          (source (origin
-                                    (method url-fetch)
-                                    (uri
-                                     "https://registry.npmjs.org/zod/-/zod-3.22.3.tgz")
-                                    (file-name "npm-zod-3.22.3.tgz")
-                                    (sha256 (base32
-                                             "01vm8x9nvj5di1wpkkzydaqlzv2yq81hhn6rbwmpmp0m4xnrflf0")))))
-        (bun-lock-package (name "zod")
                           (version "3.25.76")
                           (cache-directory "zod@3.25.76@@@1")
                           (install-paths '("node_modules/chromium-bidi/node_modules/zod"
@@ -68935,6 +66029,17 @@
                                     (file-name "npm-zod-3.25.76.tgz")
                                     (sha256 (base32
                                              "0xw3m1qdqbqam3fhxiv8ag9l9kampywwx4gfcjmis36xy02il7wy")))))
+        (bun-lock-package (name "zod")
+                          (version "4.4.3")
+                          (cache-directory "zod@4.4.3@@@1")
+                          (install-paths '("node_modules/@cloudflare/config/node_modules/zod"))
+                          (source (origin
+                                    (method url-fetch)
+                                    (uri
+                                     "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz")
+                                    (file-name "npm-zod-4.4.3.tgz")
+                                    (sha256 (base32
+                                             "17171zbchqs56621d99kxgs2cg215yp879450rhh1m9zadzz2f7f")))))
         (bun-lock-package (name "zod")
                           (version "4.6.7")
                           (cache-directory "zod@4.6.7@@@1")
@@ -69018,5 +66123,5 @@
                         (%bun-1.3.14-node-fallbacks-npm-inputs =>
                          %bun-1.3.14-node-fallbacks-npm-inputs)
                         (%bun-1.3.14-npm-inputs => %bun-1.3.14-npm-inputs)
-                        (%opencode-2.2.5-npm-inputs =>
-                         %opencode-2.2.5-npm-inputs))
+                        (%opencode-2.3.2-npm-inputs =>
+                         %opencode-2.3.2-npm-inputs))
