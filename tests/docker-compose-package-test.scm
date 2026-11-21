@@ -1,11 +1,11 @@
 (use-modules (roquix packages docker)
              (guix packages)
-             (guix build-system gnu)
+             (guix build-system go)
              (srfi srfi-64))
 
 (test-begin "docker-compose-package")
 
-(test-equal "Compose is built from source" gnu-build-system
+(test-equal "Compose uses the Go build system" go-build-system
   (package-build-system docker-compose))
 (test-assert "Compose has a pinned source archive"
   (origin? (package-source docker-compose)))

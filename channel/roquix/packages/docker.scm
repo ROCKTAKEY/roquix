@@ -4,7 +4,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages version-control)
-  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
@@ -54,54 +54,56 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "0qqdndw1lmrkwr9hx5932s1gjpryysh8z4cy53cs5n369bfvgxcq"))))
-    (build-system gnu-build-system)
+    (build-system go-build-system)
     (arguments
      (list
-      #:modules '((guix build gnu-build-system)
+      #:go go-1.27
+      #:import-path "github.com/docker/compose/v5/cmd"
+      #:unpack-path "github.com/docker/compose/v5"
+      #:install-source? #f
+      #:build-flags
+      #~(list "-mod=vendor"
+              (string-append
+               "-ldflags=-s -w -X github.com/docker/compose/v5/internal.Version=v"
+               #$version))
+      ;; Test the whole module, rather than only the cmd import path.
+      #:test-subdirs #~'()
+      #:test-flags #~(list "-mod=vendor" "-trimpath" "./...")
+      #:modules '((guix build go-build-system)
                   (guix build utils)
                   (ice-9 popen)
                   (ice-9 textual-ports))
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-test-shells
-            (lambda _
-              ;; These tests execute a shell directly or generate a plugin
-              ;; script at runtime, outside the shebang patching phases.
-              (substitute* '("pkg/watch/watcher_naive_test.go"
-                             "pkg/compose/model_test.go")
-                (("/bin/sh") (which "sh")))))
-          (replace 'configure
-            (lambda* (#:key inputs #:allow-other-keys)
-              (copy-recursively (assoc-ref inputs "vendor") "vendor"
-                                #:log (%make-void-port "w"))
-              ;; Remote Compose files are cloned by an external Git process.
-              (substitute* "pkg/remote/git.go"
-                (("\"git\"")
-                 (object->string (search-input-file inputs "/bin/git"))))
-              (setenv "HOME" (getcwd))
-              (setenv "GOCACHE" (string-append (getcwd) "/.go-cache"))
-              (setenv "GOPATH" (string-append (getcwd) "/.go"))
+          (add-after 'patch-source-shebangs 'prepare-module
+            (lambda* (#:key inputs unpack-path #:allow-other-keys)
+              (setenv "GO111MODULE" "on")
               (setenv "GOTOOLCHAIN" "local")
               (setenv "GOPROXY" "off")
               (setenv "GOSUMDB" "off")
-              (setenv "GOFLAGS" "-mod=vendor -trimpath")
-              (setenv "GOMAXPROCS" (number->string (parallel-job-count)))))
-          (replace 'build
+              (with-directory-excursion (string-append "src/" unpack-path)
+                (copy-recursively (assoc-ref inputs "vendor") "vendor"
+                                  #:log (%make-void-port "w"))
+                ;; These tests execute or generate shell scripts at runtime.
+                (substitute* '("pkg/watch/watcher_naive_test.go"
+                               "pkg/compose/model_test.go")
+                  (("/bin/sh") (which "sh")))
+                ;; Remote Compose files are cloned by an external Git process.
+                (substitute* "pkg/remote/git.go"
+                  (("\"git\"")
+                   (object->string (search-input-file inputs "/bin/git")))))))
+          ;; Module mode needs go.mod in the working directory.  The standard
+          ;; license phase expects to start from the GOPATH root.
+          (add-before 'build 'enter-module
+            (lambda* (#:key unpack-path #:allow-other-keys)
+              (chdir (string-append "src/" unpack-path))))
+          (add-after 'check 'leave-module
             (lambda _
-              (invoke "go" "build" "-ldflags"
-                      (string-append
-                       "-w -X github.com/docker/compose/v5/internal.Version=v"
-                       #$version)
-                      "-o" "docker-compose" "./cmd")))
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                ;; Docker's end-to-end suite is gated by the e2e build tag;
-                ;; ordinary unit tests can run without a Docker daemon.
-                (invoke "go" "test" "./..."))))
-          (replace 'install
+              (chdir (getenv "GOPATH"))))
+          (add-after 'build 'rename-command
             (lambda _
-              (install-file "docker-compose" (string-append #$output "/bin"))))
+              (rename-file (string-append #$output "/bin/cmd")
+                           (string-append #$output "/bin/docker-compose"))))
           (add-after 'install 'install-plugin
             (lambda _
               (let ((plugins (string-append #$output "/lib/docker/cli-plugins")))
@@ -144,8 +146,7 @@
                     (error "Compose configuration parsing failed")))))))))
     (inputs (list git-minimal))
     (native-inputs
-     (list (list "go" go-1.27)
-           (list "vendor"
+     (list (list "vendor"
                  (origin
                    (method compose-vendor-fetch)
                    (uri (package-source this-package))
