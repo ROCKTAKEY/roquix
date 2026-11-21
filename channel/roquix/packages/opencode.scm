@@ -72,6 +72,12 @@
                 ;; compiled OpenCode executable, so the upstream smoke test is
                 ;; valid without an explicit loader wrapper.
                 (substitute* "packages/cli/script/build.ts"
+                  ;; With Bun 1.3.14, precompiled bytecode crashes during the
+                  ;; MCP WebSocket handshake in the service smoke test.
+                  (("bytecode: true") "bytecode: false")
+                  ;; Bun 1.3.14 exports these constructors from its ws module.
+                  (("createWebSocketStream, extension, Receiver, Sender, subprotocol, WebSocket, WebSocketServer")
+                   "createWebSocketStream, Receiver, Sender, WebSocket, WebSocketServer")
                   (("target: target.replace\\(binary, .*CompileTarget,")
                    "// target omitted: use the current Bun runtime"))))
             (add-after 'use-current-bun-template 'use-guix-ripgrep
