@@ -88,14 +88,21 @@
                  #$(file-append libappindicator "/lib/libappindicator3.so.1")))))
           (add-after 'install 'install-desktop-entry
             (lambda _
-              (let ((apps (string-append #$output "/share/applications")))
-                (mkdir-p apps)
-                (call-with-output-file (string-append apps "/me.proton.lumo-app.desktop")
-                  (lambda (port)
-                    (display "[Desktop Entry]\nType=Application\nName=Lumo\nExec=lumo-desktop %U\nIcon=lumo\nCategories=Office;\nMimeType=x-scheme-handler/proton-lumo;\n" port))))
-              (let ((icons (string-append #$output "/share/icons/hicolor/128x128/apps")))
+              (let ((desktop "linux/launcher.desktop")
+                    (icons (string-append #$output "/share/icons/hicolor/128x128/apps")))
+                ;; Both optional fields in the Tauri template apply to Lumo.
+                (substitute* desktop
+                  (("^\\{\\{(#if (comment|mime_type)|/if)\\}\\}\n$") "")
+                  (("\\{\\{categories\\}\\}") "Office;")
+                  (("\\{\\{comment\\}\\}") "Lumo: your private assistant")
+                  (("\\{\\{(exec|icon)\\}\\}") "lumo-desktop")
+                  (("\\{\\{mime_type\\}\\}") "x-scheme-handler/proton-lumo"))
+                (rename-file desktop "me.proton.lumo-app.desktop")
+                (install-file "me.proton.lumo-app.desktop"
+                              (string-append #$output "/share/applications"))
                 (mkdir-p icons)
-                (copy-file "icons/128x128.png" (string-append icons "/lumo.png"))))))))
+                (copy-file "icons/128x128.png"
+                           (string-append icons "/lumo-desktop.png"))))))))
     (native-inputs (list cmake-minimal node perl pkg-config procps))
     (inputs (cons* dbus gtk+ libappindicator libx11 openssl webkitgtk-for-gtk3
                    (cargo-inputs 'lumo-desktop #:module '(roquix packages rust-crates))))
