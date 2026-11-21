@@ -36,6 +36,15 @@
        (eq? (package-source t3code) (package-source t3code-cli))))
 
 (for-each
+ (lambda (package)
+   (test-assert (string-append (package-name package)
+                              " excludes proprietary providers in its source origin")
+     (any (lambda (patch)
+            (string=? (local-file-name patch) "exclude-proprietary-providers.patch"))
+          (origin-patches (package-source package)))))
+ (list t3code t3code-cli t3code-rocktakey t3code-cli-rocktakey))
+
+(for-each
  (lambda (package name)
    (test-equal "session sharing is separately installable"
      name (package-name package))

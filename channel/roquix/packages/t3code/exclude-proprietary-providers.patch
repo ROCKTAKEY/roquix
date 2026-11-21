@@ -1,0 +1,353 @@
+--- a/apps/server/package.json
++++ b/apps/server/package.json
+@@ -37,6 +37,4 @@
+   },
+   "dependencies": {
+-    "@anthropic-ai/claude-agent-sdk": "^0.3.321",
+-    "@cursor/sdk": "1.3.1",
+     "@effect/platform-node": "catalog:",
+     "@effect/platform-node-shared": "catalog:",
+--- a/packages/provider-cursor/package.json
++++ b/packages/provider-cursor/package.json
+@@ -46,5 +46,4 @@
+   },
+   "dependencies": {
+-    "@cursor/sdk": "1.3.1",
+     "@t3tools/contracts": "workspace:*",
+     "@t3tools/provider-core": "workspace:*",
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -112,5 +112,4 @@
+   expo-network: 58.0.4
+   "@clerk/expo-native-components": 0.4.4
+-  "@cursor/sdk": 1.3.1
+   expo-sharing: 58.0.22
+   expo-widgets: 58.0.27
+@@ -145,13 +144,4 @@
+   # registry manifest, so the edge has to be cut here as well.
+   "dbus-next>usocket": "-"
+-  # The SDK always receives the user's Claude executable, so its bundled binaries are unused.
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-arm64": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-x64": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64-musl": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64-musl": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-arm64": "-"
+-  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-x64": "-"
+   "@clerk/backend": "catalog:"
+   "@clerk/clerk-js": "catalog:"
+@@ -276,7 +266,4 @@
+   # stalled update download hangs forever.
+   electron-updater@6.8.9: patches/electron-updater@6.8.9.patch
+-  # Local agents honor the attribution settings in the user's Cursor CLI cli-config.json, stream
+-  # shell output while it runs, and expose agent.resume() (the protocol's ResumeAction).
+-  "@cursor/sdk@1.3.1": patches/@cursor__sdk@1.3.1.patch
+   # A failed Artifacts.cached effect hangs every later caller: https://github.com/alchemy-run/alchemy/issues/2981
+   alchemy@2.0.0-beta.85: patches/alchemy@2.0.0-beta.85.patch
+@@ -311,10 +298,4 @@
+     skills: false
+
+-# @cursor/sdk finds its platform package (sandbox helper, rg, tree-sitter) by
+-# walking up from the entry script for node_modules/@cursor/sdk-<platform>-<arch>.
+-# pnpm keeps optional deps inside the virtual store, so hoist it to the root.
+-publicHoistPattern:
+-  - "@cursor/sdk-*"
+-
+ minimumReleaseAgeExclude:
+   - "@legendapp/list@3.7.3"
+@@ -327,5 +308,4 @@
+   - "@effect/tsgo-win32-x64@0.67.1"
+   - "@effect/tsgo@0.67.1"
+-  - "@anthropic-ai/claude-agent-sdk@0.3.321"
+   - "@pierre/diffs@1.7.0-beta.4"
+   - "@pierre/highlights@0.5.0"
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -281,5 +281,4 @@
+   expo-network: 58.0.4
+   '@clerk/expo-native-components': 0.4.4
+-  '@cursor/sdk': 1.3.1
+   expo-sharing: 58.0.22
+   expo-widgets: 58.0.27
+@@ -305,12 +304,4 @@
+   unenv: 2.0.0-rc.24
+   dbus-next>usocket: '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-arm64': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-x64': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64-musl': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64-musl': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-arm64': '-'
+-  '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-x64': '-'
+   '@clerk/backend': 3.27.0
+   '@clerk/clerk-js': 6.42.3
+@@ -366,5 +357,4 @@
+   '@alchemy.run/test@2.0.0-beta.85': 29c0539ea71d9cc372f0b16558640599beb9bc609605feb2a493da268d72713e
+   '@clerk/expo-native-components@0.4.4': 7a808b92da8460750b85818552e13be3fb73d111691c7db76965970351e124e4
+-  '@cursor/sdk@1.3.1': 8dc0d68c1a2d0cd08a609f7820d8c3c3d1393da8044ff33fd10f4ded750e8718
+   '@effect/platform-node-shared@4.1.2': 06952843c6f431ca83c78762fd18d23cda76883801049ee311feced2438ecf14
+   '@effect/vitest@4.1.2': 299510b71c36537a832a67e9d160a5f112a5f326a29e95c41cb45fc8234e47c7
+@@ -857,10 +847,4 @@
+   apps/server:
+     dependencies:
+-      '@anthropic-ai/claude-agent-sdk':
+-        specifier: ^0.3.321
+-        version: 0.3.321(@anthropic-ai/sdk@0.93.0(zod@4.6.7))(@modelcontextprotocol/sdk@1.32.2(supports-color@8.1.1)(zod@4.6.7))(zod@4.6.7)
+-      '@cursor/sdk':
+-        specifier: 1.3.1
+-        version: 1.3.1(patch_hash=8dc0d68c1a2d0cd08a609f7820d8c3c3d1393da8044ff33fd10f4ded750e8718)(zod@4.6.7)
+       '@effect/platform-node':
+         specifier: 4.1.2
+@@ -1789,7 +1773,4 @@
+   packages/provider-cursor:
+     dependencies:
+-      '@cursor/sdk':
+-        specifier: 1.3.1
+-        version: 1.3.1(patch_hash=8dc0d68c1a2d0cd08a609f7820d8c3c3d1393da8044ff33fd10f4ded750e8718)(zod@4.6.7)
+       '@t3tools/contracts':
+         specifier: workspace:*
+@@ -2831,12 +2812,4 @@
+         optional: true
+
+-  '@anthropic-ai/claude-agent-sdk@0.3.321':
+-    resolution: {integrity: sha512-Smer/h/jQLTtT+l4sxaAUwZq7wif/9RzzuqltS5Gy+kAFo/iP89H7JHa8avhVT0xGkPBvBD/1Bbdg3pcArhQcw==}
+-    engines: {node: '>=18.14.0'}
+-    peerDependencies:
+-      '@anthropic-ai/sdk': '>=0.93.0'
+-      '@modelcontextprotocol/sdk': ^1.29.0
+-      zod: ^4.0.0
+-
+   '@anthropic-ai/sdk@0.93.0':
+     resolution: {integrity: sha512-q9vaSZQVFx6B/gPxetGYfLXSJD5v0sOmh0OpZDq7yCrTSA+Rscvrtyol7JJTW40wEpQB4U1B4JXzxQitbQ3CAA==}
+@@ -3740,40 +3713,4 @@
+     resolution: {integrity: sha512-bPlN9S9O1A0euCpEWE4qnvB5YDuyYVsUTrxSgmAM1Is0j4tICHoVyOVAXfWMP/kS9ZrjvyIXWV2PmomiAXXqOw==}
+     engines: {node: '>=20.19.0'}
+-
+-  '@cursor/sdk-darwin-arm64@1.3.1':
+-    resolution: {integrity: sha512-5JXgVJYeFPxXjDqnu1ha/rAmH+ATFh4abdx199x8E/RcYYM++9b55oJXO3GYv1/9/4Qa9RsE5JkHRY6FYc5vQw==}
+-    cpu: [arm64]
+-    os: [darwin]
+-    hasBin: true
+-
+-  '@cursor/sdk-darwin-x64@1.3.1':
+-    resolution: {integrity: sha512-yHzIRER8IpOpIH/CUigquuwqvcjCEe62xV6OiJHzRfgApdnzxCjC8JMhLZP2M08/dofyZu9xeo7yr43H6oSRTA==}
+-    cpu: [x64]
+-    os: [darwin]
+-    hasBin: true
+-
+-  '@cursor/sdk-linux-arm64@1.3.1':
+-    resolution: {integrity: sha512-8wI7DUSQtJ7Rkyj5AhNONeR0M+5bjhR0qo8GJEEmRs6isi072sNPsFXwfhlzX7bhbtsX/FCtvsTG/vpam48ObA==}
+-    cpu: [arm64]
+-    os: [linux]
+-    hasBin: true
+-
+-  '@cursor/sdk-linux-x64@1.3.1':
+-    resolution: {integrity: sha512-jIwzTr3KhMtU4aJc8x0i1RlcBKttqcVYhor9FI/h1qJQm03yTgSwhyZjsMvfBHPQ5KoYDFVdu47S1dIhwaSWZA==}
+-    cpu: [x64]
+-    os: [linux]
+-    hasBin: true
+-
+-  '@cursor/sdk-win32-x64@1.3.1':
+-    resolution: {integrity: sha512-hqYllGgY27eaq+w035PebKdoc/JswcrvOSNCniqq/nicLXgWdK5zdKiAs5MyWUr73HGGL1sK0aiE7WdxbIKKVw==}
+-    cpu: [x64]
+-    os: [win32]
+-    hasBin: true
+-
+-  '@cursor/sdk@1.3.1':
+-    resolution: {integrity: sha512-Mn0gK8V+5BkOqm22J2ocU+1BrqnNH8QcK9kmA7SkRuawDOeq2ABC2BIZq9gRnF3z68x/I7J/ZU8jl6DcshCVUA==}
+-    engines: {node: '>=22.13'}
+-    peerDependencies:
+-      zod: ^3.25.0 || ^4.0.0
+
+   '@date-fns/tz@1.5.0':
+@@ -13301,10 +13238,4 @@
+       - utf-8-validate
+
+-  '@anthropic-ai/claude-agent-sdk@0.3.321(@anthropic-ai/sdk@0.93.0(zod@4.6.7))(@modelcontextprotocol/sdk@1.32.2(supports-color@8.1.1)(zod@4.6.7))(zod@4.6.7)':
+-    dependencies:
+-      '@anthropic-ai/sdk': 0.93.0(zod@4.6.7)
+-      '@modelcontextprotocol/sdk': 1.32.2(supports-color@8.1.1)(zod@4.6.7)
+-      zod: 4.6.7
+-
+   '@anthropic-ai/sdk@0.93.0(zod@4.6.7)':
+     dependencies:
+@@ -14233,33 +14164,4 @@
+
+   '@csstools/css-tokenizer@4.0.1': {}
+-
+-  '@cursor/sdk-darwin-arm64@1.3.1':
+-    optional: true
+-
+-  '@cursor/sdk-darwin-x64@1.3.1':
+-    optional: true
+-
+-  '@cursor/sdk-linux-arm64@1.3.1':
+-    optional: true
+-
+-  '@cursor/sdk-linux-x64@1.3.1':
+-    optional: true
+-
+-  '@cursor/sdk-win32-x64@1.3.1':
+-    optional: true
+-
+-  '@cursor/sdk@1.3.1(patch_hash=8dc0d68c1a2d0cd08a609f7820d8c3c3d1393da8044ff33fd10f4ded750e8718)(zod@4.6.7)':
+-    dependencies:
+-      '@bufbuild/protobuf': 1.10.0
+-      '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.0)
+-      '@connectrpc/connect-web': 1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))
+-      '@statsig/js-client': 3.31.0
+-      zod: 4.6.7
+-    optionalDependencies:
+-      '@cursor/sdk-darwin-arm64': 1.3.1
+-      '@cursor/sdk-darwin-x64': 1.3.1
+-      '@cursor/sdk-linux-arm64': 1.3.1
+-      '@cursor/sdk-linux-x64': 1.3.1
+-      '@cursor/sdk-win32-x64': 1.3.1
+
+   '@date-fns/tz@1.5.0': {}
+--- a/apps/server/src/provider/builtInDrivers.ts
++++ b/apps/server/src/provider/builtInDrivers.ts
+@@ -4,7 +4,5 @@
+ } from "@t3tools/provider-acp-registry/server";
+ import { AntigravityDriver, type AntigravityDriverEnv } from "./Drivers/AntigravityDriver.ts";
+-import { ClaudeDriver, type ClaudeDriverEnv } from "./Drivers/ClaudeDriver.ts";
+ import { CodexDriver, type CodexDriverEnv } from "./Drivers/CodexDriver.ts";
+-import { CursorDriver, type CursorDriverEnv } from "@t3tools/provider-cursor/server";
+ import { FxDriver, type FxDriverEnv } from "@t3tools/provider-fx/server";
+ import { GrokDriver, type GrokDriverEnv } from "@t3tools/provider-grok/server";
+@@ -21,7 +19,5 @@
+   | AcpRegistryDriverEnv
+   | AntigravityDriverEnv
+-  | ClaudeDriverEnv
+   | CodexDriverEnv
+-  | CursorDriverEnv
+   | FxDriverEnv
+   | GrokDriverEnv
+@@ -33,6 +29,4 @@
+ export const BUILT_IN_DRIVERS: ReadonlyArray<AnyProviderDriver<BuiltInDriversEnv>> = [
+   CodexDriver,
+-  ClaudeDriver,
+-  CursorDriver,
+   GrokDriver,
+   FxDriver,
+@@ -46,10 +40,8 @@
+
+ export type BuiltInUsageReadersEnv =
+-  | ProviderUsageReaderEnv<typeof ClaudeDriver>
+   | ProviderUsageReaderEnv<typeof CodexDriver>
+   | ProviderUsageReaderEnv<typeof GrokDriver>
+   | ProviderUsageReaderEnv<typeof OpenCodeDriver>
+   | ProviderUsageReaderEnv<typeof AntigravityDriver>
+-  | ProviderUsageReaderEnv<typeof CursorDriver>
+   | ProviderUsageReaderEnv<typeof PiDriver>
+   | ProviderUsageReaderEnv<typeof MuseDriver>;
+@@ -59,5 +51,4 @@
+   AnyProviderDriver<BuiltInDriversEnv, BuiltInUsageReadersEnv>
+ > = [
+-  ClaudeDriver,
+   CodexDriver,
+   GrokDriver,
+@@ -66,4 +57,3 @@
+   MuseDriver,
+   AntigravityDriver,
+-  CursorDriver,
+ ];
+--- a/apps/server/src/provider/ProviderOrchestrationAdapterInfrastructure.ts
++++ b/apps/server/src/provider/ProviderOrchestrationAdapterInfrastructure.ts
+@@ -3,16 +3,10 @@
+ import * as SqlClient from "effect/sql/SqlClient";
+
+-import * as ClaudeAdapterV2 from "../orchestration-v2/Adapters/ClaudeAdapterV2.ts";
+ import * as CodexAdapterV2 from "../orchestration-v2/Adapters/CodexAdapterV2.ts";
+-import * as CursorAgentSdk from "@t3tools/provider-cursor/server/CursorAgentSdk";
+-import * as CursorSdk from "@t3tools/provider-cursor/server/CursorSdk";
+ import * as IdAllocator from "@t3tools/provider-core/server/IdAllocator";
+ import * as ProviderContinuationRequests from "@t3tools/provider-core/server/ProviderContinuationRequests";
+
+ export type ProviderOrchestrationAdapterInfrastructure =
+-  | ClaudeAdapterV2.ClaudeAgentSdkQueryRunner
+   | CodexAdapterV2.CodexAppServerClientFactory
+-  | CursorAgentSdk.CursorAgentSdkRunner
+-  | CursorSdk.CursorSdk
+   | IdAllocator.IdAllocatorV2;
+
+@@ -37,7 +31,5 @@
+ /** Reuse the continuation worker's exact layer reference so memoization shares one queue. */
+ export const layer = Layer.mergeAll(
+-  ClaudeAdapterV2.layerQueryRunner,
+   CodexAdapterV2.layerAppServerClientFactory,
+-  CursorAgentSdk.layer.pipe(Layer.provideMerge(CursorSdk.layer)),
+   layerIdAllocator,
+   ProviderContinuationRequests.layer,
+--- a/apps/server/src/server.ts
++++ b/apps/server/src/server.ts
+@@ -211,6 +211,4 @@
+ import * as AntigravityUsage from "./provider/Drivers/AntigravityUsage.ts";
+ import { MuseUsageHome } from "@t3tools/provider-muse/server";
+-import * as CursorAccountReader from "@t3tools/provider-cursor/server/CursorAccountReader";
+-import * as CursorUsageAccounts from "@t3tools/provider-cursor/server/CursorUsageAccounts";
+ import * as UsageService from "./usage/UsageService.ts";
+ import * as CodexUsageHistory from "./usage/CodexUsageHistory.ts";
+@@ -316,5 +314,4 @@
+       MuseUsageHome.layer,
+       CodexUsageHistory.layer,
+-      CursorUsageAccounts.layer.pipe(Layer.provide(CursorAccountReader.layer)),
+     ).pipe(Layer.provide(ProviderHostLive.layer.pipe(Layer.provide(ServerSecretStore.layer)))),
+   ),
+--- a/apps/server/src/binCli.ts
++++ b/apps/server/src/binCli.ts
+@@ -33,5 +33,4 @@
+ import { runServiceLauncherCli } from "./cli/serviceLauncher.ts";
+ import { speechWorkerCommand } from "./cli/speechWorker.ts";
+-import { claudeHistoryCommand } from "./cli/claudeHistory.ts";
+ import { sshHelperCommand } from "./cli/sshHelper.ts";
+ import { serviceCommand } from "./cli/service.ts";
+@@ -104,5 +103,4 @@
+         Command.withHandler(() => Effect.sync(() => void runServiceLauncherCli())),
+       ),
+-      claudeHistoryCommand,
+       speechWorkerCommand,
+       sshHelperCommand,
+--- a/apps/server/vite.config.ts
++++ b/apps/server/vite.config.ts
+@@ -106,10 +106,9 @@
+         },
+       ],
+-      // SEA embeds one entry; expose the history worker as a hidden subcommand.
+       entry: packBootstrap
+         ? ["src/bin.ts"]
+         : packExecutable
+           ? ["src/binMain.ts"]
+-          : ["src/bin.ts", "src/claude-history-worker.ts"],
++          : ["src/bin.ts"],
+       outDir: packBootstrap ? "dist-exe" : packExecutable ? cliAssetDir : "dist",
+       sourcemap: !packExecutable,
+--- a/apps/server/src/orchestration-v2/ProviderTurnStartService.ts
++++ b/apps/server/src/orchestration-v2/ProviderTurnStartService.ts
+@@ -34,8 +34,4 @@
+
+ import * as ServerConfig from "../config.ts";
+-import {
+-  CLAUDE_PROVIDER,
+-  CLAUDE_QUERY_ENDED_BEFORE_TURN_DETAIL,
+-} from "./Adapters/ClaudeAdapterV2.ts";
+ import { withTurnStartReservation, withWorkspaceLease } from "../workspace/workspaceLease.ts";
+ import * as GitWorkflowService from "../git/GitWorkflowService.ts";
+@@ -130,5 +126,4 @@
+
+ export const isProviderTurnStartError = Schema.is(ProviderTurnStartError);
+-const isProviderAdapterProtocolError = Schema.is(ProviderAdapter.ProviderAdapterProtocolError);
+ const isProviderAdapterOpenSessionError = Schema.is(
+   ProviderAdapter.ProviderAdapterOpenSessionError,
+@@ -151,9 +146,6 @@
+ const refusedBeforePrompt = (error: unknown): boolean =>
+   PROMPT_REFUSAL_TAGS.some((tag) => Predicate.isTagged(error, tag)) ||
+-  (isProviderAdapterProtocolError(error) &&
+-    error.driver === CLAUDE_PROVIDER &&
+-    error.detail === CLAUDE_QUERY_ENDED_BEFORE_TURN_DETAIL) ||
+   (Predicate.hasProperty(error, "cause") && refusedBeforePrompt(error.cause));
+
+ /**
+  * Whether a non-truncating provider's native session lost the conversation kept before `run`.

@@ -50,7 +50,7 @@
 (define %t3code-version
   "0.1.11")
 
-(define %t3code-source
+(define %t3code-upstream-source
   (origin
     (method url-fetch)
     (uri (string-append
@@ -58,6 +58,16 @@
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
     (sha256 (base32 "0n13n6rwmv2w1vk3cdfs9ijq76l2lys78p8jfg85ghqj9aibl6ww"))))
+
+(define %t3code-exclude-proprietary-providers-patch
+  (local-file (canonicalize-path (search-path %load-path
+                  "roquix/packages/t3code/exclude-proprietary-providers.patch"))))
+
+(define %t3code-source
+  (origin
+    (inherit %t3code-upstream-source)
+    (patches (list %t3code-exclude-proprietary-providers-patch))
+    (patch-flags #~("-p1" "--fuzz=0"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
 ;; https://registry.npmjs.org/@ff-labs/fff-node/0.11.0
@@ -378,7 +388,7 @@
                                "/bin:"
                                #+tar
                                "/bin:"
-                               #+gzip
+                               #+zstd
                                "/bin:"
                                #+bash-minimal
                                "/bin"))
@@ -412,7 +422,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "1lgdmcyz9098yd88as9fnqz78l8vf39xmr55d6zq5qz1s8r6xhjz"))))
+    (sha256 (base32 "1dlmxc7j6mvchv5v7pzazw8wzhwdprwbssczysq2w280j13ij400"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -534,7 +544,7 @@
     (name name)
     (version %t3code-version)
     (source
-     %t3code-source)
+     %t3code-upstream-source)
     (build-system cargo-build-system)
     (arguments
      (list
@@ -1101,6 +1111,13 @@
                         #$t3code-sql-wasm
                         #$t3code-pdfjs-wasm
                         "apps/web/src/terminal/ghostty/vendor"))))
+          (add-after 'validate-runpath 'check-proprietary-provider-exclusion
+            (lambda* (#:key tests? outputs #:allow-other-keys)
+              (when tests?
+                (invoke "node"
+                        #$(file-append %t3code-installed-tests
+                                       "/check-proprietary-provider-exclusion.mjs")
+                        (assoc-ref outputs "out")))))
           (add-after 'validate-runpath 'check-installed
             (lambda* (#:key tests? inputs outputs #:allow-other-keys)
               (when tests?
@@ -1320,7 +1337,9 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "00kfrbwsd43v82fvyzd5r7hms1a3jlbrdv6cahyfm21cdhkcymq1"))))
+    (sha256 (base32 "00kfrbwsd43v82fvyzd5r7hms1a3jlbrdv6cahyfm21cdhkcymq1"))
+    (patches (list %t3code-exclude-proprietary-providers-patch))
+    (patch-flags #~("-p1" "--fuzz=0"))))
 
 (define* (t3code-rocktakey-package base
                                    #:key (desktop? #t))
