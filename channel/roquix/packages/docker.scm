@@ -161,3 +161,112 @@
 creates and runs their containers together.  This package provides both the
 standalone command and a Docker CLI plugin in @file{lib/docker/cli-plugins}.")
     (license license:asl2.0)))
+
+(define-public docker-buildx
+  (package
+    (name "docker-buildx")
+    (version "0.38.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/docker/buildx/archive/refs/tags/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1h19askhqy87yq6ibd4hfr22fkidhk20a23fxc4b0f34xhycl80x"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:go go-1.26
+      #:import-path "github.com/docker/buildx/cmd/buildx"
+      #:unpack-path "github.com/docker/buildx"
+      #:install-source? #f
+      #:build-flags
+      #~(list "-mod=vendor"
+              #$(string-append "-ldflags=-s -w -X "
+                               "github.com/docker/buildx/version.Version=v"
+                               version))
+      ;; Test the whole module, rather than only the command import path.
+      #:test-subdirs #~'()
+      #:test-flags
+      #~(list "-mod=vendor" "-trimpath"
+              ;; These two cases fetch remote Git branches from GitHub.
+              #$(string-append "-skip=^TestGitRemoteURL$/"
+                               "(single_tracking_branch|"
+                               "fork_tracking_branch)$")
+              "./...")
+      #:modules '((guix build go-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 textual-ports))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'patch-source-shebangs 'prepare-module
+            (lambda _
+              ;; Use the upstream vendor tree without downloading modules or
+              ;; allowing Go to replace the packaged toolchain.
+              (setenv "GO111MODULE" "on")
+              (setenv "GOPROXY" "off")
+              (setenv "GOTOOLCHAIN" "local")
+              (setenv "GOSUMDB" "off")
+              ;; Upstream's unit-test mode needs no Docker or BuildKit daemon:
+              ;; https://github.com/docker/buildx/blob/v0.38.2/Dockerfile#L99
+              (setenv "SKIP_INTEGRATION_TESTS" "1")))
+          ;; Module mode needs go.mod in the working directory.  The standard
+          ;; license phase expects to start from the GOPATH root.
+          (add-before 'build 'enter-module
+            (lambda* (#:key unpack-path #:allow-other-keys)
+              (chdir (string-append "src/" unpack-path))))
+          (add-after 'check 'leave-module
+            (lambda _
+              (chdir (getenv "GOPATH"))))
+          (add-after 'build 'rename-command
+            (lambda _
+              (rename-file (string-append #$output "/bin/buildx")
+                           (string-append #$output "/bin/docker-buildx"))))
+          (add-after 'install 'install-plugin
+            (lambda _
+              (let ((plugins (string-append #$output "/lib/docker/cli-plugins")))
+                (mkdir-p plugins)
+                (symlink "../../../bin/docker-buildx"
+                         (string-append plugins "/docker-buildx")))))
+          (add-after 'install-plugin 'check-installed
+            (lambda* (#:key tests? #:allow-other-keys)
+              (define (output-of . args)
+                (let* ((pipe (apply open-pipe* OPEN_READ args))
+                       (result (get-string-all pipe)))
+                  (unless (zero? (close-pipe pipe))
+                    (error "Buildx command failed" args))
+                  result))
+              (when tests?
+                (let ((buildx (string-append #$output "/bin/docker-buildx"))
+                      (plugin (string-append #$output
+                               "/lib/docker/cli-plugins/docker-buildx")))
+                  (unless (string-prefix?
+                           (string-append "github.com/docker/buildx v"
+                                          #$version " ")
+                           (output-of buildx "version"))
+                    (error "Unexpected Buildx version"))
+                  (unless (string-contains
+                           (output-of plugin "docker-cli-plugin-metadata")
+                           (string-append "v" #$version))
+                    (error "Missing Docker CLI plugin metadata"))
+                  (call-with-output-file "docker-bake.hcl"
+                    (lambda (port)
+                      (display "target \"default\" { tags = [\"package-test:latest\"] }\n"
+                               port)))
+                  (unless (string-contains
+                           (output-of buildx "bake" "--file" "docker-bake.hcl"
+                                      "--print")
+                           "package-test:latest")
+                    (error "Bake configuration parsing failed")))))))))
+    (native-inputs (list git-minimal))
+    (home-page "https://github.com/docker/buildx")
+    (synopsis "Docker CLI plugin for extended BuildKit builds")
+    (description
+     "Buildx extends the Docker command line with BuildKit features, including
+multi-platform images, remote builders, and declarative builds with Bake.  It
+provides both the docker-buildx command and a Docker CLI plugin under
+@file{lib/docker/cli-plugins}.  Add that directory to Docker's
+@code{cliPluginsExtraDirs} configuration to use @code{docker buildx}.")
+    (license license:asl2.0)))
