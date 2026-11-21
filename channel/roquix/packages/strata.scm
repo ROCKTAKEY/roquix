@@ -55,7 +55,8 @@
        (sha256
         (base32 "08xqpw4m69d4b00zpw1l1g119vhycsrj9d09iwzzprl7gmilmzhh"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
-                      (strata-resource-path "strata-parser-timing.patch")))
+                      (strata-resource-path "strata-parser-timing.patch")
+                      (strata-resource-path "strata-server-tests.patch")))
        (modules '((guix build utils)))
        (snippet
         ;; The optional control vector carries a separate Qwen model license.
