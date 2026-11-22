@@ -74,6 +74,26 @@ class SetupTests(unittest.TestCase):
             self.package / "engine", installed.engine_for({"arch": "gfx1151"}, "none")
         )
 
+    def test_shape_setup_and_refresh_use_the_same_packaged_engine(self):
+        setup = self.adapter
+        prepared = setup.PackagedStrata.load(self.package).prepare(self.root / "state")
+        setup.ROOT = prepared.state
+        for family in (setup.hy4_family, setup.inkling_family):
+            with self.subTest(family=family.FAMILY), patch.dict(
+                setup.SHAPE_ENGINE, {"shape": family.SHAPE}
+            ), patch.object(setup, "shape_engine_fetch", side_effect=AssertionError):
+                (self.package / "engine" / family.EXE).touch()
+                _, engine, _, _, _, _ = setup.engine_step(
+                    None, {"arch": "gfx1101"}, True, True, None, "none"
+                )
+                expected = str(prepared.state / "engine" / family.EXE)
+                self.assertEqual(expected, setup.engine_exe(engine))
+                config = prepared.state / f"strata-{family.FAMILY}.json"
+                config.write_text(json.dumps({"arch": family.ARCH, "args": [],
+                                              "exe": f"component:{family.EXE}"}))
+                prepared.refresh_engine_configurations()
+                self.assertEqual(expected, json.loads(config.read_text())["exe"])
+
     def test_package_requires_runtime_libraries_without_cuda_fallback(self):
         manifest = self.package / "engine/BUILD.json"
         metadata = json.loads(manifest.read_text())

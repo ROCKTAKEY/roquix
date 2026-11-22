@@ -1,0 +1,83 @@
+--- a/terminal/setup.py
++++ b/terminal/setup.py
+@@ -7415,8 +7415,14 @@
+ SHAPE_ENGINE: dict = {}       # the model-shape engine the chosen model runs on: {"shape": "q4_lite"} (strata_control/shape_engine.py); empty: the Strata engine
+ 
+ 
++PACKAGED_SHAPES = {family.SHAPE: family for family in (hy4_family, inkling_family)}
++
++
+ def engine_exe(eng: Path) -> str:
+     """The `exe` of a run config: the engine component in the app, else the engine binary's path. A model of its own shape names that shape's engine."""
++    family = PACKAGED_SHAPES.get(SHAPE_ENGINE.get("shape"))
++    if family:
++        return str(eng / family.EXE)
+     if SHAPE_ENGINE.get("shape"):
+         from strata_control import shape_engine
+         return shape_engine.reference(SHAPE_ENGINE["shape"])
+@@ -9170,6 +9176,10 @@
+ def engine_step(a, gpu, hip, amd, cuda_tk, vision):
+     """Step 4: llama.cpp's sources and the engine (ready-made, or compiled here).  Returns (llama, engine folder, its
+     BUILD.json, its library folders, the GPU (AMD on Windows: as the engine sees it), the image-encoder choice)."""
++    if SHAPE_ENGINE.get("shape") in PACKAGED_SHAPES:
++        package = PackagedStrata.load(PACKAGE_ROOT)
++        eng = PreparedStrata(package, ROOT).engine_for(gpu, "none")
++        return None, eng, json.loads((eng / "BUILD.json").read_text()), list(package.library_directories), gpu, vision
+     if SHAPE_ENGINE.get("shape"):
+         return shape_engine_step(a, gpu, vision)
+     if CONTROL:
+@@ -10196,13 +10206,18 @@
+     def parse(cls, arguments: list[str]) -> "SetupRequest":
+         parser = argparse.ArgumentParser(prog="strata-setup", add_help=False)
+         parser.add_argument("--backend", choices=["hip"])
+-        parser.add_argument("--vision", choices=["none", "no"])
++        parser.add_argument("--family")
++        parser.add_argument("--vision")
+         parser.add_argument("--build", action="store_true")
+         parser.add_argument("--prebuilt")
+         parser.add_argument("--dsv41-package")
+         options, _ = parser.parse_known_args(arguments)
+         if options.build or options.prebuilt is not None or options.dsv41_package is not None:
+             parser.error("Guix manages the engine; use guix upgrade strata-hip")
++        if options.family in (hy4_family.FAMILY, inkling_family.FAMILY):
++            return cls(tuple(arguments))
++        if options.vision not in (None, "none", "no"):
++            parser.error("the packaged general engine has no external vision encoder")
+         return cls(("--vision", "none", *arguments))
+ 
+ 
+@@ -10287,7 +10302,9 @@
+     def refresh_engine_configurations(self) -> None:
+         for path in installed_configs():
+             config = json.loads(path.read_text(encoding="utf-8-sig"))
+-            config["exe"] = str(self.state / "engine/strata")
++            name = next((family.EXE for family in PACKAGED_SHAPES.values()
++                         if config.get("arch") == family.ARCH), EXE)
++            config["exe"] = str(self.state / "engine" / name)
+             config["lib_dirs"] = list(self.package.library_directories)
+             write_config(path, config)
+ 
+--- a/engine/CMakeLists.txt
++++ b/engine/CMakeLists.txt
+@@ -853,3 +853,11 @@
+ else()
+   message(STATUS "strata tests: OFF (STRATA_BUILD_TESTS=OFF)")
+ endif()
++
++# Hy4's HIP runner shares the native container reader and quantization codecs.
++set(hy4_dir src/hy4flash/run)
++set(hy4_kernels ${hy4_dir}/hy4_main.hip.cpp ${hy4_dir}/mla_attn.hip.cpp)
++set_source_files_properties(${hy4_kernels} PROPERTIES LANGUAGE HIP)
++add_executable(strata-hy4 ${hy4_kernels}
++               ${hy4_dir}/hy4_cpu_experts.cpp ${hy4_dir}/hy4_engram.cpp)
++target_link_libraries(strata-hy4 PRIVATE strata_inkling_core hip::host)
+--- a/engine/src/hy4flash/run/hy4_json.h
++++ b/engine/src/hy4flash/run/hy4_json.h
+@@ -11,6 +11,7 @@
+ namespace hy4 {
+ 
+ struct JVal {
++    JVal() noexcept = default;
+     enum T { Null, Bool, Num, Str, Arr, Obj } t = Null;
+     bool b = false;
+     double num = 0;

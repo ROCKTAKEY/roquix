@@ -89,8 +89,17 @@ The explicit setup commands use a 131,072-token context for =IQ2_XS= and
 tool results, and generated output together.  Configure each client's
 context limit to match its server.
 
-The package includes text inference.  The optional image encoder is not
-included.  Run =strata-setup --help= to list the available Qwen models.
+For Tencent Hy4-Flash and Inkling-2-Mini, setup uses the packaged
+=strata-hy4= and =strata-inkling= HIP executables.  Select a family to
+see its model sizes and memory estimates before downloading the weights.
+
+#+begin_src sh
+guix shell -L channel strata-hip -- strata-setup --family hy4-flash
+guix shell -L channel strata-hip -- strata-setup --family inkling-2-mini
+#+end_src
+
+Both specialized engines handle vision internally.  Use =--vision no= for
+text-only setup.  Qwen configurations use text inference.
 
 The commands above store model configurations, logs, and run scripts in
 =~/.local/share/strata=.  =STRATA_STATE_DIR= selects this directory;

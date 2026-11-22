@@ -56,7 +56,8 @@
         (base32 "1q2i2p2m0rl4anvh700hx6gsy615vgrb749j4rkcv0jv1475sngw"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-parser-timing.patch")
-                      (strata-resource-path "strata-server-tests.patch")))
+                      (strata-resource-path "strata-server-tests.patch")
+                      (strata-resource-path "strata-shape-engines.patch")))
        (modules '((guix build utils)))
        (snippet
         ;; The optional control vector carries a separate Qwen model license.
@@ -83,6 +84,8 @@
                         #$(file-append rocm-toolchain "/bin/clang++"))
          (string-append "-DCMAKE_HIP_COMPILER_ROCM_ROOT="
                         #$rocm-hip-runtime)
+         (string-append "-DSTRATA_ROCM_BITCODE_PATH="
+                        #$(file-append rocm-device-libs "/amdgcn/bitcode"))
          (string-append "-DCMAKE_HIP_FLAGS=--rocm-path="
                         #$rocm-hip-runtime " --rocm-device-lib-path="
                         #$(file-append rocm-device-libs "/amdgcn/bitcode")))
@@ -92,13 +95,17 @@
             (lambda _
               (setenv "STRATA_SOURCE_DIR" (canonicalize-path "terminal"))
               (setenv "PYTHONDONTWRITEBYTECODE" "1")
-              (chdir "engine")))
+              (chdir "engine")
+              ;; Clang requires alignas before HIP's shared-storage attribute.
+              (substitute* (find-files "src/inkling2/hip" "\\.h(pp)?$")
+                (("__shared__ alignas\\(16\\)") "alignas(16) __shared__"))))
           (replace 'build
             (lambda* (#:key parallel-build? #:allow-other-keys)
               (invoke "cmake"
                       "--build"
                       "."
                       "--target"
+                      "strata-inkling" "strata-hy4"
                       "strata"
                       "strata-device"
                       "strata-gguf"
@@ -116,6 +123,8 @@
                         #$%strata-ca-bundle)
                 ;; Build workers have no GPU; run device tests on the installed
                 ;; package, while keeping CPU and server tests in the build.
+                (invoke "./strata-hy4" "--version")
+                (invoke "./src/inkling2/strata-inkling" "--version")
                 (invoke "ctest" "--output-on-failure" "-R"
                         (string-append
                          "^(conversation_(cache|memory)|"
@@ -151,10 +160,11 @@
                 (mkdir-p engine)
                 (for-each (lambda (name)
                             (install-file name engine)
-                            (symlink (string-append engine "/" name)
-                                     (string-append bin "/" name)))
+                            (let ((exe (basename name)))
+                              (symlink (string-append engine "/" exe)
+                                       (string-append bin "/" exe))))
                           '("strata" "strata-device" "strata-gguf"
-                            "strata-plan"))
+                            "strata-plan" "strata-hy4" "src/inkling2/strata-inkling"))
                 (for-each (lambda (name)
                             (copy-recursively (string-append source "/" name)
                                               (string-append share "/" name)))
@@ -228,9 +238,9 @@
                   python-psutil))
     (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/Niko1221/Strata")
-    (synopsis "Local Qwen inference with AMD HIP")
+    (synopsis "Local model inference with AMD HIP")
     (description
-     "Strata runs Qwen3.8-Flash-Next and supported derivatives
+     "Strata runs Qwen3.8-Flash-Next, Hy4-Flash and Inkling-2-Mini
 using GPU memory,
 system RAM, and SSD storage.  This package provides the AMD HIP engines, model
 preparation tools, and a local web server with OpenAI- and Anthropic-compatible
