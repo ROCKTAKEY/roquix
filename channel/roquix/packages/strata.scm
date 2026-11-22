@@ -18,7 +18,7 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "6e38f588a646c0ee6948a74afbe670eb75896106")
+  "c6f6427d9de9016fd92d13e29740f65625261df7")
 
 (define (strata-resource-path name)
   (canonicalize-path
@@ -44,7 +44,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.18")
+    (version "0.2.19")
     (source
      (origin
        (method url-fetch)
@@ -53,7 +53,7 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "08xqpw4m69d4b00zpw1l1g119vhycsrj9d09iwzzprl7gmilmzhh"))
+        (base32 "1q2i2p2m0rl4anvh700hx6gsy615vgrb749j4rkcv0jv1475sngw"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-parser-timing.patch")
                       (strata-resource-path "strata-server-tests.patch")))
@@ -121,6 +121,9 @@
                          "^(conversation_(cache|memory)|"
                          "file_expert_source)_test$"))
                 (with-directory-excursion (getenv "STRATA_SOURCE_DIR")
+                  ;; The Inkling mock engine generates an executable shell script.
+                  (substitute* "serve/test_inkling_serve_e2e.py"
+                    (("#!/bin/sh") (string-append "#!" (which "sh"))))
                   ;; The Windows ZIP fixture uses strata.exe even on Linux.
                   (invoke "python3" "-c"
                           (string-append
@@ -172,7 +175,7 @@
                          "'vision':'none', 'lib_dirs':sys.argv[4:]},"
                          "open(sys.argv[1], 'w'))")
                         (string-append engine "/BUILD.json")
-                        "0.1.64"
+                        "0.1.65"
                         #$(string-join %strata-hip-architectures ";")
                         #$(file-append rocm-hip-runtime "/lib")
                         #$(file-append hipblas "/lib")

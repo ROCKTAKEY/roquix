@@ -6,7 +6,7 @@
 (test-begin "strata-package")
 
 (test-equal "Strata packages the checked upstream release"
-  "0.2.18" (package-version strata-hip))
+  "0.2.19" (package-version strata-hip))
 
 (test-eq "Strata uses the CMake build system"
   cmake-build-system (package-build-system strata-hip))
