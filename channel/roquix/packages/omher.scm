@@ -22,7 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (roquix packages omher crates))
+  #:use-module (gnu packages rust-crates))
 
 (define omher-source
   (origin
@@ -168,7 +168,8 @@
                     #:mime-type '("x-scheme-handler/omher")
                     #:categories '("Development")))))))
     (native-inputs (list curl node patchelf perl pkg-config))
-    (inputs (cons* gtk+ openssl webkitgtk-for-gtk3 libappindicator dbus omher-crates))
+    (inputs (cons* gtk+ openssl webkitgtk-for-gtk3 libappindicator dbus
+                   (cargo-inputs 'omher #:module '(roquix packages rust-crates))))
     (home-page "https://omher.app/")
     (synopsis "Desktop workspace for Hermes Agent")
     (description "Omher brings Hermes conversations, tasks and agent terminals
