@@ -7,7 +7,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages llvm)
+  #:use-module (roquix packages omher image-addon)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
@@ -34,26 +34,6 @@
           (commit "4726fe83e279bbca05892bc7551fc93aede5cbfb")))
     (file-name (git-file-name "omher" "1.1.2"))
     (sha256 (base32 "0wxg1rrm9zn5y71jg86niqx46193d6d0pkpji8jzsqvvsjpaz0rm"))))
-
-(define (codec-source project commit hash)
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url (string-append "https://github.com/jerch/" project))
-          (commit commit)))
-    (file-name (git-file-name project commit))
-    (sha256 (base32 hash))))
-
-(define xterm-wasm-parts
-  (codec-source "xterm-wasm-parts" "92c6434eb98c16abfcb5d0b3b339baa2a836c7ee"
-                "15madd67dj6n8rz04zskjsdihp9p3hm4ylaldlacgxbi21whj3qk"))
-
-(define node-sixel
-  (codec-source "node-sixel" "35f542f8b1b9a8867fab133aea5d43cb3da6108a"
-                "1jszzpx1i07aixvy8fdz3vgbx1wkw8lv61fj2rw7q5gqz6ix4wz9"))
-
-(define build-image-codecs
-  (local-file (canonicalize-path (search-path %load-path "roquix/packages/omher/build-image-codecs.cjs"))))
 
 (define pnpm-source
   (origin
@@ -115,11 +95,8 @@
                  (lambda _
                    (chdir "apps/omher")
                    (copy-recursively #$web-inputs "node_modules")
-                   (for-each make-file-writable
-                             (find-files "node_modules/@xterm/addon-image/lib" "^addon-image\\.m?js$"))
-                   (invoke "node" #$build-image-codecs #$xterm-wasm-parts #$node-sixel
-                           #$(file-append clang-22 "/bin/clang")
-                           #$(file-append lld-22 "/bin/wasm-ld"))
+                   (delete-file-recursively "node_modules/@xterm/addon-image")
+                   (copy-recursively #$image-addon "node_modules/@xterm/addon-image")
                    (invoke "node" "node_modules/typescript/bin/tsc" "-b")
                    (invoke "node" "node_modules/vite/bin/vite.js" "build")
                    (chdir "src-tauri")
