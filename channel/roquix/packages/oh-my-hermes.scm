@@ -36,9 +36,15 @@
               (lambda _
                 ;; git-fetch leaves Git archive's export-subst marker unexpanded.
                 (call-with-output-file "src/omh/_archive_commit.txt"
-                  (lambda (port) (display #$commit port))))))))
+                  (lambda (port) (display #$commit port)))))
+            (add-after 'wrap 'wrap-node
+              (lambda* (#:key inputs #:allow-other-keys)
+                ;; Hermes launches the terminal UI with node inherited from omh.
+                (wrap-program (string-append #$output "/bin/omh")
+                  `("PATH" suffix
+                    (,(dirname (search-input-file inputs "/bin/node"))))))))))
       (native-inputs (list python-pytest python-setuptools python-wheel))
-      (propagated-inputs (list node))
+      (inputs (list node))
       (home-page "https://omher.app/")
       (synopsis "Workflow and skill manager for Hermes Agent")
       (description
