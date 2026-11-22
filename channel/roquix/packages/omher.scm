@@ -12,7 +12,7 @@
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
   #:use-module (guix build-system cargo)
@@ -22,7 +22,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (gnu packages rust-crates))
+  #:use-module (gnu packages rust-crates)
+  #:use-module ((roquix packages hermes) #:select (hermes))
+  #:use-module ((roquix packages hermes interpreter) #:select (hermes-python)))
 
 (define omher-source
   (origin
@@ -32,9 +34,6 @@
           (commit "4726fe83e279bbca05892bc7551fc93aede5cbfb")))
     (file-name (git-file-name "omher" "1.1.2"))
     (sha256 (base32 "0wxg1rrm9zn5y71jg86niqx46193d6d0pkpji8jzsqvvsjpaz0rm"))))
-
-(define launcher
-  (local-file (canonicalize-path (search-path %load-path "roquix/packages/omher/launcher.py"))))
 
 (define (codec-source project commit hash)
   (origin
@@ -148,14 +147,32 @@
                      ;; The GTK tray loads libappindicator with dlopen.
                      (invoke "patchelf" "--add-rpath" #$(file-append libappindicator "/lib") exe)
                      (mkdir-p (dirname bin))
-                     (copy-file #$launcher bin)
-                     (substitute* bin
-                       (("@python@") #$(file-append python "/bin/python3"))
-                       (("@executable@") exe)
-                       (("@host_tools@") (string-append #$curl "/bin:" #$coreutils "/bin:"
-                                                       #$bash-minimal "/bin")))
+                     ;; The bridge imports Hermes with the interpreter used to build it.
+                     (call-with-output-file bin
+                       (lambda (port)
+                         (format port "#!~a~%" #$(file-append bash-minimal "/bin/sh"))
+                         (display "if test -z \"$OMHER_HERMES_PYTHON\"; then\n" port)
+                         (format port "  export OMHER_HERMES_PYTHON=~s~%"
+                                 #$(file-append hermes-python "/bin/python3"))
+                         (format port "  export OMHER_HERMES_ROOT=~s~%fi~%"
+                                 #$(file-append hermes "/lib/hermes/source"))
+                         (format port "export PATH=\"~a${PATH:+:$PATH}:~a\"~%"
+                                 #$(file-append hermes "/bin")
+                                 (string-join
+                                  (list #$(file-append openssh "/bin")
+                                        #$(file-append curl "/bin")
+                                        #$(file-append coreutils "/bin")
+                                        #$(file-append bash-minimal "/bin")) ":"))
+                         (format port "exec ~s \"$@\"~%" exe)))
                      (chmod bin #o555))
+                   ;; The Guix interpreter keeps Hermes libraries in the Hermes output.
+                   ;; Activate them in the bridge process so other Python tools stay isolated.
                    (substitute* "../bridge/omher_bridge.py"
+                     (("    ensure_hermes_on_path\\(root\\)" original)
+                      (string-append original "\n"
+                                     "    if os.environ.get('OMHER_HERMES_ROOT') == str(root):\n"
+                                     "        import site\n"
+                                     "        site.addsitedir(str(root.parent / 'site-packages'))"))
                      (("DEFAULT_HERMES_ROOT = _default_hermes_root\\(\\)")
                       "DEFAULT_HERMES_ROOT = Path(os.environ.get('OMHER_HERMES_ROOT') or _default_hermes_root())"))
                    (install-file "../bridge/omher_bridge.py" (string-append #$output "/lib/omher/bridge"))
@@ -168,7 +185,7 @@
                     #:mime-type '("x-scheme-handler/omher")
                     #:categories '("Development")))))))
     (native-inputs (list curl node patchelf perl pkg-config))
-    (inputs (cons* gtk+ openssl webkitgtk-for-gtk3 libappindicator dbus
+    (inputs (cons* hermes openssh gtk+ openssl webkitgtk-for-gtk3 libappindicator dbus
                    (cargo-inputs 'omher #:module '(roquix packages rust-crates))))
     (home-page "https://omher.app/")
     (synopsis "Desktop workspace for Hermes Agent")
