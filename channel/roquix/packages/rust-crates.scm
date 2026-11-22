@@ -28657,6 +28657,7 @@
                   rust-itoa-1.0.18
                   rust-kqueue-1.2.1
                   rust-kqueue-sys-1.1.2
+                  rust-lazy-static-1.5.1
                   rust-libc-0.2.191
                   rust-linux-raw-sys-0.12.1
                   rust-log-0.4.34
@@ -28667,6 +28668,7 @@
                   rust-nix-0.30.1
                   rust-notify-8.2.1
                   rust-notify-types-2.2.0
+                  rust-nu-ansi-term-0.50.3
                   rust-objc2-core-foundation-0.3.2
                   rust-objc2-core-services-0.3.2
                   rust-once-cell-1.21.4
@@ -28683,14 +28685,17 @@
                   rust-serde-json-1.0.154
                   rust-serde-path-to-error-0.1.20
                   rust-serde-spanned-1.1.2
+                  rust-sharded-slab-0.1.7
                   rust-signal-hook-registry-1.4.8
                   rust-slab-0.4.12
                   rust-smallvec-1.16.4
                   rust-socket2-0.6.5
                   rust-subtle-2.6.1
+                  rust-syn-2.0.119
                   rust-syn-3.0.9
                   rust-sync-wrapper-1.0.2
                   rust-tempfile-3.27.0
+                  rust-thread-local-1.1.10
                   rust-tokio-1.54.1
                   rust-tokio-macros-2.7.2
                   rust-tokio-stream-0.1.19
@@ -28700,9 +28705,17 @@
                   rust-toml-parser-1.1.5+spec-1.1.0
                   rust-toml-writer-1.1.3+spec-1.1.0
                   rust-tower-0.5.3
+                  rust-tower-http-0.7.1
                   rust-tower-layer-0.3.3
                   rust-tower-service-0.3.3
+                  rust-tracing-0.1.44
+                  rust-tracing-attributes-0.1.31
+                  rust-tracing-core-0.1.36
+                  rust-tracing-log-0.2.0
+                  rust-tracing-serde-0.2.0
+                  rust-tracing-subscriber-0.3.23
                   rust-unicode-ident-1.0.27
+                  rust-valuable-0.1.1
                   rust-walkdir-2.5.0
                   rust-wasi-0.11.1+wasi-snapshot-preview1
                   rust-winapi-util-0.1.11
