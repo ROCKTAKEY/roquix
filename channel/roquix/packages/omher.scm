@@ -147,7 +147,9 @@
                      ;; The GTK tray loads libappindicator with dlopen.
                      (invoke "patchelf" "--add-rpath" #$(file-append libappindicator "/lib") exe)
                      (mkdir-p (dirname bin))
-                     ;; The bridge imports Hermes with the interpreter used to build it.
+                     ;; Omher normally finds Hermes's Python under the user's Hermes home.
+                     ;; Guix installs Python and the Hermes modules in separate store
+                     ;; locations, so the desktop launcher supplies both paths.
                      (call-with-output-file bin
                        (lambda (port)
                          (format port "#!~a~%" #$(file-append bash-minimal "/bin/sh"))
