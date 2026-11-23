@@ -67,6 +67,7 @@
       (arguments
        (list
         #:tests? #f ; Upstream provides no test target.
+        #:make-flags #~(list "-C" "build" "AR=gcc-ar" "config=release_x64" "ygopro")
         #:phases
         #~(modify-phases %standard-phases
             (replace 'configure
@@ -103,10 +104,6 @@
                                        ":" (dirname (search-input-file inputs "/include/SDL2/SDL_stdinc.h"))
                                        ":" (getenv "CPLUS_INCLUDE_PATH")))
                 (invoke "premake5" "--sound=sdl-mixer" "gmake")))
-            (replace 'build
-              (lambda _
-                (invoke "make" "-C" "build" "-j" (number->string (parallel-job-count))
-                        "AR=gcc-ar" "config=release_x64" "ygopro")))
             (replace 'install
               (lambda* (#:key inputs #:allow-other-keys)
                 (let ((bin (string-append #$output "/bin"))
