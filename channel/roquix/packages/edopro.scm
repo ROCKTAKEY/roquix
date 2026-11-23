@@ -2,6 +2,7 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
@@ -43,6 +44,34 @@
           (recursive? #t)))
     (file-name "edopro-distribution-54a6e23")
     (sha256 (base32 "1sm2hj5xah99kby8spybfbggl48ckh81nv6yikmh19gh2sk86sac"))))
+
+(define-public babelcdb
+  (let ((commit "4c8e9ca577d94292c51e420c5ae423e141d2eec7"))
+    (package
+      (name "babelcdb")
+      (version (git-version "2025.04.19" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ProjectIgnis/BabelCDB")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "0dnmkxwk6122cv32shvvs1vwh5j19m85dhp3alr085zhykqs69mc"))))
+      (build-system copy-build-system)
+      (arguments
+       (list #:install-plan
+             #~'(("." "share/edopro/databases" #:include-regexp ("\\.cdb$"))
+                 ("README.md" "share/doc/babelcdb/"))))
+      (home-page "https://github.com/ProjectIgnis/BabelCDB")
+      (synopsis "Project Ignis card databases for EDOPro")
+      (description "BabelCDB provides card statistics and text for EDOPro.
+Install it alongside edopro to make the databases available to the client.
+Upstream does not specify a redistribution license for these databases.")
+      (license
+       (license:license "Unspecified"
+                        (string-append "https://github.com/ProjectIgnis/BabelCDB/tree/" commit)
+                        "No database redistribution license is stated at this revision.")))))
 
 (define edopro-game-data
   (computed-file
@@ -123,6 +152,11 @@
       (build-system gnu-build-system)
       (supported-systems '("x86_64-linux"))
       (native-inputs (list premake5))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "EDOPRO_DATABASE_DIR")
+              (files '("share/edopro/databases"))
+              (separator #f))))
       (inputs (list bash-minimal coreutils mesa wayland libxkbcommon freetype
                     fmt-9 nlohmann-json
                     sdl2 sdl2-mixer sqlite libevent curl libgit2 libssh2
@@ -163,6 +197,21 @@
                                                (string-append "lib/" library))))
                         (if path (string-append "dlopen(\"" path "\"") match)))))
                  (find-files "irrlicht/src" "\\.cpp$"))
+                ;; Load profile databases directly so switching profiles also
+                ;; switches card data without leaving stale user copies.
+                (substitute* "gframe/data_handler.cpp"
+                  (("#include <irrlicht.h>" line)
+                   (string-append line "\n#include <cstdlib>"))
+                  (("void DataHandler::LoadDatabases\\(\\) [{]" line)
+                   (string-append
+                    line "\n"
+                    "    if (const char* dir = std::getenv(\"EDOPRO_DATABASE_DIR\")) {\n"
+                    "        auto path = Utils::ToPathString(dir) + EPRO_TEXT(\"/\");\n"
+                    "        for (const auto& file : Utils::FindFiles(path, { EPRO_TEXT(\"cdb\") }, 0)) {\n"
+                    "            auto db = path + file;\n"
+                    "            if (dataManager->LoadDB(db)) WindBot::AddDatabase(db);\n"
+                    "        }\n"
+                    "    }")))
                 (setenv "CPLUS_INCLUDE_PATH"
                         (string-append (search-input-directory inputs "/include/freetype2")
                                        ":" (dirname (search-input-file inputs "/include/SDL2/SDL_stdinc.h"))
