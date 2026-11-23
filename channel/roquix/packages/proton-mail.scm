@@ -1,8 +1,8 @@
 (define-module (roquix packages proton-mail)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (roquix packages pnpm)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
@@ -34,27 +34,25 @@
                                    #:allow-other-keys)
   (gexp->derivation
    name
-   (with-imported-modules '((guix build utils))
-     #~(begin
-         (use-modules (guix build utils))
-         (setenv "HOME" (getcwd))
-         (setenv "PATH" (string-append #+pnpm "/bin:" #+node "/bin:"
-                                       #+gzip "/bin:" #+bash-minimal "/bin"))
-         (setenv "SSL_CERT_FILE"
-                 #+(file-append nss-certs-for-test "/etc/ssl/certs/ca-certificates.crt"))
-         (setenv "PYTHONPATH"
-                 (car (find-files #+python-pyyaml "^site-packages$" #:directories? #t)))
-         (invoke #+(file-append tar "/bin/tar") "xf" #+source
-                 "--wildcards" "--no-wildcards-match-slash"
-                 "--strip-components=1" "*/pnpm-lock.yaml")
-         (invoke #+(file-append python "/bin/python3")
-                 #+(proton-mail-file "desktop-lock.py") "pnpm-lock.yaml")
-         (invoke "pnpm" "install" "--ignore-scripts" "--frozen-lockfile")
-         ;; pnpm records the temporary store path and install time here.
-         (for-each delete-file '("node_modules/.modules.yaml"
-                                 "node_modules/.pnpm-workspace-state-v1.json"))
-         (call-with-output-file "/dev/null"
-           (lambda (port) (copy-recursively "node_modules" #$output #:log port)))))
+   (with-extensions (list guile-json-4 guile-yamlpp)
+     (with-imported-modules '((guix build utils) (roquix build proton-mail))
+      #~(begin
+          (use-modules (guix build utils) (roquix build proton-mail))
+          (setenv "HOME" (getcwd))
+          (setenv "PATH" (string-append #+pnpm "/bin:" #+node "/bin:"
+                                        #+gzip "/bin:" #+bash-minimal "/bin"))
+          (setenv "SSL_CERT_FILE"
+                  #+(file-append nss-certs-for-test "/etc/ssl/certs/ca-certificates.crt"))
+          (invoke #+(file-append tar "/bin/tar") "xf" #+source
+                  "--wildcards" "--no-wildcards-match-slash"
+                  "--strip-components=1" "*/pnpm-lock.yaml")
+          (write-desktop-lock "pnpm-lock.yaml")
+          (invoke "pnpm" "install" "--ignore-scripts" "--frozen-lockfile")
+          ;; pnpm records the temporary store path and install time here.
+          (for-each delete-file '("node_modules/.modules.yaml"
+                                  "node_modules/.pnpm-workspace-state-v1.json"))
+          (call-with-output-file "/dev/null"
+            (lambda (port) (copy-recursively "node_modules" #$output #:log port))))))
    #:system system #:hash-algo algorithm #:hash hash #:recursive? #t))
 
 (define build-dependencies
