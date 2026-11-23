@@ -43,6 +43,20 @@
     (file-name "edopro-distribution-54a6e23")
     (sha256 (base32 "1sm2hj5xah99kby8spybfbggl48ckh81nv6yikmh19gh2sk86sac"))))
 
+(define distribution-without-bgm
+  (computed-file
+   "edopro-game-data"
+   (with-imported-modules '((guix build utils))
+     #~(begin
+         (use-modules (guix build utils))
+         ;; Several upstream tracks restrict commercial use or redistribution
+         ;; of adaptations.  Sound effects have separate licenses.
+         ;; https://github.com/ProjectIgnis/Distribution/blob/54a6e2395c532648ff762540e9615319fac4f51b/sound/CREDITS.md
+         (let ((bgm (string-append #$distribution "/sound/BGM")))
+           (copy-recursively #$distribution #$output
+                             #:select? (lambda (file stat)
+                                         (not (string=? file bgm)))))))))
+
 (define-public edopro
   (let ((commit "c5a1fcac37fa2bfb4aec6f09b81a569e695d0a7d"))
     (package
@@ -122,7 +136,7 @@
                                "~a -rn --no-preserve=mode ~a/{config,deck,expansions,fonts,lflists,puzzles,script,skin,sound,textures} \"$dir/\"~%"
                                "exec ~a/ygopro -C \"$dir\" \"$@\"~%")
                               (search-input-file inputs "/bin/bash")
-                              (which "mkdir") (which "cp") #$distribution lib)))
+                              (which "mkdir") (which "cp") #$distribution-without-bgm lib)))
                   (chmod (string-append bin "/edopro") #o555)))))))
       (home-page "https://github.com/edo9300/edopro")
       (synopsis "Automatic Yu-Gi-Oh! duel simulator")
