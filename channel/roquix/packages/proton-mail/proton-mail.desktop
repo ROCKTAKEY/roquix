@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Proton Mail
-Comment=Access Proton Mail and Proton Calendar
-Exec=proton-mail %U
-Icon=proton-mail
-Type=Application
-StartupNotify=true
-Categories=Network;Email;
-MimeType=x-scheme-handler/mailto;x-scheme-handler/proton-inbox;

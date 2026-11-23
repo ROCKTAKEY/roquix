@@ -1,4 +1,9 @@
 (define-module (roquix packages proton-mail)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (roquix packages pnpm)
   #:use-module (gnu packages node)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages bash)
@@ -15,9 +20,16 @@
                (search-path %load-path
                             (string-append "roquix/packages/proton-mail/" name)))))
 
-;; The desktop build only uses a subset of the WebClients workspaces.  Keep
-;; its public npm inputs locked independently of Proton's private registries.
-(define* (fetch-build-dependencies uri algorithm hash
+(define proton-mail-source
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://codeload.github.com/ProtonMail/WebClients/tar.gz/"
+                        "a2e93b9af665f9dcef254d2f182dfd732f592325"))
+    (file-name "proton-mail-1.16.1.tar.gz")
+    (sha256
+     (base32 "1hj46nvq924ymqr8fkh2862wal18rrlcp1y3div2bv4555ixr4jj"))))
+
+(define* (fetch-build-dependencies source algorithm hash
                                    #:optional name #:key system
                                    #:allow-other-keys)
   (gexp->derivation
@@ -26,13 +38,21 @@
      #~(begin
          (use-modules (guix build utils))
          (setenv "HOME" (getcwd))
-         (setenv "PATH" (string-append #+node "/bin:" #+bash-minimal "/bin"))
-         (setenv "npm_config_cafile"
+         (setenv "PATH" (string-append #+pnpm "/bin:" #+node "/bin:"
+                                       #+gzip "/bin:" #+bash-minimal "/bin"))
+         (setenv "SSL_CERT_FILE"
                  #+(file-append nss-certs-for-test "/etc/ssl/certs/ca-certificates.crt"))
-         (copy-file #+(proton-mail-file "package.json") "package.json")
-         (copy-file #+(proton-mail-file "package-lock.json") "package-lock.json")
-         (invoke "npm" "ci" "--legacy-peer-deps" "--ignore-scripts"
-                 "--no-audit" "--no-fund")
+         (setenv "PYTHONPATH"
+                 (car (find-files #+python-pyyaml "^site-packages$" #:directories? #t)))
+         (invoke #+(file-append tar "/bin/tar") "xf" #+source
+                 "--wildcards" "--no-wildcards-match-slash"
+                 "--strip-components=1" "*/pnpm-lock.yaml")
+         (invoke #+(file-append python "/bin/python3")
+                 #+(proton-mail-file "desktop-lock.py") "pnpm-lock.yaml")
+         (invoke "pnpm" "install" "--ignore-scripts" "--frozen-lockfile")
+         ;; pnpm records the temporary store path and install time here.
+         (for-each delete-file '("node_modules/.modules.yaml"
+                                 "node_modules/.pnpm-workspace-state-v1.json"))
          (call-with-output-file "/dev/null"
            (lambda (port) (copy-recursively "node_modules" #$output #:log port)))))
    #:system system #:hash-algo algorithm #:hash hash #:recursive? #t))
@@ -40,9 +60,9 @@
 (define build-dependencies
   (origin
     (method fetch-build-dependencies)
-    (uri "proton-mail-build-dependencies")
+    (uri proton-mail-source)
     (file-name "proton-mail-build-dependencies")
-    (sha256 (base32 "0sy05fscwmfh28xyv14zvzav1sf0nzcrpkc2lc1rqmryqad5vwgw"))))
+    (sha256 (base32 "0i5bagg3k1clb03jy8winw2h78wnlr02crcyas1j6dgcgm8b92gg"))))
 
 (define electron-archive
   (origin
@@ -55,13 +75,7 @@
     (name "proton-mail")
     (version "1.16.1")
     (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://codeload.github.com/ProtonMail/WebClients/tar.gz/"
-                           "a2e93b9af665f9dcef254d2f182dfd732f592325"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32 "1hj46nvq924ymqr8fkh2862wal18rrlcp1y3div2bv4555ixr4jj"))))
+     proton-mail-source)
     (build-system chromium-binary-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
@@ -113,6 +127,9 @@
                 (("/usr/share/applications/proton-mail.desktop")
                  (string-append #$output "/share/applications/proton-mail.desktop")))
               (invoke "node" "../../node_modules/.bin/electron-forge" "package")
+              (copy-file #+(proton-mail-file "desktop-entry.cjs") "desktop-entry.cjs")
+              (invoke "node" "-r" "ts-node/register" "desktop-entry.cjs"
+                      (string-append #$output "/share/applications"))
               (let ((doc (string-append #$output "/share/doc/proton-mail-" #$version)))
                 (mkdir-p doc)
                 (copy-file "../../LICENSE" (string-append doc "/COPYING")))
@@ -120,14 +137,12 @@
           (add-after 'install 'install-launcher
             (lambda _
               (let ((share (string-append #$output "/share"))
-                    (desktop #+(proton-mail-file "proton-mail.desktop")))
+                    (desktop (string-append #$output
+                                            "/share/applications/proton-mail.desktop")))
                 (mkdir-p (string-append share "/pixmaps"))
                 (copy-file "resources/icon.png"
                            (string-append share "/pixmaps/proton-mail.png"))
-                (invoke "desktop-file-validate" desktop)
-                (mkdir-p (string-append share "/applications"))
-                (copy-file desktop
-                           (string-append share "/applications/proton-mail.desktop")))
+                (invoke "desktop-file-validate" desktop))
               (mkdir-p (string-append #$output "/bin"))
               (let ((launcher (string-append #$output "/bin/proton-mail")))
                 (call-with-output-file launcher
