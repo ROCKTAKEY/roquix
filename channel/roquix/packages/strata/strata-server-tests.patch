@@ -1,11 +1,22 @@
---- a/terminal/serve/test_stop_closed_pipe.py
-+++ b/terminal/serve/test_stop_closed_pipe.py
-@@ -34,7 +34,7 @@
-     e.batch, e.multi, e.silence_s, e.can_stop = 0, 0, 0, True
-     e.lines = queue.Queue()
-     e.proc = FakeProc()
--    e.sampling_keys = lambda sampling: ""
-+    e.sampling_keys = lambda sampling, *, hy4=False, inkling=False: ""
-     e.exit_code = lambda: 1
-     return e
+--- a/terminal/serve/test_internal_error_500.py
++++ b/terminal/serve/test_internal_error_500.py
+@@ -11,7 +11,7 @@
  
+ 
+ def handler(raise_this, answer_started=False):
+-    svc = SimpleNamespace(begin_request=lambda path, req: None, drop_embeddings=lambda: None, reserve_inference=lambda: True, release_inference=lambda: None)
++    svc = SimpleNamespace(check_model=lambda req: None, begin_request=lambda path, req: None, drop_embeddings=lambda: None, reserve_inference=lambda: True, release_inference=lambda: None)
+     H = server.make_handler(svc)
+     h = H.__new__(H)
+     h.path = "/v1/chat/completions"
+--- a/terminal/serve/test_hy4_serve_e2e.py
++++ b/terminal/serve/test_hy4_serve_e2e.py
+@@ -225,7 +225,7 @@
+ 
+     def test_the_anthropic_route_and_streaming(self):
+         self.start([self.ids_of("plan</think:opensource>Streamed answer." + END)])
+-        status, data = self.call("/v1/messages", {"model": "hy4-flash", "max_tokens": 100, "stream": True, "messages": [{"role": "user", "content": "hi"}]},
++        status, data = self.call("/v1/messages", {"model": "hy4-flash-sq-64", "max_tokens": 100, "stream": True, "messages": [{"role": "user", "content": "hi"}]},
+                                  {"anthropic-version": "2023-06-01"})
+         self.assertEqual(status, 200, data)
+         self.assertIn("event: message_start", data)

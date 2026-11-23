@@ -18,7 +18,7 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "c6f6427d9de9016fd92d13e29740f65625261df7")
+  "a34979fc94f3d126b9bb8210f4ad311345688b52")
 
 (define (strata-resource-path name)
   (canonicalize-path
@@ -44,7 +44,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.19")
+    (version "0.2.20")
     (source
      (origin
        (method url-fetch)
@@ -53,7 +53,7 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "1q2i2p2m0rl4anvh700hx6gsy615vgrb749j4rkcv0jv1475sngw"))
+        (base32 "0waihpn8rdpv33yvj0cyxnb171z3wqwmnf2g1pbn279p067mqd4d"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-parser-timing.patch")
                       (strata-resource-path "strata-server-tests.patch")
@@ -185,7 +185,7 @@
                          "'vision':'none', 'lib_dirs':sys.argv[4:]},"
                          "open(sys.argv[1], 'w'))")
                         (string-append engine "/BUILD.json")
-                        "0.1.65"
+                        "0.1.66"
                         #$(string-join %strata-hip-architectures ";")
                         #$(file-append rocm-hip-runtime "/lib")
                         #$(file-append hipblas "/lib")

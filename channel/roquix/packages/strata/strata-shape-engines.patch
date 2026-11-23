@@ -1,6 +1,6 @@
 --- a/terminal/setup.py
 +++ b/terminal/setup.py
-@@ -7415,8 +7415,14 @@
+@@ -7415,11 +7415,17 @@
  SHAPE_ENGINE: dict = {}       # the model-shape engine the chosen model runs on: {"shape": "q4_lite"} (strata_control/shape_engine.py); empty: the Strata engine
  
  
@@ -8,7 +8,10 @@
 +
 +
  def engine_exe(eng: Path) -> str:
-     """The `exe` of a run config: the engine component in the app, else the engine binary's path. A model of its own shape names that shape's engine."""
+     """The `exe` of a run config: the engine component in the app, else the engine binary's path. A model of its own shape names that shape's engine
+     (unless locally compiled via `--build`, in which case its local binary path is written)."""
+     if SHAPE_ENGINE.get("local_exe"):
+         return str(SHAPE_ENGINE["local_exe"])
 +    family = PACKAGED_SHAPES.get(SHAPE_ENGINE.get("shape"))
 +    if family:
 +        return str(eng / family.EXE)
@@ -69,7 +72,7 @@
 +set(hy4_kernels ${hy4_dir}/hy4_main.hip.cpp ${hy4_dir}/mla_attn.hip.cpp)
 +set_source_files_properties(${hy4_kernels} PROPERTIES LANGUAGE HIP)
 +add_executable(strata-hy4 ${hy4_kernels}
-+               ${hy4_dir}/hy4_cpu_experts.cpp ${hy4_dir}/hy4_engram.cpp)
++               ${hy4_dir}/hy4_cpu_experts.cpp ${hy4_dir}/hy4_cpu_k512.cpp ${hy4_dir}/hy4_engram.cpp)
 +target_link_libraries(strata-hy4 PRIVATE strata_inkling_core hip::host)
 --- a/engine/src/hy4flash/run/hy4_json.h
 +++ b/engine/src/hy4flash/run/hy4_json.h
