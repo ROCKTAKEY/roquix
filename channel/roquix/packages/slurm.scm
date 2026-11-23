@@ -5,17 +5,9 @@
 
 (define-public slurm-sview
   (package
-    (inherit slurm-23.11)
+    (inherit slurm)
     (name "slurm-sview")
-    (version "23.11.10")
-    (source
-     (origin
-       (inherit (package-source slurm-23.11))
-       (uri (string-append "https://download.schedmd.com/slurm/slurm-"
-                           version ".tar.bz2"))
-       (sha256
-        (base32 "0gf7x85bzpkrx87mb16wyiyvkjxqq01sbajsjxwrspyi2v675hgr"))))
-    (inputs (modify-inputs (package-inputs slurm-23.11)
+    (inputs (modify-inputs (package-inputs slurm)
               (prepend gtk+-2)))
     (synopsis "Slurm workload manager with the sview graphical interface")
     (description
