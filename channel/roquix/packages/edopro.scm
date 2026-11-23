@@ -20,6 +20,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -43,19 +44,68 @@
     (file-name "edopro-distribution-54a6e23")
     (sha256 (base32 "1sm2hj5xah99kby8spybfbggl48ckh81nv6yikmh19gh2sk86sac"))))
 
-(define distribution-without-bgm
+(define edopro-game-data
   (computed-file
    "edopro-game-data"
    (with-imported-modules '((guix build utils))
      #~(begin
          (use-modules (guix build utils))
-         ;; Several upstream tracks restrict commercial use or redistribution
-         ;; of adaptations.  Sound effects have separate licenses.
+         (define (install-resources directory files)
+           (for-each
+            (lambda (file)
+              (install-file (string-append directory "/" file)
+                            (string-append #$output "/" directory)))
+            files))
+         (chdir #$distribution)
+         (install-file "LICENSE" #$output)
+         ;; The Distribution license covers its configuration.  Card databases
+         ;; and puzzle collections are separate upstream projects.
+         (copy-recursively "config" (string-append #$output "/config"))
+         (substitute* (string-append #$output "/config/configs.json")
+           (("\"should_read\": true") "\"should_read\": false"))
+         (substitute* (string-append #$output "/config/system.conf")
+           (("^skin = .*") ""))
+         (install-resources "fonts" '("NotoSansJP-Regular.otf"
+                                      "NotoSansJP-Regular-OFL.txt"))
+         (copy-recursively "script" (string-append #$output "/script")
+                           #:select? (lambda (path stat)
+                                       (or (and (eq? 'directory (stat:type stat))
+                                                (not (string-prefix? "." (basename path))))
+                                           (string-suffix? ".lua" path)
+                                           (member (basename path) '("COPYING" "README.md")))))
+         ;; The pinned credits identify the license of each selected asset.
          ;; https://github.com/ProjectIgnis/Distribution/blob/54a6e2395c532648ff762540e9615319fac4f51b/sound/CREDITS.md
-         (let ((bgm (string-append #$distribution "/sound/BGM")))
-           (copy-recursively #$distribution #$output
-                             #:select? (lambda (file stat)
-                                         (not (string=? file bgm)))))))))
+         (install-resources "sound"
+                            '("CREDITS.md" "addcounter.wav" "attack.wav"
+                              "chatmessage.wav" "coinflip.wav" "damage.wav"
+                              "diceroll.wav" "draw.wav" "equip.wav" "flip.wav"
+                              "gainlp.wav" "nextturn.wav" "phase.wav"
+                              "playerenter.wav" "removecounter.wav" "set.wav"
+                              "shuffle.wav" "summon.wav"))
+         ;; https://github.com/ProjectIgnis/Distribution/blob/54a6e2395c532648ff762540e9615319fac4f51b/textures/CREDITS.md
+         (install-resources "textures"
+                            '("CREDITS.md" "AppIcon.png" "act.png" "attack.png"
+                              "bg.png" "bg_deck.png" "bg_menu.png" "chain.png"
+                              "chaintarget.png" "cover.png" "cover2.png"
+                              "equip.png" "field.png" "field2.png" "field3.png"
+                              "field4.png" "fieldSP.png" "fieldSP2.png"
+                              "fieldSP3.png" "fieldSP4.png" "field-transparent.png"
+                              "field-transparent2.png" "field-transparent3.png"
+                              "field-transparent4.png" "field-transparentSP.png"
+                              "field-transparentSP2.png" "field-transparentSP3.png"
+                              "field-transparentSP4.png" "lim.png" "lp.png"
+                              "lpf.png" "mask.png" "negated.png" "number.png"
+                              "ot.png" "settings.png" "target.png" "unknown.jpg"))
+         ;; EDOPro requires three hand textures at startup.  The credits name
+         ;; PNGs, while Distribution supplies JPEGs of uncertain provenance.
+         (for-each
+          (lambda (file label)
+            (invoke #$(file-append imagemagick "/bin/convert")
+                    "-size" "89x128" "xc:#222222" "-font"
+                    "fonts/NotoSansJP-Regular.otf" "-pointsize" "19"
+                    "-fill" "white" "-gravity" "center" "-annotate" "0" label
+                    "-strip" (string-append #$output "/textures/" file ".png")))
+          '("f1" "f2" "f3") '("Scissors" "Rock" "Paper"))))))
 
 (define-public edopro
   (let ((commit "c5a1fcac37fa2bfb4aec6f09b81a569e695d0a7d"))
@@ -133,13 +183,14 @@
                                "set -eu~%"
                                "dir=\"${XDG_DATA_HOME:-$HOME/.local/share}/edopro\"~%"
                                "~a -p \"$dir\"~%"
-                               "~a -rn --no-preserve=mode ~a/{config,deck,expansions,fonts,lflists,puzzles,script,skin,sound,textures} \"$dir/\"~%"
+                               "~a -rn --no-preserve=mode ~a/{config,fonts,script,sound,textures} \"$dir/\"~%"
                                "exec ~a/ygopro -C \"$dir\" \"$@\"~%")
                               (search-input-file inputs "/bin/bash")
-                              (which "mkdir") (which "cp") #$distribution-without-bgm lib)))
+                              (which "mkdir") (which "cp") #$edopro-game-data lib)))
                   (chmod (string-append bin "/edopro") #o555)))))))
       (home-page "https://github.com/edo9300/edopro")
       (synopsis "Automatic Yu-Gi-Oh! duel simulator")
       (description "EDOPro provides a graphical deck editor and duel simulator
 using the Project Ignis card engine.")
-      (license license:agpl3+))))
+      (license (list license:agpl3+ license:gpl3+ license:gpl2
+                     license:silofl1.1 license:cc0 license:cc-by3.0)))))
