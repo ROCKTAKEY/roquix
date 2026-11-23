@@ -1,0 +1,23 @@
+#!/usr/bin/env expect
+# guix shell expect -- expect tests/run-cgroup-service.exp elogind
+set service [lindex $argv 0]
+switch -- $service {
+    elogind {set user tester}
+    default {error "expected elogind"}
+}
+set root [file normalize [file join [file dirname [info script]] ..]]
+set vm [exec guix build -L $root/channel -f $root/tests/$service-service.scm 2>@stderr]
+set timeout 240
+spawn -noecho $vm -accel tcg -cpu max
+expect {
+    "login: " {send "$user\r"}
+    timeout {exit 1}
+    eof {exit 1}
+}
+expect -re {[#$] $} {send "sh /etc/service-test && echo TEST-'PASS' || echo TEST-'FAIL'\r"} timeout {exit 1} eof {exit 1}
+expect {
+    -exact "TEST-PASS" {exit 0}
+    -exact "TEST-FAIL" {exit 1}
+    timeout {exit 1}
+    eof {exit 1}
+}
