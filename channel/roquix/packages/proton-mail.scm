@@ -1,5 +1,11 @@
 (define-module (roquix packages proton-mail)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
+  #:use-module (roquix packages pnpm)
+  #:use-module (gnu packages nss)
+  #:use-module (gnu packages debian)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages web)
   #:use-module (roquix packages proton-mail sources)
@@ -13,11 +19,6 @@
   #:use-module (guix packages)
   #:use-module (nonguix build-system chromium-binary))
 
-(define (proton-mail-file name)
-  (local-file (canonicalize-path
-               (search-path %load-path
-                            (string-append "roquix/packages/proton-mail/" name)))))
-
 (define proton-mail-source
   (origin
     (method url-fetch)
@@ -26,6 +27,39 @@
     (file-name "proton-mail-1.16.1.tar.gz")
     (sha256
      (base32 "1hj46nvq924ymqr8fkh2862wal18rrlcp1y3div2bv4555ixr4jj"))))
+
+(define* (fetch-build-dependencies source algorithm hash
+                                   #:optional name #:key system
+                                   #:allow-other-keys)
+  (gexp->derivation
+   name
+   (with-extensions (list guile-json-4 guile-yamlpp)
+     (with-imported-modules '((guix build utils) (roquix build proton-mail-lock))
+      #~(begin
+          (use-modules (guix build utils) (roquix build proton-mail-lock))
+          (setenv "HOME" (getcwd))
+          (setenv "PATH" (string-append #+pnpm "/bin:" #+node "/bin:"
+                                        #+gzip "/bin:" #+bash-minimal "/bin"))
+          (setenv "SSL_CERT_FILE"
+                  #+(file-append nss-certs-for-test "/etc/ssl/certs/ca-certificates.crt"))
+          (invoke #+(file-append tar "/bin/tar") "xf" #+source
+                  "--wildcards" "--no-wildcards-match-slash"
+                  "--strip-components=1" "*/pnpm-lock.yaml")
+          (write-desktop-lock "pnpm-lock.yaml")
+          (invoke "pnpm" "install" "--ignore-scripts" "--frozen-lockfile")
+          ;; pnpm records the temporary store path and install time here.
+          (for-each delete-file '("node_modules/.modules.yaml"
+                                  "node_modules/.pnpm-workspace-state-v1.json"))
+          (call-with-output-file "/dev/null"
+            (lambda (port) (copy-recursively "node_modules" #$output #:log port))))))
+   #:system system #:hash-algo algorithm #:hash hash #:recursive? #t))
+
+(define build-dependencies
+  (origin
+    (method fetch-build-dependencies)
+    (uri proton-mail-source)
+    (file-name "proton-mail-build-dependencies")
+    (sha256 (base32 "0i5bagg3k1clb03jy8winw2h78wnlr02crcyas1j6dgcgm8b92gg"))))
 
 (define electron-archive
   (origin
@@ -69,13 +103,21 @@
               (substitute* "applications/inbox-desktop/src/utils/protocol/default_mailto_linux.ts"
                 (("/usr/share/applications/proton-mail.desktop")
                  (string-append #$output "/share/applications/proton-mail.desktop")))
-              (invoke "unzip" "-q" #+electron-archive "-d" "applications/inbox-desktop/out")
-              (build-desktop #+(proton-mail-file "package-linux.cjs")
+              (mkdir "electron-cache")
+              (symlink #+electron-archive "electron-cache/electron-v43.8.6-linux-x64.zip")
+              (setenv "ELECTRON_ZIP_DIR" (canonicalize-path "electron-cache"))
+              (setenv "HOME" (getcwd))
+              (setenv "NODE_INSTALLER" "npm")
+              (setenv "BUILD_TAG" #$(string-append "ida-" version))
+              (setenv "TS_NODE_TRANSPILE_ONLY" "true")
+              (setenv "TS_NODE_COMPILER_OPTIONS"
+                      "{\"moduleResolution\":\"node\",\"ignoreDeprecations\":\"6.0\"}")
+              (build-desktop #+build-dependencies
                              (string-append #$output "/share/applications"))
               (let ((doc (string-append #$output "/share/doc/proton-mail-" #$version)))
                 (mkdir-p doc)
                 (copy-file "LICENSE" (string-append doc "/COPYING")))
-              (chdir "applications/inbox-desktop/out")))
+              (chdir "applications/inbox-desktop/out/Proton Mail-linux-x64")))
           (add-after 'install 'install-launcher
             (lambda _
               (let ((share (string-append #$output "/share"))
@@ -98,7 +140,7 @@
                             #$(file-append bash-minimal "/bin/sh")
                             #$gsettings-desktop-schemas #$output)))
                 (chmod launcher #o755)))))))
-    (native-inputs (list node esbuild unzip desktop-file-utils))
+    (native-inputs (list node esbuild dpkg fakeroot desktop-file-utils))
     (inputs (list gsettings-desktop-schemas))
     (home-page "https://proton.me/mail")
     (synopsis "Desktop client for Proton Mail and Proton Calendar")

@@ -18,14 +18,6 @@
             "428d49f6b1e1614f082b7706fa879a3d9c64f728"
             "06qq1qi94ibf8dy9s3sh8snfhznl9sml1lbi4jjc2dcm52qaaxii"
             '("source-map-js" "."))
-    (github "RyanZim/at-least-node"
-            "6b45626accdfe9431ef860c55f07420f7df2aaa7"
-            "0nndcqiywcdl9k9acgk6qxb3v8bp3xalx2qmsb2iavm94j414qs8"
-            '("at-least-node" "."))
-    (github "RyanZim/universalify"
-            "dc17e0e00fb39c8d52e97ce77e494cdadfa8d19c"
-            "1f1s24yqkcchbgqp13nmfdi1r6iavkvhd941q9nd181rz07kynfn"
-            '("universalify" "."))
     (github "ajv-validator/ajv"
             "0fba0b8e649909613cfce0999b149cd08f4a4987"
             "14wj448hq6bansdgb6n5k23ak3kjwavf3xcz89dardfvpc3sd7xy"
@@ -62,22 +54,6 @@
             "d435ce3ae4b9adfd268786c780558a550e4546e0"
             "0kbqmc7n0vzkjm31k8knlyvyi11g5c14l7nqs9ifdin78ps5xkhl"
             '("dedent" "."))
-    (github "electron-userland/electron-installer-common"
-            "55bf32a62ad271ed62be01b66fb08c5aa5feb3b9"
-            "0rxv2c139sgi1npsc8ybr05im1hlp323adn4fya1rc5i9dbq366z"
-            '("electron-installer-common" "."))
-    (github "electron-userland/electron-installer-debian"
-            "980f47efd9767e50d028b76c6c5286696cb376db"
-            "101ylr4h3wvyw3rw5qv3b6b6zxrp31d0r1m0nd8masd6pi8sp0k6"
-            '("electron-installer-debian" "."))
-    (github "electron/asar"
-            "e4fb057678562b7b6170699a046d983ae6d31cb8"
-            "03mym7bxjs5ar8sjyqpns5shjshf6nh6wpr399nq7yjq3nlayksm"
-            '("@electron/asar" "."))
-    (github "electron/fuses"
-            "b38d2e80d9267b52d6db99cd9c9e616da3d037e8"
-            "08jvacgzvn555xi1ybjavz28ikkdjpilgyk13cjgqjg2nf0j6i3g"
-            '("@electron/fuses" "."))
     (github "electron/update-electron-app"
             "0eb2936456abd8b9838fc5c95e89785b585c35ce"
             "1vvgvpcn4j4avwawxs4syb1s3s3m1p7b9pphwmk622lw5ns9clfy"
@@ -127,58 +103,6 @@
             "crypto-2.2.0.tgz"
             "1r7avnk3s75xz27jzap53g4ccx31k5qfkv60hqzigikjxlkk6lkb"
             '("@protontech/crypto" "."))
-    (tarball "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz"
-            "concat-map-0.0.1.tgz"
-            "0qa2zqn9rrr2fqdki44s4s2dk2d8307i4556kv25h06g43b2v41m"
-            '("concat-map" "."))
-    (github "isaacs/fs.realpath"
-            "03e7c884431fe185dfebbc9b771aeca339c1807a"
-            "19xwfxbg3fklflfcd2qqgmf5xy4x36vg3g6qbsz3pnva0xvl25sb"
-            '("fs.realpath" "."))
-    (github "isaacs/inherits"
-            "9a2c29400c6d491e0b7beefe0c32efa3b462545d"
-            "114mbsa6rw9smja5zvip6x69v16dhvwxv3f7r8z5rpcsx493hk4r"
-            '("inherits" "."))
-    (github "isaacs/minimatch"
-            "7bba97888a27a6162983056bcce2a6e28f668712"
-            "04xzvakqc3mhj5iypdv1wqc1nq78h30a563jspn95rxygi723gsd"
-            '("minimatch" "."))
-    (github "isaacs/node-glob"
-            "c3cd57ae128faa0e9190492acc743bb779ac4054"
-            "0q7y8914vzkpi5clzskkl987m0zn2ygldqbmpybsannf0baa86p1"
-            '("glob" "."))
-    (github "isaacs/node-graceful-fs"
-            "514861c372899df14beb7aaecca4cdbb498d7d11"
-            "1sqwclsdhhr1flvskkl7dr3pdk61fmabacscnnvdlm8jabc4qh7f"
-            '("graceful-fs" "."))
-    (github "isaacs/once"
-            "0e614d9f5a7e6f0305c625f6b581f6d80b33b8a6"
-            "18m4wqwiw545y21kvp98y3ikk4bm4hy1h5wdzx4mdrkfaal7r4w4"
-            '("once" "."))
-    (github "jonschlinkert/author-regex"
-            "e76ce20fafcf4610faab13756f3aa2fd734cf9d5"
-            "0a47166r87px50k84irqzwzgysxif2gdypm2bhgz6dskdkrmam8z"
-            '("author-regex" "."))
-    (github "jonschlinkert/parse-author"
-            "dc5528d371661331006cfb5b8301f151a5071f49"
-            "064klqay2gfwxr4420kl3w00f408zrgjjxhjjv1ki1fj0sgqv7cx"
-            '("parse-author" "."))
-    (github "jprichardson/node-fs-extra"
-            "1625838cdfc65a1bbf28ab5fa962a75805629b9c"
-            "1hpqffzv9jkk5i5hblwwb27d3r515vr8d6dqcvhsmm20nx5zb38h"
-            '("fs-extra" "."))
-    (github "jprichardson/node-jsonfile"
-            "9c6478a85899a9318547a6e9514b0403166d8c5c"
-            "1iq8rbqjwadryvvm2skid6slhrp9422fqdkmdcxj82lk59fn2hgs"
-            '("jsonfile" "."))
-    (github "juliangruber/balanced-match"
-            "c7412e09b95d6ad97fd1e2996f6adca7626a9ae8"
-            "1xykahlp8rfx47wkmwggawcbx04ibxb8q7ah6yi5daf64jz5mszf"
-            '("balanced-match" "."))
-    (github "juliangruber/brace-expansion"
-            "8e81e187b6e9c6c723d16c042657c00acefc2483"
-            "01mhdsv9kd3wpr9zhrl80ahr3402aywc5fah40sm2b4cddzm50cp"
-            '("brace-expansion" "."))
     (github "lodash/lodash"
             "4f0b76e2eca13de1c1fe8b4305abc1f7d63f4b86"
             "1g215yacjh2lkbjrhyiq9vyd8kda8ccgipy0hbiwl21y9niywvmb"
@@ -203,18 +127,10 @@
             "2d6cbd8f213cd51727ed6b7cee342b10b7e1456f"
             "0x6bj5lx37nrkplpa0v1m6zmjixiad6wnqhqsalk398ifrb14vvk"
             '("require-in-the-middle" "."))
-    (github "npm/inflight"
-            "a547881738c8f57b27795e584071d67cf6ac1a57"
-            "0i278cakz9h03xki11s0kjprff5gqhr2s4v7im8wrrnfsvrs2fhh"
-            '("inflight" "."))
     (github "npm/node-semver"
             "6e05b7637396ac66522cff8731f07cfe0ef49a29"
             "0asfh5cc7q6wxswxqjd0qnw1kgwanqgicpnf8k06r6vin2ps399h"
             '("semver" "."))
-    (github "npm/wrappy"
-            "71d91b6dc5bdeac37e218c2cf03f9ab55b60d214"
-            "0ghbanp0ihb2pvai7p94flazpl3iqrs0ajxr5q248758wazlvi6l"
-            '("wrappy" "."))
     (github "olado/doT"
             "6adbd819970d9093aa2ea24fcf56c7e370d9a468"
             "0hlmjj6vmk0wmphjvgqx68b0y3kaxh1m6031grm3khm3ljpbhc9l"
@@ -307,10 +223,6 @@
             "4696c60a8b2b9ac61902aa9eab7cb326ab6005c8"
             "15d3niyah2787lh7qrp34zcsx2msi7hh2ifk35ywkhz71xg7fplc"
             '("path-exists" "."))
-    (github "sindresorhus/path-is-absolute"
-            "edc91d348b21dac2ab65ea2fbec2868e2eff5eb6"
-            "0aijda221ygck9sgbxk695qgjh0s4fy13rfd96rckmn1lsx77fa2"
-            '("path-is-absolute" "."))
     (github "sindresorhus/pkg-up"
             "9166b423d53ffef572eedf7b62926dcc199df0ae"
             "10q1n2gjvdgx96gxk8kw1gafm6rrgmbs52xz6yb0xapl8y8cam6q"
