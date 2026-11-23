@@ -66,7 +66,7 @@
 
   ;; Parse package configuration before lowering it to a derivation.
   (container-command-arguments
-   "/profile" executable
+   "/manifest.scm" executable
    #:preserve-environment preserve-environment
    #:set-environment
    (map (match-lambda
@@ -98,6 +98,9 @@
             (content (packages->manifest
                       (cons (list payload payload-output)
                             (map runtime-input->manifest-item inputs))))))
+         (runtime-manifest
+          (scheme-file "container-manifest.scm"
+                       #~((@ (guix profiles) profile-manifest) #$runtime-profile)))
          (launcher
           (program-file
            executable
@@ -111,7 +114,7 @@
                   (define (launch desktop)
                     (let ((command
                            (container-command-arguments
-                            #$runtime-profile #$executable
+                            #$runtime-manifest #$executable
                             #:preserve-environment
                             '#$(sexp->gexp preserve-environment)
                             #:set-environment

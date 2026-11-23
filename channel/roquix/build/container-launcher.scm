@@ -69,7 +69,7 @@
     (and target
          (string-append flag source "=" target))))
 
-(define* (container-command-arguments profile executable
+(define* (container-command-arguments manifest executable
                                       #:key
                                       (preserve-environment '())
                                       (set-environment '())
@@ -93,7 +93,7 @@
       (error "invalid environment variable assignment" entry))
     (list "-E" (string-append (car entry) "=" (cdr entry))))
   (append (list "shell" "-q" "--pure" "-C"
-                (string-append "--profile=" (absolute-path profile)))
+                (string-append "--manifest=" (absolute-path manifest)))
           (if no-cwd? '("--no-cwd") '())
           (if network? '("-N") '())
           (if emulate-fhs? '("-F") '())
@@ -107,9 +107,9 @@
                       expose)
           (list "--")
           (if private-session-bus?
-              (list (string-append profile "/bin/dbus-run-session") "--")
+              (list "dbus-run-session" "--")
               '())
-          (list (string-append profile "/bin/" executable))
+          (list executable)
           arguments))
 
 (define (rewrite-desktop-line line launcher)

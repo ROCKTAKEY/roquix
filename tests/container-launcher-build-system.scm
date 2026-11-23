@@ -96,13 +96,13 @@
    #:system "x86_64-linux" #:target #f))
 
 (test-equal "explicit environment and mounts become separate arguments"
-  '("shell" "-q" "--pure" "-C" "--profile=/store/profile" "--no-cwd"
+  '("shell" "-q" "--pure" "-C" "--manifest=/store/manifest.scm" "--no-cwd"
     "-N" "-F" "-E" "^DISPLAY$" "-E" "APP_MODE=compact"
     "--share=/tmp/host path=/inside path"
     "--expose=/run/user/1000=/run/user/1000"
-    "--" "/store/profile/bin/app" "file with spaces")
+    "--" "app" "file with spaces")
   (container-command-arguments
-   "/store/profile" "app"
+   "/store/manifest.scm" "app"
    #:preserve-environment '("DISPLAY")
    #:set-environment '(("APP_MODE" . "compact"))
    #:share '(("/tmp/host path" . "/inside path"))
@@ -115,10 +115,10 @@
               (and (string=? name "XDG_RUNTIME_DIR") "/run/user/1000"))))
 
 (test-equal "missing optional environment mount is omitted"
-  '("shell" "-q" "--pure" "-C" "--profile=/store/profile" "--no-cwd"
-    "--" "/store/profile/bin/app")
+  '("shell" "-q" "--pure" "-C" "--manifest=/store/manifest.scm" "--no-cwd"
+    "--" "app")
   (container-command-arguments
-   "/store/profile" "app"
+   "/store/manifest.scm" "app"
    #:share '((environment "XDG_RUNTIME_DIR"))
    #:getenv (lambda (_) #f)))
 

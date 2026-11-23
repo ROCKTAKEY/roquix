@@ -38,6 +38,10 @@
 (define probe-profile
   (profile (content (packages->manifest (list python nss-certs)))))
 
+(define probe-manifest
+  (scheme-file "probe-manifest.scm"
+               #~((@ (guix profiles) profile-manifest) #$probe-profile)))
+
 (define container-probe
   (program-file "network-container-probe"
     (with-imported-modules modules
@@ -46,10 +50,10 @@
           (let ((guix #$(file-append guix "/bin/guix")))
             (apply execl guix guix
                    (container-command-arguments
-                    #$probe-profile "python3" #:network? #t
+                    #$probe-manifest "python3" #:network? #t
                     #:set-environment
                     (list (cons "SSL_CERT_FILE"
-                                #$(file-append probe-profile "/etc/ssl/certs/ca-certificates.crt")))
+                                #$(file-append nss-certs "/etc/ssl/certs/ca-certificates.crt")))
                     #:expose (list (cons (string-append (cadr (command-line)) "/resolv.conf")
                                          "/etc/resolv.conf"))
                     #:arguments (cddr (command-line)))))))))
