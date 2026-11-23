@@ -17,7 +17,8 @@
   #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (nonguix build-system chromium-binary))
+  #:use-module (guix build-system gnu)
+  #:use-module (nongnu packages electron))
 
 (define proton-mail-source
   (origin
@@ -61,11 +62,16 @@
     (file-name "proton-mail-build-dependencies")
     (sha256 (base32 "0i5bagg3k1clb03jy8winw2h78wnlr02crcyas1j6dgcgm8b92gg"))))
 
-(define electron-archive
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/electron/electron/releases/download/v43.8.6/electron-v43.8.6-linux-x64.zip")
-    (sha256 (base32 "00ilfqxb2sj0p2zjyabnr5ss7878v66f2gwan5ams73hw1w7cr8w"))))
+(define electron-for-proton-mail
+  (package
+    (inherit electron-41)
+    (version "43.8.6")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/electron/electron/releases/download/v"
+                           version "/electron-v" version "-linux-x64.zip"))
+       (sha256 (base32 "00ilfqxb2sj0p2zjyabnr5ss7878v66f2gwan5ams73hw1w7cr8w"))))))
 
 (define-public proton-mail
   (package
@@ -73,27 +79,19 @@
     (version "1.16.1")
     (source
      proton-mail-source)
-    (build-system chromium-binary-build-system)
+    (build-system gnu-build-system)
     (supported-systems '("x86_64-linux"))
     (arguments
      (list
       #:imported-modules (cons '(roquix build proton-mail)
-                               %chromium-binary-build-system-modules)
-      #:wrapper-plan
-      #~'(("Proton Mail" (("out" "/lib/proton-mail") ("nss" "/lib/nss")))
-          "libEGL.so"
-          "libGLESv2.so"
-          "libffmpeg.so"
-          "libvk_swiftshader.so"
-          "libvulkan.so.1"
-          "chrome_crashpad_handler"
-          "chrome-sandbox")
-      #:install-plan
-      #~'(("." "lib/proton-mail/"))
+                               %default-gnu-imported-modules)
+      ;; All ELF objects come from Electron, whose launcher sets LD_LIBRARY_PATH.
+      #:validate-runpath? #f
+      #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
-          (delete 'binary-unpack)
-          (add-before 'patchelf 'build-desktop
+          (delete 'configure)
+          (replace 'build
             (lambda _
               (use-modules (roquix build proton-mail))
               (stage-desktop-sources
@@ -104,7 +102,18 @@
                 (("/usr/share/applications/proton-mail.desktop")
                  (string-append #$output "/share/applications/proton-mail.desktop")))
               (mkdir "electron-cache")
-              (symlink #+electron-archive "electron-cache/electron-v43.8.6-linux-x64.zip")
+              (let ((archive (string-append (canonicalize-path "electron-cache")
+                                            "/electron-v" #$(package-version electron-for-proton-mail)
+                                            "-linux-x64.zip")))
+                (copy-recursively #$(file-append electron-for-proton-mail "/share/electron")
+                                  "electron-template")
+                (copy-recursively
+                 #$(file-append electron-for-proton-mail "/share/doc/electron-"
+                                (package-version electron-for-proton-mail))
+                 "electron-template")
+                (invoke "chmod" "-R" "u+w" "electron-template")
+                (with-directory-excursion "electron-template"
+                  (invoke "zip" "-q0r" archive ".")))
               (setenv "ELECTRON_ZIP_DIR" (canonicalize-path "electron-cache"))
               (setenv "HOME" (getcwd))
               (setenv "NODE_INSTALLER" "npm")
@@ -118,30 +127,39 @@
                 (mkdir-p doc)
                 (copy-file "LICENSE" (string-append doc "/COPYING")))
               (chdir "applications/inbox-desktop/out/Proton Mail-linux-x64")))
-          (add-after 'install 'install-launcher
+          (replace 'install
             (lambda _
-              (let ((share (string-append #$output "/share"))
-                    (desktop (string-append #$output
-                                            "/share/applications/proton-mail.desktop")))
-                (mkdir-p (string-append share "/pixmaps"))
-                (copy-file "resources/icon.png"
-                           (string-append share "/pixmaps/proton-mail.png"))
+              (define runtime #$(file-append electron-for-proton-mail "/share/electron"))
+              (define lib (string-append #$output "/lib/proton-mail"))
+              (define launcher (string-append #$output "/bin/proton-mail"))
+              (mkdir-p lib)
+              ;; Forge applies Proton's fuse settings to the executable. Electron
+              ;; looks for the application's resources relative to that executable.
+              (for-each (lambda (name)
+                          (let ((dest (string-append lib "/" name)))
+                            (cond ((string=? name "Proton Mail") (copy-file name dest))
+                                  ((string=? name "resources") (copy-recursively name dest))
+                                  ((file-exists? (string-append runtime "/" name))
+                                   (symlink (string-append runtime "/" name) dest))
+                                  (else
+                                   (symlink (string-append #$electron-for-proton-mail
+                                             "/share/doc/electron-" #$(package-version electron-for-proton-mail)
+                                             "/" name) dest)))))
+                        ((@ (ice-9 ftw) scandir) "." (lambda (n) (not (member n '("." ".."))))))
+              (mkdir-p (dirname launcher))
+              (copy-file #$(file-append electron-for-proton-mail "/bin/electron") launcher)
+              (chmod launcher #o755)
+              (substitute* launcher
+                (((string-append runtime "/electron")) (string-append lib "/Proton Mail"))
+                (("^exec ") (string-append "export XDG_DATA_DIRS=\"${XDG_DATA_DIRS:-/usr/local/share:/usr/share}:"
+                                           #$gsettings-desktop-schemas "/share\"\nexec ")))
+              (let ((desktop (string-append #$output "/share/applications/proton-mail.desktop")))
+                (substitute* desktop (("^Exec=proton-mail ") (string-append "Exec=" launcher " ")))
                 (invoke "desktop-file-validate" desktop))
-              (mkdir-p (string-append #$output "/bin"))
-              (let ((launcher (string-append #$output "/bin/proton-mail")))
-                (call-with-output-file launcher
-                  (lambda (port)
-                    (format port
-                            (string-append
-                             "#!~a~%"
-                             "export XDG_DATA_DIRS=\"${XDG_DATA_DIRS:-"
-                             "/usr/local/share:/usr/share}:~a/share\"~%"
-                             "exec \"~a/lib/proton-mail/Proton Mail\" \"$@\"~%")
-                            #$(file-append bash-minimal "/bin/sh")
-                            #$gsettings-desktop-schemas #$output)))
-                (chmod launcher #o755)))))))
-    (native-inputs (list node esbuild dpkg fakeroot desktop-file-utils))
-    (inputs (list gsettings-desktop-schemas))
+              (mkdir-p (string-append #$output "/share/pixmaps"))
+              (copy-file "resources/icon.png" (string-append #$output "/share/pixmaps/proton-mail.png")))))))
+    (native-inputs (list node esbuild dpkg fakeroot zip desktop-file-utils))
+    (inputs (list electron-for-proton-mail gsettings-desktop-schemas))
     (home-page "https://proton.me/mail")
     (synopsis "Desktop client for Proton Mail and Proton Calendar")
     (description "This package provides Proton's official desktop application
