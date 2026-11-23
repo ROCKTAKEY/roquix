@@ -608,19 +608,19 @@ entries invoke the container launcher, including desktop actions.  The desktop
 environment must include the installed Guix profile's =share= directory in
 =XDG_DATA_DIRS= to discover them.
 
+* Feishin
+Install the source-built desktop player with =guix install -L channel feishin=.
+
 * AppImage build system
 =roquix= includes =appimage-build-system= for repackaging Type 2 AppImages as
 Guix packages.
 
 ** Desktop container packages
-=feishin-container= and =logseq-container=
-start the corresponding AppImage packages inside a Guix container.  Install
-one variant per application; each provides the original command name and
-its desktop entry:
+=logseq-container= runs Logseq inside a Guix container and provides the
+=logseq= command and desktop entry.
 
 #+BEGIN_SRC sh
-guix install -L channel feishin-container logseq-container
-feishin
+guix install -L channel logseq-container
 logseq
 #+END_SRC
 
