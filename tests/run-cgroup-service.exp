@@ -1,9 +1,10 @@
 #!/usr/bin/env expect
-# guix shell expect -- expect tests/run-cgroup-service.exp elogind
+# guix shell expect -- expect tests/run-cgroup-service.exp elogind|slurm
 set service [lindex $argv 0]
 switch -- $service {
     elogind {set user tester}
-    default {error "expected elogind"}
+    slurm {set user root}
+    default {error "expected elogind or slurm"}
 }
 set root [file normalize [file join [file dirname [info script]] ..]]
 set vm [exec guix build -L $root/channel -f $root/tests/$service-service.scm 2>@stderr]
