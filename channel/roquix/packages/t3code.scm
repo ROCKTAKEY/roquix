@@ -1058,6 +1058,10 @@
                  (string-append application "/apps/server/dist/bin.mjs"))))
             (chmod (string-append bin "/t3") #o755)
             (wrap-program (string-append bin "/t3")
+              ;; Both launchers disable T3 Code telemetry and the OpenTelemetry
+              ;; SDK so that even a configured exporter cannot send data.
+              '("T3CODE_TELEMETRY_ENABLED" ":" = ("false"))
+              '("T3CODE_OTEL_SDK_DISABLED" ":" = ("true"))
               `("PATH" ":" prefix
                 ,(map (lambda (file)
                         (dirname (search-input-file inputs file)))
@@ -1068,6 +1072,8 @@
                 (fontconfig-file
                  (search-input-file inputs "/etc/fonts/fonts.conf")))
             (wrap-program (string-append (assoc-ref outputs "out") "/bin/t3code")
+              '("T3CODE_TELEMETRY_ENABLED" ":" = ("false"))
+              '("T3CODE_OTEL_SDK_DISABLED" ":" = ("true"))
               `("PATH" ":" prefix
                 ,(map (lambda (file)
                         (dirname (search-input-file inputs file)))
