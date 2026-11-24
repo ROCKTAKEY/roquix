@@ -27,7 +27,7 @@
 +        eng = PreparedStrata(package, ROOT).engine_for(gpu, "none")
 +        return None, eng, json.loads((eng / "BUILD.json").read_text()), list(package.library_directories), gpu, vision
      if SHAPE_ENGINE.get("shape"):
-         return shape_engine_step(a, gpu, vision)
+         return shape_engine_step(a, gpu, vision, hip=hip, cuda_tk=cuda_tk)
      if CONTROL:
 @@ -10196,13 +10206,18 @@
      def parse(cls, arguments: list[str]) -> "SetupRequest":
@@ -60,27 +60,3 @@
              config["lib_dirs"] = list(self.package.library_directories)
              write_config(path, config)
  
---- a/engine/CMakeLists.txt
-+++ b/engine/CMakeLists.txt
-@@ -853,3 +853,11 @@
- else()
-   message(STATUS "strata tests: OFF (STRATA_BUILD_TESTS=OFF)")
- endif()
-+
-+# Hy4's HIP runner shares the native container reader and quantization codecs.
-+set(hy4_dir src/hy4flash/run)
-+set(hy4_kernels ${hy4_dir}/hy4_main.hip.cpp ${hy4_dir}/mla_attn.hip.cpp)
-+set_source_files_properties(${hy4_kernels} PROPERTIES LANGUAGE HIP)
-+add_executable(strata-hy4 ${hy4_kernels}
-+               ${hy4_dir}/hy4_cpu_experts.cpp ${hy4_dir}/hy4_cpu_k512.cpp ${hy4_dir}/hy4_engram.cpp)
-+target_link_libraries(strata-hy4 PRIVATE strata_inkling_core hip::host)
---- a/engine/src/hy4flash/run/hy4_json.h
-+++ b/engine/src/hy4flash/run/hy4_json.h
-@@ -11,6 +11,7 @@
- namespace hy4 {
- 
- struct JVal {
-+    JVal() noexcept = default;
-     enum T { Null, Bool, Num, Str, Arr, Obj } t = Null;
-     bool b = false;
-     double num = 0;

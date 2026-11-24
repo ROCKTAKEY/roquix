@@ -18,7 +18,7 @@
   #:use-module (srfi srfi-13))
 
 (define %strata-commit
-  "a34979fc94f3d126b9bb8210f4ad311345688b52")
+  "d46f5f268f8ed797e83a5c63a69bffbd7a581cf6")
 
 (define (strata-resource-path name)
   (canonicalize-path
@@ -44,7 +44,7 @@
 (define-public strata-hip
   (package
     (name "strata-hip")
-    (version "0.2.20")
+    (version "0.2.21")
     (source
      (origin
        (method url-fetch)
@@ -53,7 +53,7 @@
              %strata-commit))
        (file-name (string-append "strata-" version ".tar.gz"))
        (sha256
-        (base32 "0waihpn8rdpv33yvj0cyxnb171z3wqwmnf2g1pbn279p067mqd4d"))
+        (base32 "13q5xvni6cnyc0gvzrxq5zyv9lar841qdznhxln7fkyfyvg7hc72"))
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-parser-timing.patch")
                       (strata-resource-path "strata-server-tests.patch")
@@ -69,6 +69,7 @@
       #:configure-flags
       #~(list "-DSTRATA_ENABLE_HIP=ON"
          "-DSTRATA_ENABLE_CUDA=OFF"
+         "-DSTRATA_BUILD_HY4=ON"
          "-DSTRATA_PORTABLE=ON"
          "-DSTRATA_BUILD_TESTS=OFF"
          "-DSTRATA_BUILD_CONVERSATION_TESTS=ON"
@@ -185,7 +186,7 @@
                          "'vision':'none', 'lib_dirs':sys.argv[4:]},"
                          "open(sys.argv[1], 'w'))")
                         (string-append engine "/BUILD.json")
-                        "0.1.66"
+                        "0.1.67"
                         #$(string-join %strata-hip-architectures ";")
                         #$(file-append rocm-hip-runtime "/lib")
                         #$(file-append hipblas "/lib")
