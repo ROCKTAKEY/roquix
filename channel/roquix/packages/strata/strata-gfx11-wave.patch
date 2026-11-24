@@ -1,0 +1,35 @@
+Keep gfx11 cross-lane operations active across the full wave before
+conditional stores in Q6_K, gated recurrent projections and fused MoE.
+
+--- a/engine/src/kernels/cuda/rdna_mmvq.cu
++++ b/engine/src/kernels/cuda/rdna_mmvq.cu
+@@ -57,6 +57,8 @@
+     v += STRATA_DPP6(v, 0x168);
+     v += __int_as_float(__builtin_amdgcn_permlanex16(0, __float_as_int(v), 0x76543210, 0xfedcba98, false, false));
+ #undef STRATA_DPP6
++    // Keep the cross-lane sum active for the full wave before the lane-zero store.
++    asm volatile("" : "+v"(v));
+     return v;
+ }
+ 
+--- a/engine/src/kernels/cuda/rdna_gr.cu
++++ b/engine/src/kernels/cuda/rdna_gr.cu
+@@ -63,6 +63,7 @@
+     v += STRATA_GR_DPP(v, 0x141);
+     v += STRATA_GR_DPP(v, 0x140);
+     v += __int_as_float(__builtin_amdgcn_permlanex16(0, __float_as_int(v), 0x76543210, 0xfedcba98, false, false));
++    asm volatile("" : "+v"(v));
+     return v;
+ }
+ 
+--- a/engine/src/prefill/moe_fused_iq.cu
++++ b/engine/src/prefill/moe_fused_iq.cu
+@@ -2455,6 +2455,8 @@
+                         for (int i = 0; i < 8; ++i) {
+                             float up = __int_as_float(__builtin_amdgcn_permlanex16(
+                                 __float_as_int(acc[mt][nt][i]), __float_as_int(acc[mt][nt][i]), 0x76543210u, 0xfedcba98u, false, false));
++                            // Consume the exchange across both half-waves before the conditional store.
++                            asm volatile("" : "+v"(up));
+                             float gt = acc[mt][nt][i];
+                             if constexpr (WT == T_NVFP4) { gt *= t_gate; up *= t_up; }
+                             hv[i] = gt / (1.0f + __expf(-gt)) * up;

@@ -57,7 +57,8 @@
        (patches (list (strata-resource-path "strata-hip-setup.patch")
                       (strata-resource-path "strata-parser-timing.patch")
                       (strata-resource-path "strata-server-tests.patch")
-                      (strata-resource-path "strata-shape-engines.patch")))
+                      (strata-resource-path "strata-shape-engines.patch")
+                      (strata-resource-path "strata-gfx11-wave.patch")))
        (modules '((guix build utils)))
        (snippet
         ;; The optional control vector carries a separate Qwen model license.
