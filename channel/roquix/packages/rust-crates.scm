@@ -3958,6 +3958,10 @@
   (crate-source "der" "0.8.2"
                 "02m8k3wix7gzc9mjc72l0zx8aiqfhsf1zd79c81b48g4x58chy58"))
 
+(define rust-der-0.8.3
+  (crate-source "der" "0.8.3"
+                "01703q9nh4vlswvm7hbjknvhjd589apzdz0jdrx452zbiw86m6ba"))
+
 (define rust-der-derive-0.7.3
   (crate-source "der_derive" "0.7.3"
                 "065d2wy7zd0dank99hh58l5x7lv50hxnr7j6f3sphlb7i4ihjd40"))
@@ -9348,15 +9352,15 @@
   (crate-source "mutate_once" "0.1.2"
                 "1byj4yz6h0mdx3mmj0mq23ma59kw41pckspr2gz8rl22k0y27lhk"))
 
-(define rust-mxc-sdk-1.0.0.b211201
+(define rust-mxc-sdk-1.1.0.c662018
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/microsoft/mxc")
-          (commit "b21120168d70befe12356411423266bfef168446")))
-    (file-name (git-file-name "rust-mxc-sdk" "1.0.0.b211201"))
-    (sha256 (base32 "1nph2g8bvv2g69z5a1yrvx5flhvw3q8id2q7bcagw1wv43djb3h0"))))
+          (commit "c66201839d63cae2239db5e92f1f1d6076cf5181")))
+    (file-name (git-file-name "rust-mxc-sdk" "1.1.0.c662018"))
+    (sha256 (base32 "0s9nxip13rk83vjv2l7m3cp6zqvna2yf809jf3rba4nsjhlvm1zg"))))
 
 (define rust-n0-error-1.0.0
   (crate-source "n0-error" "1.0.0"
@@ -16622,21 +16626,21 @@
   (crate-source "tokio-tungstenite" "0.28.0"
                 "0mzqgc94csy5ai6kx5yxj548shppq2kwdbyrsdsilhycvmn40nnj"))
 
-(define rust-tokio-tungstenite-0.28.0.7447c42
+(define rust-tokio-tungstenite-0.28.0.7a92047
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/openai-oss-forks/tokio-tungstenite")
-          (commit "7447c427513cfe685f236e1ac0513c4ea3dd9c0b")))
-    (file-name (git-file-name "rust-tokio-tungstenite" "0.28.0.7447c42"))
-    (sha256 (base32 "0lp3ch581gc26swxalfwkscwzvyfq78bzrlzcf7ms03vvllsydv3"))
+          (commit "7a920470d62138955446b64220c7609e46ad770e")))
+    (file-name (git-file-name "rust-tokio-tungstenite" "0.28.0.7a92047"))
+    (sha256 (base32 "10z33w4zc8xw71vqh5krn4lmav84kyicw64sqah5xjaa2d6lacvx"))
     (modules '((guix build utils)))
     (snippet #~(begin
                  (substitute* "Cargo.toml"
                    (("git = \"https://github.com/openai-oss-forks/tungstenite-rs\"")
                     "version = \"0.27.0\"")
-                   (("rev = \"bc589d684755a8c02da0fc7e58d0861cbfc306f1\"")
+                   (("rev = \"e19950ef7828cb311e6d51a6bedcebf0192e055c\"")
                     ""))))))
 
 (define rust-tokio-tungstenite-0.29.0
@@ -17255,15 +17259,15 @@
   (crate-source "tungstenite" "0.26.2"
                 "04rwwcxx95m3avi46rmn0kmpb6nynqimnla3v2qwn3k8argcp4s7"))
 
-(define rust-tungstenite-0.27.0.bc589d6
+(define rust-tungstenite-0.27.0.e19950e
   ;; TODO REVIEW: Define standalone package if this is a workspace.
   (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/openai-oss-forks/tungstenite-rs")
-          (commit "bc589d684755a8c02da0fc7e58d0861cbfc306f1")))
-    (file-name (git-file-name "rust-tungstenite" "0.27.0.bc589d6"))
-    (sha256 (base32 "0phs4vrdjhk3wascspl9y7hh57j6iwlaqvk2l8sm74g1jzxh3d5z"))))
+          (commit "e19950ef7828cb311e6d51a6bedcebf0192e055c")))
+    (file-name (git-file-name "rust-tungstenite" "0.27.0.e19950e"))
+    (sha256 (base32 "1wmf60fw4rkqrvlz1nzmvjvrf0afp5by2i14ifwgyv4y3nl1pjca"))))
 
 (define rust-tungstenite-0.28.0
   (crate-source "tungstenite" "0.28.0"
@@ -17725,6 +17729,10 @@
   (crate-source "ureq" "3.1.4"
                 "0njqfnfqbahady0357va33cqn64yq7x2yff0fylq4bb9mgdv376k"))
 
+(define rust-ureq-3.3.0
+  (crate-source "ureq" "3.3.0"
+                "1h6gmx5kbafh4vn1dbypc01m5gy9imja2n0vxd74v1nmvjf119yy"))
+
 (define rust-ureq-3.4.1
   (crate-source "ureq" "3.4.1"
                 "12wfngqyw2kr84fbrv99b1jg89i5k9f3yww39x0xay2kiyz4cmdg"))
@@ -17736,6 +17744,10 @@
 (define rust-ureq-proto-0.5.3
   (crate-source "ureq-proto" "0.5.3"
                 "0vzdcxabp5qs1b5mhsjb94mh82m12n40csm46icvwcphkpx9w7yq"))
+
+(define rust-ureq-proto-0.6.0
+  (crate-source "ureq-proto" "0.6.0"
+                "1340ga8p9qi70c0vdrwg21h1fp4ai7pvfy18z461n6xxn22bm579"))
 
 (define rust-ureq-proto-0.6.2
   (crate-source "ureq-proto" "0.6.2"
@@ -22382,6 +22394,7 @@
          rust-deltae-0.3.2
          rust-deno-core-icudata-0.78.0
          rust-der-0.7.10
+         rust-der-0.8.3
          rust-der-parser-9.0.0
          rust-der-parser-10.0.0
          rust-deranged-0.5.9
@@ -22746,7 +22759,7 @@
          rust-multimap-0.10.1
          rust-munge-0.4.7
          rust-munge-macro-0.4.7
-         rust-mxc-sdk-1.0.0.b211201
+         rust-mxc-sdk-1.1.0.c662018
          rust-native-tls-0.2.14
          rust-ndk-0.9.0
          rust-ndk-context-0.1.1
@@ -22848,6 +22861,7 @@
          rust-pbkdf2-0.13.0
          rust-pem-3.0.6
          rust-pem-rfc7468-0.7.0
+         rust-pem-rfc7468-1.0.0
          rust-percent-encoding-2.3.2
          rust-pest-2.8.7
          rust-pest-derive-2.8.7
@@ -23205,7 +23219,7 @@
          rust-tokio-rustls-0.26.4
          rust-tokio-stream-0.1.18
          rust-tokio-test-0.4.5
-         rust-tokio-tungstenite-0.28.0.7447c42
+         rust-tokio-tungstenite-0.28.0.7a92047
          rust-tokio-util-0.7.18
          rust-toml-0.5.11
          rust-toml-0.9.11+spec-1.1.0
@@ -23246,7 +23260,7 @@
          rust-try-lock-0.2.5
          rust-ts-rs-11.1.0
          rust-ts-rs-macros-11.1.0
-         rust-tungstenite-0.27.0.bc589d6
+         rust-tungstenite-0.27.0.e19950e
          rust-two-face-0.5.1
          rust-type-map-0.5.1
          rust-typed-path-0.12.3
@@ -23274,9 +23288,12 @@
          rust-unsafe-libyaml-0.2.11
          rust-untrusted-0.7.1
          rust-untrusted-0.9.0
+         rust-ureq-3.3.0
+         rust-ureq-proto-0.6.0
          rust-url-2.5.8
          rust-urlencoding-2.1.3
          rust-utf-8-0.7.6
+         rust-utf8-zero-0.8.1
          rust-utf8-iter-1.0.4
          rust-utf8parse-0.2.2
          rust-uuid-1.20.0
