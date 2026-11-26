@@ -2200,6 +2200,10 @@
   (crate-source "cc" "1.11.1"
                 "0mgicvynjmz4xan2nbdi1dr62pjqb9kikml0j21qq3zzdw9aiwjg"))
 
+(define rust-cc-1.11.3
+  (crate-source "cc" "1.11.3"
+                "0sgskgkiv1502hz51s6hd125a1jayb0dyv6aw1f38s5kmliy1w02"))
+
 (define rust-cc-1.2.30
   (crate-source "cc" "1.2.30"
                 "1rqs46vb04ffqlpi6kjwfmvvvf64y6jkdn1faql30sfa0yb11v6y"))
@@ -30542,7 +30546,9 @@
                          rust-zvariant-utils-4.2.0))
  (t3-resource-monitor =>
                       (list rust-bitflags-2.13.0
+                            rust-cc-1.11.3
                             rust-dispatch2-0.3.1
+                            rust-find-msvc-tools-0.1.15
                             rust-itoa-1.0.18
                             rust-libc-0.2.186
                             rust-memchr-2.8.2
@@ -30559,6 +30565,7 @@
                             rust-serde-core-1.0.228
                             rust-serde-derive-1.0.228
                             rust-serde-json-1.0.150
+                            rust-shlex-2.0.1
                             rust-syn-2.0.118
                             rust-sysinfo-0.39.3
                             rust-unicode-ident-1.0.24

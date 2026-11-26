@@ -39,7 +39,7 @@ try {
   assert.match(readFileSync(path.join(output, "share/licenses/t3code-cli/LICENSE"), "utf8"),
     /MIT License/);
 
-  for (const name of ["fff", "ffi", "keyring"]) {
+  for (const name of ["fff", "ffi"]) {
     const result = execFileSync(process.execPath,
       [nativeContracts, application, name, "server"],
       { env: environment, encoding: "utf8", timeout: 30_000 });

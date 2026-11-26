@@ -48,7 +48,7 @@
   #:use-module ((roquix packages pnpm) #:prefix package:))
 
 (define %t3code-version
-  "0.1.12")
+  "0.1.13")
 
 (define %t3code-upstream-source
   (origin
@@ -57,7 +57,7 @@
           "https://codeload.github.com/pingdotgg/t3code/tar.gz/refs/tags/v"
           %t3code-version))
     (file-name (string-append "t3code-" %t3code-version ".tar.gz"))
-    (sha256 (base32 "1cq166qvqi3qn7g9r9jhfky231b85ndj75ngrlzmxb8445n8ayn5"))))
+    (sha256 (base32 "158bb8c5mspn2zqyxjx0pxfnrrrawqa7jvngllj49pgrr5bf0kaa"))))
 
 (define %t3code-exclude-proprietary-providers-patch
   (local-file (canonicalize-path (search-path %load-path
@@ -430,7 +430,7 @@
     (method t3code-node-modules-fetch)
     (uri (make-t3code-dependency-reference %t3code-source))
     (file-name (string-append "t3code-node-modules-" %t3code-version))
-    (sha256 (base32 "0b0pa5g9c7dh30bcblp2klra505xdd4jqfdkwspmznfznry4imqr"))))
+    (sha256 (base32 "0kg4xdd8n9qnj35sq6nl6jbm991dhcirgdj6h6ijksqjq4fw5657"))))
 
 (define (ghostty-dependencies-builder source)
   (with-imported-modules '((guix build utils))
@@ -1339,7 +1339,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
 
 ;; Pin feat/opencode-session-sharing so branch updates cannot change the build.
 (define %t3code-rocktakey-commit
-  "2e4b780d0ddab141256eff91e979ab027068ba56")
+  "96dbb83e43f634fc2998b5eb071f4d761dfc0265")
 
 (define %t3code-rocktakey-version
   (git-version %t3code-version "0" %t3code-rocktakey-commit))
@@ -1351,7 +1351,7 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
           %t3code-rocktakey-commit))
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
-    (sha256 (base32 "16yqfbbnbkxjy2i3y4r7wcfl3nsc3mkslcc6y9xp30fr3vznvy8m"))
+    (sha256 (base32 "1v7bnzcma6lw7nagr9vhwpg9n8c4hbkmfx1a8cyqjwfc7696mkny"))
     (patches (list %t3code-exclude-proprietary-providers-patch
                    %t3code-disable-agent-feedback-patch))
     (patch-flags #~("-p1" "--fuzz=0"))))
