@@ -1,0 +1,314 @@
+--- a/apps/server/src/binCli.ts
++++ b/apps/server/src/binCli.ts
+@@ -20,7 +20,6 @@
+ import { extendConnectionAttemptTimeout, keepOutboundFetchOnHttp1 } from "./outboundHttp.ts";
+ import { sharedServerCommandFlags } from "./cli/config.ts";
+ import { projectCommand } from "./cli/project.ts";
+-import { feedbackCommand } from "./cli/feedback.ts";
+ import { threadCommand } from "./cli/thread.ts";
+ import { workflowCommand } from "./cli/workflow.ts";
+ import { runDefaultServerCommand, serveCommand, startCommand } from "./cli/server.ts";
+@@ -93,7 +92,6 @@
+       browserCommand,
+       projectCommand,
+       threadCommand,
+-      feedbackCommand,
+       workflowCommand,
+       upCommand,
+       statusCommand,
+--- a/apps/server/src/environment/ServerEnvironment.ts
++++ b/apps/server/src/environment/ServerEnvironment.ts
+@@ -306,7 +306,7 @@
+       mcpHostedApproval: true,
+       shellThreadFamilies: true,
+       shellOlderSettled: true,
+-      agentFeedback: true,
++      agentFeedback: false,
+     },
+   };
+
+--- a/apps/server/src/mcp/McpHttpServer.ts
++++ b/apps/server/src/mcp/McpHttpServer.ts
+@@ -63,9 +63,6 @@
+ import * as OrchestratorMcpService from "./OrchestratorMcpService.ts";
+ import { PreviewControlsToolkit } from "./toolkits/previewControls/tools.ts";
+ import * as PreviewControlsHandlers from "./toolkits/previewControls/handlers.ts";
+-import * as FeedbackHandlers from "./toolkits/feedback/handlers.ts";
+-import { FeedbackToolkit } from "./toolkits/feedback/tools.ts";
+-import * as Feedback from "../feedback/FeedbackService.ts";
+ import { EnvironmentToolkit } from "./toolkits/environment/tools.ts";
+ import * as EnvironmentHandlers from "./toolkits/environment/handlers.ts";
+ import { ThemeToolkit } from "./toolkits/theme/tools.ts";
+@@ -293,7 +290,7 @@
+   const settingsFlags = serverSettings.getSettings.pipe(
+     Effect.map((settings) => ({
+       linkedEnvironments: settings.linkedEnvironmentsEnabled,
+-      agentFeedback: settings.agentFeedback.mode,
++      agentFeedback: "off" as const,
+       workflows: settings.workflowsEnabled,
+     })),
+     Effect.orElseSucceed(() => ({
+@@ -1439,17 +1436,6 @@
+
+ export const layerProjectRegistration = toolkitRegistration(ProjectToolkit, ProjectHandlers.layer);
+
+-// Reports may name any tool this server advertises, read when a report arrives.
+-const layerFeedbackToolkit = toolkitRegistration(FeedbackToolkit, FeedbackHandlers.layer).pipe(
+-  Layer.provide(
+-    Layer.unwrap(
+-      Effect.map(McpServer.McpServer, (server) =>
+-        Feedback.layer(() => server.tools.map(({ tool }) => tool.name)),
+-      ),
+-    ),
+-  ),
+-);
+-
+ export const layerAttachmentToolkit = toolkitRegistration(
+   AttachmentToolkit,
+   AttachmentHandlers.layer,
+@@ -1514,7 +1500,6 @@
+   layerWorkflowToolkit,
+   layerAttachmentToolkit,
+   layerProjectRegistration,
+-  layerFeedbackToolkit,
+   layerEnvironmentToolkit,
+   layerThemeToolkit,
+   layerPreviewControlsRegistration,
+--- a/apps/server/src/ws.ts
++++ b/apps/server/src/ws.ts
+@@ -29,6 +29,7 @@
+ import { subscribeChatGptHandoff } from "./provider/CodexChatGptHandoff.ts";
+ import {
+   AcpRegistryOperationError,
++  AgentFeedbackRequestError,
+   CommandId,
+   authScopeResponse,
+   AuthAccessStreamError,
+@@ -138,7 +139,6 @@
+ import * as Workflows from "./workflows/Workflows.ts";
+ import * as WorkflowRuntime from "./workflows/WorkflowRuntime.ts";
+ import * as SecretRequests from "./secrets/SecretRequests.ts";
+-import * as FeedbackStore from "./feedback/FeedbackStore.ts";
+ import * as GuestShareService from "./guest/GuestShareService.ts";
+ import {
+   bufferShellLiveStream,
+@@ -1516,7 +1516,6 @@
+       const toWorkflowRequestError = (error: Workflows.WorkflowError) =>
+         new WorkflowRequestError({ message: error.message });
+       const secretRequests = yield* SecretRequests.SecretRequests;
+-      const feedbackStore = yield* FeedbackStore.FeedbackStore;
+       const guestShares = yield* GuestShareService.GuestShareService;
+       const pullRequests = yield* PullRequestService.PullRequestService;
+       const issues = yield* IssueService.IssueService;
+@@ -2469,7 +2468,8 @@
+           Effect.annotateCurrentSpan({ "orchestration_v2.thread_id": input.threadId }).pipe(
+             Effect.andThen(secretRequests.answer(input)),
+           ),
+-        [WS_METHODS.agentFeedbackAnswerRequest]: (input) => feedbackStore.answer(input),
++        [WS_METHODS.agentFeedbackAnswerRequest]: () =>
++          Effect.fail(new AgentFeedbackRequestError({ reason: "feedback_off" })),
+         [WS_METHODS.scheduledTasksListWebhookDeliveries]: (input) =>
+           Effect.annotateCurrentSpan({ "scheduled_task.id": input.id }).pipe(
+             Effect.andThen(scheduledTasks.listWebhookDeliveries(input)),
+--- a/apps/server/src/orchestration-v2/runtimeLayer.ts
++++ b/apps/server/src/orchestration-v2/runtimeLayer.ts
+@@ -65,7 +65,6 @@
+ import * as TurnItemPositionStore from "./TurnItemPositionStore.ts";
+ import * as ScheduledTaskService from "../scheduledTasks/ScheduledTaskService.ts";
+ import * as SecretRequests from "../secrets/SecretRequests.ts";
+-import * as FeedbackStore from "../feedback/FeedbackStore.ts";
+ import * as WorkspaceFolders from "../workspace/WorkspaceFolders.ts";
+ import * as TaskFolderStore from "../workspace/TaskFolderStore.ts";
+
+@@ -330,10 +329,6 @@
+   Layer.provide(PeerMcpClient.layer.pipe(Layer.provideMerge(PeerLinks.layer))),
+ );
+ const layerSecretRequestsProvided = SecretRequests.layer.pipe(
+-  Layer.provide(layerThreadManagementProvided),
+-);
+-// Cards are shown from /mcp and answered over WebSocket; one instance serializes both.
+-const layerFeedbackStoreProvided = FeedbackStore.layer.pipe(
+   Layer.provide(layerThreadManagementProvided),
+ );
+ const layerScheduledTaskProvided = ScheduledTaskService.layer.pipe(
+@@ -444,7 +439,6 @@
+   layerWorkflowsProvided,
+   layerScratchThreadPromotionProvided,
+   layerSecretRequestsProvided,
+-  layerFeedbackStoreProvided,
+   GuestShareService.layer.pipe(
+     Layer.provide(Layer.merge(layerOrchestratorProvided, layerCommandOutputHubProvided)),
+   ),
+--- a/apps/server/src/orchestration-v2/ProviderSessionManager.ts
++++ b/apps/server/src/orchestration-v2/ProviderSessionManager.ts
+@@ -495,13 +495,6 @@
+         : serverSettings.value.getSettings.pipe(
+             Effect.map((settings) => settings.promptSuggestionsEnabled),
+             Effect.orElseSucceed(() => false),
+-          );
+-      // Read per turn, so the feedback instruction follows the setting without a restart.
+-      const agentFeedbackMode = Option.isNone(serverSettings)
+-        ? Effect.succeed("off" as const)
+-        : serverSettings.value.getSettings.pipe(
+-            Effect.map((settings) => settings.agentFeedback.mode),
+-            Effect.orElseSucceed(() => "off" as const),
+           );
+       const agentAccessSettings = Effect.fn("ProviderSessionManagerV2.agentAccessSettings")(
+         function* (threadId: ThreadId) {
+@@ -2738,8 +2731,7 @@
+             ),
+           startTurn: (input) =>
+             busyTurn(input, () =>
+-              agentFeedbackMode.pipe(
+-                Effect.flatMap((agentFeedback) => runtime.startTurn({ ...input, agentFeedback })),
++              runtime.startTurn({ ...input, agentFeedback: "off" }).pipe(
+                 turnMetrics("send", input.modelSelection.model),
+               ),
+             ),
+--- a/apps/web/src/components/chat/TimelineV2EventRow.tsx
++++ b/apps/web/src/components/chat/TimelineV2EventRow.tsx
+@@ -12,7 +12,6 @@
+ import { cn } from "~/lib/utils";
+ import { Collapsible, CollapsibleTrigger, CollapsiblePanel } from "../ui/collapsible";
+ import { EnvironmentSubagentAvatar, SubagentElapsed, V2LifecycleRow } from "./V2LifecycleRow";
+-import { FeedbackRequestCard } from "./FeedbackRequestCard";
+ import { LinkRequestCard } from "./LinkRequestCard";
+ import { SecretRequestCard } from "./SecretRequestCard";
+ import { TimelineRowCtx, type TimelineRow } from "./timelineRowContext";
+@@ -34,13 +33,7 @@
+     );
+   }
+   if (item.type === "feedback_request") {
+-    return (
+-      <FeedbackRequestCard
+-        environmentId={ctx.activeThreadEnvironmentId}
+-        item={item}
+-        visibility={visibility}
+-      />
+-    );
++    return null;
+   }
+   if (item.type === "link_request") {
+     return (
+--- a/apps/web/src/components/settings/LabsSettingsPanel.tsx
++++ b/apps/web/src/components/settings/LabsSettingsPanel.tsx
+@@ -1,9 +1,7 @@
+-import { msg } from "gt-react";
+ import { managedCapabilityDenial } from "@t3tools/client-runtime/contract-labels";
+ import { useAuth } from "@clerk/react";
+ import { Link } from "@tanstack/react-router";
+ import {
+-  AgentFeedbackMode,
+   DEFAULT_WORKFLOW_SKIPPED_RUNS_KEPT,
+   MAX_WORKFLOW_SKIPPED_RUNS_KEPT,
+ } from "@t3tools/contracts";
+@@ -13,7 +11,6 @@
+ import { useT3ConnectAuthPrompt } from "../clerk/useT3ConnectAuthPrompt";
+ import { Button } from "../ui/button";
+ import { NumberField, NumberFieldGroup, NumberFieldInput } from "../ui/number-field";
+-import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../ui/select";
+ import { Switch } from "../ui/switch";
+ import { commitNumberFieldOnEnter } from "./commitNumberFieldOnEnter";
+ import { ScopedSwitch } from "./ScopedSwitch";
+@@ -47,7 +44,6 @@
+         <PromptSuggestionsRow />
+         <SimlockHostsRow />
+         <FastWorktreeCheckoutRow />
+-        <AgentFeedbackRow />
+       </SettingsSection>
+     </SettingsPageContainer>
+   );
+@@ -392,74 +388,3 @@
+     />
+   );
+ }
+-
+-/** Shows only when every machine in scope honors it; older servers drop the setting. */
+-const AGENT_FEEDBACK_MODES = AgentFeedbackMode.literals;
+-const AGENT_FEEDBACK_MODE_LABELS: Record<AgentFeedbackMode, string> = {
+-  off: msg("Off"),
+-  "on-request": msg("When I ask"),
+-  auto: msg("Automatic"),
+-};
+-const AGENT_FEEDBACK_MODE_DESCRIPTIONS: Record<AgentFeedbackMode, string> = {
+-  off: msg("Agents send no feedback to the T3 team."),
+-  "on-request": msg(
+-    "When you ask, agents show you a short report about T3 Code and send it to the T3 team if you approve.",
+-  ),
+-  auto: msg(
+-    "Agents also report T3 Code problems they hit on their own, such as a T3 tool that failed.",
+-  ),
+-};
+-
+-function AgentFeedbackRow() {
+-  const searchableSetting = useSearchableSetting();
+-  const { scope, connectedEnvironments } = useSettingsScope();
+-  const settings = useScopedSettings();
+-  const updateSettings = useUpdateScopedSettings();
+-  const gt = useGT();
+-  const m = useMessages();
+-  const mixed = useScopedSettingsMixed(["agentFeedback"]);
+-  if (
+-    scope.kind === "project" ||
+-    scope.kind === "checkout" ||
+-    connectedEnvironments.length === 0 ||
+-    connectedEnvironments.some(
+-      (environment) => environment.serverConfig?.environment.capabilities.agentFeedback !== true,
+-    )
+-  )
+-    return null;
+-  return (
+-    <SettingsRow
+-      serverScoped
+-      {...searchableSetting("agent-feedback")}
+-      settingKeys={["agentFeedback"]}
+-      description={
+-        mixed
+-          ? gt("The selected machines use different agent feedback modes.")
+-          : m(AGENT_FEEDBACK_MODE_DESCRIPTIONS[settings.agentFeedback.mode])
+-      }
+-      control={
+-        <Select
+-          value={mixed ? null : settings.agentFeedback.mode}
+-          onValueChange={(mode) => {
+-            if (mode !== null) updateSettings({ agentFeedback: { mode } });
+-          }}
+-        >
+-          <SelectTrigger size="sm" className="w-full sm:w-40" aria-label={gt("Agent feedback")}>
+-            <SelectValue>
+-              {(mode: AgentFeedbackMode | null) =>
+-                mode === null ? gt("Mixed") : m(AGENT_FEEDBACK_MODE_LABELS[mode])
+-              }
+-            </SelectValue>
+-          </SelectTrigger>
+-          <SelectPopup align="end" alignItemWithTrigger={false}>
+-            {AGENT_FEEDBACK_MODES.map((mode) => (
+-              <SelectItem key={mode} hideIndicator value={mode}>
+-                {m(AGENT_FEEDBACK_MODE_LABELS[mode])}
+-              </SelectItem>
+-            ))}
+-          </SelectPopup>
+-        </Select>
+-      }
+-    />
+-  );
+-}
+--- a/apps/web/src/components/settings/settingsSearch.ts
++++ b/apps/web/src/components/settings/settingsSearch.ts
+@@ -1023,16 +1023,6 @@
+     searchTerms: [msg("logs traces processes resource history failures spans cpu memory")],
+   },
+   {
+-    id: "agent-feedback",
+-    title: msg("Agent feedback"),
+-    to: "/settings/labs",
+-    scope: "environment-defaults",
+-    agentFeedbackOnly: true,
+-    searchTerms: [
+-      msg("report bug problem t3 team send feedback agents tools automatic when i ask"),
+-    ],
+-  },
+-  {
+     id: "open-source-licenses",
+     title: msg("Open source licenses"),
+     to: "/settings/about",

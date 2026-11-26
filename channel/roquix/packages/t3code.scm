@@ -63,10 +63,15 @@
   (local-file (canonicalize-path (search-path %load-path
                   "roquix/packages/t3code/exclude-proprietary-providers.patch"))))
 
+(define %t3code-disable-agent-feedback-patch
+  (local-file (canonicalize-path (search-path %load-path
+                  "roquix/packages/t3code/disable-agent-feedback.patch"))))
+
 (define %t3code-source
   (origin
     (inherit %t3code-upstream-source)
-    (patches (list %t3code-exclude-proprietary-providers-patch))
+    (patches (list %t3code-exclude-proprietary-providers-patch
+                   %t3code-disable-agent-feedback-patch))
     (patch-flags #~("-p1" "--fuzz=0"))))
 
 ;; Match npm's gitHead, rather than assuming the Git tag includes the npm release.
@@ -1347,7 +1352,8 @@ Web interface, terminal WASM, and native addons from source and runs on Node.js.
     (file-name (string-append "t3code-rocktakey-" %t3code-rocktakey-version
                               ".tar.gz"))
     (sha256 (base32 "16yqfbbnbkxjy2i3y4r7wcfl3nsc3mkslcc6y9xp30fr3vznvy8m"))
-    (patches (list %t3code-exclude-proprietary-providers-patch))
+    (patches (list %t3code-exclude-proprietary-providers-patch
+                   %t3code-disable-agent-feedback-patch))
     (patch-flags #~("-p1" "--fuzz=0"))))
 
 (define* (t3code-rocktakey-package base

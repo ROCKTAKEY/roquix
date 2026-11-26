@@ -30,7 +30,9 @@ const run = (...args) => execFileSync(executable, args, {
 let server;
 try {
   assert.ok(existsSync(executable), "the package must provide the public t3 command");
-  assert.match(run("--help"), /serve/);
+  const help = run("--help");
+  assert.match(help, /serve/);
+  assert.doesNotMatch(help, /\bfeedback\b/i);
   assert.match(run("pair", "--help"), /pairing/i);
   assert.match(run("auth", "--help"), /session/);
   assert.equal(run("--version").trim(), `t3 v${version}`);
