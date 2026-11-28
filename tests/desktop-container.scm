@@ -5,6 +5,40 @@
 
 (test-begin "desktop-container")
 
+(define public-interfaces
+  '(Account Background Camera Clipboard Documents DynamicLauncher Email FileChooser
+    FileTransfer GlobalShortcuts Inhibit InputCapture Location MemoryMonitor
+    NetworkMonitor Notification OpenURI PowerProfileMonitor Print ProxyResolver
+    RemoteDesktop ScreenCast Screenshot Secret Settings Trash Usb Wallpaper
+    experimental.Credential))
+
+;; The echo services answer every method. Only the proxy can deny a call.
+(let ((probe (string-append (dirname (current-filename)) "/fixtures/portal-policy.sh")))
+  (for-each
+   (lambda (permissions)
+     (test-assert (format #f "bus access with portal permissions ~s" permissions)
+       (zero? (apply system* "dbus-run-session" "--" "sh" probe
+                     (string-join (map symbol->string permissions))
+                     (string-join (map symbol->string public-interfaces))
+                     (portal-proxy-rules permissions)))))
+   (append (list '() '(Documents FileTransfer) public-interfaces)
+           (map list public-interfaces))))
+
+(test-error "unknown portal permissions are rejected" #t
+  (portal-proxy-rules '(FileChooser typo)))
+
+(test-error "portal permissions must be a list" #t
+  (portal-proxy-rules #t))
+
+(for-each
+ (lambda (interface)
+   (test-error (format #f "~a needs the payload PID namespace" interface) #t
+     (portal-proxy-rules (list interface))))
+ '(GameMode Realtime))
+
+(test-error "the host-only registry is outside the app interface list" #t
+  (portal-proxy-rules '(Registry)))
+
 (test-error "application IDs cannot escape their state directory" #t
   (parse-desktop-application "../other-application"))
 

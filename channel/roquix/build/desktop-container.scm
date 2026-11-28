@@ -5,8 +5,10 @@
   #:use-module (roquix build desktop-network)
   #:use-module (roquix build desktop-temporary)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:export (parse-desktop-application prepare-desktop-runtime
+            portal-proxy-rules portal-uses-documents?
             parse-playback-endpoint
             call-with-private-desktop-runtime run-desktop-command
             desktop-runtime-share desktop-runtime-expose
@@ -159,8 +161,147 @@
          (desktop-runtime-arguments runtime)
          (desktop-runtime-network runtime)))))))
 
+(define %portal-interfaces
+  ;; Auxiliary resources follow each public interface's D-Bus contract.
+  ;; https://flatpak.github.io/xdg-desktop-portal/docs/api-reference.html
+  '((Account request documents)
+    (Background request)
+    (Camera request)
+    (Clipboard session)
+    (Documents document-service documents)
+    (DynamicLauncher request)
+    (Email request)
+    (FileChooser request documents)
+    (FileTransfer document-service documents)
+    (GlobalShortcuts request session)
+    (Inhibit request session)
+    (InputCapture request session)
+    (Location request session)
+    (MemoryMonitor)
+    (NetworkMonitor)
+    (Notification)
+    (OpenURI request)
+    (PowerProfileMonitor)
+    (Print request)
+    (ProxyResolver)
+    (RemoteDesktop request session)
+    (ScreenCast request session)
+    (Screenshot request documents)
+    (Secret request)
+    (Settings)
+    (Trash)
+    (Usb request session)
+    (Wallpaper request)
+    (experimental.Credential request)))
+
+(define (portal-uses-documents? permissions)
+  (any (lambda (name) (memq 'documents (assq-ref %portal-interfaces name)))
+       permissions))
+
+(define (portal-proxy-rules permissions)
+  (define desktop "org.freedesktop.portal.Desktop")
+  (define root "/org/freedesktop/portal/desktop")
+  (define (rule flag service member path)
+    (string-append flag "=" service "=" member "@" path))
+  (define (interface-rules name)
+    (let ((features (assq-ref %portal-interfaces name)))
+      (unless features (error "unsupported desktop portal interface" name))
+      (let* ((document-service? (memq 'document-service features))
+             (service (if document-service? "org.freedesktop.portal.Documents" desktop))
+             (path (if document-service? "/org/freedesktop/portal/documents" root))
+             (members (string-append "org.freedesktop.portal." (symbol->string name) ".*")))
+        (append
+         (list (rule "--call" service members path)
+               (rule "--broadcast" service members path)
+               (rule "--call" service "org.freedesktop.DBus.Properties.Get" path)
+               (rule "--call" service "org.freedesktop.DBus.Properties.GetAll" path)
+               (rule "--broadcast" service "org.freedesktop.DBus.Properties.PropertiesChanged" path))
+         (if (memq 'request features)
+             (list (rule "--call" desktop "org.freedesktop.portal.Request.Close"
+                         (string-append root "/request/*"))
+                   (rule "--broadcast" desktop "org.freedesktop.portal.Request.Response"
+                         (string-append root "/request/*")))
+             '())
+         (if (memq 'session features)
+             (list (rule "--call" desktop "org.freedesktop.portal.Session.Close"
+                         (string-append root "/session/*"))
+                   (rule "--broadcast" desktop "org.freedesktop.portal.Session.Closed"
+                         (string-append root "/session/*")))
+             '())))))
+  (unless (list? permissions)
+    (error "desktop-portals must be a list of permission names" permissions))
+  (delete-duplicates (append-map interface-rules permissions)))
+
+(define (call-with-portal application runtime tools directory procedure)
+  (let* ((proxy (car tools))
+         (bwrap (cadr tools))
+         (gdbus (caddr tools))
+         (rules (cadddr tools))
+         (usb? (list-ref tools 4))
+         (network? (list-ref tools 5))
+         (app-id (string-append "org.roquix.Container."
+                                (desktop-application-name application)))
+         (host-runtime (host-path (getenv "XDG_RUNTIME_DIR")))
+         (address (or (getenv "DBUS_SESSION_BUS_ADDRESS")
+                      (string-append "unix:path=" host-runtime "/bus")))
+         (socket (string-append directory "/portal-bus"))
+         (target (assoc-ref (desktop-runtime-environment runtime) "XDG_RUNTIME_DIR"))
+         (bus (string-append target "/bus"))
+         (mount-point (string-append host-runtime "/doc"))
+         (documents (string-append mount-point "/by-app/" app-id))
+         (instances (string-append host-runtime "/.flatpak")))
+    (when gdbus
+      (with-output-to-file "/dev/null"
+        (lambda ()
+          (invoke gdbus "call" "--session" "--timeout" "10"
+                  "--dest" "org.freedesktop.portal.Documents"
+                  "--object-path" "/org/freedesktop/portal/documents"
+                  "--method" "org.freedesktop.portal.Documents.GetMountPoint")))
+      (unless (file-is-directory? documents)
+        (error "application document portal mount unavailable" documents)))
+    (mkdir-p instances)
+    (let* ((instance (mkdtemp! (string-append instances "/roquix-XXXXXX")))
+           (info (string-append instance "/info")))
+      (dynamic-wind
+        (lambda () #t)
+        (lambda ()
+          ;; The portal identifies the D-Bus peer by its process root. Give
+          ;; the proxy a read-only identity and publish its actual child PID.
+          (call-with-output-file info
+            (lambda (port)
+              (format port "[Application]~%name=~a~%[Instance]~%instance-id=~a~%"
+                      app-id (basename instance))
+              (when network?
+                (format port "[Context]~%shared=network;~%"))
+              (when usb?
+                (format port "[USB Devices]~%enumerable-devices=all;~%"))))
+          (call-with-child
+           (append (list bwrap "--die-with-parent" "--unshare-pid" "--ro-bind" "/gnu/store" "/gnu/store"
+                 "--ro-bind" "/etc" "/etc" "--ro-bind" "/tmp" "/tmp"
+                 "--ro-bind" host-runtime host-runtime "--dev" "/dev"
+                 "--bind" directory directory "--ro-bind" info "/.flatpak-info"
+                 "--info-fd" "3" "--" proxy address socket "--filter")
+                   rules)
+           #f
+           (lambda (pid wait)
+             (wait-for-ready wait (lambda () (file-exists? socket)) "portal proxy")
+             (procedure
+              (%desktop-runtime
+               (if gdbus
+                   (cons (cons documents mount-point) (desktop-runtime-share runtime))
+                   (desktop-runtime-share runtime))
+               (cons* (cons socket bus) (cons info "/.flatpak-info")
+                      (desktop-runtime-expose runtime))
+               (append (list (cons "DBUS_SESSION_BUS_ADDRESS" (string-append "unix:path=" bus))
+                             (cons "GTK_USE_PORTAL" "1"))
+                       (desktop-runtime-environment runtime))
+               (desktop-runtime-arguments runtime)
+               (desktop-runtime-network runtime))))
+           #:ready-file (string-append instance "/bwrapinfo.json")))
+        (lambda () (delete-file-recursively instance))))))
+
 (define* (call-with-private-desktop-runtime application compositor procedure
-                                          #:key audio-daemon (network? #f)
+                                          #:key audio-daemon portal-tools (network? #f)
                                           (temporary-directory "/var/tmp"))
   (call-with-desktop-temporary-directory
    (parse-temporary-base temporary-directory)
@@ -175,10 +316,10 @@
           (desktop-runtime-environment runtime)
           (desktop-runtime-arguments runtime)
           (desktop-runtime-network runtime))))
-      #:audio-daemon audio-daemon #:network? network?))))
+      #:audio-daemon audio-daemon #:portal-tools portal-tools #:network? network?))))
 
 (define* (call-with-private-desktop-services application compositor procedure
-                                           #:key audio-daemon (network? #f))
+                                           #:key audio-daemon portal-tools (network? #f))
   "Run PROCEDURE with a compositor that exposes only this application's desktop."
   (let* ((runtime (prepare-desktop-runtime application))
          (host-display (car (car (desktop-runtime-expose runtime))))
@@ -215,9 +356,13 @@
                            (list (cons socket (cdr (car (desktop-runtime-expose runtime))))))
                    (desktop-runtime-environment runtime)
                    (desktop-runtime-arguments runtime) network)))
+             (define (launch runtime)
+               (if portal-tools
+                   (call-with-portal application runtime portal-tools directory procedure)
+                   (procedure runtime)))
              (if audio
-                 (call-with-private-playback private audio audio-daemon directory procedure)
-                 (procedure private))))))
+                 (call-with-private-playback private audio audio-daemon directory launch)
+                 (launch private))))))
       (lambda ()
         (for-each (lambda (handler)
                     (sigaction (car handler) (car (cdr handler))
