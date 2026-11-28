@@ -18,7 +18,19 @@ definition="$XDG_CONFIG_HOME/guix/extra-profiles/channel/manifest.scm"
 mkdir -p "$HOME" "$(dirname "$definition")"
 printf '%s\n' '(specifications->manifest (list "fixture-profile-a"))' > "$definition"
 
-# No -L or module-path environment variables may bypass channel discovery.
+if LC_ALL=C "$guix" extra-profile --help >"$test_root/before-install" 2>&1; then
+  echo "extra-profile was available before installation" >&2
+  exit 1
+fi
+grep -F 'command not found' "$test_root/before-install" >/dev/null
+
+"$guix" install -p "$test_root/extension" guix-extra-profile
+export GUIX_PROFILE="$test_root/extension"
+set +u
+. "$GUIX_PROFILE/etc/profile"
+set -u
+unset GUIX_PROFILE
+
 "$guix" extra-profile reconfigure channel --dry-run
 test ! -e "$HOME/.guix-extra-profiles/channel/channel"
 "$guix" extra-profile reconfigure channel

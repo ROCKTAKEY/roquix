@@ -8,13 +8,14 @@ trap 'rm -rf "$test_root"' EXIT HUP INT TERM
 guix repl -- "$repository/tests/extra-profile/channel-profile.scm" \
   "$repository" "$test_root" "$(command -v guix)"
 # Channel paths precede GUILE_LOAD_PATH; pin discovery to this working tree.
+extension=$(guix build -L "$repository/channel" guix-extra-profile)
 export PATH="$test_root/profile/bin:$PATH"
 
 export HOME="$test_root/home"
 export XDG_CONFIG_HOME="$test_root/config"
 export XDG_CACHE_HOME="$test_root/cache"
 export GUIX_PROFILE="$test_root/guix-profile"
-export GUIX_EXTENSIONS_PATH="$repository/channel/guix/extensions"
+export GUIX_EXTENSIONS_PATH="$extension/share/guix/extensions/1.5"
 export GUILE_LOAD_PATH="$repository/channel${GUILE_LOAD_PATH:+:$GUILE_LOAD_PATH}"
 
 definitions="$XDG_CONFIG_HOME/guix/extra-profiles"

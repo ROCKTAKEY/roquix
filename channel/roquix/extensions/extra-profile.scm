@@ -7,7 +7,7 @@
 ;;; Software Foundation, either version 3 of the License, or (at your option)
 ;;; any later version.
 
-(define-module (guix extensions extra-profile)
+(define-module (roquix extensions extra-profile)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix ui)

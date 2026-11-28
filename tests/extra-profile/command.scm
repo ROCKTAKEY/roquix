@@ -1,4 +1,4 @@
-(use-modules (guix extensions extra-profile)
+(use-modules (roquix extensions extra-profile)
              (roquix extra-profiles paths)
              (srfi srfi-64))
 
