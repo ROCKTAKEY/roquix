@@ -9,6 +9,8 @@
   #:use-module (srfi srfi-13)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages freedesktop)
+  #:use-module ((gnu packages glib) #:select (xdg-dbus-proxy glib))
+  #:use-module ((gnu packages virtualization) #:select (bubblewrap))
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages containers)
   #:use-module (gnu packages linux)
@@ -33,6 +35,7 @@
                 (share '()) (expose '())
                 (network? #f) (emulate-fhs? #f) (no-cwd? #t)
                 desktop-application (desktop-audio? #f) (desktop-network? #f)
+                (desktop-portals '())
                 (desktop-temporary-directory "/var/tmp")
                 source inputs native-inputs outputs system target
                 #:allow-other-keys)
@@ -55,8 +58,8 @@
             '(network? emulate-fhs? no-cwd? desktop-audio? desktop-network?)
             (list network? emulate-fhs? no-cwd? desktop-audio? desktop-network?))
 
-  (when (and (or desktop-audio? desktop-network?) (not desktop-application))
-    (error "desktop audio and networking require a desktop application"))
+  (when (and (or desktop-audio? desktop-network? (not (null? desktop-portals))) (not desktop-application))
+    (error "desktop audio, networking and portals require a desktop application"))
   (when (and network? desktop-network?)
     (error "host network sharing conflicts with private desktop networking"))
 
@@ -77,7 +80,9 @@
    #:network? network? #:emulate-fhs? emulate-fhs? #:no-cwd? no-cwd?
    #:getenv (lambda (_) "/runtime"))
 
-  (let* ((modules
+  (let* ((portal-rules (portal-proxy-rules desktop-portals))
+         (documents? (portal-uses-documents? desktop-portals))
+         (modules
           (source-module-closure
            '((roquix build container-launcher)
              (roquix build desktop-container)
@@ -133,7 +138,7 @@
                             #:network? #$(or network? desktop-network?)
                             #:emulate-fhs? #$emulate-fhs?
                             #:no-cwd? #$no-cwd?
-                            #:private-session-bus? (and desktop #t)
+                            #:private-session-bus? (and desktop #$(null? portal-rules))
                             #:arguments
                             (append (if desktop (desktop-runtime-arguments desktop) '())
                                     (cdr (command-line))))))
@@ -158,6 +163,14 @@
                                   #$(and desktop-application
                                          (file-append weston "/bin/weston"))
                                   launch
+                                  #:portal-tools
+                                  #$(and (pair? portal-rules)
+                                         #~(list #$(file-append xdg-dbus-proxy "/bin/xdg-dbus-proxy")
+                                                #$(file-append bubblewrap "/bin/bwrap")
+                                                #$(and documents? #~(string-append #$glib:bin "/bin/gdbus"))
+                                                '#$(sexp->gexp portal-rules)
+                                                #$(and (memq 'Usb desktop-portals) #t)
+                                                #$(or network? desktop-network?)))
                                   #:audio-daemon
                                   #$(and desktop-audio?
                                          (file-append pulseaudio "/bin/pulseaudio"))

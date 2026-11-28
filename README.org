@@ -646,9 +646,38 @@ private runtime directory.  The compositor uses software rendering and runs
 without host configuration, a desktop launcher, or a host clipboard bridge.
 The launcher never
 falls back to host X11 or shares the host runtime directory, D-Bus session,
-Secret Service, SSH agent, host audio socket, GPU, or sound devices.  Each
+Secret Service, SSH agent, host audio socket, GPU, or sound devices.  By default, each
 container starts its own D-Bus session.  Standard input, output, and error
 remain available; other inherited file descriptors are sealed before exec.
+
+Use =#:desktop-portals= to select XDG Desktop Portal interfaces by their
+upstream names. For example, =#:desktop-portals '(FileChooser Notification)=
+lets a chat client request a file dialog and post notifications. The default
+list is empty. Each entry allows the methods on that interface, including
+methods added by newer host portal versions.
+
+The selectable interfaces are =Account=, =Background=, =Camera=, =Clipboard=,
+=Documents=, =DynamicLauncher=, =Email=, =FileChooser=, =FileTransfer=,
+=GlobalShortcuts=, =Inhibit=, =InputCapture=, =Location=,
+=MemoryMonitor=, =NetworkMonitor=, =Notification=, =OpenURI=,
+=PowerProfileMonitor=, =Print=, =ProxyResolver=, =RemoteDesktop=,
+=ScreenCast=, =Screenshot=, =Secret=, =Settings=, =Trash=, =Usb=, =Wallpaper=,
+and =experimental.Credential=. Availability depends on the host's portal
+version and backend. GameMode and Realtime require translating process IDs in
+the application's PID namespace and cannot be selected. Request and Session messages are included for interfaces
+that use them. Some workflows require multiple interfaces, for example
+=Clipboard= with =RemoteDesktop=. D-Bus property reads and change signals
+are shared by interfaces on the same object.
+
+With =Usb= enabled, the application can enumerate all USB devices. The host
+USB portal handles permission to open each device.
+
+The selected interfaces require a corresponding host portal backend.
+Interfaces that exchange document paths (=Account=, =Documents=, =FileChooser=,
+=FileTransfer=, and =Screenshot=) also require the Documents portal's FUSE mount. The launcher
+shares the document view for =org.roquix.Container.<desktop-application>=.
+Use a distinct desktop application ID for each app. Document grants and
+explicit filesystem shares determine which files the app can modify.
 
 LAN and Internet connections are enabled with =#:desktop-network? #t=.
 =slirp4netns= provides outbound networking and DNS in a private network

@@ -86,6 +86,13 @@
    #:system "x86_64-linux"
    #:target #f))
 
+(test-error "portal access requires a desktop application identity" #t
+  ((build-system-lower container-launcher-build-system)
+   "hello-container"
+   #:payload hello #:executable "hello" #:desktop-portals '(FileChooser)
+   #:inputs '() #:native-inputs '() #:outputs '("out")
+   #:system "x86_64-linux" #:target #f))
+
 (test-error "desktop temporary storage must have an absolute base" #t
   ((build-system-lower container-launcher-build-system)
    "hello-container"
